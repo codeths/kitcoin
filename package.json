@@ -1,19 +1,24 @@
 {
-  "name": "kitcoin",
-  "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/chromezoneeths/kitcoin.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/chromezoneeths/kitcoin/issues"
-  },
-  "homepage": "https://github.com/chromezoneeths/kitcoin#readme"
+	"name": "kitcoin",
+	"version": "1.0.0",
+	"description": "",
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "tsc",
+		"format": "npx prettier --write ."
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/chromezoneeths/kitcoin.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/chromezoneeths/kitcoin/issues"
+	},
+	"homepage": "https://github.com/chromezoneeths/kitcoin#readme",
+	"devDependencies": {
+		"prettier": "2.4.0",
+		"typescript": "^4.4.3"
+	}
 }
