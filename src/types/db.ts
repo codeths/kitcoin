@@ -1,3 +1,9 @@
+import mongoose from "mongoose"
+
+export type Document<T> = mongoose.Document<any, any, T> & T & {
+	_id: mongoose.Types.ObjectId;
+};
+
 /**
  * @description A user
  * @param {string} email The user's email
@@ -11,11 +17,13 @@ export interface IUser {
 	 * @param {string} refresh OAuth refresh token
 	 * @param {string} access OAuth access token
 	 * @param {string} expires OAuth access token expiration date
+	 * @param {string} session Session token
 	 */
 	tokens: {
 		refresh: string | null;
 		access: string | null;
 		expires: Date | null;
+		session: string | null;
 	};
 	getBalance(): Promise<number>;
 }
