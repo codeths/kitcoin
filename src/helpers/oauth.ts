@@ -1,6 +1,5 @@
 const STUDENT_USER_SCOPES = ["profile", "email"];
 
-import { OAuth2Client } from 'google-auth-library';
 import { google } from 'googleapis';
 import { client_id, client_secret, redirect_url } from '../config/keys.json';
 import { Document, IUser } from '../types';
