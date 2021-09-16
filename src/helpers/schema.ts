@@ -1,4 +1,4 @@
-import * as mongoose from "mongoose";
+import mongoose from "mongoose";
 import { mongo as mongoURL } from "../config/keys.json";
 import { IUser, ITransaction } from "../types";
 
@@ -24,7 +24,11 @@ const userSchema = new mongoose.Schema<IUser>({
 		expires: {
 			type: Date,
 			default: null,
-		}
+		},
+		session: {
+			type: String,
+			default: null,
+		},
 	}
 });
 
