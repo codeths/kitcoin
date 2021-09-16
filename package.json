@@ -18,7 +18,11 @@
 	},
 	"homepage": "https://github.com/chromezoneeths/kitcoin#readme",
 	"devDependencies": {
+		"@types/mongoose": "^5.11.97",
 		"prettier": "2.4.0",
 		"typescript": "^4.4.3"
+	},
+	"dependencies": {
+		"mongoose": "^6.0.6"
 	}
 }
