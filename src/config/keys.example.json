@@ -1,0 +1,4 @@
+{
+	"mongo": "mongodb auth url",
+	"port": "port to listen on"
+}
