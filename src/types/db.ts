@@ -5,18 +5,19 @@
  * @param {tokens} tokens The user's OAuth tokens
  */
 export interface IUser {
-	email: string,
-	name: string | null,
+	email: string;
+	name: string | null;
 	/**
 	 * @param {string} refresh OAuth refresh token
 	 * @param {string} access OAuth access token
 	 * @param {string} expires OAuth access token expiration date
 	 */
 	tokens: {
-		refresh: string | null,
-		access: string | null,
-		expires: Date | null
-	}
+		refresh: string | null;
+		access: string | null;
+		expires: Date | null;
+	};
+	getBalance(): Promise<number>;
 }
 
 /**
@@ -28,9 +29,9 @@ export interface IUser {
  * @param {balance} balance The balance of the user after the transaction
  */
 export interface ITransaction {
-	amount: number,
-	reason: string | null,
-	user: string,
-	owner: string,
-	balance: number,
+	amount: number;
+	reason: string | null;
+	user: string;
+	owner: string;
+	balance: number;
 }

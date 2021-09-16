@@ -30,6 +30,17 @@ const userSchema = new mongoose.Schema<IUser>({
 
 userSchema.index({ email: 1 }, { unique: true });
 
+userSchema.methods.getBalance = async function () {
+	const id = this._id;
+
+	const latestTransaction = await Transaction.findOne({
+		user: id
+	});
+
+	if (!latestTransaction) return 0;
+	return latestTransaction.balance;
+}
+
 const transactionSchema = new mongoose.Schema<ITransaction>({
 	amount: {
 		type: Number,
