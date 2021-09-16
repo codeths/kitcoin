@@ -1,4 +1,8 @@
 {
 	"mongo": "mongodb auth url",
-	"port": "port to listen on"
+	"port": "port to listen on",
+	"client_id": "Google client ID",
+	"client_secret": "Google client secret",
+	"redirect_url": "OAuth redirect URL",
+	"sessionSecret": "Session secret for mongo"
 }
