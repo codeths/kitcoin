@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import mongostore from 'connect-mongodb-session';
 import { mongo as mongoURL, sessionSecret, port } from '../config/keys.json';
-import { auth } from './routes';
+import { auth, api } from './routes';
 
 declare module 'express-session' {
 	interface SessionData {
@@ -27,12 +27,7 @@ app.listen(port, () => {
 
 app.set('trust proxy', 1)
 
-app.use(
-	bodyParser.urlencoded({
-		extended: true
-	})
-);
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(cookieParser());
 
 
@@ -48,6 +43,7 @@ app.use(session({
 }))
 
 app.use('/auth', auth);
+app.use('/api', api);
 
 app.get('/', async (req, res) => {
 	res.send('Hello World!');
