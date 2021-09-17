@@ -1,8 +1,9 @@
-import mongoose from "mongoose"
+import mongoose from 'mongoose';
 
-export type Document<T> = mongoose.Document<any, any, T> & T & {
-	_id: mongoose.Types.ObjectId;
-};
+export type Document<T> = mongoose.Document<any, any, T> &
+	T & {
+		_id: mongoose.Types.ObjectId;
+	};
 
 /**
  * @description A user
