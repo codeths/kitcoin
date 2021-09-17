@@ -5,8 +5,7 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
-		"format": "prettier --write .",
-		"lint": "prettier -c ."
+		"format": "prettier --write ."
 	},
 	"repository": {
 		"type": "git",
