@@ -1,12 +1,21 @@
 import express from 'express';
 import crypto from 'crypto';
-import {STUDENT_OAUTH_URL, oauthCallback} from '../../helpers/oauth';
+import {
+	STUDENT_OAUTH_URL,
+	STAFF_OAUTH_URL,
+	oauthCallback,
+} from '../../helpers/oauth';
 import {User} from '../../helpers/schema';
 const router = express.Router();
 
 router.get('/login', async (req, res) => {
 	res.redirect(STUDENT_OAUTH_URL);
 });
+
+router.get('/login/staff', async (req, res) => {
+	res.redirect(STAFF_OAUTH_URL);
+});
+
 router.get('/logout', async (req, res) => {
 	if (!req.session.token) return res.redirect('/');
 	const user = await User.findOne({'tokens.session': req.session.token});
