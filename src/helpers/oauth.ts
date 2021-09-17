@@ -5,10 +5,10 @@ const TEACHER_USER_SCOPES = [
 	'https://www.googleapis.com/auth/classroom.rosters.readonly',
 ];
 
-import {google, Auth} from 'googleapis';
-import {client_id, client_secret, redirect_url} from '../config/keys.json';
-import {Document, IUser} from '../types';
-import {User} from './schema';
+import { google, Auth } from 'googleapis';
+import { client_id, client_secret, redirect_url } from '../config/keys.json';
+import { Document, IUser } from '../types';
+import { User } from './schema';
 
 /**
  * Generate OAuth2 client and optionally set the credentials
@@ -72,22 +72,22 @@ export async function oauthCallback(code: string, session: string) {
 		const auth = getOAuth2Client();
 		const tokens = await auth
 			.getToken(code)
-			.catch(() => reject({error: 'Invalid code'}));
+			.catch(() => reject({ error: 'Invalid code' }));
 		if (!tokens) return;
-		const {refresh_token, access_token, expiry_date} = tokens.tokens;
+		const { refresh_token, access_token, expiry_date } = tokens.tokens;
 
 		if (!refresh_token || !access_token || !expiry_date)
-			return reject({error: 'No tokens'});
+			return reject({ error: 'No tokens' });
 		auth.setCredentials({
 			access_token,
 		});
 		const person = await google
-			.people({version: 'v1', auth})
+			.people({ version: 'v1', auth })
 			.people.get({
 				resourceName: 'people/me',
 				personFields: ['names', 'emailAddresses'].join(','),
 			})
-			.catch(() => reject({error: 'Could not get user'}));
+			.catch(() => reject({ error: 'Could not get user' }));
 		if (!person) return;
 		if (
 			!person.data ||
@@ -95,7 +95,7 @@ export async function oauthCallback(code: string, session: string) {
 			!person.data.emailAddresses ||
 			!person.data.resourceName
 		)
-			return reject({error: 'Could not get user'});
+			return reject({ error: 'Could not get user' });
 		const name = person.data.names.find(
 			name => name.metadata?.primary,
 		)?.displayName;
@@ -103,9 +103,9 @@ export async function oauthCallback(code: string, session: string) {
 			email => email.metadata?.primary,
 		)?.value;
 		const id = person.data.resourceName.split('/')[1];
-		if (!name || !email) return reject({error: 'Could not get user'});
+		if (!name || !email) return reject({ error: 'Could not get user' });
 
-		let user = await User.findOne({email});
+		let user = await User.findOne({ id });
 		if (user) {
 			if (user.name !== name || user.email !== email || user.id !== id) {
 				user.name = name;
@@ -133,4 +133,4 @@ export async function oauthCallback(code: string, session: string) {
 	});
 }
 
-export {STUDENT_OAUTH_URL, STAFF_OAUTH_URL, getOAuth2Client, getAccessToken};
+export { STUDENT_OAUTH_URL, STAFF_OAUTH_URL, getOAuth2Client, getAccessToken };
