@@ -16,4 +16,3 @@ jobs:
         uses: creyD/prettier_action@v4.0
         with:
           dry: true
-          prettier_options: -c .
