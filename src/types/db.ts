@@ -35,6 +35,7 @@ export interface IUser {
  * @param {string} user Who the transition applies to
  * @param {string} owner The ID of the user who performed the transaction
  * @param {number} balance The balance of the user after the transaction
+ * @param {Date} date The date of the transaction
  */
 export interface ITransaction {
 	amount: number;
@@ -42,4 +43,5 @@ export interface ITransaction {
 	user: string;
 	owner: string;
 	balance: number;
+	date: Date;
 }

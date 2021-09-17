@@ -56,6 +56,10 @@ const transactionSchema = new mongoose.Schema<ITransaction>({
 	balance: {
 		type: Number,
 		required: true,
+	},
+	date: {
+		type: Date,
+		default: () => new Date(),
 	}
 });
 
@@ -65,3 +69,4 @@ const User = mongoose.model<IUser>("User", userSchema);
 const Transaction = mongoose.model<ITransaction>("Transaction", transactionSchema);
 
 export { User, Transaction };
+
