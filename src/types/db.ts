@@ -8,11 +8,13 @@ export type Document<T> = mongoose.Document<any, any, T> &
 /**
  * @description A user
  * @param {string} email The user's email
+ * @param {string} id The user's id on Google
  * @param {string} name The user's name from Google
  * @param {string} tokens The user's OAuth tokens
  */
 export interface IUser {
-	email: string;
+	email: string | null;
+	id: string | null;
 	name: string | null;
 	/**
 	 * @param {string} refresh OAuth refresh token

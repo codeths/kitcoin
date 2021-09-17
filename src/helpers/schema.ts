@@ -5,7 +5,8 @@ import {IUser, ITransaction} from '../types';
 mongoose.connect(mongoURL);
 
 const userSchema = new mongoose.Schema<IUser>({
-	email: {
+	email: String,
+	id: {
 		type: String,
 		required: true,
 	},
@@ -33,6 +34,7 @@ const userSchema = new mongoose.Schema<IUser>({
 });
 
 userSchema.index({email: 1}, {unique: true});
+userSchema.index({id: 1}, {unique: true});
 
 userSchema.methods.getBalance = async function () {
 	const id = this._id;
