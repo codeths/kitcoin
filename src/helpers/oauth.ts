@@ -7,8 +7,7 @@ const TEACHER_USER_SCOPES = [
 
 import { google, Auth } from 'googleapis';
 import { client_id, client_secret, redirect_url } from '../config/keys.json';
-import { Document, IUser } from '../types';
-import { User } from './schema';
+import { User, IUserDoc } from './schema';
 
 /**
  * Generate OAuth2 client and optionally set the credentials
@@ -31,7 +30,7 @@ function getOAuth2Client(credentials?: Auth.Credentials) {
  * @returns Google OAuth2 client
  */
 async function getAccessToken(
-	user: Document<IUser>,
+	user: IUserDoc,
 ): Promise<Auth.OAuth2Client | null> {
 	if (!user.tokens.refresh) return null;
 	const oauth2Client = getOAuth2Client({
@@ -68,7 +67,7 @@ const STAFF_OAUTH_URL = getAuthURL(TEACHER_USER_SCOPES);
  * @param {string} session Session ID
  */
 export async function oauthCallback(code: string, session: string) {
-	return new Promise<Document<IUser>>(async (resolve, reject) => {
+	return new Promise<IUserDoc>(async (resolve, reject) => {
 		const auth = getOAuth2Client();
 		const tokens = await auth
 			.getToken(code)

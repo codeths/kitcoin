@@ -1,13 +1,12 @@
 import express from 'express';
-import {User, Transaction} from '../../helpers/schema';
-import {Document, IUser} from '../../types';
+import {User, Transaction, IUserDoc} from '../../helpers/schema';
 import {getOAuth2Client, getAccessToken} from '../../helpers/oauth';
 import {google} from 'googleapis';
 const router = express.Router();
 
 declare module 'express-serve-static-core' {
 	interface Request {
-		user: Document<IUser>;
+		user: IUserDoc;
 	}
 }
 

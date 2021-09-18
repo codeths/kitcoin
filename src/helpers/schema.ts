@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import {mongo as mongoURL} from '../config/keys.json';
-import {IUser, ITransaction} from '../types';
+import {IUser, IUserQueries, ITransaction} from '../types';
 
 mongoose.connect(mongoURL);
 
@@ -67,10 +67,11 @@ const transactionSchema = new mongoose.Schema<ITransaction>({
 
 transactionSchema.index({user: -1});
 
-const User = mongoose.model<IUser>('User', userSchema);
+const User = mongoose.model<IUser, mongoose.Model<IUser, IUserQueries>>('User', userSchema);
 const Transaction = mongoose.model<ITransaction>(
 	'Transaction',
 	transactionSchema,
 );
 
 export {User, Transaction};
+export * from '../types';

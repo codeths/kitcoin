@@ -1,9 +1,4 @@
-import mongoose from 'mongoose';
-
-export type Document<T> = mongoose.Document<any, any, T> &
-	T & {
-		_id: mongoose.Types.ObjectId;
-	};
+import { Document, Query } from 'mongoose';
 
 /**
  * @description A user
@@ -31,6 +26,15 @@ export interface IUser {
 	getBalance(): Promise<number>;
 }
 
+export type IUserDoc = IUser & Document<IUser>;
+
+export interface IUserQueries {
+	byId(id: `${number}`): Query<any, IUserDoc> & IUserQueries;
+	byEmail(email: string): Query<any, IUserDoc> & IUserQueries;
+	byToken(token: string): Query<any, IUserDoc> & IUserQueries;
+}
+
+
 /**
  * @description A transaction of kitcoin
  * @param {number} amount The amount of the transaction
@@ -48,3 +52,5 @@ export interface ITransaction {
 	balance: number;
 	date: Date;
 }
+
+export type ITransactionDoc = ITransaction & Document<ITransaction>;
