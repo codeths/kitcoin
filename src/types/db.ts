@@ -1,4 +1,4 @@
-import { Document, Query } from 'mongoose';
+import {Document, Query} from 'mongoose';
 
 /**
  * @description A user
@@ -27,7 +27,7 @@ export interface IUser {
 }
 
 export type IUserDoc = IUser & Document<IUser>;
-export type IUserQuery = Query<any, IUserDoc> & IUserQueries;
+export type IUserQuery = Query<IUserDoc, IUserDoc> & IUserQueries;
 
 export interface IUserQueries {
 	byId(id: string): IUserQuery;
