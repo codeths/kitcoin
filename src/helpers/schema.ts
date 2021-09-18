@@ -36,11 +36,23 @@ const userSchema = new mongoose.Schema<IUser>({
 userSchema.index({email: 1}, {unique: true});
 userSchema.index({id: 1}, {unique: true});
 
-userSchema.methods.getBalance = async function () {
-	const id = this._id;
+userSchema.query.byEmail = function (email: string): IUserQueries {
+	return this.findOne({email});
+};
 
-	const latestTransaction = await Transaction.findOne({
-		user: id,
+userSchema.query.byId = function (id: string): IUserQueries {
+	return this.findOne({id});
+};
+
+userSchema.query.byToken = function (token: string): IUserQueries {
+	return this.findOne({'tokens.session': token});
+};
+
+userSchema.methods.getBalance = async function (): Promise<number> {
+	const latestTransaction = await Transaction.findOne({user: this.id}, null, {
+		sort: {
+			date: -1,
+		},
 	});
 
 	if (!latestTransaction) return 0;
@@ -67,7 +79,10 @@ const transactionSchema = new mongoose.Schema<ITransaction>({
 
 transactionSchema.index({user: -1});
 
-const User = mongoose.model<IUser, mongoose.Model<IUser, IUserQueries>>('User', userSchema);
+const User = mongoose.model<IUser, mongoose.Model<IUser, IUserQueries>>(
+	'User',
+	userSchema,
+);
 const Transaction = mongoose.model<ITransaction>(
 	'Transaction',
 	transactionSchema,
