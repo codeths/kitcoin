@@ -18,10 +18,9 @@ router.get('/login/staff', async (req, res) => {
 
 router.get('/logout', async (req, res) => {
 	if (!req.session.token) return res.redirect('/');
-	const user = await User.findOne({'tokens.session': req.session.token});
-	if (user) {
-		user.tokens.session = null;
-		await user.save();
+	if (req.user) {
+		req.user.tokens.session = null;
+		await req.user.save();
 	}
 	res.redirect('/');
 });
@@ -46,12 +45,11 @@ router.get('/cbk', async (req, res) => {
 // DEBUG
 router.get('/me', async (req, res) => {
 	if (!req.session.token) return res.status(401).send('No session');
-	const user = await User.findOne({'tokens.session': req.session.token});
-	if (!user) return res.status(401).send('Not logged in');
+	if (!req.user) return res.status(401).send('Not logged in');
 	res.status(200).send({
-		name: user.name,
-		email: user.email,
-		id: user._id,
+		name: req.user.name,
+		email: req.user.email,
+		id: req.user.id,
 	});
 });
 
