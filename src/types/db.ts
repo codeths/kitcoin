@@ -27,13 +27,13 @@ export interface IUser {
 }
 
 export type IUserDoc = IUser & Document<IUser>;
+export type IUserQuery = Query<any, IUserDoc> & IUserQueries;
 
 export interface IUserQueries {
-	byId(id: `${number}`): Query<any, IUserDoc> & IUserQueries;
-	byEmail(email: string): Query<any, IUserDoc> & IUserQueries;
-	byToken(token: string): Query<any, IUserDoc> & IUserQueries;
+	byId(id: string): IUserQuery;
+	byEmail(email: string): IUserQuery;
+	byToken(token: string): IUserQuery;
 }
-
 
 /**
  * @description A transaction of kitcoin
