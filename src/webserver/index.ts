@@ -5,10 +5,17 @@ import cookieParser from 'cookie-parser';
 import mongostore from 'connect-mongodb-session';
 import {mongo as mongoURL, sessionSecret, port} from '../config/keys.json';
 import {auth, api} from './routes';
+import {IUserDoc, User} from '../helpers/schema';
 
 declare module 'express-session' {
 	interface SessionData {
 		token: string;
+	}
+}
+
+declare module 'express-serve-static-core' {
+	interface Request {
+		user?: IUserDoc;
 	}
 }
 
@@ -42,9 +49,17 @@ app.use(
 	}),
 );
 
+app.use(async (req, res, next) => {
+	if (!req.session?.token) return next();
+	const user = await User.findOne().byToken(req.session.token);
+	if (user) req.user = user;
+	next();
+});
+
 app.use('/auth', auth);
 app.use('/api', api);
 
 app.get('/', async (req, res) => {
+	console.log(req.user);
 	res.send('Hello World!');
 });

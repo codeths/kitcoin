@@ -4,25 +4,9 @@ import {getOAuth2Client, getAccessToken} from '../../helpers/oauth';
 import {google} from 'googleapis';
 const router = express.Router();
 
-declare module 'express-serve-static-core' {
-	interface Request {
-		user: IUserDoc;
-	}
-}
-
-router.use(async (req, res, next) => {
-	if (!req.session?.token) return res.status(401).send('Unauthorized');
-	const user = await User.findOne({'tokens.session': req.session.token});
-	if (user) {
-		req.user = user;
-	} else {
-		return res.status(401).send('Unauthorized');
-	}
-	next();
-});
-
 // Get user transactions
 router.get('/transactions', async (req, res) => {
+	if (!req.user) return res.status(401).send('Unauthorized');
 	try {
 		let {user, count = 10} = req.query;
 		if (typeof count == 'string') count = parseInt(count);
@@ -33,10 +17,10 @@ router.get('/transactions', async (req, res) => {
 		)
 			return res.status(400).send('Bad Request');
 
-		const dbUser = await User.findOne({_id: user});
+		const dbUser = await User.findOne().byId(user);
 		if (!dbUser) return res.status(404).send('Invalid user');
 
-		const transactions = await Transaction.find({user: dbUser._id}, null, {
+		const transactions = await Transaction.find({user: dbUser.id}, null, {
 			sort: {
 				date: -1,
 			},
@@ -51,25 +35,18 @@ router.get('/transactions', async (req, res) => {
 
 // Get user balance
 router.get('/balance', async (req, res) => {
+	if (!req.user) return res.status(401).send('Unauthorized');
 	try {
 		const {user} = req.query;
 		if (typeof user !== 'string')
 			return res.status(400).send('Bad Request');
 
-		const dbUser = await User.findOne({_id: user});
+		const dbUser = await User.findOne().byId(user);
 		if (!dbUser) return res.status(404).send('Invalid user');
 
-		const transaction = await Transaction.findOne(
-			{user: dbUser._id},
-			null,
-			{
-				sort: {
-					date: -1,
-				},
-			},
-		);
+		const balance = await dbUser.getBalance();
 
-		res.status(200).send({balance: transaction ? transaction.balance : 0});
+		res.status(200).send({balance});
 	} catch (e) {
 		res.status(500).send('An error occured.');
 	}
@@ -77,6 +54,7 @@ router.get('/balance', async (req, res) => {
 
 // CURRENTLY DOES NOT WORK DUE TO ORGANIZATION PERMISSIONS (https://support.google.com/a/answer/6343701)
 router.get('/search', async (req, res) => {
+	if (!req.user) return res.status(401).send('Unauthorized');
 	if (!req.query.search || typeof req.query.search !== 'string')
 		return res.status(400).send('Bad Request');
 	const client = await getAccessToken(req.user);
@@ -97,6 +75,7 @@ router.get('/search', async (req, res) => {
 
 // Get classes
 router.get('/classes', async (req, res) => {
+	if (!req.user) return res.status(401).send('Unauthorized');
 	const client = await getAccessToken(req.user);
 	if (!client) return res.status(401).send('Google authentication failed.');
 
@@ -119,6 +98,7 @@ router.get('/classes', async (req, res) => {
 
 // Get students in class
 router.get('/students', async (req, res) => {
+	if (!req.user) return res.status(401).send('Unauthorized');
 	if (!req.query.class || typeof req.query.class !== 'string')
 		return res.status(400).send('Bad Request');
 	const client = await getAccessToken(req.user);
@@ -144,6 +124,7 @@ router.get('/students', async (req, res) => {
 
 // Create transaction
 router.post('/transactions', async (req, res) => {
+	if (!req.user) return res.status(401).send('Unauthorized');
 	try {
 		const {body} = req;
 		if (!body) return res.status(400).send('Bad Request');
@@ -157,11 +138,11 @@ router.post('/transactions', async (req, res) => {
 		)
 			return res.status(400).send('Bad Request');
 
-		const dbUser = await User.findOne({_id: user});
+		const dbUser = await User.findOne().byId(user);
 		if (!dbUser) return res.status(404).send('Invalid user');
 
 		const lastTransaction = await Transaction.findOne(
-			{user: dbUser._id},
+			{user: dbUser.id},
 			null,
 			{
 				sort: {
@@ -174,8 +155,8 @@ router.post('/transactions', async (req, res) => {
 		const transaction = await new Transaction({
 			amount,
 			reason: reason || null,
-			user: dbUser._id,
-			owner: req.user._id,
+			user: dbUser.id,
+			owner: req.user.id,
 			balance: oldBalance + amount,
 		}).save();
 
