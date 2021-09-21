@@ -1,14 +1,18 @@
-import { ITransaction } from "../../types";
+import {ITransaction} from '../../types';
 
 (async () => {
-	const me: {
-		name: string | null;
-		email: string | null;
-		id: string;
-	} | string = await fetch('/api/me').then(res =>
-		res && res.ok ? res.json() : res.text(),
-	).catch(() => 'Request failed');
-	if (typeof me == 'string') return (document.getElementById('me')!.innerHTML = me || 'Request failed');
+	const me:
+		| {
+				name: string | null;
+				email: string | null;
+				id: string;
+		  }
+		| string = await fetch('/api/me')
+		.then(res => (res && res.ok ? res.json() : res.text()))
+		.catch(() => 'Request failed');
+	if (typeof me == 'string')
+		return (document.getElementById('me')!.innerHTML =
+			me || 'Request failed');
 
 	document.getElementById('my-name')!.innerHTML = me.name || 'No Name';
 	document.getElementById('my-email')!.innerHTML = me.email || 'No Email';
@@ -16,19 +20,30 @@ import { ITransaction } from "../../types";
 })();
 
 document.getElementById('bal-btn')!.addEventListener('click', async () => {
-	const id = (document.getElementById('bal-input')! as HTMLInputElement).value;
-	if (!id) return document.getElementById('balance')!.innerHTML = '-';
-	const bal: { balance: number } | string = await fetch(`/api/balance/${id}`).then(res => res && res.ok ? res.json() : res.text()).catch(() => 'Request failed');
-	if (typeof bal === 'string') return document.getElementById('balance')!.innerHTML = bal || 'Request failed';
+	const id = (document.getElementById('bal-input')! as HTMLInputElement)
+		.value;
+	if (!id) return (document.getElementById('balance')!.innerHTML = '-');
+	const bal: {balance: number} | string = await fetch(`/api/balance/${id}`)
+		.then(res => (res && res.ok ? res.json() : res.text()))
+		.catch(() => 'Request failed');
+	if (typeof bal === 'string')
+		return (document.getElementById('balance')!.innerHTML =
+			bal || 'Request failed');
 	document.getElementById('balance')!.innerHTML = bal.balance.toString();
-})
-
+});
 
 document.getElementById('history-btn')!.addEventListener('click', async () => {
-	const id = (document.getElementById('history-input')! as HTMLInputElement).value;
-	if (!id) return document.getElementById('history-table')!.innerHTML = '';
-	const transactions: ITransaction[] | string = await fetch(`/api/transactions/${id}`).then(res => res && res.ok ? res.json() : res.text()).catch(() => 'Request failed');
-	if (typeof transactions == 'string') return document.getElementById('balance')!.innerHTML = transactions || 'Request failed';
+	const id = (document.getElementById('history-input')! as HTMLInputElement)
+		.value;
+	if (!id) return (document.getElementById('history-table')!.innerHTML = '');
+	const transactions: ITransaction[] | string = await fetch(
+		`/api/transactions/${id}`,
+	)
+		.then(res => (res && res.ok ? res.json() : res.text()))
+		.catch(() => 'Request failed');
+	if (typeof transactions == 'string')
+		return (document.getElementById('balance')!.innerHTML =
+			transactions || 'Request failed');
 
 	document.getElementById('history-table')!.innerHTML = '';
 
@@ -46,9 +61,13 @@ document.getElementById('history-btn')!.addEventListener('click', async () => {
 });
 
 document.getElementById('create-btn')!.addEventListener('click', async () => {
-	let user = (document.getElementById('create-user')! as HTMLInputElement).value;
-	let amount: string | number = (document.getElementById('create-amount')! as HTMLInputElement).value;
-	let reason = (document.getElementById('create-reason')! as HTMLInputElement).value;
+	let user = (document.getElementById('create-user')! as HTMLInputElement)
+		.value;
+	let amount: string | number = (
+		document.getElementById('create-amount')! as HTMLInputElement
+	).value;
+	let reason = (document.getElementById('create-reason')! as HTMLInputElement)
+		.value;
 
 	if (!user) return alert('No user');
 	if (!amount) return alert('No amount');
@@ -66,7 +85,9 @@ document.getElementById('create-btn')!.addEventListener('click', async () => {
 			amount,
 			reason,
 		}),
-	}).then(res => res && res.ok ? res.json() : res.text()).catch(() => 'Request failed');
+	})
+		.then(res => (res && res.ok ? res.json() : res.text()))
+		.catch(() => 'Request failed');
 	if (typeof res == 'string') return alert(`Error: ${res}`);
 	alert('OK.');
 });
