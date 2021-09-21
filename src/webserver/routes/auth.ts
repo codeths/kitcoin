@@ -16,12 +16,12 @@ router.get('/login/staff', async (req, res) => {
 });
 
 router.get('/logout', async (req, res) => {
-	if (!req.session.token) return res.redirect('/');
+	if (!req.session.token) return res.redirect('/demo');
 	if (req.user) {
 		req.user.tokens.session = null;
 		await req.user.save();
 	}
-	res.redirect('/');
+	res.redirect('/demo');
 });
 
 router.get('/cbk', async (req, res) => {
