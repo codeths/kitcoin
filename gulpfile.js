@@ -1,8 +1,6 @@
 const gulp = require('gulp');
 const ts = require('gulp-typescript');
 
-const tsProject = ts.createProject('tsconfig.json');
-
 gulp.task('default', async () => {
 	await task(typescript());
 	await task(copy());
@@ -23,6 +21,8 @@ function task(t) {
 }
 
 function typescript(path) {
+	const tsProject = ts.createProject('tsconfig.json');
+
 	return gulp
 		.src(path || 'src/**/*.ts', {
 			base: 'src',
