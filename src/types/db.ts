@@ -1,4 +1,4 @@
-import {Document, Query} from 'mongoose';
+import {Document, Query, SaveOptions} from 'mongoose';
 
 /**
  * @description A user
@@ -9,7 +9,7 @@ import {Document, Query} from 'mongoose';
  */
 export interface IUser {
 	email: string | null;
-	id: string | null;
+	id: string;
 	name: string | null;
 	/**
 	 * @param {string} refresh OAuth refresh token
@@ -26,7 +26,13 @@ export interface IUser {
 	getBalance(): Promise<number>;
 }
 
-export type IUserDoc = IUser & Document<IUser>;
+export type IUserDoc = IUser &
+	Omit<
+		Omit<Document<IUser>, 'save'> & {
+			save: (options?: SaveOptions | undefined) => Promise<IUserDoc>;
+		},
+		'id'
+	>;
 export type IUserQuery = Query<IUserDoc, IUserDoc> & IUserQueries;
 
 export interface IUserQueries {
