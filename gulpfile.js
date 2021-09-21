@@ -19,9 +19,7 @@ gulp.task('typescript', async () => {
 });
 
 function task(t) {
-	return new Promise((resolve, reject) =>
-		t.on('end', resolve).on('error', reject),
-	);
+	return new Promise((resolve, reject) => t.on('end', resolve));
 }
 
 function typescript(path) {
@@ -30,6 +28,7 @@ function typescript(path) {
 			base: 'src',
 		})
 		.pipe(tsProject())
+		.on('error', () => {})
 		.pipe(gulp.dest('dist'));
 }
 
