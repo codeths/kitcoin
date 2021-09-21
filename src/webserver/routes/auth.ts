@@ -5,7 +5,6 @@ import {
 	STAFF_OAUTH_URL,
 	oauthCallback,
 } from '../../helpers/oauth';
-import {User} from '../../helpers/schema';
 const router = express.Router();
 
 router.get('/login', async (req, res) => {
@@ -39,7 +38,7 @@ router.get('/cbk', async (req, res) => {
 	req.session.token = session;
 
 	// DEBUG
-	return res.redirect('/auth/me');
+	return res.redirect('/demo');
 });
 
 export default router;
