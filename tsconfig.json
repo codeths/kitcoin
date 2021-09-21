@@ -3,13 +3,12 @@
 		"outDir": "./dist",
 		"baseUrl": "./dist",
 		"rootDir": "./src",
-		"target": "es5",
-		"module": "commonjs",
 		"strict": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"allowJs": true
 	},
 	"include": ["./src/**/*"],
 	"exclude": []

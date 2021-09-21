@@ -1,10 +1,20 @@
 const gulp = require('gulp');
 const ts = require('gulp-typescript');
+
 const tsProject = ts.createProject('tsconfig.json');
 
 gulp.task('default', async () => {
 	await task(typescript());
 	await task(copy());
+	return;
+});
+
+gulp.task('copy', async () => {
+	await task(copy());
+	return;
+});
+gulp.task('typescript', async () => {
+	await task(typescript());
 	return;
 });
 
@@ -28,7 +38,7 @@ function copy(path) {
 		.src(path || ['src/**/*.*', '!src/**/*.ts'], {
 			base: 'src',
 		})
-		.pipe(gulp.dest('./dist'));
+		.pipe(gulp.dest('dist'));
 }
 
 gulp.task('watch', async () => {
