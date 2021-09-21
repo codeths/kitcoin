@@ -1,15 +1,15 @@
-import { ITransaction } from '../../types';
+import {ITransaction} from '../../types';
 
 (async () => {
 	const me:
 		| {
-			name: string | null;
-			email: string | null;
-			id: string;
-		}
+				name: string | null;
+				email: string | null;
+				id: string;
+		  }
 		| string = await fetch('/api/me')
-			.then(res => (res && res.ok ? res.json() : res.text()))
-			.catch(() => 'Request failed');
+		.then(res => (res && res.ok ? res.json() : res.text()))
+		.catch(() => 'Request failed');
 	if (typeof me == 'string')
 		return (document.getElementById('me')!.innerHTML =
 			me || 'Request failed');
@@ -23,13 +23,14 @@ document.getElementById('bal-btn')!.addEventListener('click', async () => {
 	const id = (document.getElementById('bal-input')! as HTMLInputElement)
 		.value;
 	if (!id) return (document.getElementById('balance')!.innerHTML = '-');
-	const bal: { balance: number } | string = await fetch(`/api/balance/${id}`)
+	const bal: {balance: number} | string = await fetch(`/api/balance/${id}`)
 		.then(res => (res && res.ok ? res.json() : res.text()))
 		.catch(() => 'Request failed');
 	if (typeof bal === 'string')
 		return (document.getElementById('balance')!.innerHTML =
 			bal || 'Request failed');
-	document.getElementById('balance')!.innerHTML = bal.balance.toLocaleString();
+	document.getElementById('balance')!.innerHTML =
+		bal.balance.toLocaleString();
 });
 
 document.getElementById('history-btn')!.addEventListener('click', async () => {
@@ -47,7 +48,9 @@ document.getElementById('history-btn')!.addEventListener('click', async () => {
 
 	document.getElementById('history-table')!.innerHTML = '';
 
-	if (transactions.length == 0) return (document.getElementById('history-table')!.innerHTML = 'No transactions');
+	if (transactions.length == 0)
+		return (document.getElementById('history-table')!.innerHTML =
+			'No transactions');
 	transactions.forEach(transaction => {
 		const row = document.createElement('tr');
 		row.innerHTML = `
@@ -96,13 +99,13 @@ document.getElementById('create-btn')!.addEventListener('click', async () => {
 (async () => {
 	const classes:
 		| {
-			name: string | null;
-			section: string | null;
-			id: string;
-		}[]
+				name: string | null;
+				section: string | null;
+				id: string;
+		  }[]
 		| string = await fetch('/api/classes')
-			.then(res => (res && res.ok ? res.json() : res.text()))
-			.catch(() => 'Request failed');
+		.then(res => (res && res.ok ? res.json() : res.text()))
+		.catch(() => 'Request failed');
 	if (typeof classes == 'string')
 		return (document.getElementById('class-list')!.innerHTML =
 			classes || 'Request failed');
@@ -130,12 +133,12 @@ document.getElementById('student-btn')!.addEventListener('click', async () => {
 	if (!id) return (document.getElementById('student-list')!.innerHTML = '');
 	const students:
 		| {
-			name: string | null;
-			id: string;
-		}[]
+				name: string | null;
+				id: string;
+		  }[]
 		| string = await fetch(`/api/students/${id}`)
-			.then(res => (res && res.ok ? res.json() : res.text()))
-			.catch(() => 'Request failed');
+		.then(res => (res && res.ok ? res.json() : res.text()))
+		.catch(() => 'Request failed');
 
 	if (typeof students == 'string')
 		return (document.getElementById('student-list')!.innerHTML =
@@ -143,14 +146,18 @@ document.getElementById('student-btn')!.addEventListener('click', async () => {
 
 	document.getElementById('student-list')!.innerHTML = '';
 
-	if (students.length == 0) return (document.getElementById('history-table')!.innerHTML = 'No students');
+	if (students.length == 0)
+		return (document.getElementById('history-table')!.innerHTML =
+			'No students');
 
-	students.sort((a, b) => (a.name || '').localeCompare(b.name || '')).forEach(student => {
-		const row = document.createElement('tr');
-		row.innerHTML = `
+	students
+		.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+		.forEach(student => {
+			const row = document.createElement('tr');
+			row.innerHTML = `
 			<td>${student.name || 'None'}</td>
 			<td>${student.id}</td>
 		`;
-		document.getElementById('student-list')!.appendChild(row);
-	});
+			document.getElementById('student-list')!.appendChild(row);
+		});
 });

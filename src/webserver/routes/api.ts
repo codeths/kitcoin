@@ -113,14 +113,25 @@ router.get('/students/:class', async (req, res) => {
 	if (!students) return res.status(500).send('An error occured.');
 	if (!students.data || !students.data.students)
 		return res.status(200).send([]);
-	res.status(200).send(
-		students.data.students
-			.map(s => ({
-				id: s.userId,
-				name: s.profile?.name?.fullName,
-			}))
-			.filter(x => x.id && true),
-	);
+
+	const data = students.data.students
+		.map(s => ({
+			id: s.userId,
+			name: s.profile?.name?.fullName,
+		}))
+		.filter(x => x.id && true) as {
+		id: string;
+		name: string | null;
+	}[];
+
+	data.forEach(async student => {
+		const user = await User.findOne().byId(student.id);
+		if (!user)
+			new User({id: student.id, name: student.name})
+				.save()
+				.catch(e => null);
+	});
+	res.status(200).send(data);
 });
 
 // Create transaction
