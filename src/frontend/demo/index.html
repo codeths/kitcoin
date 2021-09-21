@@ -12,6 +12,42 @@
 			<span>Email: <span id="my-email"></span></span>
 			<span>ID: <span id="my-id"></span></span>
 		</div>
+
+		<div id="bal">
+			<h2>Get balance</h2>
+			<input id="bal-input" placeholder="User ID" />
+			<button id="bal-btn">Get balance</button>
+			<span>Balance: <span id="balance">-</span></span>
+		</div>
+
+		<div id="history">
+			<h2>Get history</h2>
+			<input id="history-input" placeholder="User ID" />
+			<button id="history-btn">Get history</button>
+			<table>
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Amount</th>
+						<th>Reason</th>
+						<th>From</th>
+						<th>Ending Balance</th>
+					</tr>
+				</thead>
+				<tbody id="history-table"></tbody>
+			</table>
+		</div>
+
+		<div id="create">
+			<h2>Create transaction</h2>
+			<input id="create-user" placeholder="User ID"></input>
+			<input id="create-amount" type="number" placeholder="Amount"></input>
+			<input id="create-reason" placeholder="Reason (optional)"></input>
+			<button id="create-btn">Create Transaction</button>
+		</div>
+		<script>
+			var exports = {};
+		</script>
 		<script src="script.js"></script>
 	</body>
 </html>
