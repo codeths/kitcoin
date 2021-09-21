@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema<IUser>({
 	},
 });
 
-userSchema.index({email: 1}, {unique: true});
+userSchema.index({email: 1});
 userSchema.index({id: 1}, {unique: true});
 
 userSchema.query.byEmail = function (email: string): IUserQueries {
