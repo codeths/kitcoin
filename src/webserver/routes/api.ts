@@ -5,10 +5,11 @@ import {google} from 'googleapis';
 const router = express.Router();
 
 // Get user transactions
-router.get('/transactions', async (req, res) => {
+router.get('/transactions/:user', async (req, res) => {
 	if (!req.user) return res.status(401).send('Unauthorized');
 	try {
-		let {user, count = 10} = req.query;
+		let {user} = req.params;
+		let {count = 10} = req.query;
 		if (typeof count == 'string') count = parseInt(count);
 		if (
 			typeof user !== 'string' ||
@@ -34,10 +35,10 @@ router.get('/transactions', async (req, res) => {
 });
 
 // Get user balance
-router.get('/balance', async (req, res) => {
+router.get('/balance/:user', async (req, res) => {
 	if (!req.user) return res.status(401).send('Unauthorized');
 	try {
-		const {user} = req.query;
+		const {user} = req.params;
 		if (typeof user !== 'string')
 			return res.status(400).send('Bad Request');
 
@@ -97,16 +98,16 @@ router.get('/classes', async (req, res) => {
 });
 
 // Get students in class
-router.get('/students', async (req, res) => {
+router.get('/students/:class', async (req, res) => {
 	if (!req.user) return res.status(401).send('Unauthorized');
-	if (!req.query.class || typeof req.query.class !== 'string')
+	if (!req.params.class || typeof req.params.class !== 'string')
 		return res.status(400).send('Bad Request');
 	const client = await getAccessToken(req.user);
 	if (!client) return res.status(401).send('Google authentication failed.');
 
 	const students = await google
 		.classroom({version: 'v1', auth: client})
-		.courses.students.list({courseId: req.query.class, pageSize: 1000})
+		.courses.students.list({courseId: req.params.class, pageSize: 1000})
 		.catch(e => null);
 
 	if (!students) return res.status(500).send('An error occured.');
