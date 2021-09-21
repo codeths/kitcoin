@@ -7,6 +7,8 @@
 		<title>KitCoin Demo</title>
 	</head>
 	<body>
+		<a href="/auth/login">Student Login</a>
+		<a href="/auth/login/staff">Staff Login</a>
 		<div id="me">
 			<span>Name: <span id="my-name"></span></span>
 			<span>Email: <span id="my-email"></span></span>
@@ -44,6 +46,35 @@
 			<input id="create-amount" type="number" placeholder="Amount" />
 			<input id="create-reason" placeholder="Reason (optional)" />
 			<button id="create-btn">Create Transaction</button>
+		</div>
+
+		<div id="classes">
+			<h2>Classes</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Section</th>
+						<th>ID</th>
+					</tr>
+				</thead>
+				<tbody id="class-list"></tbody>
+			</table>
+		</div>
+
+		<div id="create">
+			<h2>View Students</h2>
+			<input id="student-input" placeholder="Class ID" />
+			<button id="student-btn">Get Students</button>
+			<table>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>ID</th>
+					</tr>
+				</thead>
+				<tbody id="student-list"></tbody>
+			</table>
 		</div>
 		<script>
 			var exports = {};

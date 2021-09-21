@@ -42,7 +42,7 @@ document.getElementById('history-btn')!.addEventListener('click', async () => {
 		.then(res => (res && res.ok ? res.json() : res.text()))
 		.catch(() => 'Request failed');
 	if (typeof transactions == 'string')
-		return (document.getElementById('balance')!.innerHTML =
+		return (document.getElementById('history-table')!.innerHTML =
 			transactions || 'Request failed');
 
 	document.getElementById('history-table')!.innerHTML = '';
@@ -90,4 +90,64 @@ document.getElementById('create-btn')!.addEventListener('click', async () => {
 		.catch(() => 'Request failed');
 	if (typeof res == 'string') return alert(`Error: ${res}`);
 	alert('OK.');
+});
+
+(async () => {
+	const classes:
+		| {
+				name: string | null;
+				section: string | null;
+				id: string;
+		  }[]
+		| string = await fetch('/api/classes')
+		.then(res => (res && res.ok ? res.json() : res.text()))
+		.catch(() => 'Request failed');
+	if (typeof classes == 'string')
+		return (document.getElementById('class-list')!.innerHTML =
+			classes || 'Request failed');
+
+	if (classes.length == 0)
+		return (document.getElementById('class-list')!.innerHTML =
+			'No Classes');
+
+	document.getElementById('class-list')!.innerHTML = '';
+
+	classes.forEach(cls => {
+		const row = document.createElement('tr');
+		row.innerHTML = `
+			<td>${cls.name || 'None'}</td>
+			<td>${cls.section || 'None'}</td>
+			<td>${cls.id}</td>
+		`;
+		document.getElementById('class-list')!.appendChild(row);
+	});
+})();
+
+document.getElementById('student-btn')!.addEventListener('click', async () => {
+	const id = (document.getElementById('student-input')! as HTMLInputElement)
+		.value;
+	if (!id) return (document.getElementById('student-list')!.innerHTML = '');
+	const students:
+		| {
+				name: string | null;
+				id: string;
+		  }[]
+		| string = await fetch(`/api/students/${id}`)
+		.then(res => (res && res.ok ? res.json() : res.text()))
+		.catch(() => 'Request failed');
+
+	if (typeof students == 'string')
+		return (document.getElementById('student-list')!.innerHTML =
+			students || 'Request failed');
+
+	document.getElementById('student-list')!.innerHTML = '';
+
+	students.forEach(student => {
+		const row = document.createElement('tr');
+		row.innerHTML = `
+			<td>${student.name || 'None'}</td>
+			<td>${student.id}</td>
+		`;
+		document.getElementById('student-list')!.appendChild(row);
+	});
 });
