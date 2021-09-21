@@ -59,7 +59,8 @@ app.use(async (req, res, next) => {
 app.use('/auth', auth);
 app.use('/api', api);
 
+app.use('/', express.static(`${__dirname}/../frontend`));
+
 app.get('/', async (req, res) => {
-	console.log(req.user);
 	res.send('Hello World!');
 });
