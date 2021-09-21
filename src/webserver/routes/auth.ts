@@ -42,15 +42,4 @@ router.get('/cbk', async (req, res) => {
 	return res.redirect('/auth/me');
 });
 
-// DEBUG
-router.get('/me', async (req, res) => {
-	if (!req.session.token) return res.status(401).send('No session');
-	if (!req.user) return res.status(401).send('Not logged in');
-	res.status(200).send({
-		name: req.user.name,
-		email: req.user.email,
-		id: req.user.id,
-	});
-});
-
 export default router;
