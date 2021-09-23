@@ -49,13 +49,6 @@ app.use(
 	}),
 );
 
-app.use(async (req, res, next) => {
-	if (!req.session?.token) return next();
-	const user = await User.findOne().byToken(req.session.token);
-	if (user) req.user = user;
-	next();
-});
-
 app.use('/auth', auth);
 app.use('/api', api);
 
