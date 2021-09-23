@@ -11,7 +11,7 @@ import {User, IUserDoc} from './schema';
 
 /**
  * Generate OAuth2 client and optionally set the credentials
- * @param {} credentials Tokens
+ * @param credentials Tokens
  * @returns Google OAuth2 client
  */
 function getOAuth2Client(credentials?: Auth.Credentials) {
