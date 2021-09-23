@@ -1,0 +1,27 @@
+{
+  "name": "kitcoin-frontend",
+  "version": "1.0.0",
+  "description": "A frontend for Kitcoin made with Svelte",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chromezoneeths/kitcoin-frontend.git"
+  },
+  "author": "CodETHS",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chromezoneeths/kitcoin-frontend/issues"
+  },
+  "homepage": "https://github.com/chromezoneeths/kitcoin-frontend#readme",
+  "dependencies": {
+    "@snowpack/plugin-postcss": "^1.4.3",
+    "@snowpack/plugin-svelte": "^3.7.0",
+    "autoprefixer": "^10.3.5",
+    "postcss": "^8.3.7",
+    "snowpack": "^3.8.8",
+    "svelte": "^3.43.0",
+    "tailwindcss": "^2.2.15"
+  }
+}
