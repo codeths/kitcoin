@@ -8,9 +8,9 @@ Returns all transactions for a user. Requires staff role for retrieving other us
 
 ### Params
 
-`:user`: The user to get transactions for, or `me` to get for the authenticated user
+`:user` (path): The user to get transactions for, or `me` to get for the authenticated user
 
-`count`: [Optional] the number of transactions to return. Defaults to 10
+`count` (query): [Optional] the number of transactions to return. Defaults to 10
 
 ### Returns
 
@@ -22,7 +22,7 @@ Get the balance for a user. Requires staff role for retrieving other users' tran
 
 ### Params
 
-`:user`: The user to get transactions for, or `me` to get for the authenticated user
+`:user` (path): The user to get transactions for, or `me` to get for the authenticated user
 
 ### Returns
 
@@ -81,6 +81,8 @@ Create a transaction. Requires staff role.
 
 ### Params
 
+Body:
+
 ```ts
 {
 	amount: number;
@@ -98,6 +100,8 @@ Transaction object
 Update a user's roles. Requires admin role.
 
 ### Params
+
+Body:
 
 ```ts
 {
