@@ -6,6 +6,7 @@ import {Document, Query, SaveOptions} from 'mongoose';
  * @param {string} id The user's id on Google
  * @param {string} name The user's name from Google
  * @param {string} tokens The user's OAuth tokens
+ * @param {roles} number The user's roles (bitfield)
  */
 export interface IUser {
 	email: string | null;
@@ -23,7 +24,32 @@ export interface IUser {
 		expires: Date | null;
 		session: string | null;
 	};
+	roles: number;
+	/**
+	 * Get the user's balance
+	 * @returns The user's balance
+	 */
 	getBalance(): Promise<number>;
+	/**
+	 * Set the roles on this user
+	 * @param roles An array of roles to set
+	 */
+	setRoles(roles: UserRoleTypes[]): void;
+	/**
+	 * Check if the user has a role
+	 * @param role The role to check for
+	 */
+	hasRole(role: UserRoleTypes): boolean;
+	/**
+	 * Check if the user has any of the specified roles
+	 * @param role The roles to check for
+	 */
+	hasAnyRole(roles: UserRoleTypes[]): boolean;
+	/**
+	 * Check if the user has all of the specified roles
+	 * @param role The roles to check for
+	 */
+	hasAllRoles(roles: UserRoleTypes[]): boolean;
 }
 
 export type IUserDoc = IUser &
@@ -60,3 +86,23 @@ export interface ITransaction {
 }
 
 export type ITransactionDoc = ITransaction & Document<ITransaction>;
+
+export enum UserRoles {
+	NONE = 0,
+	STUDENT = 0b0010,
+	STAFF = 0b0100,
+	ADMIN = 0b1000,
+	ALL = STUDENT | STAFF | ADMIN,
+}
+
+export type UserRoleTypes = keyof typeof UserRoles;
+
+export function isValidRole(role: unknown): role is UserRoleTypes {
+	if (Array.isArray(role)) return role.every(isValidRole);
+	return typeof role === 'string' && Object.keys(UserRoles).includes(role);
+}
+
+export function isValidRoles(roles: unknown): roles is UserRoleTypes[] {
+	if (!Array.isArray(roles)) return false;
+	return roles.every(isValidRole);
+}

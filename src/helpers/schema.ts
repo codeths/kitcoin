@@ -1,6 +1,12 @@
 import mongoose from 'mongoose';
 import {mongo as mongoURL} from '../config/keys.json';
-import {IUser, IUserQueries, ITransaction} from '../types';
+import {
+	IUser,
+	IUserQueries,
+	ITransaction,
+	UserRoles,
+	UserRoleTypes,
+} from '../types';
 
 mongoose.connect(mongoURL);
 
@@ -31,6 +37,7 @@ const userSchema = new mongoose.Schema<IUser>({
 			default: null,
 		},
 	},
+	roles: Number,
 });
 
 userSchema.index({email: 1});
@@ -57,6 +64,23 @@ userSchema.methods.getBalance = async function (): Promise<number> {
 
 	if (!latestTransaction) return 0;
 	return latestTransaction.balance;
+};
+
+userSchema.methods.setRoles = function (roles: UserRoleTypes[]): void {
+	this.roles = roles.reduce((acc, role) => acc | UserRoles[role], 0);
+	return;
+};
+
+userSchema.methods.hasRole = function (role: UserRoleTypes): boolean {
+	return (this.roles & UserRoles[role]) === UserRoles[role];
+};
+
+userSchema.methods.hasAnyRole = function (roles: UserRoleTypes[]): boolean {
+	return roles.some(role => this.hasRole(role));
+};
+
+userSchema.methods.hasAllRoles = function (roles: UserRoleTypes[]): boolean {
+	return roles.every(role => this.hasRole(role));
 };
 
 const transactionSchema = new mongoose.Schema<ITransaction>({
