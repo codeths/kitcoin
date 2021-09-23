@@ -9,6 +9,7 @@ Returns all transactions for a user. Requires staff role for retrieving other us
 ### Params
 
 `:user`: The user to get transactions for, or `me` to get for the authenticated user
+
 `count`: [Optional] the number of transactions to return. Defaults to 10
 
 ### Returns
