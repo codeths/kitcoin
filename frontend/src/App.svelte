@@ -12,9 +12,9 @@
 	];
 
 	const transactions = [
-		{incoming: false, user: 'Wildkit Store', amount: 100, date: '2021-10-01T16:00:00Z', reason: 'Beans'},
-		{incoming: true, user: 'John Doe', amount: 100, date: '2021-10-01T00:00:00Z', reason: 'Go buy urself some beans lol'},
-		{incoming: false, user: 'Karen', amount: 10, date: '2020-01-01T00:00:00Z', reason: 'I want to speak with your manager!'},
+		{incoming: false, user: 'Wildkit Store', amount: -15, date: '2021-10-01T16:00:00Z', reason: 'Beans'},
+		{incoming: true, user: 'John Doe', amount: 15, date: '2021-10-01T00:00:00Z', reason: 'Go buy urself some beans lol'},
+		{incoming: false, user: 'Karen', amount: -10, date: '2020-01-01T00:00:00Z', reason: 'I want to speak with your manager!'},
 	]
 </script>
 
