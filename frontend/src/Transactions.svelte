@@ -3,10 +3,54 @@
 	  Item: {incoming: true, user: 'John Doe', amount: 10, date: 'ISO Date', reason: 'Reason'}
 	*/
 	export let items = []; // An array of items. (See above)
+
+	let filteredItems = items;
+
+	function updateFilter() {
+		filteredItems = items;
+		const incoming = document.getElementById('filter-incoming').value;
+		const min = document.getElementById('filter-min').value;
+		const max = document.getElementById('filter-max').value;
+		const search = document.getElementById('filter-text').value;
+		const before = document.getElementById('filter-before').value;
+		const after = document.getElementById('filter-after').value;
+		const beforeDate = before ? new Date(`${before}T00:00:00`) : null;
+		const afterDate = after ? new Date(`${after}T24:00:00`) : null;
+
+		if (incoming !== 'all') filteredItems = filteredItems.filter(item => item.incoming === (incoming === 'incoming'));
+		if (min !== '') filteredItems = filteredItems.filter(item => Math.abs(item.amount) >= min);
+		if (max !== '') filteredItems = filteredItems.filter(item => Math.abs(item.amount) <= max);
+		if (search !== '') filteredItems = filteredItems.filter(item => [item.user, item.reason].some(x => x.toLowerCase().includes(search.toLowerCase())));
+		if (beforeDate && !isNaN(beforeDate)) filteredItems = filteredItems.filter(item => new Date(item.date).getTime() > beforeDate.getTime());
+		if (afterDate && !isNaN(afterDate)) filteredItems = filteredItems.filter(item => new Date(item.date).getTime() < afterDate.getTime());
+	}
 </script>
 
+<div class="pb-2">
+	<!-- TODO: show/hide -->
+	<span>Type:&nbsp;</span>
+	<select on:change={() => updateFilter()} id="filter-incoming">
+		<option selected value="all">Incoming or Outgoing</option>
+		<option value="incoming">Incoming</option>
+		<option value="outgoing">Outgoing</option>
+	</select>
+	<br>
+	<span>Price:&nbsp;</span>
+	<input id="filter-min" type="number" pattern="\d" on:input={() => updateFilter()} placeholder="Min Amount"/>
+	<span>&nbsp;-&nbsp;</span>
+	<input id="filter-max" type="number" pattern="\d" on:input={() => updateFilter()} placeholder="Max Amount"/>
+	<br>
+	<span>Date:&nbsp;</span>
+	<input id="filter-before" type="date" on:change={() => updateFilter()}>
+	<span>&nbsp;-&nbsp;</span>
+	<input id="filter-after" type="date" on:change={() => updateFilter()}>
+	<br>
+	<span>Search:&nbsp;</span>
+	<input id="filter-text" type="text" on:input={() => updateFilter()} placeholder="Search"/>
+</div>
+
 <div class="p-4 bg-white rounded shadow-md flex">
-	{#if items.length != 0}
+	{#if filteredItems.length != 0}
 		<table class="w-full table-auto transactions">
 			<thead>
 				<tr class="text-left">
@@ -19,7 +63,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each items as item}
+				{#each filteredItems as item}
 				<tr class="border-t-2 border-gray-300">
 					<td class="px-2 text-center">
 						{#if item.incoming}&rarr;{:else}&larr;{/if}
@@ -38,7 +82,8 @@
 				</tr>
 				{/each}
 			</tbody>
-		</table> {:else}!
-		<h1>No transactions</h1>
+		</table>
+		{:else}
+		<h1>{#if items.length == 0}No transactions.{:else}No transactions match this filter.{/if}</h1>
 	{/if}
 </div>
