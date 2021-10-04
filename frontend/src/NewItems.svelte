@@ -34,7 +34,7 @@
             <img src={item.img} alt={item.name} style='max-width: 13rem; max-height: 13rem; width: max-content;'>
             <div>
               <h2 class='text-lg text-gray-600'>{item.name}</h2>
-              <h1 class='text-2xl font-bold'>${item.price}</h1>
+              <h1 class='text-2xl font-bold'>${item.price.toLocaleString()}</h1>
             </div>
           </div>
         {/each}

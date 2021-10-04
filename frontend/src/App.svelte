@@ -36,7 +36,7 @@
 		<div class='lg:col-span-2 sm:max-w-sm lg:max-w-none'>
 			<h1 class='text-3xl font-medium mb-2'>Balance</h1>
 			<div class='bg-white shadow-md rounded py-10 border-t-8 border-blue-900'>
-				<h1 class='text-center text-6xl sm:text-7xl xl:text-8xl font-medium'>$ {balance}</h1>
+				<h1 class='text-center text-6xl sm:text-7xl xl:text-8xl font-medium'>$ {balance.toLocaleString()}</h1>
 			</div>
 		</div>
 		<div class='lg:col-span-3'>
