@@ -17,12 +17,32 @@
 		const beforeDate = before ? new Date(`${before}T00:00:00`) : null;
 		const afterDate = after ? new Date(`${after}T24:00:00`) : null;
 
-		if (incoming !== 'all') filteredItems = filteredItems.filter(item => item.incoming === (incoming === 'incoming'));
-		if (min !== '') filteredItems = filteredItems.filter(item => Math.abs(item.amount) >= min);
-		if (max !== '') filteredItems = filteredItems.filter(item => Math.abs(item.amount) <= max);
-		if (search !== '') filteredItems = filteredItems.filter(item => [item.user, item.reason].some(x => x.toLowerCase().includes(search.toLowerCase())));
-		if (beforeDate && !isNaN(beforeDate)) filteredItems = filteredItems.filter(item => new Date(item.date).getTime() > beforeDate.getTime());
-		if (afterDate && !isNaN(afterDate)) filteredItems = filteredItems.filter(item => new Date(item.date).getTime() < afterDate.getTime());
+		if (incoming !== 'all')
+			filteredItems = filteredItems.filter(
+				item => item.incoming === (incoming === 'incoming'),
+			);
+		if (min !== '')
+			filteredItems = filteredItems.filter(
+				item => Math.abs(item.amount) >= min,
+			);
+		if (max !== '')
+			filteredItems = filteredItems.filter(
+				item => Math.abs(item.amount) <= max,
+			);
+		if (search !== '')
+			filteredItems = filteredItems.filter(item =>
+				[item.user, item.reason].some(x =>
+					x.toLowerCase().includes(search.toLowerCase()),
+				),
+			);
+		if (beforeDate && !isNaN(beforeDate))
+			filteredItems = filteredItems.filter(
+				item => new Date(item.date).getTime() > beforeDate.getTime(),
+			);
+		if (afterDate && !isNaN(afterDate))
+			filteredItems = filteredItems.filter(
+				item => new Date(item.date).getTime() < afterDate.getTime(),
+			);
 	}
 </script>
 
@@ -34,19 +54,36 @@
 		<option value="incoming">Incoming</option>
 		<option value="outgoing">Outgoing</option>
 	</select>
-	<br>
+	<br />
 	<span>Price:&nbsp;</span>
-	<input id="filter-min" type="number" pattern="\d" on:input={() => updateFilter()} placeholder="Min Amount"/>
+	<input
+		id="filter-min"
+		type="number"
+		pattern="\d"
+		on:input={() => updateFilter()}
+		placeholder="Min Amount"
+	/>
 	<span>&nbsp;-&nbsp;</span>
-	<input id="filter-max" type="number" pattern="\d" on:input={() => updateFilter()} placeholder="Max Amount"/>
-	<br>
+	<input
+		id="filter-max"
+		type="number"
+		pattern="\d"
+		on:input={() => updateFilter()}
+		placeholder="Max Amount"
+	/>
+	<br />
 	<span>Date:&nbsp;</span>
-	<input id="filter-before" type="date" on:change={() => updateFilter()}>
+	<input id="filter-before" type="date" on:change={() => updateFilter()} />
 	<span>&nbsp;-&nbsp;</span>
-	<input id="filter-after" type="date" on:change={() => updateFilter()}>
-	<br>
+	<input id="filter-after" type="date" on:change={() => updateFilter()} />
+	<br />
 	<span>Search:&nbsp;</span>
-	<input id="filter-text" type="text" on:input={() => updateFilter()} placeholder="Search"/>
+	<input
+		id="filter-text"
+		type="text"
+		on:input={() => updateFilter()}
+		placeholder="Search"
+	/>
 </div>
 
 <div class="p-4 bg-white rounded shadow-md flex">
@@ -54,7 +91,7 @@
 		<table class="w-full table-auto transactions">
 			<thead>
 				<tr class="text-left">
-					<th class="px-2"></th>
+					<th class="px-2" />
 					<th>Date</th>
 					<th>From</th>
 					<th>To</th>
@@ -64,26 +101,33 @@
 			</thead>
 			<tbody>
 				{#each filteredItems as item}
-				<tr class="border-t-2 border-gray-300">
-					<td class="px-2 text-center">
-						{#if item.incoming}&rarr;{:else}&larr;{/if}
-					</td>
-					<td>
-						{new Date(item.date).toLocaleString()}
-					</td>
-					<td>
-						{#if item.incoming}{item.user}{:else}Me{/if}
-					</td>
-					<td>
-						{#if item.incoming}Me{:else}{item.user}{/if}
-					</td>
-					<td>{item.amount < 0 ? '-' : ''}${Math.abs(item.amount).toLocaleString()}</td>
-					<td>{item.reason || 'None'}</td>
-				</tr>
+					<tr class="border-t-2 border-gray-300">
+						<td class="px-2 text-center">
+							{#if item.incoming}&rarr;{:else}&larr;{/if}
+						</td>
+						<td>
+							{new Date(item.date).toLocaleString()}
+						</td>
+						<td>
+							{#if item.incoming}{item.user}{:else}Me{/if}
+						</td>
+						<td>
+							{#if item.incoming}Me{:else}{item.user}{/if}
+						</td>
+						<td
+							>{item.amount < 0 ? '-' : ''}${Math.abs(
+								item.amount,
+							).toLocaleString()}</td
+						>
+						<td>{item.reason || 'None'}</td>
+					</tr>
 				{/each}
 			</tbody>
 		</table>
-		{:else}
-		<h1>{#if items.length == 0}No transactions.{:else}No transactions match this filter.{/if}</h1>
+	{:else}
+		<h1>
+			{#if items.length == 0}No transactions.{:else}No transactions match
+				this filter.{/if}
+		</h1>
 	{/if}
 </div>
