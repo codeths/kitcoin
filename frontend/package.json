@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "A frontend for Kitcoin made with Svelte",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+	"dev": "npx snowpack dev",
+	"build": "npx snowpack build",
+	"format": "prettier --write ."
+},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/chromezoneeths/kitcoin-frontend.git"
