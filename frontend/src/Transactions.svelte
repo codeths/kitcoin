@@ -14,8 +14,8 @@
 					<th>Date</th>
 					<th>From</th>
 					<th>To</th>
-					<th>Reason</th>
 					<th>Amount</th>
+					<th>Reason</th>
 				</tr>
 			</thead>
 			<tbody>
