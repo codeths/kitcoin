@@ -33,7 +33,7 @@
 					<td>
 						{#if item.incoming}Me{:else}{item.user}{/if}
 					</td>
-					<td>{item.amount}</td>
+					<td>{item.amount.toLocaleString()}</td>
 					<td>{item.reason || 'None'}</td>
 				</tr>
 				{/each}
