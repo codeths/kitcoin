@@ -79,8 +79,14 @@ const transactionSchema = new mongoose.Schema<ITransaction>({
 		required: true,
 	},
 	reason: String,
-	user: String,
-	owner: String,
+	from: {
+		_id: String,
+		text: String,
+	},
+	to: {
+		_id: String,
+		text: String,
+	},
 	date: {
 		type: Date,
 		default: () => new Date(),
