@@ -1,31 +1,43 @@
 import {Document, Query, SaveOptions} from 'mongoose';
 
-/**
- * @description A user
- * @param {string} email The user's email
- * @param {string} id The user's id on Google
- * @param {string} name The user's name from Google
- * @param {string} tokens The user's OAuth tokens
- * @param {number} balance The user's balance
- * @param {roles} number The user's roles (bitfield)
- */
 export interface IUser {
-	email: string | null;
-	id: string;
-	name: string | null;
 	/**
-	 * @param {string} refresh OAuth refresh token
-	 * @param {string} access OAuth access token
-	 * @param {Date} expires OAuth access token expiration date
-	 * @param {string} session Session token
+	 * The user's email
 	 */
+	email: string | null;
+	/**
+	 * The user's Google ID
+	 */
+	id: string;
+	/**
+	 * The user's name
+	 */
+	name: string | null;
 	tokens: {
+		/**
+		 * OAuth refresh token
+		 */
 		refresh: string | null;
+		/**
+		 * OAuth access token
+		 */
 		access: string | null;
+		/**
+		 * OAuth access token expiration date
+		 */
 		expires: Date | null;
+		/**
+		 * Session token
+		 */
 		session: string | null;
 	};
+	/**
+	 * The user's balance
+	 */
 	balance: number;
+	/**
+	 * The user's roles (bitfield)
+	 */
 	roles: number;
 	/**
 	 * Set the roles on this user
@@ -65,18 +77,39 @@ export interface IUserQueries {
 }
 
 /**
- * @description A transaction of kitcoin
- * @param {number} amount The amount of the transaction
- * @param {string} [reason] The reason of the transaction
- * @param {string} user Who the transition applies to
- * @param {string} owner The ID of the user who performed the transaction
- * @param {Date} date The date of the transaction
+ * @typedef TransactionUser
+ * @property {} _id The user's id
+ * @property {} text Text to display (for non-user transactions)
  */
+
 export interface ITransaction {
+	/**
+	 * The amount of the transaction
+	 */
 	amount: number;
+	/**
+	 * The reason of the transaction
+	 */
 	reason: string | null;
-	user: string;
-	owner: string;
+	/**
+	 * Who sent this transaction
+	 * @type {TransactionUser}
+	 */
+	from: {
+		_id: string | null;
+		text: string | null;
+	};
+	/**
+	 * Who received this transaction
+	 * @type {TransactionUser}
+	 */
+	to: {
+		_id: string | null;
+		text: string | null;
+	};
+	/**
+	 * The date of the transaction
+	 */
 	date: Date;
 }
 
