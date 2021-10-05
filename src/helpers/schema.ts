@@ -137,22 +137,21 @@ transactionSchema.methods.toAPIResponse = async function (
 	user?: string,
 ): Promise<ITransactionAPIResponse> {
 	let json: ITransaction = this.toJSON();
-	if (json.from.id && !json.from.text) {
-		json.from.text =
-			json.from.id == user
-				? 'Me'
-				: (await this.getUserText('FROM')) || null;
-	}
-
-	if (json.to.id && !json.to.text) {
-		json.to.text =
-			json.to.id == user ? 'Me' : (await this.getUserText('TO')) || null;
-	}
 
 	let res: ITransactionAPIResponse = {
 		...json,
 		date: json.date.toISOString(),
 	};
+
+	if (res.from.id && !res.from.text) {
+		res.from.text = (await this.getUserText('FROM')) || null;
+		if (user) res.from.me = user === res.from.id;
+	}
+
+	if (res.to.id && !res.to.text) {
+		res.to.text = (await this.getUserText('TO')) || null;
+		if (user) res.to.me = user === res.to.id;
+	}
 
 	return res;
 };

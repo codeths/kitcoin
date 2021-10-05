@@ -97,18 +97,28 @@ export interface ITransaction {
 	reason: string | null;
 	/**
 	 * Who sent this transaction
-	 * @type {TransactionUser}
 	 */
 	from: {
+		/**
+		 * The user's id
+		 */
 		id: string | null;
+		/**
+		 * Text to display (for non-user transactions)
+		 */
 		text: string | null;
 	};
 	/**
 	 * Who received this transaction
-	 * @type {TransactionUser}
 	 */
 	to: {
+		/**
+		 * The user's id
+		 */
 		id: string | null;
+		/**
+		 * Text to display (for non-user transactions)
+		 */
 		text: string | null;
 	};
 	/**
@@ -135,6 +145,18 @@ export type ITransactionAPIResponse = Omit<ITransaction, 'date'> & {
 	 * The date of the transaction (ISO format)
 	 */
 	date: string;
+	from: {
+		/**
+		 * Is from current user
+		 */
+		me?: boolean;
+	};
+	to: {
+		/**
+		 * Is to current user
+		 */
+		me?: boolean;
+	};
 };
 
 export type ITransactionDoc = ITransaction &
