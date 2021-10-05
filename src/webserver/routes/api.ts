@@ -252,16 +252,6 @@ router.post(
 			const dbUser = await User.findOne().byId(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
 
-			const lastTransaction = await Transaction.findOne(
-				{user: dbUser.id},
-				null,
-				{
-					sort: {
-						date: -1,
-					},
-				},
-			);
-
 			const transaction = await new Transaction({
 				amount,
 				reason: reason || null,
