@@ -112,13 +112,12 @@ transactionSchema.query.byUser = function (
 	count ??= 10;
 	page ??= 1;
 
-	return this.find({$or: [{'from.id': id}, {'to.id': id}]}, null, {
-		sort: {
+	return this.find({$or: [{'from.id': id}, {'to.id': id}]})
+		.sort({
 			date: -1,
-		},
-		limit: count,
-		skip: count * (page - 1),
-	});
+		})
+		.limit(count)
+		.skip(count * (page - 1));
 };
 
 transactionSchema.index({user: -1});
