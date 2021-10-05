@@ -90,7 +90,7 @@ router.get(
 	async (req, res) => {
 		if (!req.user) return;
 		try {
-			const balance = await req.user.getBalance();
+			const balance = req.user.balance;
 
 			res.status(200).send({balance});
 		} catch (e) {
@@ -117,7 +117,7 @@ router.get(
 			const dbUser = await User.findOne().byId(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
 
-			const balance = await dbUser.getBalance();
+			const balance = dbUser.balance;
 
 			res.status(200).send({balance});
 		} catch (e) {
@@ -261,14 +261,12 @@ router.post(
 					},
 				},
 			);
-			const oldBalance = lastTransaction ? lastTransaction.balance : 0;
 
 			const transaction = await new Transaction({
 				amount,
 				reason: reason || null,
 				user: dbUser.id,
 				owner: req.user.id,
-				balance: oldBalance + amount,
 			}).save();
 
 			res.status(200).send(transaction);

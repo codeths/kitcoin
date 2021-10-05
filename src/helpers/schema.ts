@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema<IUser>({
 	name: {
 		type: String,
 	},
+	balance: Number,
 	tokens: {
 		refresh: {
 			type: String,
@@ -55,17 +56,6 @@ userSchema.query.byToken = function (token: string): IUserQueries {
 	return this.findOne({'tokens.session': token});
 };
 
-userSchema.methods.getBalance = async function (): Promise<number> {
-	const latestTransaction = await Transaction.findOne({user: this.id}, null, {
-		sort: {
-			date: -1,
-		},
-	});
-
-	if (!latestTransaction) return 0;
-	return latestTransaction.balance;
-};
-
 userSchema.methods.setRoles = function (roles: UserRoleTypes[]): void {
 	this.roles = roles.reduce((acc, role) => acc | UserRoles[role], 0);
 	return;
@@ -91,10 +81,6 @@ const transactionSchema = new mongoose.Schema<ITransaction>({
 	reason: String,
 	user: String,
 	owner: String,
-	balance: {
-		type: Number,
-		required: true,
-	},
 	date: {
 		type: Date,
 		default: () => new Date(),

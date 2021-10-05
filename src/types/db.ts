@@ -6,6 +6,7 @@ import {Document, Query, SaveOptions} from 'mongoose';
  * @param {string} id The user's id on Google
  * @param {string} name The user's name from Google
  * @param {string} tokens The user's OAuth tokens
+ * @param {number} balance The user's balance
  * @param {roles} number The user's roles (bitfield)
  */
 export interface IUser {
@@ -24,12 +25,8 @@ export interface IUser {
 		expires: Date | null;
 		session: string | null;
 	};
+	balance: number;
 	roles: number;
-	/**
-	 * Get the user's balance
-	 * @returns The user's balance
-	 */
-	getBalance(): Promise<number>;
 	/**
 	 * Set the roles on this user
 	 * @param roles An array of roles to set
@@ -73,7 +70,6 @@ export interface IUserQueries {
  * @param {string} [reason] The reason of the transaction
  * @param {string} user Who the transition applies to
  * @param {string} owner The ID of the user who performed the transaction
- * @param {number} balance The balance of the user after the transaction
  * @param {Date} date The date of the transaction
  */
 export interface ITransaction {
@@ -81,7 +77,6 @@ export interface ITransaction {
 	reason: string | null;
 	user: string;
 	owner: string;
-	balance: number;
 	date: Date;
 }
 
