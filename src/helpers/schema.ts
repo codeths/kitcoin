@@ -1,16 +1,19 @@
 import mongoose from 'mongoose';
 import {mongo as mongoURL} from '../config/keys.json';
 import {
-	IUser,
 	IUserQueries,
-	ITransaction,
 	UserRoles,
 	UserRoleTypes,
+	ITransactionAPIResponse,
+	ITransactionDoc,
+	IUserDoc,
+	IUserModel,
+	ITransactionModel,
 } from '../types';
 
 mongoose.connect(mongoURL);
 
-const userSchema = new mongoose.Schema<IUser>({
+const userSchema = new mongoose.Schema<IUserDoc, IUserModel>({
 	email: String,
 	id: {
 		type: String,
@@ -73,7 +76,10 @@ userSchema.methods.hasAllRoles = function (roles: UserRoleTypes[]): boolean {
 	return roles.every(role => this.hasRole(role));
 };
 
-const transactionSchema = new mongoose.Schema<ITransaction>({
+const transactionSchema = new mongoose.Schema<
+	ITransactionDoc,
+	ITransactionModel
+>({
 	amount: {
 		type: Number,
 		required: true,
@@ -95,11 +101,29 @@ const transactionSchema = new mongoose.Schema<ITransaction>({
 
 transactionSchema.index({user: -1});
 
-const User = mongoose.model<IUser, mongoose.Model<IUser, IUserQueries>>(
-	'User',
-	userSchema,
-);
-const Transaction = mongoose.model<ITransaction>(
+transactionSchema.methods.getUserText = async function (
+	which: 'FROM' | 'TO',
+): Promise<string | null> {
+	let data = which === 'FROM' ? this.from : this.to;
+
+	return (
+		data.text || (data._id && (await User.findById(data._id))?.name) || null
+	);
+};
+
+transactionSchema.methods.toAPIResponse =
+	async function (): Promise<ITransactionAPIResponse> {
+		return {
+			amount: this.amount,
+			reason: this.reason,
+			from: await this.getUserText('FROM'),
+			to: await this.getUserText('TO'),
+			date: this.date.toISOString(),
+		};
+	};
+
+const User = mongoose.model<IUserDoc, IUserModel>('User', userSchema);
+const Transaction = mongoose.model<ITransactionDoc, ITransactionModel>(
 	'Transaction',
 	transactionSchema,
 );

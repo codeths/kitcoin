@@ -1,4 +1,4 @@
-import {Document, Query, SaveOptions} from 'mongoose';
+import {Document, Model, Query, SaveOptions} from 'mongoose';
 
 export interface IUser {
 	/**
@@ -68,6 +68,7 @@ export type IUserDoc = IUser &
 		},
 		'id'
 	>;
+
 export type IUserQuery = Query<IUserDoc, IUserDoc> & IUserQueries;
 
 export interface IUserQueries {
@@ -75,6 +76,8 @@ export interface IUserQueries {
 	byEmail(email: string): IUserQuery;
 	byToken(token: string): IUserQuery;
 }
+
+export interface IUserModel extends Model<IUserDoc, IUserQueries> {}
 
 /**
  * @typedef TransactionUser
@@ -111,9 +114,43 @@ export interface ITransaction {
 	 * The date of the transaction
 	 */
 	date: Date;
+	/**
+	 * Get the text of the users involved in this transaction
+	 * @param which Which user to get the text of
+	 */
+	getUserText(which: 'FROM' | 'TO'): Promise<string | null>;
+	/**
+	 * Turn this transaction into a JSON object for API output
+	 */
+	toAPIResponse(): Promise<ITransactionAPIResponse>;
+}
+
+export interface ITransactionAPIResponse {
+	/**
+	 * The amount of the transaction
+	 */
+	amount: number;
+	/**
+	 * The reason of the transaction
+	 */
+	reason: string | null;
+	/**
+	 * Who sent this transaction
+	 */
+	from: string | null;
+	/**
+	 * Who received this transaction
+	 */
+	to: string | null;
+	/**
+	 * The date of the transaction (ISO format)
+	 */
+	date: string;
 }
 
 export type ITransactionDoc = ITransaction & Document<ITransaction>;
+
+export interface ITransactionModel extends Model<ITransactionDoc> {}
 
 export enum UserRoles {
 	NONE = 0,
