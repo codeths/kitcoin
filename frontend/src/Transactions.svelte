@@ -1,8 +1,8 @@
 <script>
 	/*
-	  Item: {incoming: true, user: 'John Doe', amount: 10, date: 'ISO Date', reason: 'Reason'}
+	  Transaction object
 	*/
-	export let items = []; // An array of items. (See above)
+	export let items = []; // An array of items.
 
 	let filteredItems = items;
 
@@ -18,9 +18,7 @@
 		const afterDate = after ? new Date(`${after}T24:00:00`) : null;
 
 		if (incoming !== 'all')
-			filteredItems = filteredItems.filter(
-				item => item.incoming === (incoming === 'incoming'),
-			);
+			filteredItems = filteredItems.filter(item => item[incoming].me);
 		if (min !== '')
 			filteredItems = filteredItems.filter(
 				item => Math.abs(item.amount) >= min,
@@ -31,9 +29,11 @@
 			);
 		if (search !== '')
 			filteredItems = filteredItems.filter(item =>
-				[item.user, item.reason].some(x =>
-					x.toLowerCase().includes(search.toLowerCase()),
-				),
+				[
+					!item.from.me ? item.from.text : '',
+					!item.to.me ? item.to.text : '',
+					item.reason,
+				].some(x => x.toLowerCase().includes(search.toLowerCase())),
 			);
 		if (beforeDate && !isNaN(beforeDate))
 			filteredItems = filteredItems.filter(
@@ -50,9 +50,9 @@
 	<!-- TODO: show/hide -->
 	<span>Type:&nbsp;</span>
 	<select on:change={() => updateFilter()} id="filter-incoming">
-		<option selected value="all">Incoming or Outgoing</option>
-		<option value="incoming">Incoming</option>
-		<option value="outgoing">Outgoing</option>
+		<option selected value="all">To or From</option>
+		<option value="to">To Me</option>
+		<option value="from">From Me</option>
 	</select>
 	<br />
 	<span>Price:&nbsp;</span>
@@ -103,16 +103,16 @@
 				{#each filteredItems as item}
 					<tr class="border-t-2 border-gray-300">
 						<td class="px-2 text-center">
-							{#if item.incoming}&rarr;{:else}&larr;{/if}
+							{#if item.to.me}&rarr;{:else if item.from.me}&larr;{/if}
 						</td>
 						<td>
 							{new Date(item.date).toLocaleString()}
 						</td>
 						<td>
-							{#if item.incoming}{item.user}{:else}Me{/if}
+							{#if item.from.me}Me{:else}{item.from.text}{/if}
 						</td>
 						<td>
-							{#if item.incoming}Me{:else}{item.user}{/if}
+							{#if item.to.me}Me{:else}{item.to.text}{/if}
 						</td>
 						<td
 							>{item.amount < 0 ? '-' : ''}${Math.abs(

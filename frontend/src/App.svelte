@@ -21,22 +21,46 @@
 
 	const transactions = [
 		{
-			incoming: false,
-			user: 'Wildkit Store',
+			from: {
+				id: 'abcdef',
+				text: 'Jeff',
+				me: true,
+			},
+			to: {
+				id: 'abcdef',
+				text: 'Wildkit Store',
+				me: false,
+			},
 			amount: -15,
 			date: '2021-10-01T16:00:00Z',
 			reason: 'Beans',
 		},
 		{
-			incoming: true,
-			user: 'John Doe',
+			from: {
+				id: 'abcdef',
+				text: 'John Doe',
+				me: false,
+			},
+			to: {
+				id: 'abcdef',
+				text: 'Jeff',
+				me: true,
+			},
 			amount: 15,
 			date: '2021-10-01T00:00:00Z',
 			reason: 'Go buy urself some beans lol',
 		},
 		{
-			incoming: false,
-			user: 'Karen',
+			from: {
+				id: 'abcdef',
+				text: 'Jeff',
+				me: true,
+			},
+			to: {
+				id: 'abcdef',
+				text: 'Karen',
+				me: false,
+			},
 			amount: -10,
 			date: '2020-01-01T00:00:00Z',
 			reason: 'I want to speak with your manager!',
