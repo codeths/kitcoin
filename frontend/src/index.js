@@ -1,5 +1,5 @@
-import App from './App.svelte';
+import StudentPage from './pages/StudentHome.svelte';
 
-const app = new App({
+const app = new StudentPage({
 	target: document.body,
 });

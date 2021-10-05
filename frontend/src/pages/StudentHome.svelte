@@ -1,6 +1,6 @@
 <script>
-	import NewItems from './NewItems.svelte';
-	import Transactions from './Transactions.svelte';
+	import NewItems from '../components/NewItems.svelte';
+	import Transactions from '../components/Transactions.svelte';
 
 	const balance = 42069;
 	const newItems = [
