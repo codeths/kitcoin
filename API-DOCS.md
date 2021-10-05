@@ -2,6 +2,8 @@
 
 > All endpoints are located on `/api`
 
+> `user` or `id` refers to the document ID in the database
+
 ## GET `/transactions/:user`
 
 Returns all transactions for a user. Requires staff role for retrieving other users' transactions.
@@ -11,6 +13,8 @@ Returns all transactions for a user. Requires staff role for retrieving other us
 `:user` (path): The user to get transactions for, or `me` to get for the authenticated user
 
 `count` (query): [Optional] the number of transactions to return. Defaults to 10
+
+`page` (query): [Optional] the page of transactions to return. Defaults to 1
 
 ### Returns
 
