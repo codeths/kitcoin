@@ -90,7 +90,7 @@ router.get(
 
 			res.status(200).send(
 				await Promise.all(
-					transactions.map(t => t.toAPIResponse(req.user!.id)),
+					transactions.map(t => t.toAPIResponse(dbUser.id)),
 				),
 			);
 		} catch (e) {
