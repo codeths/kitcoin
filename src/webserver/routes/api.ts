@@ -39,7 +39,9 @@ router.get(
 			);
 
 			res.status(200).send(
-				await Promise.all(transactions.map(t => t.toAPIResponse())),
+				await Promise.all(
+					transactions.map(t => t.toAPIResponse(req.user!.id)),
+				),
 			);
 		} catch (e) {
 			res.status(500).send('An error occured.');
@@ -87,7 +89,9 @@ router.get(
 			);
 
 			res.status(200).send(
-				await Promise.all(transactions.map(t => t.toAPIResponse())),
+				await Promise.all(
+					transactions.map(t => t.toAPIResponse(req.user!.id)),
+				),
 			);
 		} catch (e) {
 			res.status(500).send('An error occured.');
@@ -283,7 +287,7 @@ router.post(
 				await dbUser.save();
 			}
 
-			res.status(200).send(await transaction.toAPIResponse());
+			res.status(200).send(await transaction.toAPIResponse(req.user.id));
 		} catch (e) {
 			res.status(500).send('An error occured.');
 		}

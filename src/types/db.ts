@@ -39,6 +39,9 @@ export interface IUser {
 	 * The user's roles (bitfield)
 	 */
 	roles: number;
+}
+
+export interface IUserMethods {
 	/**
 	 * Set the roles on this user
 	 * @param roles An array of roles to set
@@ -62,6 +65,7 @@ export interface IUser {
 }
 
 export type IUserDoc = IUser &
+	IUserMethods &
 	Omit<Document<IUser>, 'save'> & {
 		save: (options?: SaveOptions | undefined) => Promise<IUserDoc>;
 	};
@@ -111,6 +115,9 @@ export interface ITransaction {
 	 * The date of the transaction
 	 */
 	date: Date;
+}
+
+export interface ITransactionMethods {
 	/**
 	 * Get the text of the users involved in this transaction
 	 * @param which Which user to get the text of
@@ -118,34 +125,20 @@ export interface ITransaction {
 	getUserText(which: 'FROM' | 'TO'): Promise<string | null>;
 	/**
 	 * Turn this transaction into a JSON object for API output
+	 * @param user Current user's ID
 	 */
-	toAPIResponse(): Promise<ITransactionAPIResponse>;
+	toAPIResponse(user?: string): Promise<ITransactionAPIResponse>;
 }
 
-export interface ITransactionAPIResponse {
-	/**
-	 * The amount of the transaction
-	 */
-	amount: number;
-	/**
-	 * The reason of the transaction
-	 */
-	reason: string | null;
-	/**
-	 * Who sent this transaction
-	 */
-	from: string | null;
-	/**
-	 * Who received this transaction
-	 */
-	to: string | null;
+export type ITransactionAPIResponse = Omit<ITransaction, 'date'> & {
 	/**
 	 * The date of the transaction (ISO format)
 	 */
 	date: string;
-}
+};
 
 export type ITransactionDoc = ITransaction &
+	ITransactionMethods &
 	Omit<Document<ITransaction>, 'save'> & {
 		save: (options?: SaveOptions | undefined) => Promise<ITransaction>;
 	};

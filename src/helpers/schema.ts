@@ -10,6 +10,7 @@ import {
 	IUserModel,
 	ITransactionModel,
 	ITransactionQueries,
+	ITransaction,
 } from '../types';
 
 mongoose.connect(mongoURL);
@@ -132,16 +133,29 @@ transactionSchema.methods.getUserText = async function (
 	);
 };
 
-transactionSchema.methods.toAPIResponse =
-	async function (): Promise<ITransactionAPIResponse> {
-		return {
-			amount: this.amount,
-			reason: this.reason,
-			from: await this.getUserText('FROM'),
-			to: await this.getUserText('TO'),
-			date: this.date.toISOString(),
-		};
+transactionSchema.methods.toAPIResponse = async function (
+	user?: string,
+): Promise<ITransactionAPIResponse> {
+	let json: ITransaction = this.toJSON();
+	if (json.from.id && !json.from.text) {
+		json.from.text =
+			json.from.id == user
+				? 'Me'
+				: (await this.getUserText('FROM')) || null;
+	}
+
+	if (json.to.id && !json.to.text) {
+		json.to.text =
+			json.to.id == user ? 'Me' : (await this.getUserText('TO')) || null;
+	}
+
+	let res: ITransactionAPIResponse = {
+		...json,
+		date: json.date.toISOString(),
 	};
+
+	return res;
+};
 
 const User = mongoose.model<IUserDoc, IUserModel>('User', userSchema);
 const Transaction = mongoose.model<ITransactionDoc, ITransactionModel>(
