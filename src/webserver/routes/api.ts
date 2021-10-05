@@ -15,23 +15,32 @@ router.get(
 	async (req, res) => {
 		if (!req.user) return;
 		try {
-			let {count = 10} = req.query;
+			let {
+				count,
+				page,
+			}: {
+				count?: number | string;
+				page?: number | string;
+			} = req.query;
 			if (typeof count == 'string') count = parseInt(count);
-			if (typeof count !== 'number' || isNaN(count))
+			if (typeof page == 'string') page = parseInt(page);
+			if (
+				(count !== undefined &&
+					(typeof count !== 'number' || isNaN(count))) ||
+				(page !== undefined &&
+					(typeof page !== 'number' || isNaN(page)))
+			)
 				return res.status(400).send('Bad Request');
 
-			const transactions = await Transaction.find(
-				{user: req.user.id},
-				null,
-				{
-					sort: {
-						date: -1,
-					},
-					limit: count,
-				},
+			const transactions = await Transaction.find().byUser(
+				req.user.id,
+				count,
+				page,
 			);
 
-			res.status(200).send(transactions);
+			res.status(200).send(
+				await Promise.all(transactions.map(t => t.toAPIResponse())),
+			);
 		} catch (e) {
 			res.status(500).send('An error occured.');
 		}
@@ -50,30 +59,36 @@ router.get(
 		if (!req.user) return;
 		try {
 			let {user} = req.params;
-			let {count = 10} = req.query;
+			let {
+				count,
+				page,
+			}: {
+				count?: number | string;
+				page?: number | string;
+			} = req.query;
 			if (typeof count == 'string') count = parseInt(count);
+			if (typeof page == 'string') page = parseInt(page);
 			if (
 				typeof user !== 'string' ||
-				typeof count !== 'number' ||
-				isNaN(count)
+				(count !== undefined &&
+					(typeof count !== 'number' || isNaN(count))) ||
+				(page !== undefined &&
+					(typeof page !== 'number' || isNaN(page)))
 			)
 				return res.status(400).send('Bad Request');
 
-			const dbUser = await User.findOne().byId(user);
+			const dbUser = await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
 
-			const transactions = await Transaction.find(
-				{user: dbUser.id},
-				null,
-				{
-					sort: {
-						date: -1,
-					},
-					limit: count,
-				},
+			const transactions = await Transaction.find().byUser(
+				user,
+				count,
+				page,
 			);
 
-			res.status(200).send(transactions);
+			res.status(200).send(
+				await Promise.all(transactions.map(t => t.toAPIResponse())),
+			);
 		} catch (e) {
 			res.status(500).send('An error occured.');
 		}
@@ -105,7 +120,7 @@ router.get(
 	async (...req) =>
 		request(...req, {
 			authentication: true,
-			roles: ['STAFF', 'ADMIN'],
+			roles: ['STAFF'],
 		}),
 	async (req, res) => {
 		if (!req.user) return;
@@ -114,7 +129,7 @@ router.get(
 			if (typeof user !== 'string')
 				return res.status(400).send('Bad Request');
 
-			const dbUser = await User.findOne().byId(user);
+			const dbUser = await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
 
 			const balance = dbUser.balance;
@@ -153,7 +168,7 @@ router.get(
 	async (...req) =>
 		request(...req, {
 			authentication: true,
-			roles: ['STAFF', 'ADMIN'],
+			roles: ['STAFF'],
 		}),
 	async (req, res) => {
 		if (!req.user) return;
@@ -186,7 +201,7 @@ router.get(
 	async (...req) =>
 		request(...req, {
 			authentication: true,
-			roles: ['STAFF', 'ADMIN'],
+			roles: ['STAFF'],
 		}),
 	async (req, res) => {
 		if (!req.user) return;
@@ -218,7 +233,7 @@ router.get(
 		data.forEach(async student => {
 			const user = await User.findOne().byId(student.id);
 			if (!user)
-				new User({id: student.id, name: student.name})
+				new User({googleID: student.id, name: student.name})
 					.save()
 					.catch(e => null);
 		});
@@ -232,7 +247,7 @@ router.post(
 	async (...req) =>
 		request(...req, {
 			authentication: true,
-			roles: ['STAFF', 'ADMIN'],
+			roles: ['STAFF'],
 		}),
 	async (req, res) => {
 		if (!req.user) return;
@@ -249,17 +264,26 @@ router.post(
 			)
 				return res.status(400).send('Bad Request');
 
-			const dbUser = await User.findOne().byId(user);
+			const dbUser = await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
 
 			const transaction = await new Transaction({
 				amount,
 				reason: reason || null,
-				user: dbUser.id,
-				owner: req.user.id,
+				from: {
+					id: req.user.id,
+				},
+				to: {
+					id: dbUser.id,
+				},
 			}).save();
 
-			res.status(200).send(transaction);
+			if (transaction) {
+				dbUser.balance += amount;
+				await dbUser.save();
+			}
+
+			res.status(200).send(await transaction.toAPIResponse());
 		} catch (e) {
 			res.status(500).send('An error occured.');
 		}
@@ -279,7 +303,7 @@ router.patch(
 		console.log(roles);
 		if (!isValidRoles(roles)) return res.send(400).send('Bad Request');
 
-		const dbUser = await User.findOne().byId(user);
+		const dbUser = await User.findById(user);
 		if (!dbUser) return res.status(404).send('Invalid user');
 
 		dbUser.setRoles(roles);

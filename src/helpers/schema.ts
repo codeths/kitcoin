@@ -9,20 +9,24 @@ import {
 	IUserDoc,
 	IUserModel,
 	ITransactionModel,
+	ITransactionQueries,
 } from '../types';
 
 mongoose.connect(mongoURL);
 
 const userSchema = new mongoose.Schema<IUserDoc, IUserModel>({
 	email: String,
-	id: {
+	googleID: {
 		type: String,
 		required: true,
 	},
 	name: {
 		type: String,
 	},
-	balance: Number,
+	balance: {
+		type: Number,
+		default: 0,
+	},
 	tokens: {
 		refresh: {
 			type: String,
@@ -41,18 +45,18 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>({
 			default: null,
 		},
 	},
-	roles: Number,
+	roles: {type: Number, default: UserRoles.STUDENT},
 });
 
 userSchema.index({email: 1});
-userSchema.index({id: 1}, {unique: true});
+userSchema.index({googleID: 1}, {unique: true});
 
 userSchema.query.byEmail = function (email: string): IUserQueries {
 	return this.findOne({email});
 };
 
-userSchema.query.byId = function (id: string): IUserQueries {
-	return this.findOne({id});
+userSchema.query.byId = function (googleID: string): IUserQueries {
+	return this.findOne({googleID});
 };
 
 userSchema.query.byToken = function (token: string): IUserQueries {
@@ -86,11 +90,11 @@ const transactionSchema = new mongoose.Schema<
 	},
 	reason: String,
 	from: {
-		_id: String,
+		id: String,
 		text: String,
 	},
 	to: {
-		_id: String,
+		id: String,
 		text: String,
 	},
 	date: {
@@ -98,6 +102,23 @@ const transactionSchema = new mongoose.Schema<
 		default: () => new Date(),
 	},
 });
+
+transactionSchema.query.byUser = function (
+	id: string,
+	count?: number,
+	page?: number,
+): ITransactionQueries {
+	count ??= 10;
+	page ??= 1;
+
+	return this.find({$or: [{'from.id': id}, {'to.id': id}]}, null, {
+		sort: {
+			date: -1,
+		},
+		limit: count,
+		skip: count * (page - 1),
+	});
+};
 
 transactionSchema.index({user: -1});
 
@@ -107,7 +128,7 @@ transactionSchema.methods.getUserText = async function (
 	let data = which === 'FROM' ? this.from : this.to;
 
 	return (
-		data.text || (data._id && (await User.findById(data._id))?.name) || null
+		data.text || (data.id && (await User.findById(data.id))?.name) || null
 	);
 };
 

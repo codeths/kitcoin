@@ -1,4 +1,4 @@
-import {Document, Model, Query, SaveOptions} from 'mongoose';
+import {Document, Model, ObjectId, Query, SaveOptions} from 'mongoose';
 
 export interface IUser {
 	/**
@@ -8,7 +8,7 @@ export interface IUser {
 	/**
 	 * The user's Google ID
 	 */
-	id: string;
+	googleID: string;
 	/**
 	 * The user's name
 	 */
@@ -62,17 +62,14 @@ export interface IUser {
 }
 
 export type IUserDoc = IUser &
-	Omit<
-		Omit<Document<IUser>, 'save'> & {
-			save: (options?: SaveOptions | undefined) => Promise<IUserDoc>;
-		},
-		'id'
-	>;
+	Omit<Document<IUser>, 'save'> & {
+		save: (options?: SaveOptions | undefined) => Promise<IUserDoc>;
+	};
 
 export type IUserQuery = Query<IUserDoc, IUserDoc> & IUserQueries;
 
 export interface IUserQueries {
-	byId(id: string): IUserQuery;
+	byId(googleID: string): IUserQuery;
 	byEmail(email: string): IUserQuery;
 	byToken(token: string): IUserQuery;
 }
@@ -81,7 +78,7 @@ export interface IUserModel extends Model<IUserDoc, IUserQueries> {}
 
 /**
  * @typedef TransactionUser
- * @property {} _id The user's id
+ * @property {} id The user's id
  * @property {} text Text to display (for non-user transactions)
  */
 
@@ -99,7 +96,7 @@ export interface ITransaction {
 	 * @type {TransactionUser}
 	 */
 	from: {
-		_id: string | null;
+		id: string | null;
 		text: string | null;
 	};
 	/**
@@ -107,7 +104,7 @@ export interface ITransaction {
 	 * @type {TransactionUser}
 	 */
 	to: {
-		_id: string | null;
+		id: string | null;
 		text: string | null;
 	};
 	/**
@@ -148,9 +145,23 @@ export interface ITransactionAPIResponse {
 	date: string;
 }
 
-export type ITransactionDoc = ITransaction & Document<ITransaction>;
+export type ITransactionDoc = ITransaction &
+	Omit<Document<ITransaction>, 'save'> & {
+		save: (options?: SaveOptions | undefined) => Promise<ITransaction>;
+	};
 
-export interface ITransactionModel extends Model<ITransactionDoc> {}
+export type ITransactionQuery = Query<ITransactionDoc, ITransactionDoc> &
+	IUserQueries;
+
+export type ITransactionsQuery = Query<ITransactionDoc[], ITransactionDoc> &
+	IUserQueries;
+
+export interface ITransactionQueries {
+	byUser(id: string, count?: number, page?: number): ITransactionsQuery;
+}
+
+export interface ITransactionModel
+	extends Model<ITransactionDoc, ITransactionQueries> {}
 
 export enum UserRoles {
 	NONE = 0,

@@ -1,7 +1,7 @@
 const STUDENT_USER_SCOPES = ['profile', 'email'];
 const TEACHER_USER_SCOPES = [
 	...STUDENT_USER_SCOPES,
-	/*"https://www.googleapis.com/auth/directory.readonly", */ 'https://www.googleapis.com/auth/classroom.courses.readonly',
+	'https://www.googleapis.com/auth/classroom.courses.readonly',
 	'https://www.googleapis.com/auth/classroom.rosters.readonly',
 ];
 
@@ -101,21 +101,25 @@ export async function oauthCallback(code: string, session: string) {
 		const email = person.data.emailAddresses.find(
 			email => email.metadata?.primary,
 		)?.value;
-		const id = person.data.resourceName.split('/')[1];
+		const googleID = person.data.resourceName.split('/')[1];
 		if (!name || !email) return reject({error: 'Could not get user'});
 
-		let user = await User.findOne().byId(id);
+		let user = await User.findOne().byId(googleID);
 		if (user) {
-			if (user.name !== name || user.email !== email || user.id !== id) {
+			if (
+				user.name !== name ||
+				user.email !== email ||
+				user.googleID !== googleID
+			) {
 				user.name = name;
 				user.email = email;
-				user.id = id;
+				user.googleID = googleID;
 			}
 		} else {
 			user = new User({
 				name,
 				email,
-				id,
+				googleID,
 			});
 		}
 
