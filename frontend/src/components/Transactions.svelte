@@ -103,7 +103,19 @@
 				{#each filteredItems as item}
 					<tr class="border-t-2 border-gray-300">
 						<td class="px-2 text-center">
-							{#if item.to.me}&rarr;{:else if item.from.me}&larr;{/if}
+							{#if item.to.me}
+								<img
+									src="assets/recieve.svg"
+									alt="&rarr;"
+									class="w-8 h-8 m-auto"
+								/>
+							{:else if item.from.me}
+								<img
+									src="assets/send.svg"
+									alt="&larr;"
+									class="w-8 h-8 m-auto"
+								/>
+							{/if}
 						</td>
 						<td>
 							{new Date(item.date).toLocaleString()}
