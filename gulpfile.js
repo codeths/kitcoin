@@ -140,3 +140,9 @@ function node() {
 	}
 	nodeProcess = spawn('node', ['.']);
 }
+
+process.on('exit', function () {
+	if (nodeProcess) {
+		nodeProcess.kill('SIGINT');
+	}
+});
