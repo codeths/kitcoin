@@ -2,7 +2,7 @@
 
 A frontend for Kitcoin made with Svelte
 
-**So far, this is nothing but a template or placeholder, so anything like shop items and images are temporary, and won't be kept in this repo in the future**
+**This is a submodule for [chromezoneeths/kitcoin](https://github.com/chromezoneeths/kitcoin).**
 
 ## Setup
 
@@ -25,8 +25,7 @@ This will create a folder called "build" containing the newly built frontend.
 
 ## Development
 
-Svelte is used with Tailwind CSS to make the frontend, and Snowpack is used for builds.
-As of right now, the frontend does not use actual data, so everything so far is just coded into the pages. Because it isn't hooked up to the backend yet, you don't need the backend for development.
+[Svelte](https://svelte.dev/) and [Routify](https://www.routify.dev/) is used with [Tailwind CSS](https://tailwindcss.com/) to make the frontend, and Vite is used for builds.
 
 To start the dev server, run the command below:
 
