@@ -56,31 +56,41 @@ function frontend() {
 }
 
 gulp.task('watch', async () => {
-	node();
-	gulp.watch(['src/**/*', '!src/frontend/**/*']).on(
-		'change',
-		async function (fileName) {
-			console.log(`${fileName} changed.`);
-			await task(
-				['ts'].some(x => fileName.endsWith(`.${x}`))
-					? typescript(fileName)
-					: copy(fileName),
-			);
-			console.log(`${fileName} done.`);
-			node();
-		},
-	);
+	dev(true);
+});
 
-	gulp.watch(['src/frontend/**/*', '!src/frontend/build/**/*']).on(
-		'change',
-		async function (fileName) {
-			console.log(`${fileName} changed.`);
-			await frontend();
-			await task(copy('src/frontend/**/*.*'));
-			console.log(`${fileName} done.`);
-			node();
-		},
-	);
+gulp.task('dev', async () => {
+	dev(false);
+});
+
+function dev(watch) {
+	node();
+	if (watch) {
+		gulp.watch(['src/**/*', '!src/frontend/**/*']).on(
+			'change',
+			async function (fileName) {
+				console.log(`${fileName} changed.`);
+				await task(
+					['ts'].some(x => fileName.endsWith(`.${x}`))
+						? typescript(fileName)
+						: copy(fileName),
+				);
+				console.log(`${fileName} done.`);
+				node();
+			},
+		);
+
+		gulp.watch(['src/frontend/**/*', '!src/frontend/build/**/*']).on(
+			'change',
+			async function (fileName) {
+				console.log(`${fileName} changed.`);
+				await frontend();
+				await task(copy('src/frontend/**/*.*'));
+				console.log(`${fileName} done.`);
+				node();
+			},
+		);
+	}
 
 	console.log('Node started');
 
@@ -113,11 +123,15 @@ gulp.task('watch', async () => {
 			await task(copy('src/frontend/**/*.*'));
 			node();
 			console.log('Done');
+		} else if (
+			['stop', 'abort', 'close', 'cancel', 'exit'].includes(line)
+		) {
+			process.exit();
 		} else {
 			console.log('Unknown command.');
 		}
 	});
-});
+}
 
 let nodeProcess = null;
 function node() {

@@ -5,7 +5,8 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "gulp",
-		"dev": "gulp watch",
+		"dev": "gulp dev",
+		"watch": "gulp watch",
 		"format": "prettier --write ."
 	},
 	"repository": {
