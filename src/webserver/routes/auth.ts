@@ -7,21 +7,21 @@ import {
 } from '../../helpers/oauth';
 const router = express.Router();
 
-router.get('/login', async (req, res) => {
+router.get(['/login', '/signin'], async (req, res) => {
 	res.redirect(STUDENT_OAUTH_URL);
 });
 
-router.get('/login/staff', async (req, res) => {
+router.get(['/login/staff', '/signin/staff'], async (req, res) => {
 	res.redirect(STAFF_OAUTH_URL);
 });
 
-router.get('/logout', async (req, res) => {
-	if (!req.session.token) return res.redirect('/demo');
+router.get(['/logout', '/signout'], async (req, res) => {
+	if (!req.session.token) return res.redirect('/');
 	if (req.user) {
 		req.user.tokens.session = null;
 		await req.user.save();
 	}
-	res.redirect('/demo');
+	res.redirect('/');
 });
 
 router.get('/cbk', async (req, res) => {
@@ -38,7 +38,7 @@ router.get('/cbk', async (req, res) => {
 	req.session.token = session;
 
 	// DEBUG
-	return res.redirect('/demo');
+	return res.redirect('/');
 });
 
 router.use((req, res) => res.status(404).send());
