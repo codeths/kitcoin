@@ -53,6 +53,10 @@ app.use(
 app.use('/auth', auth);
 app.use('/api', api);
 
+app.use(['/login', '/logout', '/signin', '/signout'], (req, res) => {
+	res.redirect(`/auth${req.path}`);
+});
+
 app.use(express.static(`${__dirname}/../frontend/build`));
 
 app.get('*', (req, res) =>
