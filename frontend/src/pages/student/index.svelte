@@ -1,6 +1,6 @@
 <script>
-	import NewItems from '../components/NewItems.svelte';
-	import Transactions from '../components/Transactions.svelte';
+	import NewItems from '../../components/NewItems.svelte';
+	import Transactions from '../../components/Transactions.svelte';
 
 	async function getBalance() {
 		const res = await fetch('/api/balance/me').catch(e => null);
