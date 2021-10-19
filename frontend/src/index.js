@@ -1,5 +1,7 @@
-import StudentPage from './pages/StudentHome.svelte';
-
-const app = new StudentPage({
+import App from './App.svelte';
+import '../public/global.css';
+var app = new App({
 	target: document.body,
 });
+
+export default app;

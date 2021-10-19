@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "A frontend for Kitcoin made with Svelte",
   "scripts": {
-	"dev": "npx snowpack dev",
-	"build": "npx snowpack build",
-	"format": "prettier --write ."
-},
+    "dev": "routify; vite",
+    "build": "routify -b && vite build",
+    "format": "prettier --write ."
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/chromezoneeths/kitcoin-frontend.git"
@@ -18,16 +18,18 @@
   },
   "homepage": "https://github.com/chromezoneeths/kitcoin-frontend#readme",
   "dependencies": {
-    "@snowpack/plugin-postcss": "^1.4.3",
-    "@snowpack/plugin-svelte": "^3.7.0",
-    "autoprefixer": "^10.3.5",
-    "postcss": "^8.3.7",
-    "snowpack": "^3.8.8",
-    "svelte": "^3.43.0",
-    "tailwindcss": "^2.2.15"
+    "postcss-load-config": "^3.1.0"
   },
   "devDependencies": {
+    "@roxi/routify": "^2.18.3",
+    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
+    "autoprefixer": "^10.3.5",
+    "postcss": "^8.3.7",
     "prettier": "^2.4.1",
-    "prettier-plugin-svelte": "^2.4.0"
+    "prettier-plugin-svelte": "^2.4.0",
+    "rollup-plugin-svelte": "^7.1.0",
+    "svelte": "^3.43.0",
+    "tailwindcss": "^2.2.15",
+    "vite": "^2.6.10"
   }
 }
