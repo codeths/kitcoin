@@ -2,7 +2,38 @@
 	import NewItems from '../components/NewItems.svelte';
 	import Transactions from '../components/Transactions.svelte';
 
-	const balance = 42069;
+	async function getBalance() {
+		const res = await fetch('/api/balance/me').catch(e => null);
+		if (res && res.ok) {
+			try {
+				const json = await res.json();
+				return json.balance;
+			} catch (e) {
+				throw 'An error occured.';
+			}
+		} else {
+			throw res && res.status == 401
+				? 'Not logged in'
+				: 'An error occured.';
+		}
+	}
+
+	async function getTransactions() {
+		const res = await fetch('/api/transactions/me').catch(e => null);
+		if (res && res.ok) {
+			try {
+				const json = await res.json();
+				return json;
+			} catch (e) {
+				throw 'An error occured.';
+			}
+		} else {
+			throw res && res.status == 401
+				? 'Not logged in'
+				: 'An error occured.';
+		}
+	}
+
 	const newItems = [
 		{img: 'shop_images/beans.png', price: 15, name: 'Beans'},
 		{img: 'shop_images/blahaj.webp', price: 17.99, name: 'Blahaj'},
@@ -17,54 +48,6 @@
 			name: 'Pro Stand',
 		},
 		{img: 'shop_images/banana.png', price: 20000, name: 'Banana'},
-	];
-
-	const transactions = [
-		{
-			from: {
-				id: 'abcdef',
-				text: 'Jeff',
-				me: true,
-			},
-			to: {
-				id: 'abcdef',
-				text: 'Wildkit Store',
-				me: false,
-			},
-			amount: -15,
-			date: '2021-10-01T16:00:00Z',
-			reason: 'Beans',
-		},
-		{
-			from: {
-				id: 'abcdef',
-				text: 'John Doe',
-				me: false,
-			},
-			to: {
-				id: 'abcdef',
-				text: 'Jeff',
-				me: true,
-			},
-			amount: 15,
-			date: '2021-10-01T00:00:00Z',
-			reason: 'Go buy urself some beans lol',
-		},
-		{
-			from: {
-				id: 'abcdef',
-				text: 'Jeff',
-				me: true,
-			},
-			to: {
-				id: 'abcdef',
-				text: 'Karen',
-				me: false,
-			},
-			amount: -10,
-			date: '2020-01-01T00:00:00Z',
-			reason: 'I want to speak with your manager!',
-		},
 	];
 </script>
 
@@ -98,7 +81,13 @@
 				<h1
 					class="text-center text-6xl sm:text-7xl xl:text-8xl font-medium"
 				>
-					$ {balance.toLocaleString()}
+					{#await getBalance()}
+						Loading...
+					{:then balance}
+						$ {balance.toLocaleString()}
+					{:catch error}
+						{error}
+					{/await}
 				</h1>
 			</div>
 		</div>
@@ -112,7 +101,13 @@
 	<div class="mt-12">
 		<h1 class="text-4xl font-medium mb-6">Transaction History</h1>
 		<div>
-			<Transactions items={transactions} />
+			{#await getTransactions()}
+				Loading...
+			{:then transactions}
+				<Transactions items={transactions} />
+			{:catch error}
+				{error}
+			{/await}
 		</div>
 	</div>
 </div>
