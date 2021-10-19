@@ -52,8 +52,4 @@ app.use(
 app.use('/auth', auth);
 app.use('/api', api);
 
-app.use('/', express.static(`${__dirname}/../frontend`));
-
-app.get('/', async (req, res) => {
-	res.send('Hello World!');
-});
+app.use('/', express.static(`${__dirname}/../frontend/build`));
