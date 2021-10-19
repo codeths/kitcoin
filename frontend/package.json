@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "A frontend for Kitcoin made with Svelte",
   "scripts": {
-	"dev": "npx snowpack dev --polyfill-node",
-	"build": "npx snowpack build --polyfill-node",
+	"dev": "npx snowpack dev",
+	"build": "npx snowpack build",
 	"format": "prettier --write ."
 },
   "repository": {
