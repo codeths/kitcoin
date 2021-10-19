@@ -121,10 +121,12 @@
 							{new Date(item.date).toLocaleString()}
 						</td>
 						<td>
-							{#if item.from.me}Me{:else}{item.from.text}{/if}
+							{#if item.from.me}Me{:else}{item.from.text ||
+									'Unknown'}{/if}
 						</td>
 						<td>
-							{#if item.to.me}Me{:else}{item.to.text}{/if}
+							{#if item.to.me}Me{:else}{item.to.text ||
+									'Unknown'}{/if}
 						</td>
 						<td
 							>{item.amount < 0 ? '-' : ''}${Math.abs(
