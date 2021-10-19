@@ -41,4 +41,6 @@ router.get('/cbk', async (req, res) => {
 	return res.redirect('/demo');
 });
 
+router.use((req, res) => res.status(404).send());
+
 export default router;
