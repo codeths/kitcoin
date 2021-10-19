@@ -6,6 +6,7 @@ import mongostore from 'connect-mongodb-session';
 import {mongo as mongoURL, sessionSecret, port} from '../config/keys.json';
 import {auth, api} from './routes';
 import {IUserDoc, User} from '../helpers/schema';
+import path from 'path';
 
 declare module 'express-session' {
 	interface SessionData {
@@ -52,4 +53,8 @@ app.use(
 app.use('/auth', auth);
 app.use('/api', api);
 
-app.use('/', express.static(`${__dirname}/../frontend/build`));
+app.use(express.static(`${__dirname}/../frontend/build`));
+
+app.get('*', (req, res) =>
+	res.sendFile(path.resolve(`${__dirname}/../frontend/build/index.html`)),
+);
