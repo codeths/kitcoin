@@ -14,7 +14,7 @@ import {User, IUserDoc} from './schema';
  * @param credentials Tokens
  * @returns Google OAuth2 client
  */
-function getOAuth2Client(credentials?: Auth.Credentials) {
+function getOAuth2Client(credentials?: Auth.Credentials): Auth.OAuth2Client {
 	const client = new google.auth.OAuth2(
 		client_id,
 		client_secret,
@@ -43,6 +43,8 @@ async function getAccessToken(
 	if (!token || !token.token) return null;
 	if (token.token !== user.tokens.access) {
 		user.tokens.access = token.token;
+		const info = await oauth2Client.getTokenInfo(token.token);
+		user.tokens.expires = new Date(info.expiry_date);
 		await user.save();
 	}
 	return oauth2Client;
