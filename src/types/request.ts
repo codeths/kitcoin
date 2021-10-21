@@ -19,6 +19,12 @@ const defaultOptions: RequestOptions = {
 export function getOptions(
 	options: Partial<RequestOptions> = {},
 ): RequestOptions {
+	Object.keys(options).forEach(key => {});
+
+	for (let key of Object.keys(options) as (keyof RequestOptions)[]) {
+		if (options[key] == undefined) delete options[key];
+	}
+
 	return {
 		...defaultOptions,
 		...options,
