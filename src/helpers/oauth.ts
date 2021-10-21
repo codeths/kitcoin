@@ -55,6 +55,7 @@ function getAuthURL(scopes: string[]) {
 		scope: scopes,
 		redirect_uri: redirect_url,
 		prompt: 'consent',
+		include_granted_scopes: true,
 	});
 }
 
