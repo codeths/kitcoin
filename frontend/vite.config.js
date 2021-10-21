@@ -7,4 +7,7 @@ export default defineConfig({
 	build: {
 		outDir: 'build',
 	},
+	optimizeDeps: {
+		exclude: ['@roxi/ssr'],
+	},
 });
