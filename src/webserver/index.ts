@@ -57,8 +57,8 @@ app.use(['/login', '/logout', '/signin', '/signout'], (req, res) => {
 	res.redirect(`/auth${req.originalUrl}`);
 });
 
-app.use(express.static(`${__dirname}/../frontend/build`));
+app.use(express.static(`${__dirname}/../../frontend/build`));
 
 app.get('*', (req, res) =>
-	res.sendFile(path.resolve(`${__dirname}/../frontend/build/index.html`)),
+	res.sendFile(path.resolve(`${__dirname}/../../frontend/build/index.html`)),
 );
