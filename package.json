@@ -7,7 +7,8 @@
 		"build": "gulp",
 		"dev": "gulp dev",
 		"watch": "gulp watch",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"postinstall": "(cd src/frontend && npm install);"
 	},
 	"repository": {
 		"type": "git",
