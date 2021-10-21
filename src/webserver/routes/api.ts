@@ -5,62 +5,20 @@ import {google} from 'googleapis';
 import {request} from '../../helpers/request';
 const router = express.Router();
 
-// Get my transactions
-router.get(
-	'/transactions/me',
-	async (...req) =>
-		request(...req, {
-			authentication: true,
-		}),
-	async (req, res) => {
-		if (!req.user) return;
-		try {
-			let {
-				count,
-				page,
-			}: {
-				count?: number | string;
-				page?: number | string;
-			} = req.query;
-			if (typeof count == 'string') count = parseInt(count);
-			if (typeof page == 'string') page = parseInt(page);
-			if (
-				(count !== undefined &&
-					(typeof count !== 'number' || isNaN(count))) ||
-				(page !== undefined &&
-					(typeof page !== 'number' || isNaN(page)))
-			)
-				return res.status(400).send('Bad Request');
-
-			const transactions = await Transaction.find().byUser(
-				req.user.id,
-				count,
-				page,
-			);
-
-			res.status(200).send(
-				await Promise.all(
-					transactions.map(t => t.toAPIResponse(req.user!.id)),
-				),
-			);
-		} catch (e) {
-			res.status(500).send('An error occured.');
-		}
-	},
-);
-
 // Get user transactions
 router.get(
 	'/transactions/:user',
-	async (...req) =>
-		request(...req, {
+	async (req, res, next) =>
+		request(req, res, next, {
 			authentication: true,
-			roles: ['STAFF', 'ADMIN'],
+			roles: req.params?.user == 'me' ? undefined : ['STAFF', 'ADMIN'],
 		}),
 	async (req, res) => {
 		if (!req.user) return;
 		try {
 			let {user} = req.params;
+			if (user == 'me') user = req.user.id;
+
 			let {
 				count,
 				page,
@@ -79,7 +37,7 @@ router.get(
 			)
 				return res.status(400).send('Bad Request');
 
-			const dbUser = await User.findById(user);
+			const dbUser = user == 'me' ? req.user : await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
 
 			const transactions = await Transaction.find().byUser(
@@ -99,41 +57,24 @@ router.get(
 	},
 );
 
-// Get my balance
-router.get(
-	'/balance/me',
-	async (...req) =>
-		request(...req, {
-			authentication: true,
-		}),
-	async (req, res) => {
-		if (!req.user) return;
-		try {
-			const balance = req.user.balance;
-
-			res.status(200).send({balance});
-		} catch (e) {
-			res.status(500).send('An error occured.');
-		}
-	},
-);
-
 // Get user balance
 router.get(
 	'/balance/:user',
-	async (...req) =>
-		request(...req, {
+	async (req, res, next) =>
+		request(req, res, next, {
 			authentication: true,
-			roles: ['STAFF'],
+			roles: req.params?.user == 'me' ? undefined : ['STAFF', 'ADMIN'],
 		}),
 	async (req, res) => {
 		if (!req.user) return;
 		try {
-			const {user} = req.params;
+			let {user} = req.params;
+			if (user == 'me') user = req.user.id;
+
 			if (typeof user !== 'string')
 				return res.status(400).send('Bad Request');
 
-			const dbUser = await User.findById(user);
+			const dbUser = user == 'me' ? req.user : await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
 
 			const balance = dbUser.balance;
