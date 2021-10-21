@@ -77,21 +77,25 @@ gulp.task('dev', async () => {
 function dev(watch) {
 	node();
 	if (watch) {
-		gulp.watch(['src/**/*']).on('change', async function (fileName) {
-			console.log(`${fileName} changed.`);
-			await task(
-				['ts'].some(x => fileName.endsWith(`.${x}`))
-					? typescript(fileName)
-					: copy(fileName),
-			);
-			console.log(`${fileName} done.`);
-			node();
-		});
+		gulp.watch(['src/**/*', '!**/node_modules/**/*']).on(
+			'change',
+			async function (fileName) {
+				console.log(`${fileName} changed.`);
+				await task(
+					['ts'].some(x => fileName.endsWith(`.${x}`))
+						? typescript(fileName)
+						: copy(fileName),
+				);
+				console.log(`${fileName} done.`);
+				node();
+			},
+		);
 
 		gulp.watch([
 			'frontend/**/*',
 			'!frontend/build/**/*',
 			'!frontend/.routify/**/*',
+			'!**/node_modules/**/*',
 		]).on('change', async function (fileName) {
 			console.log(`${fileName} changed.`);
 			await frontend();
