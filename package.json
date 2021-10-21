@@ -8,7 +8,7 @@
 		"dev": "gulp dev",
 		"watch": "gulp watch",
 		"format": "prettier --write .",
-		"postinstall": "(cd src/frontend && npm install);"
+		"postinstall": "(cd frontend && npm install);"
 	},
 	"repository": {
 		"type": "git",
@@ -26,6 +26,7 @@
 		"@types/express": "^4.17.13",
 		"@types/express-session": "^1.17.4",
 		"@types/mongoose": "^5.11.97",
+		"del": "^6.0.0",
 		"gulp": "^4.0.2",
 		"gulp-typescript": "^6.0.0-alpha.1",
 		"prettier": "2.4.0",

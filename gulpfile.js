@@ -35,7 +35,7 @@ function typescript(path) {
 	const tsProject = ts.createProject('tsconfig.json');
 
 	return gulp
-		.src(path || ['src/**/*.ts', '!src/frontend/**/*'], {
+		.src(path || ['src/**/*.ts'], {
 			base: 'src',
 		})
 		.pipe(tsProject())
@@ -52,7 +52,7 @@ function copy(path) {
 }
 
 function frontend() {
-	return exec('npm run build --prefix src/frontend');
+	return exec('npm run build --prefix frontend');
 }
 
 gulp.task('watch', async () => {
@@ -66,26 +66,22 @@ gulp.task('dev', async () => {
 function dev(watch) {
 	node();
 	if (watch) {
-		gulp.watch(['src/**/*', '!src/frontend/**/*']).on(
-			'change',
-			async function (fileName) {
-				console.log(`${fileName} changed.`);
-				await task(
-					['ts'].some(x => fileName.endsWith(`.${x}`))
-						? typescript(fileName)
-						: copy(fileName),
-				);
-				console.log(`${fileName} done.`);
-				node();
-			},
-		);
+		gulp.watch(['src/**/*']).on('change', async function (fileName) {
+			console.log(`${fileName} changed.`);
+			await task(
+				['ts'].some(x => fileName.endsWith(`.${x}`))
+					? typescript(fileName)
+					: copy(fileName),
+			);
+			console.log(`${fileName} done.`);
+			node();
+		});
 
-		gulp.watch(['src/frontend/**/*', '!src/frontend/build/**/*']).on(
+		gulp.watch(['frontend/**/*', '!build', '!.routify']).on(
 			'change',
 			async function (fileName) {
 				console.log(`${fileName} changed.`);
 				await frontend();
-				await task(copy('src/frontend/**/*.*'));
 				console.log(`${fileName} done.`);
 				node();
 			},
@@ -120,7 +116,6 @@ function dev(watch) {
 		} else if (['frontend', 'fe'].includes(line)) {
 			console.log('Rebuilding frontend');
 			await frontend();
-			await task(copy('src/frontend/**/*.*'));
 			node();
 			console.log('Done');
 		} else if (
