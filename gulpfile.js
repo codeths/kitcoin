@@ -77,15 +77,16 @@ function dev(watch) {
 			node();
 		});
 
-		gulp.watch(['frontend/**/*', '!build', '!.routify']).on(
-			'change',
-			async function (fileName) {
-				console.log(`${fileName} changed.`);
-				await frontend();
-				console.log(`${fileName} done.`);
-				node();
-			},
-		);
+		gulp.watch([
+			'frontend/**/*',
+			'!frontend/build/**/*',
+			'!frontend/.routify/**/*',
+		]).on('change', async function (fileName) {
+			console.log(`${fileName} changed.`);
+			await frontend();
+			console.log(`${fileName} done.`);
+			node();
+		});
 	}
 
 	console.log('Node started');
