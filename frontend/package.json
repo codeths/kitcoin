@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A frontend for Kitcoin made with Svelte",
   "scripts": {
-    "dev": "routify; vite",
+    "dev": "routify; vite --port 8080",
     "build": "routify -b && vite build",
     "format": "prettier --write ."
   },
@@ -29,6 +29,7 @@
     "prettier-plugin-svelte": "^2.4.0",
     "rollup-plugin-svelte": "^7.1.0",
     "svelte": "^3.43.0",
+    "svelte-preprocess": "^4.9.8",
     "tailwindcss": "^2.2.15",
     "vite": "^2.6.10"
   }

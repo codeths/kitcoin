@@ -5,19 +5,26 @@
   */
 	export let items = []; // An array of items. (See above)
 	let buttonStates = {
-		left: false,
+		left: true,
 		right: false,
 	};
 	let offset = 0;
 
 	const handleClick = btn => {
-		// TODO: constrain this so that you can't just 'scroll' forever
+		// TODO: constrain this so that you can't just 'scroll' forever (50% done)
 		switch (btn) {
 			case 'left':
-				offset += 75;
+				if (offset + 75 > 0) {
+					// Check if we can move
+					buttonStates.left = true;
+				} else {
+					offset += 75;
+				}
+				if (offset >= 0) buttonStates.left = true; // Check if we can move again
 				break;
 			case 'right':
 				offset -= 75;
+				if (offset < 0) buttonStates.left = false;
 				break;
 		}
 	};
