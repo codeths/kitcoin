@@ -21,11 +21,14 @@ Building the frontend is pretty easy, just run the command below:
 npm run build
 ```
 
-This will create a folder called "build" containing the newly built frontend.
+This will create a folder called "build" containing the newly built frontend.  
+If you're going to serve the build, make sure your server is set up to serve `index.html` as the 404 page. This is needed because routify puts the entire frontend in one place, and determines which view to show based on the path, which won't always just be the root.
+
+As of writing, there is not content at the root, and the student dashboard is at _/student_.
 
 ## Development
 
-[Svelte](https://svelte.dev/) and [Routify](https://www.routify.dev/) is used with [Tailwind CSS](https://tailwindcss.com/) to make the frontend, and Vite is used for builds.
+[Svelte](https://svelte.dev/) and [Routify](https://www.routify.dev/) are used with [Tailwind CSS](https://tailwindcss.com/) to make the frontend, and [Vite](https://vitejs.dev/) is used for builds.
 
 To start the dev server, run the command below:
 
@@ -33,5 +36,5 @@ To start the dev server, run the command below:
 npm run dev
 ```
 
-This should open a new browser tab with the page open. The page will update as soon as you save a change, so you don't need to worry about reloading the page.  
-You can also access the page by opening [localhost:8080](https://localhost:8080) once the dev server is up and running.
+This starts a local server hosting the frontend that updates as you save. The page will update as soon as you save a change, so you don't need to worry about reloading the page.  
+You can access the page by opening [localhost:8080](https://localhost:8080) once the dev server is up and running.
