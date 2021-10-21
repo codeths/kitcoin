@@ -1,7 +1,7 @@
 import express from 'express';
 import {User, Transaction, isValidRoles} from '../../helpers/schema';
 import {getAccessToken} from '../../helpers/oauth';
-import {google} from 'googleapis';
+import Google, {google} from 'googleapis';
 import {request} from '../../helpers/request';
 const router = express.Router();
 
@@ -117,13 +117,24 @@ router.get(
 		}),
 	async (req, res) => {
 		if (!req.user) return;
+		let teaching = req.query?.role || 'any';
+		if (
+			typeof teaching !== 'string' ||
+			!['teacher', 'student', 'any'].includes(teaching)
+		)
+			return res.status(400).send('Bad Request');
+		let apiOptions: Google.classroom_v1.Params$Resource$Courses$List = {};
+
+		if (teaching == 'student') apiOptions.studentId = 'me';
+		if (teaching == 'teacher') apiOptions.teacherId = 'me';
+
 		const client = await getAccessToken(req.user);
 		if (!client)
 			return res.status(401).send('Google authentication failed.');
 
 		const classes = await google
 			.classroom({version: 'v1', auth: client})
-			.courses.list({teacherId: 'me'})
+			.courses.list(apiOptions)
 			.catch(e => null);
 		if (!classes) return res.status(500).send('An error occured.');
 		if (!classes.data || !classes.data.courses)
