@@ -83,7 +83,7 @@ function dev(watch) {
 				console.log(`${fileName} changed.`);
 				await task(
 					['ts'].some(x => fileName.endsWith(`.${x}`))
-						? typescript(fileName)
+						? typescript()
 						: copy(fileName),
 				);
 				console.log(`${fileName} done.`);
