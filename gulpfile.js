@@ -1,11 +1,13 @@
 const gulp = require('gulp');
 const ts = require('gulp-typescript');
+const del = require('del');
 const promisify = require('util').promisify;
 const exec = promisify(require('child_process').exec);
 const spawn = require('child_process').spawn;
 const readline = require('readline');
 
 gulp.task('default', async () => {
+	await delDist();
 	await task(typescript());
 	await frontend();
 	await task(copy());
@@ -14,6 +16,11 @@ gulp.task('default', async () => {
 
 gulp.task('copy', async () => {
 	await task(copy());
+	return;
+});
+
+gulp.task('clear', async () => {
+	await delDist();
 	return;
 });
 
@@ -29,6 +36,10 @@ gulp.task('frontend', async () => {
 
 function task(t) {
 	return new Promise((resolve, reject) => t.on('end', resolve));
+}
+
+function delDist() {
+	return del('dist');
 }
 
 function typescript(path) {
@@ -99,6 +110,7 @@ function dev(watch) {
 			node();
 		} else if (['build', 'gulp'].includes(line)) {
 			console.log('Rebuilding');
+			await delDist();
 			await task(typescript());
 			await frontend();
 			await task(copy());
