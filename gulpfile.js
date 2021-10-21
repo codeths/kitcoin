@@ -151,6 +151,16 @@ function node() {
 		nodeProcess.kill('SIGINT');
 	}
 	nodeProcess = spawn('node', ['.']);
+
+	nodeProcess.stdout.setEncoding('utf8');
+	nodeProcess.stdout.on('data', function (data) {
+		console.log(data);
+	});
+
+	nodeProcess.stderr.setEncoding('utf8');
+	nodeProcess.stderr.on('data', function (data) {
+		console.log(data);
+	});
 }
 
 process.on('exit', function () {
