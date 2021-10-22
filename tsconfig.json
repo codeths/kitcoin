@@ -11,5 +11,5 @@
 		"allowJs": true
 	},
 	"include": ["./src/**/*"],
-	"exclude": []
+	"exclude": ["frontend"]
 }
