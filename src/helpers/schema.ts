@@ -11,6 +11,14 @@ import {
 	ITransactionModel,
 	ITransactionQueries,
 	ITransaction,
+	IStoreDoc,
+	IStoreModel,
+	IStoreQueries,
+	IStoreItem,
+	IStoreItemQueries,
+	IStoreItemMethods,
+	IStoreItemDoc,
+	IStoreItemModel,
 } from '../types';
 
 mongoose.connect(mongoURL);
@@ -155,11 +163,56 @@ transactionSchema.methods.toAPIResponse = async function (
 	return res;
 };
 
+const storeSchema = new mongoose.Schema<IStoreDoc, IStoreModel>({
+	name: {type: String, required: true},
+	description: String,
+	classID: String,
+	public: {
+		type: Boolean,
+		default: false,
+		required: true,
+	},
+	managers: [String],
+});
+
+storeSchema.query.byClassCode = function (classCode: string): IStoreQueries {
+	return this.findOne({classID: classCode});
+};
+
+storeSchema.methods.getItems = async function (): Promise<IStoreItemDoc[]> {
+	return await StoreItem.find({storeID: this._id});
+};
+
+storeSchema.index({classID: 1});
+
+const storeItemSchema = new mongoose.Schema<IStoreItemDoc, IStoreItemModel>({
+	storeID: {type: String, required: true},
+	name: {type: String, required: true},
+	quantity: Number,
+	description: String,
+});
+
+storeItemSchema.query.byStore = function (storeID: string): IStoreItemQueries {
+	return this.find({storeID});
+};
+
+storeItemSchema.methods.getStore =
+	async function (): Promise<IStoreDoc | null> {
+		return await Store.findById(this.storeID);
+	};
+
+storeItemSchema.index({storeID: 1});
+
 const User = mongoose.model<IUserDoc, IUserModel>('User', userSchema);
 const Transaction = mongoose.model<ITransactionDoc, ITransactionModel>(
 	'Transaction',
 	transactionSchema,
 );
+const Store = mongoose.model<IStoreDoc, IStoreModel>('Store', storeSchema);
+const StoreItem = mongoose.model<IStoreItemDoc, IStoreItemModel>(
+	'StoreItem',
+	storeItemSchema,
+);
 
-export {User, Transaction};
+export {User, Transaction, Store, StoreItem};
 export * from '../types';

@@ -197,3 +197,80 @@ export function isValidRoles(roles: unknown): roles is UserRoleTypes[] {
 	if (!Array.isArray(roles)) return false;
 	return roles.every(isValidRole);
 }
+
+export interface IStore {
+	name: string;
+	description?: string;
+	/**
+	 * Google classroom ID (if applicable)
+	 */
+	classID: string | null;
+	/**
+	 * Should the store be shown to everyone
+	 */
+	public: boolean;
+	/**
+	 * Mongo IDs of users who can manage this store
+	 */
+	managers: string[];
+}
+
+export type IStoreDoc = IStore &
+	IStoreMethods &
+	Omit<Document<IUser>, 'save'> & {
+		save: (options?: SaveOptions | undefined) => Promise<IStoreDoc>;
+	};
+
+export type IStoreQuery = Query<IStoreDoc, IStoreDoc> & IStoreQueries;
+
+export interface IStoreMethods {
+	getItems(): Promise<IStoreItemDoc[]>;
+}
+
+export interface IStoreQueries {
+	/**
+	 * @param classCode Google classroom code
+	 */
+	byClassCode(classCode: string): IStoreQuery;
+}
+
+export interface IStoreModel extends Model<IStoreDoc, IStoreQueries> {}
+
+export interface IStoreItem {
+	/**
+	 * Which store the item is in (Mongo ID)
+	 */
+	storeID: string;
+	/**
+	 * Name of the store item
+	 */
+	name: string;
+	quantity: number | null;
+	/**
+	 * Item description
+	 */
+	description: string;
+}
+
+export type IStoreItemDoc = IStoreItem &
+	IStoreItemMethods &
+	Omit<Document<IUser>, 'save'> & {
+		save: (options?: SaveOptions | undefined) => Promise<IStoreItemDoc>;
+	};
+
+export type IStoreItemQuery = Query<IStoreItemDoc, IStoreItemDoc> &
+	IStoreItemQueries;
+
+export interface IStoreItemMethods {
+	getStore(): Promise<IStoreDoc | null>;
+}
+
+export interface IStoreItemQueries {
+	/**
+	 * @param storeID Store ID (Mongo ID)
+	 */
+	byStoreID(storeID: string): IStoreItemQuery;
+}
+
+export interface IStoreItemModel
+	extends Model<IStoreItemDoc, IStoreItemQueries> {}
