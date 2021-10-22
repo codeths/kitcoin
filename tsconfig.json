@@ -1,8 +1,7 @@
 {
 	"compilerOptions": {
-		"outDir": "./dist",
-		"baseUrl": "./dist",
-		"rootDir": "./src",
+		"outDir": "dist",
+		"baseUrl": "dist",
 		"strict": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
@@ -10,6 +9,6 @@
 		"resolveJsonModule": true,
 		"allowJs": true
 	},
-	"include": ["./src/**/*"],
+	"include": ["src/**/*"],
 	"exclude": ["frontend"]
 }
