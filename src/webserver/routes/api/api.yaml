@@ -53,37 +53,38 @@ paths:
                     content:
                         application/json:
                             schema:
-                                type: array
-                                items:
-                                    properties:
-                                        amount:
-                                            type: number
-                                        reason:
-                                            type: string
-                                            nullable: true
-                                        from:
-                                            type: object
-                                            properties:
-                                                id:
-                                                    type: string
-                                                    nullable: true
-                                                    description: Mongo User ID
-                                                name:
-                                                    type: string
-                                                    nullable: true
-                                                    description: Text to display (for non-user transactions)
-                                        to:
-                                            type: object
-                                            properties:
-                                                id:
-                                                    type: string
-                                                    nullable: true
-                                                    description: Mongo User ID
-                                                name:
-                                                    type: string
-                                                    nullable: true
-                                                    description: Text to display (for non-user transactions)
-                                        date:
-                                            type: string
-                                            format: date-time
-                                            description: Date of transaction
+                                $ref: '../../../../schema/transactionapires.json'
+        post:
+            description: Create a new transaction
+            parameters:
+                - name: user
+                  in: path
+                  description: Mongo User ID
+                  required: true
+                  schema:
+                      type: string
+                - name: amount
+                  in: query
+                  description: Amount of transaction
+                  required: true
+                  schema:
+                      type: number
+                - name: type
+                  in: query
+                  description: Type of transaction
+                  required: true
+                  schema:
+                      type: string
+                - name: description
+                  in: query
+                  description: Description of transaction
+                  required: false
+                  schema:
+                      type: string
+            responses:
+                200:
+                    description: Created transaction
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '../../../../schema/transactionapires.json'

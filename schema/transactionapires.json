@@ -1,0 +1,57 @@
+{
+	"type": "array",
+	"items": {
+		"properties": {
+			"amount": {
+				"type": "number"
+			},
+			"reason": {
+				"type": "string",
+				"nullable": true
+			},
+			"from": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"nullable": true,
+						"description": "Mongo User ID"
+					},
+					"name": {
+						"type": "string",
+						"nullable": true,
+						"description": "Text to display"
+					},
+					"me": {
+						"type": "boolean",
+						"description": "Is this the logged in user"
+					}
+				}
+			},
+			"to": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"nullable": true,
+						"description": "Mongo User ID"
+					},
+					"name": {
+						"type": "string",
+						"nullable": true,
+						"description": "Text to display"
+					},
+					"me": {
+						"type": "boolean",
+						"description": "Is this the logged in user"
+					}
+				}
+			},
+			"date": {
+				"type": "string",
+				"format": "date-time",
+				"description": "Date of transaction"
+			}
+		}
+	}
+}
