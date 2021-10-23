@@ -1,5 +1,6 @@
 <script>
 	import Header from '../../components/Header.svelte';
+	import CreateTransaction from '../../components/CreateTransaction.svelte';
 	import {getBalance, getTransactions} from '../../utils/api.js';
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
 	console.log('Hello Staff!!');
@@ -54,6 +55,9 @@
 					</div>
 				</div>
 			</div>
+		</div>
+		<div class="">
+			<CreateTransaction />
 		</div>
 	</div>
 </div>
