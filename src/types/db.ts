@@ -217,7 +217,7 @@ export interface IStore {
 
 export type IStoreDoc = IStore &
 	IStoreMethods &
-	Omit<Document<IUser>, 'save'> & {
+	Omit<Document<IStore>, 'save'> & {
 		save: (options?: SaveOptions | undefined) => Promise<IStoreDoc>;
 	};
 
