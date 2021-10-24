@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher, onMount} from 'svelte';
+	import {searchUsers} from '../utils/api';
 	const dispatch = createEventDispatcher();
 
 	export let inputClass = '';
@@ -14,7 +15,6 @@
 		focusindex = -1;
 
 	function key(e) {
-		console.log(e);
 		// On arrow down
 		if (e.keyCode === 40) {
 			e.preventDefault();
@@ -59,24 +59,6 @@
 		}
 	}
 
-	/**
-	 * @todo Get data
-	 */
-	let data = [
-		{
-			name: 'John Doe',
-			id: '1',
-		},
-		{
-			name: 'Jane Doe',
-			id: '2',
-		},
-		{
-			name: 'John Smith',
-			id: '3',
-		},
-	];
-
 	async function search(text, resetValue = false) {
 		if (resetValue && value !== '') {
 			value = '';
@@ -85,9 +67,11 @@
 		if (text.replace(/[ \n]/g, '') == '') {
 			results = [];
 		} else {
-			results = data.filter(user =>
-				user.name.toLowerCase().includes(text.toLowerCase()),
-			);
+			try {
+				results = await searchUsers(text, 15, ['STUDENT']);
+			} catch (e) {
+				results = [];
+			}
 		}
 	}
 </script>
@@ -118,7 +102,7 @@
 	/>
 	<div class="relative ">
 		<div
-			class="divide-y w-full absolute bg-white rounded-b border-t border-gray-300 {results.length ==
+			class="divide-y max-h-60 w-full overflow-scroll absolute bg-white rounded-b border-t border-gray-300 {results.length ==
 			0
 				? 'invisible'
 				: ''}"
