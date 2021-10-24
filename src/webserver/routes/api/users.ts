@@ -54,6 +54,8 @@ router.get(
 		const {q, roles, count} = req.query;
 		if (!q || typeof q !== 'string')
 			return res.status(400).send('Bad Request');
+
+		if (q.length < 3) return res.status(200).send([]);
 		if (roles && typeof roles !== 'string')
 			return res.status(400).send('Bad Request');
 		let roleArray = roles ? roles.toUpperCase().split(',') : null;
@@ -73,12 +75,13 @@ router.get(
 		res.status(200).send(
 			results
 				.map(x => x.toJSON())
-				.filter(x => x.confidenceScore > 10)
+				.filter(x => x.confidenceScore > 5)
 				.slice(0, countNum)
 				.map(user => ({
 					name: user.name,
 					email: user.email,
 					id: user._id,
+					confidence: user.confidenceScore,
 				})),
 		);
 	},
