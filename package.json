@@ -44,6 +44,7 @@
 		"express-session": "^1.17.2",
 		"googleapis": "^86.1.0",
 		"mongoose": "^6.0.6",
+		"mongoose-fuzzy-searching": "github:chromezoneeths/mongoose-fuzzy-searching",
 		"swagger-ui-express": "^4.1.6",
 		"yamljs": "^0.3.0"
 	}
