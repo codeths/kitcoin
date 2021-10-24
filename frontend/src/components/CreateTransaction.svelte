@@ -1,11 +1,12 @@
 <script>
+	import StudentSearch from './StudentSearch.svelte';
+
 	// string: error
 	// null: no error
-
-	// undefined: no input happened
+	// empty string: no input happened
 	let formErrors = {
-		student: undefined,
-		amount: undefined,
+		student: '',
+		amount: '',
 		reason: null,
 	};
 
@@ -15,8 +16,10 @@
 
 	let formValidators = {
 		student: e => {
-			let v = e.target.value;
-			if (!v) return (formErrors.student = 'Student is required');
+			let v = e.detail;
+			if (!v)
+				return (formErrors.student =
+					v.type == 'blur' ? 'Student is required' : '');
 			formErrors.student = null;
 		},
 		amount: e => {
@@ -51,14 +54,9 @@
 		{#if formErrors.student}
 			<span class="text-red-500">{formErrors.student}</span>
 		{/if}
-		<input
-			class="shadow appearance-none border {formErrors.student
-				? 'border-red-500'
-				: ''} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-			id="student"
-			type="text"
-			placeholder="Search for a student"
-			on:input={e => validate('student', e)}
+		<StudentSearch
+			inputClass={formErrors.student ? 'border-red-500' : ''}
+			on:change={e => validate('student', e)}
 			on:blur={e => validate('student', e)}
 		/>
 	</div>
