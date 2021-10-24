@@ -60,7 +60,7 @@
 	}
 
 	async function search(text, resetValue = false) {
-		if (resetValue && value !== '') {
+		if (resetValue && value) {
 			value = '';
 			dispatch('change', value);
 		}
@@ -95,6 +95,7 @@
 			search(e.target.value, true);
 		}}
 		on:focus={e => {
+			if (!value) dispatch('change', value);
 			focusindex = -1;
 			search(e.target.value);
 		}}

@@ -108,6 +108,9 @@
 			placeholder="Amount"
 			on:input={e => validate('amount', e)}
 			on:blur={e => validate('amount', e)}
+			on:focus={e => {
+				if (formErrors.amount) formErrors.amount = '';
+			}}
 			bind:value={values.amount}
 		/>
 	</div>
