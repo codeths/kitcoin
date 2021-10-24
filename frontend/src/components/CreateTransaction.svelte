@@ -25,7 +25,7 @@
 			let v = e.detail;
 			if (!v)
 				return (formErrors.student =
-					v.type == 'blur' ? 'Student is required' : '');
+					e && e.type == 'blur' ? 'Student is required' : '');
 			formErrors.student = null;
 		},
 		amount: e => {

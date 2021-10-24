@@ -83,12 +83,12 @@
 	on:keydown={key}
 >
 	<div
-		class="rounded border shadow w-full absolute pointer-events-none z-10"
+		class="rounded border {inputClass} shadow w-full absolute pointer-events-none z-10"
 		style="padding-bottom: {inputheight + dropheight}px;"
 	/>
 	<input
 		bind:this={input}
-		class="w-full rounded border-none {inputClass} w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+		class="w-full rounded border-none w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
 		type="text"
 		placeholder="Search for a student"
 		on:input={e => {
