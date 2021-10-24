@@ -184,7 +184,7 @@ storeSchema.query.byClassCode = function (classCode: string): IStoreQueries {
 };
 
 storeSchema.methods.getItems = async function (): Promise<IStoreItemDoc[]> {
-	return await StoreItem.find({storeID: this._id});
+	return await StoreItem.find({storeID: this.id});
 };
 
 storeSchema.index({classID: 1});
