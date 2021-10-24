@@ -51,8 +51,8 @@ router.get(
 		}),
 	async (req, res) => {
 		if (!req.user) return;
-		const {query, roles, count} = req.query;
-		if (!query || typeof query !== 'string')
+		const {q, roles, count} = req.query;
+		if (!q || typeof q !== 'string')
 			return res.status(400).send('Bad Request');
 		if (roles && typeof roles !== 'string')
 			return res.status(400).send('Bad Request');
@@ -66,8 +66,7 @@ router.get(
 		let countNum = typeof count === 'string' ? parseInt(count) : 10;
 		if (isNaN(countNum)) return res.status(400).send('Bad Request');
 
-		console.log(roleBitfield);
-		const results = await User.fuzzySearch(query, {
+		const results = await User.fuzzySearch(q, {
 			roles: {$bitsAnySet: roleBitfield},
 		});
 
