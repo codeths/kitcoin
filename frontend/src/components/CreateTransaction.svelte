@@ -10,6 +10,12 @@
 		reason: null,
 	};
 
+	let values = {
+		student: null,
+		amount: null,
+		reason: null,
+	};
+
 	let hasError = true;
 	let checkError = () =>
 		(hasError = Object.values(formErrors).some(x => x != null));
@@ -44,9 +50,34 @@
 		formValidators[which](event);
 		checkError();
 	};
+
+	function send(e) {
+		e.preventDefault();
+		if (hasError) return false;
+		fetch('/api/transactions', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				user: values.student,
+				amount: parseInt(values.amount),
+				reason: values.reason || null,
+			}),
+		})
+			.then(res => res.json())
+			.then(res => {
+				if (res.error) {
+					alert(res.error);
+				}
+				alert('Success');
+			});
+
+		return false;
+	}
 </script>
 
-<form class="bg-white shadow-md rounded px-8 py-8">
+<form class="bg-white shadow-md rounded px-8 py-8" on:submit={send}>
 	<div class="mb-4">
 		<label class="block text-gray-700 text-sm font-bold mb-2" for="student">
 			Student
@@ -58,6 +89,7 @@
 			inputClass={formErrors.student ? 'border-red-500' : ''}
 			on:change={e => validate('student', e)}
 			on:blur={e => validate('student', e)}
+			bind:value={values.student}
 		/>
 	</div>
 	<div class="mb-4">
@@ -76,6 +108,7 @@
 			placeholder="Amount"
 			on:input={e => validate('amount', e)}
 			on:blur={e => validate('amount', e)}
+			bind:value={values.amount}
 		/>
 	</div>
 	<div class="mb-4">
@@ -94,15 +127,15 @@
 			placeholder="Reason"
 			on:input={e => validate('reason', e)}
 			on:blur={e => validate('reason', e)}
+			bind:value={values.reason}
 		/>
 	</div>
 	<div class="flex items-center justify-between">
-		<button
+		<input
 			class="bg-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-			type="button"
+			type="submit"
+			value="Send"
 			disabled={hasError}
-		>
-			Send
-		</button>
+		/>
 	</div>
 </form>

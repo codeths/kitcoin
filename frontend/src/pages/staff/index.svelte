@@ -56,7 +56,11 @@
 				</div>
 			</div>
 		</div>
-		<div class="">
+	</div>
+	<div
+		class="space-y-10 mt-10 space-x-0 lg:grid lg:grid-cols-5 lg:space-x-10 lg:space-y-0"
+	>
+		<div class="lg:col-span-3">
 			<CreateTransaction />
 		</div>
 	</div>
