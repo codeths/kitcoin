@@ -21,6 +21,8 @@ import {
 	IStoreItemModel,
 } from '../types';
 
+import fuzzySearch from 'mongoose-fuzzy-searching';
+
 mongoose.connect(mongoURL);
 
 const userSchema = new mongoose.Schema<IUserDoc, IUserModel>({
@@ -143,11 +145,11 @@ transactionSchema.methods.getUserText = async function (
 transactionSchema.methods.toAPIResponse = async function (
 	user?: string,
 ): Promise<ITransactionAPIResponse> {
-	let json: ITransaction = this.toJSON();
+	let json: Omit<ITransaction, 'date'> = this.toJSON();
 
 	let res: ITransactionAPIResponse = {
 		...json,
-		date: json.date.toISOString(),
+		date: this.date.toISOString(),
 	};
 
 	if (res.from.id && !res.from.text) {
