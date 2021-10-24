@@ -1,4 +1,12 @@
-import {Document, Model, ObjectId, Query, SaveOptions} from 'mongoose';
+import {
+	Callback,
+	Document,
+	Model,
+	ObjectId,
+	Query,
+	SaveOptions,
+} from 'mongoose';
+import {MongooseFuzzyModel} from 'mongoose-fuzzy-searching';
 
 export interface IUser {
 	/**
@@ -64,11 +72,7 @@ export interface IUserMethods {
 	hasAllRoles(roles: UserRoleTypes[]): boolean;
 }
 
-export type IUserDoc = IUser &
-	IUserMethods &
-	Omit<Document<IUser>, 'save'> & {
-		save: (options?: SaveOptions | undefined) => Promise<IUserDoc>;
-	};
+export type IUserDoc = IUser & IUserMethods & Document<IUser>;
 
 export type IUserQuery = Query<IUserDoc, IUserDoc> & IUserQueries;
 
@@ -78,7 +82,8 @@ export interface IUserQueries {
 	byToken(token: string): IUserQuery;
 }
 
-export interface IUserModel extends Model<IUserDoc, IUserQueries> {}
+export interface IUserModel
+	extends MongooseFuzzyModel<IUserDoc, IUserQueries> {}
 
 /**
  * @typedef TransactionUser
@@ -161,9 +166,7 @@ export type ITransactionAPIResponse = Omit<ITransaction, 'date'> & {
 
 export type ITransactionDoc = ITransaction &
 	ITransactionMethods &
-	Omit<Document<ITransaction>, 'save'> & {
-		save: (options?: SaveOptions | undefined) => Promise<ITransaction>;
-	};
+	Document<ITransaction>;
 
 export type ITransactionQuery = Query<ITransactionDoc, ITransactionDoc> &
 	IUserQueries;
@@ -215,11 +218,7 @@ export interface IStore {
 	managers: string[];
 }
 
-export type IStoreDoc = IStore &
-	IStoreMethods &
-	Omit<Document<IStore>, 'save'> & {
-		save: (options?: SaveOptions | undefined) => Promise<IStoreDoc>;
-	};
+export type IStoreDoc = IStore & IStoreMethods & Document<IStore>;
 
 export type IStoreQuery = Query<IStoreDoc, IStoreDoc> & IStoreQueries;
 
@@ -252,11 +251,7 @@ export interface IStoreItem {
 	description: string;
 }
 
-export type IStoreItemDoc = IStoreItem &
-	IStoreItemMethods &
-	Omit<Document<IUser>, 'save'> & {
-		save: (options?: SaveOptions | undefined) => Promise<IStoreItemDoc>;
-	};
+export type IStoreItemDoc = IStoreItem & IStoreItemMethods & Document<IUser>;
 
 export type IStoreItemQuery = Query<IStoreItemDoc, IStoreItemDoc> &
 	IStoreItemQueries;
