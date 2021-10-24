@@ -91,6 +91,8 @@ userSchema.methods.hasAllRoles = function (roles: UserRoleTypes[]): boolean {
 	return roles.every(role => this.hasRole(role));
 };
 
+userSchema.plugin(fuzzySearch, {fields: ['name', 'email']});
+
 const transactionSchema = new mongoose.Schema<
 	ITransactionDoc,
 	ITransactionModel
