@@ -133,7 +133,7 @@
 		<input
 			class="shadow appearance-none border {borderStyle(
 				formErrors.amount,
-			)} focus:border-gray-200 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+			)} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
 			id="amount"
 			type="number"
 			placeholder="Amount"
@@ -152,7 +152,7 @@
 		<textarea
 			class="shadow appearance-none border {borderStyle(
 				formErrors.reason,
-			)} focus:border-gray-200 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+			)} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
 			id="reason"
 			type="text"
 			placeholder="Reason"

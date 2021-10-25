@@ -82,7 +82,7 @@
 <div class="group w-auto" bind:this={parent} on:keydown={key}>
 	<input
 		bind:this={input}
-		class="w-full rounded border {inputClass} focus:border-gray-200 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+		class="w-full rounded border {inputClass} w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
 		type="text"
 		placeholder="Search for a student"
 		on:input={e => {
