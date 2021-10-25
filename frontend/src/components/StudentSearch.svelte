@@ -15,6 +15,10 @@
 	export let error = '';
 	export let query = '';
 
+	$: {
+		if (!value) query = '';
+	}
+
 	function key(e) {
 		// On arrow down
 		if (e.keyCode === 40) {
@@ -98,6 +102,7 @@
 		}}
 		on:blur={e => {
 			if (!e.relatedTarget || !parent.contains(e.relatedTarget)) {
+				results = [];
 				validate('blur', value, e.target, query);
 			}
 		}}
