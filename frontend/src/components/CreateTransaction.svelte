@@ -89,7 +89,14 @@
 			() => {
 				submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
 				if (res.ok) {
-					Object.keys(values).forEach(x => (values[x] = null));
+					Object.keys(values).forEach(x => {
+						values[x] = null;
+						errors[x] = null;
+						valid[x] = !formValidators[x]({
+							value: '',
+							type: 'blur',
+						});
+					});
 				}
 				setTimeout(() => {
 					submitStatus = null;
