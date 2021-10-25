@@ -3,16 +3,19 @@
 	import {searchUsers} from '../utils/api';
 	const dispatch = createEventDispatcher();
 
-	export let inputClass = '';
-	export let value = '';
-
 	let results = [];
 	let input,
 		parent,
-		inputheight = 0,
-		dropheight = 0,
 		resultEls = [],
 		focusindex = -1;
+
+	export let inputClass = '';
+
+	export let value = '';
+
+	$: {
+		if (value == null && input) input.value = '';
+	}
 
 	function key(e) {
 		// On arrow down
@@ -76,26 +79,16 @@
 	}
 </script>
 
-<div
-	class="w-auto"
-	bind:this={parent}
-	bind:clientHeight={inputheight}
-	on:keydown={key}
->
-	<div
-		class="rounded border {inputClass} shadow w-full absolute pointer-events-none z-10"
-		style="padding-bottom: {inputheight + dropheight}px;"
-	/>
+<div class="group w-auto" bind:this={parent} on:keydown={key}>
 	<input
 		bind:this={input}
-		class="w-full rounded border-none w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+		class="w-full rounded border {inputClass} focus:border-gray-200 w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
 		type="text"
 		placeholder="Search for a student"
 		on:input={e => {
 			search(e.target.value, true);
 		}}
 		on:focus={e => {
-			if (!value) dispatch('change', value);
 			focusindex = -1;
 			search(e.target.value);
 		}}
@@ -103,12 +96,11 @@
 	/>
 	<div class="relative ">
 		<div
-			class="divide-y max-h-60 w-full overflow-scroll absolute bg-white rounded-b border-t border-gray-300 {results.length ==
+			class="divide-y my-2 max-h-60 w-full overflow-scroll absolute bg-white rounded border-2 {results.length ==
 			0
 				? 'invisible'
 				: ''}"
 			tabindex="-1"
-			bind:clientHeight={dropheight}
 		>
 			{#each results as result, index}
 				<button
