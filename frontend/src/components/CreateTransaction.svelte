@@ -1,15 +1,7 @@
 <script>
 	import StudentSearch from './StudentSearch.svelte';
 	import Loading from './Loading.svelte';
-
-	// string: error
-	// null: no error
-	// empty string: no input happened
-	let formErrors = {
-		student: '',
-		amount: '',
-		reason: null,
-	};
+	import Input from './Input.svelte';
 
 	let values = {
 		student: null,
@@ -17,40 +9,60 @@
 		reason: null,
 	};
 
+	let errors = {
+		student: null,
+		amount: null,
+		reason: null,
+	};
+
+	let valid = {
+		student: false,
+		amount: false,
+		reason: true,
+	};
+
+	let inputs = {};
+
 	let hasError = true;
-	let checkError = () =>
-		(hasError = Object.values(formErrors).some(x => x != null));
+
+	$: {
+		hasError = Object.values(valid).some(v => !v);
+	}
 
 	let formValidators = {
 		student: e => {
-			let v = e.detail;
+			let v = e.value;
 			if (!v)
-				return (formErrors.student =
-					e && e.type == 'blur' ? 'Student is required' : '');
-			formErrors.student = null;
+				return e && e.type == 'blur'
+					? e.query
+						? 'Student must be selected from dropdown'
+						: 'Student is required'
+					: '';
+			return null;
 		},
 		amount: e => {
-			let v = e.target.value;
-			if (!v) return (formErrors.amount = 'Amount is required');
+			let v = e.value;
+			if (!v) return e.type == 'blur' ? 'Amount is required' : '';
 			let num = parseFloat(v);
-			if (isNaN(num))
-				return (formErrors.amount = 'Amount must be an number');
-			if (num % 1 !== 0)
-				return (formErrors.amount = 'Amount must be a whole number');
-			if (num < 1)
-				return (formErrors.amount = 'Amount must be greater than 0');
-			formErrors.amount = null;
+			if (isNaN(num)) return 'Amount must be an number';
+			if (num % 1 !== 0) return 'Amount must be a whole number';
+			if (num < 1) return 'Amount must be greater than 0';
+
+			return null;
 		},
 		reason: e => {
-			let v = e.target.value;
-			formErrors.reason = null;
+			let v = e.value;
+			return null;
 		},
 	};
 
-	let validate = (which, event) => {
-		formValidators[which](event);
-		checkError();
-	};
+	function validate(which, event) {
+		let res = formValidators[which](event);
+
+		values[which] = event.value;
+		errors[which] = res;
+		valid[which] = res == null;
+	}
 
 	let submitStatus = null;
 	async function send(e) {
@@ -89,17 +101,6 @@
 		return false;
 	}
 
-	function borderStyle(error) {
-		if (error == null) return 'border-green-500';
-		if (error) return 'border-red-500';
-		return '';
-	}
-
-	function textStyle(error) {
-		if (error) return 'text-red-500';
-		return 'text-gray-700';
-	}
-
 	function btnColor(submitStatus) {
 		if (submitStatus == 'LOADING') return 'bg-gray-500';
 		if (submitStatus == 'SUCCESS') return 'bg-green-500';
@@ -109,58 +110,30 @@
 </script>
 
 <form class="bg-white shadow-md rounded px-8 py-8" on:submit={send}>
-	<div class="mb-4">
-		<label
-			class="block {textStyle(formErrors.student)} text-sm font-bold mb-2"
-			for="student"
-		>
-			{formErrors.student || 'Student'}
-		</label>
-		<StudentSearch
-			inputClass={borderStyle(formErrors.student)}
-			on:change={e => validate('student', e)}
-			on:blur={e => validate('student', e)}
-			bind:value={values.student}
-		/>
-	</div>
-	<div class="mb-4">
-		<label
-			class="block {textStyle(formErrors.amount)} text-sm font-bold mb-2"
-			for="amount"
-		>
-			{formErrors.amount || 'Amount'}
-		</label>
-		<input
-			class="shadow appearance-none border {borderStyle(
-				formErrors.amount,
-			)} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-			id="amount"
-			type="number"
-			placeholder="Amount"
-			on:input={e => validate('amount', e)}
-			on:blur={e => validate('amount', e)}
-			bind:value={values.amount}
-		/>
-	</div>
-	<div class="mb-4">
-		<label
-			class="block {textStyle(formErrors.reason)} text-sm font-bold mb-2"
-			for="reason"
-		>
-			{formErrors.reason || 'Reason (optional)'}
-		</label>
-		<textarea
-			class="shadow appearance-none border {borderStyle(
-				formErrors.reason,
-			)} rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-			id="reason"
-			type="text"
-			placeholder="Reason"
-			on:input={e => validate('reason', e)}
-			on:blur={e => validate('reason', e)}
-			bind:value={values.reason}
-		/>
-	</div>
+	<StudentSearch
+		bind:this={inputs.student}
+		bind:value={values.student}
+		bind:error={errors.student}
+		bind:valid={valid.student}
+		on:validate={e => validate('student', e.detail)}
+	/>
+	<Input
+		label="Amount"
+		bind:this={inputs.amount}
+		bind:value={values.amount}
+		bind:error={errors.amount}
+		bind:valid={valid.amount}
+		on:validate={e => validate('amount', e.detail)}
+	/>
+	<Input
+		label="Reason (Optional)"
+		type="textarea"
+		bind:this={inputs.reason}
+		bind:value={values.reason}
+		bind:error={errors.reason}
+		bind:valid={valid.reason}
+		on:validate={e => validate('reason', e.detail)}
+	/>
 	<div class="flex items-center justify-between">
 		<div
 			role="button"

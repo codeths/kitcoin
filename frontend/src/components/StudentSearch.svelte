@@ -1,6 +1,7 @@
 <script>
 	import {createEventDispatcher, onMount} from 'svelte';
 	import {searchUsers} from '../utils/api';
+	import Input from './Input.svelte';
 	const dispatch = createEventDispatcher();
 
 	let results = [];
@@ -9,13 +10,10 @@
 		resultEls = [],
 		focusindex = -1;
 
-	export let inputClass = '';
-
 	export let value = '';
-
-	$: {
-		if (value == null && input) input.value = '';
-	}
+	export let valid = false;
+	export let error = '';
+	export let query = '';
 
 	function key(e) {
 		// On arrow down
@@ -46,20 +44,15 @@
 
 	function setValue(e, user) {
 		e.preventDefault();
+		validate('blur', user.id, input.input, user.name);
 		value = user.id;
-		input.value = user.name;
-		input.blur();
+		query = user.name;
 		results = [];
-		dispatch('change', value);
-		dispatch('blur', value);
+		document.body.focus();
 	}
 
-	function blur(e) {
-		let target = e.relatedTarget;
-		if (!target || !parent.contains(target)) {
-			results = [];
-			dispatch('blur', value);
-		}
+	function validate(type, value, element, query) {
+		dispatch('validate', {type, value, element, query});
 	}
 
 	async function search(text, resetValue = false) {
@@ -80,11 +73,12 @@
 </script>
 
 <div class="group w-auto" bind:this={parent} on:keydown={key}>
-	<input
+	<Input
+		label="Student"
 		bind:this={input}
-		class="w-full rounded border {inputClass} w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-		type="text"
-		placeholder="Search for a student"
+		bind:value={query}
+		bind:error
+		bind:valid
 		on:input={e => {
 			search(e.target.value, true);
 		}}
@@ -92,11 +86,25 @@
 			focusindex = -1;
 			search(e.target.value);
 		}}
-		on:blur={blur}
+		on:validate={e => {
+			if (!e.detail.type == 'blur') {
+				validate(
+					e.detail.type,
+					value,
+					e.detail.element,
+					e.detail.value,
+				);
+			}
+		}}
+		on:blur={e => {
+			if (!e.relatedTarget || !parent.contains(e.relatedTarget)) {
+				validate('blur', value, e.target, query);
+			}
+		}}
 	/>
 	<div class="relative ">
 		<div
-			class="divide-y my-2 max-h-60 w-full overflow-scroll absolute bg-white rounded border-2 {results.length ==
+			class="divide-y max-h-60 w-full overflow-scroll absolute bg-white rounded border-2 {results.length ==
 			0
 				? 'invisible'
 				: ''}"
