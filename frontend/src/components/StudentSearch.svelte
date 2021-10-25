@@ -4,7 +4,7 @@
 	import Input from './Input.svelte';
 	const dispatch = createEventDispatcher();
 
-	let results = [];
+	let results = null;
 	let input,
 		parent,
 		resultEls = [],
@@ -51,7 +51,7 @@
 		validate('blur', user.id, input.input, user.name);
 		value = user.id;
 		query = user.name;
-		results = [];
+		results = null;
 		document.body.focus();
 	}
 
@@ -59,19 +59,22 @@
 		dispatch('validate', {type, value, element, query});
 	}
 
+	let loading = false;
 	async function search(text, resetValue = false) {
 		if (resetValue && value) {
 			value = '';
 			dispatch('change', value);
 		}
 		if (text.replace(/[ \n]/g, '') == '') {
-			results = [];
+			results = null;
 		} else {
 			try {
+				loading = true;
 				results = await searchUsers(text, 15, ['STUDENT']);
 			} catch (e) {
 				results = [];
 			}
+			loading = false;
 		}
 	}
 </script>
@@ -102,28 +105,34 @@
 		}}
 		on:blur={e => {
 			if (!e.relatedTarget || !parent.contains(e.relatedTarget)) {
-				results = [];
+				results = null;
 				validate('blur', value, e.target, query);
 			}
 		}}
 	/>
 	<div class="relative ">
 		<div
-			class="divide-y max-h-60 w-full overflow-scroll absolute bg-white rounded border-2 {results.length ==
-			0
-				? 'invisible'
-				: ''}"
+			class="divide-y max-h-60 w-full overflow-scroll absolute bg-white rounded border-2 {results ||
+			loading
+				? ''
+				: 'invisible'}"
 			tabindex="-1"
 		>
-			{#each results as result, index}
-				<button
-					class="p-2 w-full text-left focus:outline-none focus:bg-gray-100 hover:bg-gray-100"
-					on:click={e => setValue(e, result)}
-					tabindex="0"
-					bind:this={resultEls[index]}
-					>{result.name}
-				</button>
-			{/each}
+			{#if results && results[0]}
+				{#each results as result, index}
+					<button
+						class="p-2 w-full text-left focus:outline-none focus:bg-gray-100 hover:bg-gray-100"
+						on:click={e => setValue(e, result)}
+						tabindex="0"
+						bind:this={resultEls[index]}
+						>{result.name}
+					</button>
+				{/each}
+			{:else}
+				<span class="p-2 w-full text-left block"
+					>{loading ? 'Loading...' : 'No Results'}</span
+				>
+			{/if}
 		</div>
 	</div>
 </div>
