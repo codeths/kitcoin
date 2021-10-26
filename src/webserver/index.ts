@@ -7,6 +7,7 @@ import {mongo as mongoURL, sessionSecret, port} from '../config/keys.json';
 import {auth, api, docs} from './routes';
 import {IUserDoc, User} from '../helpers/schema';
 import path from 'path';
+import {request} from '../helpers/request';
 
 declare module 'express-session' {
 	interface SessionData {
@@ -58,8 +59,60 @@ app.use(['/login', '/logout', '/signin', '/signout'], (req, res) => {
 	res.redirect(`/auth${req.originalUrl}`);
 });
 
+function servePage(res: express.Response) {
+	res.sendFile(path.resolve(`${__dirname}/../../frontend/build/index.html`));
+}
+
+app.get(
+	'/student',
+	(...req) => request(...req, {}),
+	(req, res) => {
+		if (req.user && req.user.hasRole('STUDENT')) servePage(res);
+		else if (req.user) res.redirect('/');
+		else res.redirect('/login');
+	},
+);
+
+app.get(
+	'/staff',
+	(...req) => request(...req, {}),
+	(req, res) => {
+		if (req.user && req.user.hasRole('STAFF')) servePage(res);
+		else if (req.user) res.redirect('/');
+		else res.redirect('/login');
+	},
+);
+
+app.get(
+	'/admin',
+	(...req) => request(...req, {}),
+	(req, res) => {
+		if (req.user && req.user.hasRole('ADMIN')) servePage(res);
+		else if (req.user) res.redirect('/');
+		else res.redirect('/login');
+	},
+);
+
+app.get(
+	'/',
+	(...req) => request(...req, {}),
+	(req, res) => {
+		if (req.user) {
+			if (req.user.hasRole('STAFF')) res.redirect('/staff');
+			else if (req.user.hasRole('STUDENT')) res.redirect('/student');
+			else servePage(res);
+		} else {
+			res.redirect('/login');
+		}
+	},
+);
+
 app.use(express.static(`${__dirname}/../../frontend/build`));
 
-app.get('*', (req, res) =>
-	res.sendFile(path.resolve(`${__dirname}/../../frontend/build/index.html`)),
+app.get(
+	'*',
+	(...req) => request(...req, {}),
+	(req, res) => {
+		servePage(res);
+	},
 );
