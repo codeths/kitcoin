@@ -1,9 +1,28 @@
 <script>
 	import Header from '../../components/Header.svelte';
 	import CreateTransaction from '../../components/CreateTransaction.svelte';
-	import {getBalance, getTransactions} from '../../utils/api.js';
+	import Modal from '../../components/Modal.svelte';
+	import {
+		getBalance,
+		getTransactions,
+		getClasses,
+		getClassStudents,
+	} from '../../utils/api.js';
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
-	console.log('Hello Staff!!');
+
+	let selectedClass = '';
+	let classList = [];
+	let selectMsg = 'Loading classes...';
+
+	getClasses('teacher')
+		.then(classes => {
+			classList = classes.sort((a, b) => a.name.localeCompare(b.name));
+			selectMsg = 'Select a class';
+		})
+		.catch(err => {
+			selectMsg = err;
+		});
+	let modalStudent = null;
 </script>
 
 <!-- Head -->
@@ -11,57 +30,83 @@
 <Header />
 
 <!-- Content -->
-<div class="mx-14 my-8 lg:mx-24 lg:my-14">
-	<div
-		class="space-y-10 space-x-0 lg:grid lg:grid-cols-5 lg:space-x-10 lg:space-y-0"
-	>
-		<div class="lg:col-span-2 sm:max-w-sm lg:max-w-none">
-			<h1 class="text-3xl font-medium mb-2">Balance</h1>
-			<div
-				class="bg-white shadow-md rounded py-10 border-t-8 border-blue-900"
-			>
-				<h1
-					class="text-center text-6xl sm:text-7xl xl:text-8xl font-medium"
-				>
-					{#await getBalance()}
-						Loading...
-					{:then balance}
-						$ {balance.toLocaleString()}
-					{:catch error}
-						{error}
-					{/await}
-				</h1>
-			</div>
-		</div>
-		<div class="lg:col-span-3">
-			<h1 class="text-3xl font-medium mb-2">Overview</h1>
-			<div class="bg-white shadow-md rounded">
-				<div class="p-4">
-					<div class="p-2">
-						<p class="text-gray-700 mb-3">
-							To help Kitcoin retain its value, you can only give
-							your students a set amount each month. This changes
-							depending on a number of factors.
-						</p>
-						<p class="text-gray-700">
-							When you're finished, click "Reward Students" to
-							award it to your students instantly. If you want to
-							create a new task for your students, click "Create
-							New Task".
-						</p>
-					</div>
-					<div>
-						<button>Select your amount</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div
-		class="space-y-10 mt-10 space-x-0 lg:grid lg:grid-cols-5 lg:space-x-10 lg:space-y-0"
-	>
-		<div class="lg:col-span-3">
+<div class="grid gap-4 grid-cols-4 mx-14 my-8 lg:mx-24 lg:my-14">
+	<div class="col-span-4 md:col-span-2">
+		<h1 class="text-3xl font-medium mb-2">Send KitCoin</h1>
+		<div class="bg-white shadow-md rounded px-8 py-8">
 			<CreateTransaction />
 		</div>
 	</div>
+	<div class="col-span-4 md:col-span-2">
+		<h1 class="text-3xl font-medium mb-2">Available KitCoin</h1>
+		<div
+			class="bg-white shadow-md rounded py-10 border-t-8 border-blue-900"
+		>
+			<h1
+				class="text-center text-6xl sm:text-7xl xl:text-8xl font-medium"
+			>
+				{#await getBalance()}
+					Loading...
+				{:then balance}
+					$ {balance.toLocaleString()}
+				{:catch error}
+					{error}
+				{/await}
+			</h1>
+		</div>
+	</div>
+	<div class="col-span-4">
+		<div class="bg-white shadow-md rounded px-8 py-8">
+			<select
+				bind:value={selectedClass}
+				class="border shadow rounded w-full py-2 px-3 mb-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+			>
+				<option disabled value="" selected>
+					{selectMsg}
+				</option>
+				{#each classList as classroom}
+					<option value={classroom.id}>
+						{classroom.name}
+					</option>
+				{/each}
+			</select>
+			{#if selectedClass}
+				{#await getClassStudents(selectedClass)}
+					<span
+						class="text-center text-1xl sm:text-3xl xl:text-4xl font-medium inline-block w-full"
+					>
+						Loading students...
+					</span>
+				{:then students}
+					<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+						{#each students.sort( (a, b) => a.name.localeCompare(b.name), ) as student}
+							<button
+								class="shadow border rounded hover:shadow-md hover:bg-gray-100 transition-all transition-colors duration-300 py-2 px-4 mx-4 my-2 rounded flex items-center justify-center text-center"
+								on:click={(modalStudent = student)}
+								>{student.name}</button
+							>
+						{/each}
+					</div>
+				{:catch error}
+					<span
+						class="text-center text-1xl sm:text-3xl xl:text-4xl font-medium inline-block w-full"
+					>
+						{error}
+					</span>
+				{/await}
+			{/if}
+		</div>
+	</div>
 </div>
+
+{#if modalStudent}
+	<Modal
+		title="Send KitCoin"
+		on:close={() => (modalStudent = null)}
+		on:confirm={() => {
+			modalStudent = null;
+		}}
+	>
+		<CreateTransaction student={modalStudent} />
+	</Modal>
+{/if}

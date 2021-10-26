@@ -46,4 +46,34 @@ async function searchUsers(search, count, roles) {
 	}
 }
 
-export {getBalance, getTransactions, searchUsers};
+async function getClasses(role = 'any') {
+	const res = await fetch(`/api/classes?role=${role.toLowerCase()}`).catch(
+		e => null,
+	);
+	if (res && res.ok) {
+		try {
+			const json = await res.json();
+			return json;
+		} catch (e) {
+			throw 'An error occured.';
+		}
+	} else {
+		throw res && res.status == 401 ? 'Not logged in' : 'An error occured.';
+	}
+}
+
+async function getClassStudents(id) {
+	const res = await fetch(`/api/students/${id}`).catch(e => null);
+	if (res && res.ok) {
+		try {
+			const json = await res.json();
+			return json;
+		} catch (e) {
+			throw 'An error occured.';
+		}
+	} else {
+		throw res && res.status == 401 ? 'Not logged in' : 'An error occured.';
+	}
+}
+
+export {getBalance, getTransactions, searchUsers, getClasses, getClassStudents};

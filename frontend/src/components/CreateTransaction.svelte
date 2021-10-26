@@ -122,7 +122,7 @@
 	}
 </script>
 
-<form class="bg-white shadow-md rounded px-8 py-8" on:submit={send}>
+<form on:submit={send}>
 	<StudentSearch
 		bind:this={inputs.student}
 		bind:value={values.student}
