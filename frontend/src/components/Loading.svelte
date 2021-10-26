@@ -21,6 +21,7 @@
 		animation: load7 1.8s infinite ease-in-out;
 		top: calc(var(--height) * -1);
 	}
+
 	.loader {
 		color: #ffffff;
 		font-size: calc(var(--height) * 0.25);

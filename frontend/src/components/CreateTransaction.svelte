@@ -56,7 +56,12 @@
 		},
 	};
 
+	let submitStatus = null;
+	let loadTimeout;
+
 	function validate(which, event) {
+		clearTimeout(loadTimeout);
+		submitStatus = null;
 		let res = formValidators[which](event);
 
 		values[which] = event.value;
@@ -64,7 +69,6 @@
 		valid[which] = res == null;
 	}
 
-	let submitStatus = null;
 	async function send(e) {
 		e.preventDefault();
 		if (hasError) return false;
@@ -85,7 +89,8 @@
 		let end = new Date();
 		let wait = 1500 - (end.getTime() - start.getTime());
 
-		setTimeout(
+		clearTimeout(loadTimeout);
+		loadTimeout = setTimeout(
 			() => {
 				submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
 				if (res.ok) {
@@ -108,11 +113,12 @@
 		return false;
 	}
 
-	function btnColor(submitStatus) {
-		if (submitStatus == 'LOADING') return 'bg-gray-500';
+	function btnColor(submitStatus, hasError) {
+		if (submitStatus == 'LOADING') return 'bg-gray-500 cursor-not-allowed';
 		if (submitStatus == 'SUCCESS') return 'bg-green-500';
 		if (submitStatus == 'ERROR') return 'bg-red-500';
-		return 'bg-blue-500';
+		if (hasError) return 'bg-gray-400 cursor-not-allowed';
+		return 'bg-blue-500 hover:bg-blue-700';
 	}
 </script>
 
@@ -142,15 +148,13 @@
 		on:validate={e => validate('reason', e.detail)}
 	/>
 	<div class="flex items-center justify-between">
-		<div
-			role="button"
-			tabindex="0"
+		<button
 			on:click={send}
-			class="{hasError
-				? 'cursor-not-allowed bg-gray-400 pointer-events-none'
-				: `cursor-pointer ${btnColor(
-						submitStatus,
-				  )}`} transition-colors duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-32 h-10 flex items-center justify-center text-center"
+			disabled={hasError || submitStatus == 'LOADING'}
+			class="{btnColor(
+				submitStatus,
+				hasError,
+			)} transition-colors duration-300 text-white font-bold py-2 px-4 rounded w-32 h-10 flex items-center justify-center text-center"
 		>
 			{#if submitStatus == 'LOADING'}
 				<Loading height="2rem" />
@@ -161,6 +165,6 @@
 			{:else}
 				Send
 			{/if}
-		</div>
+		</button>
 	</div>
 </form>

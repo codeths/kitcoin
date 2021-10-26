@@ -46,6 +46,13 @@
 		}
 	}
 
+	function blur(e) {
+		if (!e.relatedTarget || !parent.contains(e.relatedTarget)) {
+			results = null;
+			validate('blur', value, e.target, query);
+		}
+	}
+
 	function setValue(e, user) {
 		e.preventDefault();
 		validate('blur', user.id, input.input, user.name);
@@ -103,14 +110,9 @@
 				);
 			}
 		}}
-		on:blur={e => {
-			if (!e.relatedTarget || !parent.contains(e.relatedTarget)) {
-				results = null;
-				validate('blur', value, e.target, query);
-			}
-		}}
+		on:blur={blur}
 	/>
-	<div class="relative ">
+	<div class="relative">
 		<div
 			class="divide-y max-h-60 w-full overflow-scroll absolute bg-white rounded border-2 {results ||
 			loading
@@ -123,6 +125,7 @@
 					<button
 						class="p-2 w-full text-left focus:outline-none focus:bg-gray-100 hover:bg-gray-100"
 						on:click={e => setValue(e, result)}
+						on:blur={blur}
 						tabindex="0"
 						bind:this={resultEls[index]}
 						>{result.name}
