@@ -1,5 +1,5 @@
 import express from 'express';
-import {User} from '../../../helpers/schema';
+import {IUserDoc, User} from '../../../helpers/schema';
 import {request} from '../../../helpers/request';
 import Google, {google} from 'googleapis';
 import {getAccessToken} from '../../../helpers/oauth';
@@ -76,21 +76,39 @@ router.get(
 
 		const data = students.data.students
 			.map(s => ({
-				id: s.userId,
+				googleID: s.userId,
 				name: s.profile?.name?.fullName,
 			}))
-			.filter(x => x.id && true) as {
-			id: string;
+			.filter(x => x.googleID && true) as {
+			googleID: string;
 			name: string | null;
+			id: string | null;
 		}[];
 
-		data.forEach(async student => {
-			const user = await User.findOne().byId(student.id);
-			if (!user)
-				new User({googleID: student.id, name: student.name})
-					.save()
-					.catch(e => null);
-		});
+		const dataWithIDs = (
+			await Promise.all(
+				data.map(async student => {
+					let user: IUserDoc | null = await User.findOne().byId(
+						student.googleID,
+					);
+					if (!user)
+						user = await new User({
+							googleID: student.googleID,
+							name: student.name,
+						})
+							.save()
+							.catch(e => null);
+					if (!user) return null;
+					student.id = user.id;
+					return student;
+				}),
+			)
+		).filter(x => x && true) as {
+			googleID: string;
+			name: string | null;
+			id: string | null;
+		}[];
+
 		res.status(200).send(data);
 	},
 );
