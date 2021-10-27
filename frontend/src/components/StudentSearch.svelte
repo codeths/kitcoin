@@ -1,5 +1,5 @@
 <script>
-	import {createEventDispatcher, onMount} from 'svelte';
+	import {createEventDispatcher} from 'svelte';
 	import {searchUsers} from '../utils/api';
 	import Input from './Input.svelte';
 	const dispatch = createEventDispatcher();
@@ -14,6 +14,7 @@
 	export let valid = false;
 	export let error = '';
 	export let query = '';
+	export let disabled = false;
 
 	$: {
 		if (!value) query = '';
@@ -89,6 +90,7 @@
 <div class="group w-auto" bind:this={parent} on:keydown={key}>
 	<Input
 		label="Student"
+		{disabled}
 		bind:this={input}
 		bind:value={query}
 		bind:error

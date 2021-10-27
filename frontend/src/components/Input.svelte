@@ -12,9 +12,11 @@
 	export let error = '';
 	export let type = 'input';
 	export let input = null;
+	export let disabled = false;
+	export let focus = false;
 
 	let className =
-		'border shadow rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline';
+		'border shadow rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline disabled:bg-gray-200 disabled:cursor-not-allowed';
 	$: {
 		if (error) {
 			borderStyle = 'border-red-500';
@@ -46,6 +48,7 @@
 		if (input && type !== 'textarea') {
 			input.type = type;
 		}
+		if (focus) input.focus();
 	});
 </script>
 
@@ -56,6 +59,7 @@
 	{#if type == 'textarea'}
 		<textarea
 			class="{className} {borderStyle}"
+			{disabled}
 			placeholder={label}
 			on:input={handle}
 			on:focus={handle}
@@ -69,6 +73,7 @@
 	{:else}
 		<input
 			class="{className} {borderStyle}"
+			{disabled}
 			placeholder={label}
 			on:input={handle}
 			on:focus={handle}

@@ -2,6 +2,9 @@
 	import Header from '../../components/Header.svelte';
 	import CreateTransaction from '../../components/CreateTransaction.svelte';
 	import Modal from '../../components/Modal.svelte';
+	import ToastContainer from '../../components/ToastContainer.svelte';
+	let toastContainer;
+
 	import {
 		getBalance,
 		getTransactions,
@@ -22,7 +25,8 @@
 		.catch(err => {
 			selectMsg = err;
 		});
-	let modalStudent = null;
+	let modalStudent = null,
+		modal = null;
 </script>
 
 <!-- Head -->
@@ -82,7 +86,7 @@
 						{#each students.sort( (a, b) => a.name.localeCompare(b.name), ) as student}
 							<button
 								class="shadow border rounded hover:shadow-md hover:bg-gray-100 transition-all transition-colors duration-300 py-2 px-4 mx-4 my-2 rounded flex items-center justify-center text-center"
-								on:click={(modalStudent = student)}
+								on:click={() => (modalStudent = student)}
 								>{student.name}</button
 							>
 						{/each}
@@ -102,11 +106,32 @@
 {#if modalStudent}
 	<Modal
 		title="Send KitCoin"
-		on:close={() => (modalStudent = null)}
+		on:close={e => {
+			modalStudent = null;
+		}}
 		on:confirm={() => {
 			modalStudent = null;
 		}}
+		bind:this={modal}
 	>
-		<CreateTransaction student={modalStudent} />
+		<CreateTransaction
+			modal="true"
+			student={modalStudent}
+			class="w-full"
+			on:close={e => {
+				modal.close();
+				if (e && e.detail == true)
+					setTimeout(
+						() =>
+							toastContainer.toast(
+								'Transaction sent!',
+								'success',
+							),
+						300,
+					);
+			}}
+		/>
 	</Modal>
 {/if}
+
+<ToastContainer bind:this={toastContainer} />

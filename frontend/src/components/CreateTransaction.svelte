@@ -1,7 +1,12 @@
 <script>
+	import {createEventDispatcher, onMount} from 'svelte';
+	const dispatch = createEventDispatcher();
+
 	import StudentSearch from './StudentSearch.svelte';
 	import Loading from './Loading.svelte';
 	import Input from './Input.svelte';
+
+	export let modal = false;
 
 	let values = {
 		student: null,
@@ -67,6 +72,9 @@
 		values[which] = event.value;
 		errors[which] = res;
 		valid[which] = res == null;
+
+		console.log(which);
+		console.log(valid);
 	}
 
 	async function send(e) {
@@ -103,9 +111,13 @@
 						});
 					});
 				}
-				setTimeout(() => {
-					submitStatus = null;
-				}, 3000);
+				if (modal && res && res.ok) {
+					dispatch('close', res && res.ok);
+				} else {
+					setTimeout(() => {
+						submitStatus = null;
+					}, 3000);
+				}
 			},
 			wait > 0 ? wait : 0,
 		);
@@ -115,15 +127,26 @@
 
 	function btnColor(submitStatus, hasError) {
 		if (submitStatus == 'LOADING') return 'bg-gray-500 cursor-not-allowed';
-		if (submitStatus == 'SUCCESS') return 'bg-green-500';
+		if (submitStatus == 'SUCCESS' && !modal) return 'bg-green-500';
 		if (submitStatus == 'ERROR') return 'bg-red-500';
 		if (hasError) return 'bg-gray-400 cursor-not-allowed';
 		return 'bg-blue-500 hover:bg-blue-700';
+	}
+
+	export let student;
+	let query;
+
+	if (student) {
+		values.student = student.id;
+		query = student.name;
+		valid.student = true;
 	}
 </script>
 
 <form on:submit={send}>
 	<StudentSearch
+		disabled={student ? true : false}
+		{query}
 		bind:this={inputs.student}
 		bind:value={values.student}
 		bind:error={errors.student}
@@ -132,6 +155,7 @@
 	/>
 	<Input
 		label="Amount"
+		focus={modal}
 		bind:this={inputs.amount}
 		bind:value={values.amount}
 		bind:error={errors.amount}
@@ -147,7 +171,11 @@
 		bind:valid={valid.reason}
 		on:validate={e => validate('reason', e.detail)}
 	/>
-	<div class="flex items-center justify-between">
+	<div
+		class="flex items-center space-x-2 {modal
+			? 'justify-end'
+			: 'justify-start'}"
+	>
 		<button
 			on:click={send}
 			disabled={hasError || submitStatus == 'LOADING'}
@@ -166,5 +194,13 @@
 				Send
 			{/if}
 		</button>
+		{#if modal}
+			<button
+				on:click={() => dispatch('close')}
+				class="border transition-colors duration-300 font-bold py-2 px-4 rounded w-32 h-10 flex items-center justify-center text-center"
+			>
+				Close
+			</button>
+		{/if}
 	</div>
 </form>
