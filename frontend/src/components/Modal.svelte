@@ -15,6 +15,12 @@
 		}, 300);
 	}
 
+	document.addEventListener('keydown', e => {
+		if (e.key == 'Escape') {
+			close();
+		}
+	});
+
 	setTimeout(() => (hide = false), 0);
 </script>
 
