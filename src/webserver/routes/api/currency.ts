@@ -49,13 +49,16 @@ router.get(
 			let {
 				count,
 				page,
+				search,
 			}: {
 				count?: number | string;
 				page?: number | string;
+				search?: string;
 			} = req.query;
 			if (typeof count == 'string') count = parseInt(count);
 			if (typeof page == 'string') page = parseInt(page);
 			if (
+				(search !== undefined && typeof search !== 'string') ||
 				typeof user !== 'string' ||
 				(count !== undefined &&
 					(typeof count !== 'number' || isNaN(count))) ||
@@ -71,6 +74,7 @@ router.get(
 				user,
 				count,
 				page,
+				search,
 			);
 
 			res.status(200).send(

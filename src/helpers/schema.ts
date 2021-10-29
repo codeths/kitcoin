@@ -134,11 +134,16 @@ transactionSchema.query.byUser = function (
 	id: string,
 	count?: number,
 	page?: number,
+	search?: string,
 ): ITransactionQueries {
 	count ??= 10;
 	page ??= 1;
 
-	return this.find({$or: [{'from.id': id}, {'to.id': id}]})
+	let searchOptions = search
+		? {$or: [{reason: {$regex: search, $options: 'i'}}]}
+		: {};
+
+	return this.find({$or: [{'from.id': id}, {'to.id': id}], ...searchOptions})
 		.sort({
 			date: -1,
 		})
