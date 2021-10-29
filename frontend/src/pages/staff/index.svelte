@@ -3,7 +3,6 @@
 	import CreateTransaction from '../../components/CreateTransaction.svelte';
 	import Modal from '../../components/Modal.svelte';
 	import ToastContainer from '../../components/ToastContainer.svelte';
-	import Icon from '../../components/Icon.svelte';
 	let toastContainer;
 
 	import {
@@ -56,7 +55,7 @@
 						Loading...
 					{:then balance}
 						<span
-							class="icon icon-logo mr-3"
+							class="icon icon-currency mr-3"
 						/>{balance.toLocaleString()}
 					{:catch error}
 						{error}

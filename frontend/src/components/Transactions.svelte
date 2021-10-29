@@ -2,8 +2,6 @@
 	/*
 	  Transaction object
 	*/
-	import Icon from './Icon.svelte';
-
 	export let items = []; // An array of items.
 
 	let filteredItems = items;
@@ -132,7 +130,7 @@
 						</td>
 						<td
 							>{item.amount < 0 ? '-' : ''}<span
-								class="icon icon-logo mr-1"
+								class="icon icon-currency mr-1"
 							/>{Math.abs(item.amount).toLocaleString()}</td
 						>
 						<td>{item.reason || 'None'}</td>

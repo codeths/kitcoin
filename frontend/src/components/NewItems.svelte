@@ -57,8 +57,10 @@
 						/>
 						<div>
 							<h2 class="text-lg text-gray-600">{item.name}</h2>
-							<h1 class="text-2xl font-bold">
-								${item.price.toLocaleString()}
+							<h1 class="text-2xl font-bold flex items-center">
+								<span
+									class="icon icon-currency mr-1"
+								/>{item.price.toLocaleString()}
 							</h1>
 						</div>
 					</div>

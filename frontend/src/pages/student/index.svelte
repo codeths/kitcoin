@@ -4,7 +4,6 @@
 	import Header from '../../components/Header.svelte';
 	import {getBalance, getTransactions} from '../../utils/api.js';
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
-	import Icon from '../../components/Icon.svelte';
 
 	const newItems = [
 		{img: 'shop_images/beans.png', price: 15, name: 'Beans'},
@@ -44,7 +43,7 @@
 						Loading...
 					{:then balance}
 						<span
-							class="icon icon-logo mr-3"
+							class="icon icon-currency mr-3"
 						/>{balance.toLocaleString()}
 					{:catch error}
 						{error}
