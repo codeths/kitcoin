@@ -4,6 +4,7 @@
 	import Header from '../../components/Header.svelte';
 	import {getBalance, getTransactions} from '../../utils/api.js';
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
+	import Icon from '../../components/Icon.svelte';
 
 	const newItems = [
 		{img: 'shop_images/beans.png', price: 15, name: 'Beans'},
@@ -37,12 +38,15 @@
 				class="bg-white shadow-md rounded py-10 border-t-8 border-blue-900"
 			>
 				<h1
-					class="text-center text-6xl sm:text-7xl xl:text-8xl font-medium"
+					class="text-center text-6xl sm:text-7xl xl:text-8xl block align-baseline"
 				>
 					{#await getBalance()}
 						Loading...
 					{:then balance}
-						$ {balance.toLocaleString()}
+						<Icon
+							icon="kitcoin"
+							class="mr-3"
+						/>{balance.toLocaleString()}
 					{:catch error}
 						{error}
 					{/await}

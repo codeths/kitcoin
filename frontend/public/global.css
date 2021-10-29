@@ -7,3 +7,19 @@
 	padding-top: 0.5rem;
 	padding-bottom: 0.5rem;
 }
+
+:root {
+	--cap-height: 0.715;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans');
+
+body {
+	font-family: 'Open Sans', sans-serif;
+}
+
+.baseline::after {
+	content: '';
+	height: 100%;
+	display: inline-block;
+}

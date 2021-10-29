@@ -3,6 +3,7 @@
 	import CreateTransaction from '../../components/CreateTransaction.svelte';
 	import Modal from '../../components/Modal.svelte';
 	import ToastContainer from '../../components/ToastContainer.svelte';
+	import Icon from '../../components/Icon.svelte';
 	let toastContainer;
 
 	import {
@@ -52,7 +53,10 @@
 				{#await getBalance()}
 					Loading...
 				{:then balance}
-					$ {balance.toLocaleString()}
+					<Icon
+						icon="kitcoin"
+						class="mr-3"
+					/>{balance.toLocaleString()}
 				{:catch error}
 					{error}
 				{/await}
