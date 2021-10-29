@@ -1,5 +1,7 @@
 <header>
-	<nav class="bg-blue-900 p-3 flex justify-between items-center shadow-xl">
+	<nav
+		class="bg-blue-eths text-white p-3 flex justify-between items-center shadow-xl"
+	>
 		<div>
 			<a href="/">
 				<h2
