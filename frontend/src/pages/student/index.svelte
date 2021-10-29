@@ -35,17 +35,16 @@
 		<div class="lg:col-span-2 sm:max-w-sm lg:max-w-none">
 			<h1 class="text-3xl font-medium mb-2">Balance</h1>
 			<div
-				class="bg-white shadow-md rounded py-10 border-t-8 border-blue-900"
+				class="flex bg-white shadow-md rounded py-10 border-t-8 border-blue-900"
 			>
 				<h1
-					class="text-center text-6xl sm:text-7xl xl:text-8xl block align-baseline"
+					class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full"
 				>
 					{#await getBalance()}
 						Loading...
 					{:then balance}
-						<Icon
-							icon="kitcoin"
-							class="mr-3"
+						<span
+							class="icon icon-logo mr-3"
 						/>{balance.toLocaleString()}
 					{:catch error}
 						{error}

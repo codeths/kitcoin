@@ -131,9 +131,8 @@
 									'Unknown'}{/if}
 						</td>
 						<td
-							>{item.amount < 0 ? '-' : ''}<Icon
-								icon="kitcoin"
-								class="mr-1"
+							>{item.amount < 0 ? '-' : ''}<span
+								class="icon icon-logo mr-1"
 							/>{Math.abs(item.amount).toLocaleString()}</td
 						>
 						<td>{item.reason || 'None'}</td>

@@ -44,23 +44,25 @@
 	</div>
 	<div class="col-span-4 md:col-span-2">
 		<h1 class="text-3xl font-medium mb-2">Available KitCoin</h1>
-		<div
-			class="bg-white shadow-md rounded py-10 border-t-8 border-blue-900"
-		>
-			<h1
-				class="text-center text-6xl sm:text-7xl xl:text-8xl font-medium"
+		<div class="lg:col-span-2 sm:max-w-sm lg:max-w-none">
+			<h1 class="text-3xl font-medium mb-2">Balance</h1>
+			<div
+				class="flex bg-white shadow-md rounded py-10 border-t-8 border-blue-900"
 			>
-				{#await getBalance()}
-					Loading...
-				{:then balance}
-					<Icon
-						icon="kitcoin"
-						class="mr-3"
-					/>{balance.toLocaleString()}
-				{:catch error}
-					{error}
-				{/await}
-			</h1>
+				<h1
+					class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full"
+				>
+					{#await getBalance()}
+						Loading...
+					{:then balance}
+						<span
+							class="icon icon-logo mr-3"
+						/>{balance.toLocaleString()}
+					{:catch error}
+						{error}
+					{/await}
+				</h1>
+			</div>
 		</div>
 	</div>
 	<div class="col-span-4">

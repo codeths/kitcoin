@@ -2,9 +2,10 @@
 	export let icon = '';
 </script>
 
-<img
-	src="assets/icons/{icon}.svg"
-	alt="{icon} icon"
+<svg
 	class="inline-block align-baseline {$$props.class || ''}"
 	style="height: calc(1em * var(--cap-height));"
-/>
+	alt="{icon} icon"
+>
+	<use href="assets/icons/{icon}.svg#icon" />
+</svg>
