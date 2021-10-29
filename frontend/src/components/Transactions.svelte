@@ -86,54 +86,48 @@
 	/>
 </div>
 
-<div class="p-4 bg-white rounded shadow-md flex">
+<div
+	class="w-full p-4 bg-white rounded shadow-md flex flex-col divide-y divide-gray-300"
+>
 	{#if filteredItems.length != 0}
-		<table class="w-full table-auto transactions">
-			<thead>
-				<tr class="text-left">
-					<th class="px-2" />
-					<th>Date</th>
-					<th>From</th>
-					<th>To</th>
-					<th>Amount</th>
-					<th>Reason</th>
+		<table class="w-full table-auto">
+			<thead class="hidden md:table-header-group w-full">
+				<tr class="text-left border-b border-gray-300">
+					<th class="px-2 pb-2">Date</th>
+					<th class="px-2 pb-2">Description</th>
+					<th class="px-2 pb-2">Amount</th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody class="w-full divide-y divide-gray-300">
 				{#each filteredItems as item}
-					<tr class="border-t-2 border-gray-300">
-						<td class="px-2 text-center">
-							{#if item.to.me}
-								<img
-									src="assets/recieve.svg"
-									alt="&rarr;"
-									class="w-8 h-8 m-auto"
-								/>
-							{:else if item.from.me}
-								<img
-									src="assets/send.svg"
-									alt="&larr;"
-									class="w-8 h-8 m-auto"
-								/>
-							{/if}
-						</td>
-						<td>
-							{new Date(item.date).toLocaleString()}
-						</td>
-						<td>
-							{#if item.from.me}Me{:else}{item.from.text ||
-									'Unknown'}{/if}
-						</td>
-						<td>
-							{#if item.to.me}Me{:else}{item.to.text ||
-									'Unknown'}{/if}
+					<tr>
+						<td
+							class="px-2 pt-4 md:py-4 block mr-8 md:table-cell md:mr-0 overflow-ellipsis"
+						>
+							{new Date(item.date).toLocaleDateString()}
+							{new Date(item.date).toLocaleTimeString([], {
+								hour: 'numeric',
+								minute: '2-digit',
+							})}
 						</td>
 						<td
-							>{item.amount < 0 ? '-' : ''}<span
-								class="icon icon-currency mr-1"
+							class="px-2 md:py-4 block md:table-cell break-words overflow-ellipsis"
+						>
+							{item.to.me
+								? `From ${item.from.text || 'Unknown'}`
+								: `To ${item.to.text || 'Unknown'}`}{item.reason
+								? `: ${item.reason}`
+								: ''}
+						</td>
+						<td
+							class="px-2 pb-4 md:py-4 block md:table-cell text-right text-3xl md:text-left md:text-base {item.amount <
+							0
+								? 'text-orange-eths'
+								: 'text-blue-eths'}"
+							>{item.amount < 0 ? '-' : '+'}<span
+								class="icon icon-currency mx-1"
 							/>{Math.abs(item.amount).toLocaleString()}</td
 						>
-						<td>{item.reason || 'None'}</td>
 					</tr>
 				{/each}
 			</tbody>
