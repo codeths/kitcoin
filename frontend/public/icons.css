@@ -19,6 +19,10 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
-.icon-logo:before {
+.icon-currency:before {
 	content: '\e900';
+}
+
+.icon-logo:before {
+	content: '\e901';
 }
