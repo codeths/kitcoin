@@ -60,13 +60,7 @@
 		<div class="lg:col-span-12">
 			<h1 class="text-4xl font-medium mb-6">Transaction History</h1>
 			<div>
-				{#await getTransactions()}
-					Loading...
-				{:then transactions}
-					<Transactions items={transactions} />
-				{:catch error}
-					{error}
-				{/await}
+				<Transactions />
 			</div>
 		</div>
 	</div>

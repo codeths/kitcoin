@@ -1,5 +1,5 @@
-async function getBalance() {
-	const res = await fetch('/api/balance/me').catch(e => null);
+async function getBalance(user = 'me') {
+	const res = await fetch(`/api/balance/${user}`).catch(e => null);
 	if (res && res.ok) {
 		try {
 			const json = await res.json();
@@ -12,8 +12,10 @@ async function getBalance() {
 	}
 }
 
-async function getTransactions() {
-	const res = await fetch('/api/transactions/me').catch(e => null);
+async function getTransactions(user = 'me', page = 1) {
+	const res = await fetch(`/api/transactions/${user}?page=${page}`).catch(
+		e => null,
+	);
 	if (res && res.ok) {
 		try {
 			const json = await res.json();
