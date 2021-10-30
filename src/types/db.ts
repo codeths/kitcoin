@@ -3,10 +3,15 @@ import {
 	Document,
 	Model,
 	ObjectId,
-	Query,
+	Query as DefaultQuery,
 	SaveOptions,
 } from 'mongoose';
 import {MongooseFuzzyModel} from 'mongoose-fuzzy-searching';
+
+export interface Query<ResultType, DocType, THelpers = {}, RawDocType = DocType>
+	extends DefaultQuery<ResultType, DocType, THelpers, RawDocType> {
+	clone(): this;
+}
 
 export interface IUser {
 	/**
