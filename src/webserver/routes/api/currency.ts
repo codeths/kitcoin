@@ -70,18 +70,31 @@ router.get(
 			const dbUser = user == 'me' ? req.user : await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
 
-			const transactions = await Transaction.find().byUser(
-				user,
-				count,
-				page,
-				search,
-			);
+			const query = Transaction.find().byUser(user, count, page, search);
 
-			res.status(200).send(
-				await Promise.all(
+			const [transactions, docCount] = await Promise.all([
+				query.exec(),
+				query
+					.clone()
+					.setOptions({
+						skip: 0,
+						limit: undefined,
+					})
+					.countDocuments()
+					.exec(),
+			]);
+
+			res.status(200).send({
+				page,
+				pageCount: Math.ceil(
+					docCount /
+						(query.getOptions().limit ?? transactions.length),
+				),
+				docCount,
+				transactions: await Promise.all(
 					transactions.map(t => t.toAPIResponse(dbUser.id)),
 				),
-			);
+			});
 		} catch (e) {
 			res.status(500).send('An error occured.');
 		}
