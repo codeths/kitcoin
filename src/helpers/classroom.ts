@@ -37,6 +37,12 @@ class ClassroomClient {
 		options: Google.classroom_v1.Params$Resource$Courses$List | null = {},
 	) {
 		if (!this.client) return null;
+
+		options = {
+			courseStates: ['ACTIVE'],
+			...options,
+		};
+
 		try {
 			const classes = await google
 				.classroom({version: 'v1', auth: this.client})
