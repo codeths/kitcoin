@@ -63,15 +63,15 @@ userSchema.index({email: 1});
 userSchema.index({googleID: 1}, {unique: true});
 
 userSchema.query.byEmail = function (email: string): IUserQueries {
-	return this.findOne({email});
+	return this.where({email});
 };
 
 userSchema.query.byId = function (googleID: string): IUserQueries {
-	return this.findOne({googleID});
+	return this.where({googleID});
 };
 
 userSchema.query.byToken = function (token: string): IUserQueries {
-	return this.findOne({'tokens.session': token});
+	return this.where({'tokens.session': token});
 };
 
 userSchema.methods.setRoles = function (roles: UserRoleTypes[]): void {
@@ -143,7 +143,7 @@ transactionSchema.query.byUser = function (
 		? {$or: [{reason: {$regex: search, $options: 'i'}}]}
 		: {};
 
-	return this.find({$or: [{'from.id': id}, {'to.id': id}], ...searchOptions})
+	return this.where({$or: [{'from.id': id}, {'to.id': id}], ...searchOptions})
 		.sort({
 			date: -1,
 		})
@@ -199,11 +199,11 @@ const storeSchema = new mongoose.Schema<IStoreDoc, IStoreModel>({
 });
 
 storeSchema.query.byClassCode = function (classCode: string): IStoreQueries {
-	return this.findOne({classID: classCode});
+	return this.where({classID: classCode});
 };
 
 storeSchema.methods.getItems = async function (): Promise<IStoreItemDoc[]> {
-	return await StoreItem.find({storeID: this.id});
+	return await StoreItem.where({storeID: this.id});
 };
 
 storeSchema.index({classID: 1});
@@ -216,7 +216,7 @@ const storeItemSchema = new mongoose.Schema<IStoreItemDoc, IStoreItemModel>({
 });
 
 storeItemSchema.query.byStore = function (storeID: string): IStoreItemQueries {
-	return this.find({storeID});
+	return this.where({storeID});
 };
 
 storeItemSchema.methods.getStore =
