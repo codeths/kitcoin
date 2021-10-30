@@ -13,13 +13,11 @@ router.get(
 	async (...req) =>
 		request(...req, {
 			authentication: true,
-			roles: ['STAFF'],
 		}),
 	async (req, res) => {
 		if (!req.user) return;
 		const role = req.query?.role ?? 'ANY';
-		let teaching =
-			typeof req.query?.role == 'string' && req.query?.role.toUpperCase();
+		let teaching = typeof role == 'string' && role.toUpperCase();
 		if (!teaching || !isValidClassroomRole(teaching))
 			return res.status(400).send('Bad Request');
 
