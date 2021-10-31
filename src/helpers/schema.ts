@@ -132,9 +132,9 @@ const transactionSchema = new mongoose.Schema<
 
 transactionSchema.query.byUser = function (
 	id: string,
-	count?: number,
-	page?: number,
-	search?: string,
+	count?: number | null,
+	page?: number | null,
+	search?: string | null,
 ): ITransactionQueries {
 	count ??= 10;
 	page ??= 1;
