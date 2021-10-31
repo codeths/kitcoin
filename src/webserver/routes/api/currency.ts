@@ -1,6 +1,12 @@
 import express from 'express';
 import {Transaction, User} from '../../../helpers/schema';
-import {request, validate, validators} from '../../../helpers/request';
+import {
+	numberFromData,
+	request,
+	stringFromData,
+	validate,
+	validators,
+} from '../../../helpers/request';
 const router = express.Router();
 
 // Get user balance
@@ -11,8 +17,8 @@ router.get(
 			authentication: true,
 			roles: req.params?.user == 'me' ? undefined : ['STAFF', 'ADMIN'],
 		}),
-	(...req) =>
-		validate(...req, {
+	(req, res, next) =>
+		validate(req, res, next, {
 			params: {
 				user: validators.string,
 			},
@@ -46,8 +52,8 @@ router.get(
 			authentication: true,
 			roles: req.params?.user == 'me' ? undefined : ['STAFF', 'ADMIN'],
 		}),
-	(...req) =>
-		validate(...req, {
+	(req, res, next) =>
+		validate(req, res, next, {
 			params: {
 				user: validators.string,
 			},
@@ -68,17 +74,9 @@ router.get(
 			let {user} = req.params;
 			if (user == 'me') user = req.user.id;
 
-			let {
-				count,
-				page,
-				search,
-			}: {
-				count?: number | string;
-				page?: number | string;
-				search?: string;
-			} = req.query;
-			if (typeof count == 'string') count = parseInt(count);
-			if (typeof page == 'string') page = parseInt(page);
+			let count = numberFromData(req.query.count);
+			let page = numberFromData(req.query.page);
+			let search = stringFromData(req.query.search);
 
 			const dbUser = user == 'me' ? req.user : await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
@@ -119,13 +117,13 @@ router.get(
 // Create transaction
 router.post(
 	'/transactions',
-	async (...req) =>
-		request(...req, {
+	async (req, res, next) =>
+		request(req, res, next, {
 			authentication: true,
 			roles: ['STAFF'],
 		}),
-	(...req) =>
-		validate(...req, {
+	(req, res, next) =>
+		validate(req, res, next, {
 			body: {
 				amount: validators.number,
 				reason: validators.optional(validators.string),
