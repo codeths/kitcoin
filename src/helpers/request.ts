@@ -1,11 +1,13 @@
 import express from 'express';
-import {notEmpty, RequestValidateKeyOptions} from '../types';
 import {
+	notEmpty,
 	getOptions,
 	RequestOptions,
 	RequestValidateOptions,
 	RequestValidateParts,
-} from '../types/request';
+	RequestValidateKeyOptions,
+	RequestValidateKeyOptionsResolvable,
+} from '../types';
 import {User} from './schema';
 
 export async function request(
@@ -41,7 +43,7 @@ export function validate(
 	);
 
 	for (let partKey of partKeys) {
-		const validators = options[partKey] || {};
+		const part = options[partKey] || {};
 		const data: {[key: string]: unknown} = req[partKey] || {};
 
 		if (typeof data !== 'object')
@@ -51,9 +53,9 @@ export function validate(
 
 		for (let key of validatorKeys) {
 			const value = data[key];
-			const validatorOptions = validators[key];
+			const validatorOptions = part[key];
 
-			const validator = resolveValidator(validatorOptions);
+			const validator = validators.resolve(validatorOptions);
 
 			const valid = validator.run(value);
 			const error = typeof valid == 'string' ? valid : null;
@@ -82,7 +84,7 @@ function numberFromData(data: unknown): number | false {
 	let number;
 	if (validators.numberString().run(data))
 		number = parseFloat(data as string);
-	else if (validators.number(data)) number = data as number;
+	else if (validators.number().run(data)) number = data as number;
 	else return false;
 
 	if (isNaN(number)) return false;
@@ -90,41 +92,43 @@ function numberFromData(data: unknown): number | false {
 	return number;
 }
 
-function resolveValidator(
-	validator: RequestValidateKeyOptions | (() => RequestValidateKeyOptions),
-): RequestValidateKeyOptions {
-	if (typeof validator == 'function') return validator();
-	return validator;
-}
+export class validators {
+	static resolve = (
+		validator: RequestValidateKeyOptionsResolvable,
+	): RequestValidateKeyOptions => {
+		if (typeof validator == 'function') return validator();
+		return validator;
+	};
 
-export const validators: {
-	[key: string]: (...options: any[]) => RequestValidateKeyOptions;
-} = {
-	string: () => ({
+	static string = () => ({
 		run: (data: unknown): data is string => typeof data === 'string',
 		errorMessage: '{KEY} must be a string',
-	}),
-	streq: (value: string) => ({
+	});
+
+	static streq = (value: string) => ({
 		run: (data: unknown) => {
-			let isStr = validators.string().run(data) as boolean;
+			let isStr = this.string().run(data) as boolean;
 			if (!isStr) return '{KEY} must be a string';
 			return data == value;
 		},
 		errorMessage: `{KEY} must be equal to ${value}`,
-	}),
-	number: () => ({
+	});
+
+	static number = () => ({
 		run: (data: unknown): data is number => typeof data === 'number',
 		errorMessage: '{KEY} must be a number',
-	}),
-	numberString: () => ({
+	});
+
+	static numberString = () => ({
 		run: (data: unknown) => {
-			let isStr = validators.string().run(data) as boolean;
+			let isStr = this.string().run(data) as boolean;
 			if (!isStr) return '{KEY} must be a string';
 			return !isNaN(parseFloat(data as string));
 		},
 		errorMessage: '{KEY} must be a stringified number',
-	}),
-	integer: () => ({
+	});
+
+	static integer = () => ({
 		run: (data: unknown) => {
 			let isNum = validators
 				.number()
@@ -133,12 +137,14 @@ export const validators: {
 			return (numberFromData(data) as number) % 1 === 0;
 		},
 		errorMessage: '{KEY} must be an integer',
-	}),
-	boolean: () => ({
+	});
+
+	static boolean = () => ({
 		run: (data: unknown): data is boolean => typeof data === 'boolean',
 		errorMessage: '{KEY} must be a boolean',
-	}),
-	gt: (value: number = 0) => ({
+	});
+
+	static gt = (value: number) => ({
 		run: (data: unknown) => {
 			let isNum = validators
 				.number()
@@ -147,8 +153,9 @@ export const validators: {
 			return numberFromData(data) > value;
 		},
 		errorMessage: `{KEY} must be greater than ${value}`,
-	}),
-	lt: (value: number = 0) => ({
+	});
+
+	static lt = (value: number) => ({
 		run: (data: unknown) => {
 			let isNum = validators
 				.number()
@@ -157,8 +164,9 @@ export const validators: {
 			return numberFromData(data) < value;
 		},
 		errorMessage: `{KEY} must be less than ${value}`,
-	}),
-	eq: (value: number = 0) => ({
+	});
+
+	static eq = (value: number) => ({
 		run: (data: unknown) => {
 			let isNum = validators
 				.number()
@@ -167,22 +175,25 @@ export const validators: {
 			return numberFromData(data) === value;
 		},
 		errorMessage: `{KEY} must be equal to ${value}`,
-	}),
-	gte: (value: number = 0) => ({
+	});
+
+	static gte = (value: number) => ({
 		run: (data: unknown) =>
-			validators.gt(value).run(data) || validators.eq(value).run(data),
+			this.gt(value).run(data) || this.eq(value).run(data),
 		errorMessage: `{KEY} must be greater than or equal to ${value}`,
-	}),
-	lte: (value: number = 0) => ({
+	});
+
+	static lte = (value: number) => ({
 		run: (data: unknown) =>
-			validators.lt(value).run(data) || validators.eq(value).run(data),
+			this.lt(value).run(data) || this.eq(value).run(data),
 		errorMessage: `{KEY} must be less than or equal to ${value}`,
-	}),
-	and: (...validators: RequestValidateKeyOptions[]) => ({
+	});
+
+	static and = (...validators: RequestValidateKeyOptionsResolvable[]) => ({
 		run: (data: unknown) => {
 			let results: (string | boolean)[] = [];
 			validators.forEach(validator => {
-				let v = resolveValidator(validator);
+				let v = this.resolve(validator);
 				let res = v.run(data);
 				results.push(!res ? v.errorMessage || `{KEY} is invalid` : res);
 			});
@@ -192,12 +203,13 @@ export const validators: {
 				.filter((x, i, a) => a.indexOf(x) == i)
 				.join('\nAND ');
 		},
-	}),
-	or: (...validators: RequestValidateKeyOptions[]) => ({
+	});
+
+	static or = (...validators: RequestValidateKeyOptionsResolvable[]) => ({
 		run: (data: unknown) => {
 			let results: (string | boolean)[] = [];
 			validators.forEach(validator => {
-				let v = resolveValidator(validator);
+				let v = this.resolve(validator);
 				let res = v.run(data);
 				results.push(!res ? v.errorMessage || `{KEY} is invalid` : res);
 			});
@@ -207,23 +219,26 @@ export const validators: {
 				.filter((x, i, a) => a.indexOf(x) == i)
 				.join('\nOR ');
 		},
-	}),
-	not: (validator: RequestValidateKeyOptions) => ({
+	});
+
+	static not = (validator: RequestValidateKeyOptionsResolvable) => ({
 		run: (data: unknown) => {
-			let v = resolveValidator(validator);
+			let v = this.resolve(validator);
 			let res = v.run(data);
 			if (res === true) return `NOT ${v.errorMessage}`;
 			return true;
 		},
-	}),
-	exists: () => ({
+	});
+
+	static exists = () => ({
 		run: (data: unknown) => data !== null && data !== undefined,
 		errorMessage: '{KEY} must exist',
-	}),
-	optional: (validator: RequestValidateKeyOptions) => ({
+	});
+
+	static optional = (validator: RequestValidateKeyOptionsResolvable) => ({
 		run: (data: unknown) => {
-			let v = resolveValidator(validator);
-			if (!validators.exists().run(data)) return true;
+			let v = this.resolve(validator);
+			if (!this.exists().run(data)) return true;
 			let res = v.run(data);
 			if (!res)
 				return (
@@ -231,5 +246,5 @@ export const validators: {
 				);
 			return res;
 		},
-	}),
-};
+	});
+}

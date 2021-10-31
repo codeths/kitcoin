@@ -43,12 +43,14 @@ export type RequestValidateKeyOptions = {
 	errorStatus?: number;
 	errorMessage?: string;
 };
+export type RequestValidateKeyOptionsResolvable =
+	| RequestValidateKeyOptions
+	| (() => RequestValidateKeyOptions);
+
 export type RequestValidateOptions = {
 	[key in RequestValidateParts]?:
 		| {
-				[key: string]:
-					| RequestValidateKeyOptions
-					| (() => RequestValidateKeyOptions);
+				[key: string]: RequestValidateKeyOptionsResolvable;
 		  }
 		| undefined;
 };
