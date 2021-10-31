@@ -5,7 +5,7 @@ import {
 	UserRoles,
 	UserRoleTypes,
 } from '../../../helpers/schema';
-import {request, validate, validators} from '../../../helpers/request';
+import {request, Validators} from '../../../helpers/request';
 const router = express.Router();
 
 router.patch(
@@ -14,15 +14,14 @@ router.patch(
 		request(req, res, next, {
 			authentication: true,
 			roles: ['ADMIN'],
-		}),
-	(req, res, next) =>
-		validate(req, res, next, {
-			body: {
-				user: validators.string,
-				roles: {
-					run: (data: unknown) =>
-						typeof data == 'string' && isValidRoles(data),
-					errorMessage: 'Invalid roles list',
+			validators: {
+				body: {
+					user: Validators.string,
+					roles: {
+						run: (data: unknown) =>
+							typeof data == 'string' && isValidRoles(data),
+						errorMessage: 'Invalid roles list',
+					},
 				},
 			},
 		}),
@@ -69,17 +68,16 @@ router.get(
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
-		}),
-	(req, res, next) =>
-		validate(req, res, next, {
-			query: {
-				q: validators.string,
-				roles: validators.optional({
-					run: (data: unknown) =>
-						typeof data == 'string' && isValidRoles(data),
-					errorMessage: 'Invalid roles list',
-				}),
-				count: validators.optional(validators.number),
+			validators: {
+				query: {
+					q: Validators.string,
+					roles: Validators.optional({
+						run: (data: unknown) =>
+							typeof data == 'string' && isValidRoles(data),
+						errorMessage: 'Invalid roles list',
+					}),
+					count: Validators.optional(Validators.number),
+				},
 			},
 		}),
 	async (req, res) => {

@@ -1,6 +1,6 @@
 import express from 'express';
 import {IUserDoc, User} from '../../../helpers/schema';
-import {request, validate, validators} from '../../../helpers/request';
+import {request, Validators} from '../../../helpers/request';
 import Google, {google} from 'googleapis';
 import {getAccessToken} from '../../../helpers/oauth';
 import {ClassroomClient} from '../../../helpers/classroom';
@@ -53,11 +53,10 @@ router.get(
 		request(req, res, next, {
 			authentication: true,
 			roles: ['STAFF'],
-		}),
-	(req, res, next) =>
-		validate(req, res, next, {
-			params: {
-				class: validators.string,
+			validators: {
+				params: {
+					class: Validators.string,
+				},
 			},
 		}),
 	async (req, res) => {

@@ -1,6 +1,6 @@
 import express from 'express';
 import {ClassroomClient} from '../../../helpers/classroom';
-import {request, validate, validators} from '../../../helpers/request';
+import {request, Validators} from '../../../helpers/request';
 import {IStoreDoc, IUserDoc, Store} from '../../../helpers/schema';
 const router = express.Router();
 
@@ -51,11 +51,10 @@ router.get(
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
-		}),
-	(req, res, next) =>
-		validate(req, res, next, {
-			params: {
-				id: validators.string,
+			validators: {
+				params: {
+					id: Validators.string,
+				},
 			},
 		}),
 	async (req, res) => {
@@ -105,15 +104,14 @@ router.post(
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
-		}),
-	(req, res, next) =>
-		validate(req, res, next, {
-			body: {
-				storeID: validators.string,
-				name: validators.string,
-				description: validators.string,
-				price: validators.number,
-				quantity: validators.optional(validators.number),
+			validators: {
+				body: {
+					storeID: Validators.string,
+					name: Validators.string,
+					description: Validators.string,
+					price: Validators.number,
+					quantity: Validators.optional(Validators.number),
+				},
 			},
 		}),
 	async (req, res) => {

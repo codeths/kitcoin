@@ -4,8 +4,7 @@ import {
 	numberFromData,
 	request,
 	stringFromData,
-	validate,
-	validators,
+	Validators,
 } from '../../../helpers/request';
 const router = express.Router();
 
@@ -16,11 +15,10 @@ router.get(
 		request(req, res, next, {
 			authentication: true,
 			roles: req.params?.user == 'me' ? undefined : ['STAFF', 'ADMIN'],
-		}),
-	(req, res, next) =>
-		validate(req, res, next, {
-			params: {
-				user: validators.string,
+			validators: {
+				params: {
+					user: Validators.string,
+				},
 			},
 		}),
 	async (req, res) => {
@@ -51,20 +49,19 @@ router.get(
 		request(req, res, next, {
 			authentication: true,
 			roles: req.params?.user == 'me' ? undefined : ['STAFF', 'ADMIN'],
-		}),
-	(req, res, next) =>
-		validate(req, res, next, {
-			params: {
-				user: validators.string,
-			},
-			query: {
-				count: validators.optional(
-					validators.and(validators.integer, validators.gt(0)),
-				),
-				page: validators.optional(
-					validators.and(validators.integer, validators.gt(0)),
-				),
-				search: validators.optional(validators.string),
+			validators: {
+				params: {
+					user: Validators.string,
+				},
+				query: {
+					count: Validators.optional(
+						Validators.and(Validators.integer, Validators.gt(0)),
+					),
+					page: Validators.optional(
+						Validators.and(Validators.integer, Validators.gt(0)),
+					),
+					search: Validators.optional(Validators.string),
+				},
 			},
 		}),
 	async (req, res) => {
@@ -121,13 +118,12 @@ router.post(
 		request(req, res, next, {
 			authentication: true,
 			roles: ['STAFF'],
-		}),
-	(req, res, next) =>
-		validate(req, res, next, {
-			body: {
-				amount: validators.number,
-				reason: validators.optional(validators.string),
-				user: validators.string,
+			validators: {
+				body: {
+					amount: Validators.number,
+					reason: Validators.optional(Validators.string),
+					user: Validators.string,
+				},
 			},
 		}),
 	async (req, res) => {
