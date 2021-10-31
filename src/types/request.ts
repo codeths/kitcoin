@@ -34,3 +34,21 @@ export function getOptions(
 export interface AuthenticatedRequest extends express.Request {
 	user: IUserDoc;
 }
+
+export type RequestValidateParts = 'query' | 'params' | 'body';
+
+export type RequestValidateKeyFunction = (value: unknown) => boolean | string;
+export type RequestValidateKeyOptions = {
+	run: RequestValidateKeyFunction;
+	errorStatus?: number;
+	errorMessage?: string;
+};
+export type RequestValidateOptions = {
+	[key in RequestValidateParts]?:
+		| {
+				[key: string]:
+					| RequestValidateKeyOptions
+					| (() => RequestValidateKeyOptions);
+		  }
+		| undefined;
+};
