@@ -244,7 +244,7 @@ export class Validators {
 				let res = v.run(data);
 				if (typeof res === 'string') {
 					results.push(res);
-					results.push(v.errorMessage || `{KEY} is invalid`);
+					if (v.errorMessage) results.push(v.errorMessage);
 				} else if (res) {
 					results.push(true);
 				} else {
@@ -252,10 +252,10 @@ export class Validators {
 				}
 			});
 			if (results.every(x => x === true)) return true;
-			return results
+			return `(${results
 				.filter(x => x !== true)
 				.filter((x, i, a) => a.indexOf(x) == i)
-				.join('<br>AND ');
+				.join('<br>AND ')})`;
 		},
 	});
 
@@ -272,7 +272,7 @@ export class Validators {
 
 				if (typeof res === 'string') {
 					results.push(res);
-					results.push(v.errorMessage || `{KEY} is invalid`);
+					if (v.errorMessage) results.push(v.errorMessage);
 				} else if (res) {
 					results.push(true);
 				} else {
@@ -280,10 +280,10 @@ export class Validators {
 				}
 			});
 			if (results.some(x => x === true)) return true;
-			return results
+			return `(${results
 				.filter(x => x !== true)
 				.filter((x, i, a) => a.indexOf(x) == i)
-				.join('<br>OR ');
+				.join('<br>OR ')})`;
 		},
 	});
 
@@ -314,12 +314,9 @@ export class Validators {
 	 * @param validator Validator to run
 	 */
 	static optional = (validator: RequestValidateKeyOptionsResolvable) => ({
-		run: (data: unknown): boolean | string => {
-			let v = Validators.resolve(validator);
-			if (!Validators.exists().run(data)) return true;
-			let res = v.run(data);
-			if (!res) return `OPTIONAL ${v.errorMessage || '{KEY} is invalid'}`;
-			return res;
-		},
+		run: (data: unknown): boolean | string =>
+			Validators.or(Validators.not(Validators.exists), validator).run(
+				data,
+			),
 	});
 }
