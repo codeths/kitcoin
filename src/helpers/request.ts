@@ -29,15 +29,16 @@ export async function request(
 			return res.status(403).send('Forbidden');
 	}
 
+	const badRequest = validate(req, appliedOptions.validators);
+	if (badRequest) return res.status(400).send(badRequest);
+
 	next();
 }
 
-export function validate(
+function validate(
 	req: express.Request,
-	res: express.Response,
-	next: express.NextFunction,
 	options: RequestValidateOptions,
-) {
+): string | null {
 	let partKeys = (Object.keys(options) as RequestValidateParts[]).filter(x =>
 		notEmpty(options[x]),
 	);
@@ -49,8 +50,7 @@ export function validate(
 		const part = options[partKey] || {};
 		const data: {[key: string]: unknown} = req[partKey] || {};
 
-		if (typeof data !== 'object')
-			return res.status(400).send(`Request is missing ${partKey}`);
+		if (typeof data !== 'object') return `Request is missing ${partKey}`;
 
 		const validatorKeys = Object.keys(data);
 
@@ -63,7 +63,7 @@ export function validate(
 
 			if (validatorOptions) {
 				// Resolve the validator
-				const validator = validators.resolve(validatorOptions);
+				const validator = Validators.resolve(validatorOptions);
 
 				// Run the validator
 				const valid = validator.run(value);
@@ -81,8 +81,8 @@ export function validate(
 		}
 	}
 
-	if (errors.length > 0) return res.status(400).send(errors.join('<br><br>'));
-	next();
+	if (errors.length > 0) return errors.join('<br><br>');
+	return null;
 }
 
 export function stringFromData(data: string): string;
@@ -96,9 +96,9 @@ export function numberFromData(data: number | `${number}`): number;
 export function numberFromData(data: unknown): number | null;
 export function numberFromData(data: unknown): number | null {
 	let number;
-	if (validators.numberString().run(data))
+	if (Validators.numberString().run(data))
 		number = parseFloat(data as string);
-	else if (validators.number().run(data)) number = data as number;
+	else if (Validators.number().run(data)) number = data as number;
 	else return null;
 
 	if (isNaN(number)) return null;
@@ -106,7 +106,7 @@ export function numberFromData(data: unknown): number | null {
 	return number;
 }
 
-export class validators {
+export class Validators {
 	static resolve = (
 		validator: RequestValidateKeyOptionsResolvable,
 	): RequestValidateKeyOptions => {
@@ -126,7 +126,7 @@ export class validators {
 	 */
 	static streq = (value: string) => ({
 		run: (data: unknown): boolean | string => {
-			let isStr = this.string().run(data) as boolean;
+			let isStr = Validators.string().run(data) as boolean;
 			if (!isStr) return '{KEY} must be a string';
 			return data == value;
 		},
@@ -142,7 +142,7 @@ export class validators {
 	/** Data must be a stringified number */
 	static numberString = () => ({
 		run: (data: unknown): data is `${number}` => {
-			let isStr = this.string().run(data) as boolean;
+			let isStr = Validators.string().run(data) as boolean;
 			if (!isStr) return false;
 			return !isNaN(parseFloat(data as string));
 		},
@@ -152,7 +152,7 @@ export class validators {
 	/** Data must be an integer */
 	static integer = () => ({
 		run: (data: unknown): boolean | string => {
-			if (!validators.numberString().run(data))
+			if (!Validators.numberString().run(data))
 				return '{KEY} must be a number';
 			return (numberFromData(data) as number) % 1 === 0;
 		},
@@ -171,7 +171,7 @@ export class validators {
 	 */
 	static gt = (value: number) => ({
 		run: (data: unknown): boolean | string => {
-			if (!validators.numberString().run(data))
+			if (!Validators.numberString().run(data))
 				return '{KEY} must be a number';
 			return numberFromData(data) > value;
 		},
@@ -184,7 +184,7 @@ export class validators {
 	 */
 	static lt = (value: number) => ({
 		run: (data: unknown): boolean | string => {
-			if (!validators.numberString().run(data))
+			if (!Validators.numberString().run(data))
 				return '{KEY} must be a number';
 			return numberFromData(data) < value;
 		},
@@ -197,7 +197,7 @@ export class validators {
 	 */
 	static eq = (value: number) => ({
 		run: (data: unknown): boolean | string => {
-			if (!validators.numberString().run(data))
+			if (!Validators.numberString().run(data))
 				return '{KEY} must be a number';
 			return numberFromData(data) === value;
 		},
@@ -210,7 +210,7 @@ export class validators {
 	 */
 	static gte = (value: number) => ({
 		run: (data: unknown): boolean | string =>
-			this.gt(value).run(data) || this.eq(value).run(data),
+			Validators.gt(value).run(data) || Validators.eq(value).run(data),
 		errorMessage: `{KEY} must be greater than or equal to ${value}`,
 	});
 
@@ -220,7 +220,7 @@ export class validators {
 	 */
 	static lte = (value: number) => ({
 		run: (data: unknown): boolean | string =>
-			this.lt(value).run(data) || this.eq(value).run(data),
+			Validators.lt(value).run(data) || Validators.eq(value).run(data),
 		errorMessage: `{KEY} must be less than or equal to ${value}`,
 	});
 
@@ -232,7 +232,7 @@ export class validators {
 		run: (data: unknown): boolean | string => {
 			let results: (string | boolean)[] = [];
 			validators.forEach(validator => {
-				let v = this.resolve(validator);
+				let v = Validators.resolve(validator);
 				let res = v.run(data);
 				results.push(!res ? v.errorMessage || `{KEY} is invalid` : res);
 			});
@@ -252,7 +252,7 @@ export class validators {
 		run: (data: unknown): boolean | string => {
 			let results: (string | boolean)[] = [];
 			validators.forEach(validator => {
-				let v = this.resolve(validator);
+				let v = Validators.resolve(validator);
 				let res = v.run(data);
 				results.push(!res ? v.errorMessage || `{KEY} is invalid` : res);
 			});
@@ -270,7 +270,7 @@ export class validators {
 	 */
 	static not = (validator: RequestValidateKeyOptionsResolvable) => ({
 		run: (data: unknown): boolean | string => {
-			let v = this.resolve(validator);
+			let v = Validators.resolve(validator);
 			let res = v.run(data);
 			if (res === true) return `NOT ${v.errorMessage}`;
 			return true;
@@ -292,8 +292,8 @@ export class validators {
 	 */
 	static optional = (validator: RequestValidateKeyOptionsResolvable) => ({
 		run: (data: unknown): boolean | string => {
-			let v = this.resolve(validator);
-			if (!this.exists().run(data)) return true;
+			let v = Validators.resolve(validator);
+			if (!Validators.exists().run(data)) return true;
 			let res = v.run(data);
 			if (!res)
 				return (

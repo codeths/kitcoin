@@ -9,11 +9,13 @@ import {IUserDoc, UserRoleTypes} from '.';
 export interface RequestOptions {
 	authentication: boolean;
 	roles: UserRoleTypes[];
+	validators: RequestValidateOptions;
 }
 
 const defaultOptions: RequestOptions = {
 	authentication: false,
 	roles: ['NONE'],
+	validators: {},
 };
 
 export function getOptions(
