@@ -182,9 +182,9 @@ export type ITransactionsQuery = Query<ITransactionDoc[], ITransactionDoc> &
 export interface ITransactionQueries {
 	byUser(
 		id: string,
-		count?: number,
-		page?: number,
-		search?: string,
+		count?: number | null,
+		page?: number | null,
+		search?: string | null,
 	): ITransactionsQuery;
 }
 
