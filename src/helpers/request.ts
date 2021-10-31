@@ -146,13 +146,21 @@ export class Validators {
 			if (!isStr) return false;
 			return !isNaN(parseFloat(data as string));
 		},
-		errorMessage: '{KEY} must be a stringified number',
+		errorMessage: '{KEY} must be a number',
+	});
+
+	/** Data must be a number or stringified number */
+	static anyNumber = () => ({
+		run: (data: unknown): data is number | `${number}` =>
+			Validators.number().run(data) ||
+			Validators.numberString().run(data),
+		errorMessage: '{KEY} must be a number',
 	});
 
 	/** Data must be an integer */
 	static integer = () => ({
 		run: (data: unknown): boolean | string => {
-			if (!Validators.numberString().run(data))
+			if (!Validators.anyNumber().run(data))
 				return '{KEY} must be a number';
 			return (numberFromData(data) as number) % 1 === 0;
 		},
@@ -171,7 +179,7 @@ export class Validators {
 	 */
 	static gt = (value: number) => ({
 		run: (data: unknown): boolean | string => {
-			if (!Validators.numberString().run(data))
+			if (!Validators.anyNumber().run(data))
 				return '{KEY} must be a number';
 			return numberFromData(data) > value;
 		},
@@ -184,7 +192,7 @@ export class Validators {
 	 */
 	static lt = (value: number) => ({
 		run: (data: unknown): boolean | string => {
-			if (!Validators.numberString().run(data))
+			if (!Validators.anyNumber().run(data))
 				return '{KEY} must be a number';
 			return numberFromData(data) < value;
 		},
@@ -197,7 +205,7 @@ export class Validators {
 	 */
 	static eq = (value: number) => ({
 		run: (data: unknown): boolean | string => {
-			if (!Validators.numberString().run(data))
+			if (!Validators.anyNumber().run(data))
 				return '{KEY} must be a number';
 			return numberFromData(data) === value;
 		},
@@ -234,7 +242,14 @@ export class Validators {
 			validators.forEach(validator => {
 				let v = Validators.resolve(validator);
 				let res = v.run(data);
-				results.push(!res ? v.errorMessage || `{KEY} is invalid` : res);
+				if (typeof res === 'string') {
+					results.push(res);
+					results.push(v.errorMessage || `{KEY} is invalid`);
+				} else if (res) {
+					results.push(true);
+				} else {
+					results.push(v.errorMessage || `{KEY} is invalid`);
+				}
 			});
 			if (results.every(x => x === true)) return true;
 			return results
@@ -254,7 +269,15 @@ export class Validators {
 			validators.forEach(validator => {
 				let v = Validators.resolve(validator);
 				let res = v.run(data);
-				results.push(!res ? v.errorMessage || `{KEY} is invalid` : res);
+
+				if (typeof res === 'string') {
+					results.push(res);
+					results.push(v.errorMessage || `{KEY} is invalid`);
+				} else if (res) {
+					results.push(true);
+				} else {
+					results.push(v.errorMessage || `{KEY} is invalid`);
+				}
 			});
 			if (results.some(x => x === true)) return true;
 			return results
@@ -295,10 +318,7 @@ export class Validators {
 			let v = Validators.resolve(validator);
 			if (!Validators.exists().run(data)) return true;
 			let res = v.run(data);
-			if (!res)
-				return (
-					`OPTIONAL ${v.errorMessage}` || 'OPTIONAL {KEY} is invalid'
-				);
+			if (!res) return `OPTIONAL ${v.errorMessage || '{KEY} is invalid'}`;
 			return res;
 		},
 	});
