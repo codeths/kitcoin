@@ -1,6 +1,6 @@
 import express from 'express';
 import {Transaction, User} from '../../../helpers/schema';
-import {request} from '../../../helpers/request';
+import {request, validate, validators} from '../../../helpers/request';
 const router = express.Router();
 
 // Get user balance
@@ -11,14 +11,18 @@ router.get(
 			authentication: true,
 			roles: req.params?.user == 'me' ? undefined : ['STAFF', 'ADMIN'],
 		}),
+	(...req) =>
+		validate(...req, {
+			params: {
+				user: validators.string,
+			},
+		}),
 	async (req, res) => {
-		if (!req.user) return;
 		try {
+			if (!req.user) return;
+
 			let {user} = req.params;
 			if (user == 'me') user = req.user.id;
-
-			if (typeof user !== 'string')
-				return res.status(400).send('Bad Request');
 
 			const dbUser = user == 'me' ? req.user : await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
@@ -27,7 +31,9 @@ router.get(
 
 			res.status(200).send({balance});
 		} catch (e) {
-			res.status(500).send('An error occured.');
+			try {
+				res.status(500).send('An error occured.');
+			} catch (e) {}
 		}
 	},
 );
@@ -40,9 +46,25 @@ router.get(
 			authentication: true,
 			roles: req.params?.user == 'me' ? undefined : ['STAFF', 'ADMIN'],
 		}),
+	(...req) =>
+		validate(...req, {
+			params: {
+				user: validators.string,
+			},
+			query: {
+				count: validators.optional(
+					validators.and(validators.integer, validators.gt(0)),
+				),
+				page: validators.optional(
+					validators.and(validators.integer, validators.gt(0)),
+				),
+				serach: validators.optional(validators.string),
+			},
+		}),
 	async (req, res) => {
-		if (!req.user) return;
 		try {
+			if (!req.user) return;
+
 			let {user} = req.params;
 			if (user == 'me') user = req.user.id;
 
@@ -57,15 +79,6 @@ router.get(
 			} = req.query;
 			if (typeof count == 'string') count = parseInt(count);
 			if (typeof page == 'string') page = parseInt(page);
-			if (
-				(search !== undefined && typeof search !== 'string') ||
-				typeof user !== 'string' ||
-				(count !== undefined &&
-					(typeof count !== 'number' || isNaN(count))) ||
-				(page !== undefined &&
-					(typeof page !== 'number' || isNaN(page)))
-			)
-				return res.status(400).send('Bad Request');
 
 			const dbUser = user == 'me' ? req.user : await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
@@ -96,7 +109,9 @@ router.get(
 				),
 			});
 		} catch (e) {
-			res.status(500).send('An error occured.');
+			try {
+				res.status(500).send('An error occured.');
+			} catch (e) {}
 		}
 	},
 );
@@ -109,20 +124,23 @@ router.post(
 			authentication: true,
 			roles: ['STAFF'],
 		}),
+	(...req) =>
+		validate(...req, {
+			body: {
+				amount: validators.number,
+				reason: validators.optional(validators.string),
+				user: validators.string,
+			},
+		}),
 	async (req, res) => {
-		if (!req.user) return;
 		try {
-			const {body} = req;
-			if (!body) return res.status(400).send('Bad Request');
+			if (!req.user) return;
 
-			const {amount, reason, user} = body;
-			if (!amount || !user) return res.status(400).send('Bad Request');
-			if (
-				typeof amount !== 'number' ||
-				(reason && typeof reason !== 'string') ||
-				typeof user !== 'string'
-			)
-				return res.status(400).send('Bad Request');
+			const {
+				amount,
+				reason,
+				user,
+			}: {amount: number; reason: string; user: string} = req.body;
 
 			const dbUser = await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
@@ -145,7 +163,9 @@ router.post(
 
 			res.status(200).send(await transaction.toAPIResponse(req.user.id));
 		} catch (e) {
-			res.status(500).send('An error occured.');
+			try {
+				res.status(500).send('An error occured.');
+			} catch (e) {}
 		}
 	},
 );

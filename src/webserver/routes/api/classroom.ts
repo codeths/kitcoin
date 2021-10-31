@@ -1,6 +1,6 @@
 import express from 'express';
 import {IUserDoc, User} from '../../../helpers/schema';
-import {request} from '../../../helpers/request';
+import {request, validate, validators} from '../../../helpers/request';
 import Google, {google} from 'googleapis';
 import {getAccessToken} from '../../../helpers/oauth';
 import {ClassroomClient} from '../../../helpers/classroom';
@@ -15,28 +15,34 @@ router.get(
 			authentication: true,
 		}),
 	async (req, res) => {
-		if (!req.user) return;
-		const role = req.query?.role ?? 'ANY';
-		let teaching = typeof role == 'string' && role.toUpperCase();
-		if (!teaching || !isValidClassroomRole(teaching))
-			return res.status(400).send('Bad Request');
+		try {
+			if (!req.user) return;
+			const role = req.query?.role ?? 'ANY';
+			let teaching = typeof role == 'string' && role.toUpperCase();
+			if (!teaching || !isValidClassroomRole(teaching))
+				return res.status(400).send('Bad Request');
 
-		const classroomClient = await new ClassroomClient().createClient(
-			req.user,
-		);
-		if (!classroomClient.client)
-			return res.status(403).send('Failed to authorize with Google');
-		const classes = await classroomClient.getClassesForRole(teaching);
+			const classroomClient = await new ClassroomClient().createClient(
+				req.user,
+			);
+			if (!classroomClient.client)
+				return res.status(403).send('Failed to authorize with Google');
+			const classes = await classroomClient.getClassesForRole(teaching);
 
-		res.status(200).send(
-			(classes || [])
-				.map(c => ({
-					id: c.id,
-					name: c.name,
-					section: c.section,
-				}))
-				.filter(x => x.id),
-		);
+			res.status(200).send(
+				(classes || [])
+					.map(c => ({
+						id: c.id,
+						name: c.name,
+						section: c.section,
+					}))
+					.filter(x => x.id),
+			);
+		} catch (e) {
+			try {
+				res.status(500).send('An error occured.');
+			} catch (e) {}
+		}
 	},
 );
 
@@ -48,30 +54,41 @@ router.get(
 			authentication: true,
 			roles: ['STAFF'],
 		}),
+	(...req) =>
+		validate(...req, {
+			params: {
+				class: validators.string,
+			},
+		}),
 	async (req, res) => {
-		if (!req.user) return;
-		if (!req.params.class || typeof req.params.class !== 'string')
-			return res.status(400).send('Bad Request');
-		const client = await getAccessToken(req.user);
-		if (!client)
-			return res.status(401).send('Google authentication failed.');
+		try {
+			if (!req.user) return;
 
-		const classroomClient = await new ClassroomClient().createClient(
-			req.user,
-		);
-		if (!classroomClient.client)
-			return res.status(403).send('Failed to authorize with Google');
-		const students = await classroomClient.getStudentsWithIds(
-			req.params.class,
-		);
+			const client = await getAccessToken(req.user);
+			if (!client)
+				return res.status(401).send('Google authentication failed.');
 
-		res.status(200).send(
-			(students || []).map(s => ({
-				googleId: s.userId,
-				id: s.mongoId,
-				name: s.profile?.name?.fullName,
-			})),
-		);
+			const classroomClient = await new ClassroomClient().createClient(
+				req.user,
+			);
+			if (!classroomClient.client)
+				return res.status(403).send('Failed to authorize with Google');
+			const students = await classroomClient.getStudentsWithIds(
+				req.params.class,
+			);
+
+			res.status(200).send(
+				(students || []).map(s => ({
+					googleId: s.userId,
+					id: s.mongoId,
+					name: s.profile?.name?.fullName,
+				})),
+			);
+		} catch (e) {
+			try {
+				res.status(500).send('An error occured.');
+			} catch (e) {}
+		}
 	},
 );
 

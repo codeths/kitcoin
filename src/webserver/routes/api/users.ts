@@ -1,6 +1,11 @@
 import express from 'express';
-import {isValidRoles, User, UserRoles} from '../../../helpers/schema';
-import {request} from '../../../helpers/request';
+import {
+	isValidRoles,
+	User,
+	UserRoles,
+	UserRoleTypes,
+} from '../../../helpers/schema';
+import {request, validate, validators} from '../../../helpers/request';
 const router = express.Router();
 
 router.patch(
@@ -10,18 +15,34 @@ router.patch(
 			authentication: true,
 			roles: ['ADMIN'],
 		}),
+	(...req) =>
+		validate(...req, {
+			body: {
+				user: validators.string,
+				roles: {
+					run: (data: unknown) =>
+						typeof data == 'string' && isValidRoles(data),
+					errorMessage: 'Invalid roles list',
+				},
+			},
+		}),
 	async (req, res) => {
-		if (!req.user) return;
-		let {user, roles} = req.body;
-		if (!isValidRoles(roles)) return res.send(400).send('Bad Request');
+		try {
+			if (!req.user) return;
+			let {user, roles} = req.body;
 
-		const dbUser = await User.findById(user);
-		if (!dbUser) return res.status(404).send('Invalid user');
+			const dbUser = await User.findById(user);
+			if (!dbUser) return res.status(404).send('Invalid user');
 
-		dbUser.setRoles(roles);
-		await dbUser.save();
+			dbUser.setRoles(roles);
+			await dbUser.save();
 
-		res.status(200).send(dbUser);
+			res.status(200).send(dbUser);
+		} catch (e) {
+			try {
+				res.status(500).send('An error occured.');
+			} catch (e) {}
+		}
 	},
 );
 
@@ -49,41 +70,60 @@ router.get(
 		request(...req, {
 			authentication: true,
 		}),
+	(...req) =>
+		validate(...req, {
+			query: {
+				q: validators.string,
+				roles: validators.optional({
+					run: (data: unknown) =>
+						typeof data == 'string' && isValidRoles(data),
+					errorMessage: 'Invalid roles list',
+				}),
+				count: validators.optional(validators.number),
+			},
+		}),
 	async (req, res) => {
-		if (!req.user) return;
-		const {q, roles, count} = req.query;
-		if (!q || typeof q !== 'string')
-			return res.status(400).send('Bad Request');
+		try {
+			if (!req.user) return;
+			const {q, roles, count} = req.query as {
+				q: string;
+				roles?: string;
+				count?: string;
+			};
 
-		if (q.length < 3) return res.status(200).send([]);
-		if (roles && typeof roles !== 'string')
-			return res.status(400).send('Bad Request');
-		let roleArray = roles ? roles.toUpperCase().split(',') : null;
-		if (roleArray && !isValidRoles(roleArray))
-			return res.status(400).send('Bad Request');
-		let roleBitfield = roleArray
-			? roleArray.reduce((field, role) => field | UserRoles[role], 0)
-			: UserRoles.ALL;
+			if (q.length < 3) return res.status(200).send([]);
 
-		let countNum = typeof count === 'string' ? parseInt(count) : 10;
-		if (isNaN(countNum)) return res.status(400).send('Bad Request');
+			let roleArray = roles
+				? (roles.toUpperCase().split(',') as UserRoleTypes[])
+				: null;
 
-		const results = await User.fuzzySearch(q, {
-			roles: {$bitsAnySet: roleBitfield},
-		});
+			let roleBitfield = roleArray
+				? roleArray.reduce((field, role) => field | UserRoles[role], 0)
+				: UserRoles.ALL;
 
-		res.status(200).send(
-			results
-				.map(x => x.toJSON())
-				.filter(x => x.confidenceScore > 5)
-				.slice(0, countNum)
-				.map(user => ({
-					name: user.name,
-					email: user.email,
-					id: user._id,
-					confidence: user.confidenceScore,
-				})),
-		);
+			let countNum = count ? parseInt(count) : 10;
+
+			const results = await User.fuzzySearch(q, {
+				roles: {$bitsAnySet: roleBitfield},
+			});
+
+			res.status(200).send(
+				results
+					.map(x => x.toJSON())
+					.filter(x => x.confidenceScore > 5)
+					.slice(0, countNum)
+					.map(user => ({
+						name: user.name,
+						email: user.email,
+						id: user._id,
+						confidence: user.confidenceScore,
+					})),
+			);
+		} catch (e) {
+			try {
+				res.status(500).send('An error occured.');
+			} catch (e) {}
+		}
 	},
 );
 

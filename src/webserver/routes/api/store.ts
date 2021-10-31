@@ -1,6 +1,6 @@
 import express from 'express';
 import {ClassroomClient} from '../../../helpers/classroom';
-import {request} from '../../../helpers/request';
+import {request, validate, validators} from '../../../helpers/request';
 import {IStoreDoc, IUserDoc, Store} from '../../../helpers/schema';
 const router = express.Router();
 
@@ -52,10 +52,16 @@ router.get(
 		request(req, res, next, {
 			authentication: true,
 		}),
+	(...req) =>
+		validate(...req, {
+			params: {
+				id: validators.string,
+			},
+		}),
 	async (req, res) => {
-		if (!req.user) return;
-
 		try {
+			if (!req.user) return;
+
 			const {id} = req.params;
 
 			const store = await Store.findById(id)
@@ -100,14 +106,23 @@ router.post(
 		request(...req, {
 			authentication: true,
 		}),
+	(...req) =>
+		validate(...req, {
+			body: {
+				storeID: validators.string,
+				name: validators.string,
+				description: validators.string,
+				price: validators.number,
+				quantity: validators.optional(validators.number),
+			},
+		}),
 	async (req, res) => {
-		if (!req.user) return;
-
 		try {
-			const {body} = req;
-			if (!body) return res.status(400).send('Bad Request');
+			if (!req.user) return;
 
-			const {storeID, name, quantity, description} = body;
+			const {body} = req;
+
+			const {storeID, name, quantity, description, price} = body;
 
 			const store = await Store.findById(storeID)
 				.then(store => {
