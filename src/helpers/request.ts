@@ -42,6 +42,8 @@ export function validate(
 		notEmpty(options[x]),
 	);
 
+	let errors: string[] = [];
+
 	// Loop through each request part (body, query, params, etc.)
 	for (let partKey of partKeys) {
 		const part = options[partKey] || {};
@@ -59,20 +61,15 @@ export function validate(
 			// Validator for the key
 			const validatorOptions = part[key];
 
-			// Resolve the validator
-			const validator = validators.resolve(validatorOptions);
+			if (validatorOptions) {
+				// Resolve the validator
+				const validator = validators.resolve(validatorOptions);
 
-			// Run the validator
-			const valid = validator.run(value);
-			const error = typeof valid == 'string' ? valid : null;
-			if (error)
-				return res
-					.status(
-						(typeof validatorOptions == 'object' &&
-							validatorOptions.errorStatus) ||
-							400,
-					)
-					.send(
+				// Run the validator
+				const valid = validator.run(value);
+				const error = typeof valid == 'string' ? valid : null;
+				if (error)
+					errors.push(
 						(
 							error ||
 							(typeof validatorOptions == 'object' &&
@@ -80,9 +77,11 @@ export function validate(
 							'Bad request'
 						).replace(/{KEY}/g, `${key} in ${partKey}`),
 					);
+			}
 		}
 	}
 
+	if (errors.length > 0) return res.status(400).send(errors.join('<br><br>'));
 	next();
 }
 
@@ -241,7 +240,7 @@ export class validators {
 			return results
 				.filter(x => x !== true)
 				.filter((x, i, a) => a.indexOf(x) == i)
-				.join('\nAND ');
+				.join('<br>AND ');
 		},
 	});
 
@@ -261,7 +260,7 @@ export class validators {
 			return results
 				.filter(x => x !== true)
 				.filter((x, i, a) => a.indexOf(x) == i)
-				.join('\nOR ');
+				.join('<br>OR ');
 		},
 	});
 
