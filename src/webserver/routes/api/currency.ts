@@ -64,7 +64,7 @@ router.get(
 				page: validators.optional(
 					validators.and(validators.integer, validators.gt(0)),
 				),
-				serach: validators.optional(validators.string),
+				search: validators.optional(validators.string),
 			},
 		}),
 	async (req, res) => {
