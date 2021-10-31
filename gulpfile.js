@@ -1,14 +1,14 @@
 const gulp = require('gulp');
-const ts = require('gulp-typescript');
 const del = require('del');
 const promisify = require('util').promisify;
 const exec = promisify(require('child_process').exec);
 const spawn = require('child_process').spawn;
 const readline = require('readline');
+let args = process.argv.slice(2);
 
 gulp.task('default', async () => {
 	await delDist();
-	await task(typescript());
+	await typescript();
 	await frontend();
 	await task(copy());
 	return;
@@ -25,7 +25,7 @@ gulp.task('clear', async () => {
 });
 
 gulp.task('typescript', async () => {
-	await task(typescript());
+	await typescript();
 	return;
 });
 
@@ -42,16 +42,8 @@ function delDist() {
 	return del('dist');
 }
 
-function typescript(path) {
-	const tsProject = ts.createProject('tsconfig.json');
-
-	return gulp
-		.src(path || ['src/**/*.ts'], {
-			base: 'src',
-		})
-		.pipe(tsProject())
-		.on('error', () => {})
-		.pipe(gulp.dest('dist'));
+function typescript() {
+	return exec('npm run tsc');
 }
 
 function copy(path) {
@@ -66,27 +58,21 @@ function frontend() {
 	return exec('npm run build --prefix frontend');
 }
 
-gulp.task('watch', async () => {
-	dev(true);
-});
-
 gulp.task('dev', async () => {
-	dev(false);
+	dev();
 });
 
-function dev(watch) {
+function dev() {
 	node();
-	if (watch) {
+	if (args.includes('--watch')) {
 		gulp.watch(['src/**/*', '!**/node_modules/**/*']).on(
 			'change',
 			async function (fileName) {
 				console.log(`${fileName} changed.`);
-				await task(
-					['ts'].some(x => fileName.endsWith(`.${x}`))
-						? typescript()
-						: copy(fileName),
-				);
-				console.log(`${fileName} done.`);
+				await (['ts'].some(x => fileName.endsWith(`.${x}`))
+					? typescript()
+					: task(copy(fileName))),
+					console.log(`${fileName} done.`);
 				node();
 			},
 		);
@@ -104,8 +90,6 @@ function dev(watch) {
 		});
 	}
 
-	console.log('Node started');
-
 	var rl = readline.createInterface({input: process.stdin});
 	rl.on('line', async line => {
 		line = line.toLowerCase();
@@ -115,14 +99,14 @@ function dev(watch) {
 		} else if (['build', 'gulp'].includes(line)) {
 			console.log('Rebuilding');
 			await delDist();
-			await task(typescript());
+			await typescript();
 			await frontend();
 			await task(copy());
 			node();
 			console.log('Done');
 		} else if (['ts', 'typescript'].includes(line)) {
 			console.log('Rebuilding typescript');
-			await task(typescript());
+			await typescript();
 			node();
 			console.log('Done');
 		} else if (['copy', 'cp'].includes(line)) {
@@ -147,8 +131,11 @@ function dev(watch) {
 
 let nodeProcess = null;
 function node() {
+	if (args.includes('--no-run')) return;
 	if (nodeProcess) {
 		nodeProcess.kill('SIGINT');
+	} else {
+		console.log('Node started');
 	}
 	nodeProcess = spawn('node', ['.']);
 

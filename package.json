@@ -6,7 +6,8 @@
 	"scripts": {
 		"build": "gulp",
 		"dev": "gulp dev",
-		"watch": "gulp watch",
+		"tsc": "tsc",
+		"watch": "gulp dev --watch",
 		"format": "prettier --write .",
 		"postinstall": "(cd frontend && npm install);"
 	},
@@ -31,7 +32,6 @@
 		"@types/yamljs": "^0.2.31",
 		"del": "^6.0.0",
 		"gulp": "^4.0.2",
-		"gulp-typescript": "^6.0.0-alpha.1",
 		"prettier": "2.4.0",
 		"tsc-watch": "^4.5.0",
 		"typescript": "^4.4.3"

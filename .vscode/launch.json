@@ -1,0 +1,40 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Dev Debug",
+			"type": "node",
+			"autoAttachChildProcesses": true,
+			"request": "launch",
+			"program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
+			"console": "integratedTerminal",
+			"args": [
+				"dev"
+			]
+		},
+		{
+			"name": "Watch Debug",
+			"type": "node",
+			"autoAttachChildProcesses": true,
+			"request": "launch",
+			"program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
+			"console": "integratedTerminal",
+			"args": [
+				"dev", "--watch"
+			]
+		},
+		{
+			"name": "Node",
+			"type": "node",
+			"request": "launch",
+			"program": "${workspaceRoot}/src/index.ts",
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
+			"args": []
+		}
+	]
+}
