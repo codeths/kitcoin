@@ -5,18 +5,6 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Dev Debug",
-			"type": "node",
-			"autoAttachChildProcesses": true,
-			"request": "launch",
-			"program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
-			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
-			"console": "integratedTerminal",
-			"args": [
-				"dev"
-			]
-		},
-		{
 			"name": "Watch Debug",
 			"type": "node",
 			"autoAttachChildProcesses": true,
@@ -26,6 +14,18 @@
 			"console": "integratedTerminal",
 			"args": [
 				"dev", "--watch"
+			]
+		},
+		{
+			"name": "Dev Debug",
+			"type": "node",
+			"autoAttachChildProcesses": true,
+			"request": "launch",
+			"program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
+			"console": "integratedTerminal",
+			"args": [
+				"dev"
 			]
 		},
 		{
