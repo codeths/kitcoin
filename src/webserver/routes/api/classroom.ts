@@ -77,8 +77,11 @@ router.get(
 				req.params.class,
 			);
 
+			if (!students)
+				return res.status(500).send('Could not get students');
+
 			res.status(200).send(
-				(students || []).map(s => ({
+				students.map(s => ({
 					googleId: s.userId,
 					id: s.mongoId,
 					name: s.profile?.name?.fullName,
