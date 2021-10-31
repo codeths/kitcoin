@@ -10,13 +10,13 @@ const router = express.Router();
 
 router.patch(
 	'/roles',
-	async (...req) =>
-		request(...req, {
+	async (req, res, next) =>
+		request(req, res, next, {
 			authentication: true,
 			roles: ['ADMIN'],
 		}),
-	(...req) =>
-		validate(...req, {
+	(req, res, next) =>
+		validate(req, res, next, {
 			body: {
 				user: validators.string,
 				roles: {
@@ -49,8 +49,8 @@ router.patch(
 // Get my info
 router.get(
 	'/me',
-	async (...req) =>
-		request(...req, {
+	async (req, res, next) =>
+		request(req, res, next, {
 			authentication: true,
 		}),
 	async (req, res) => {
@@ -66,12 +66,12 @@ router.get(
 // Search users
 router.get(
 	'/search',
-	async (...req) =>
-		request(...req, {
+	async (req, res, next) =>
+		request(req, res, next, {
 			authentication: true,
 		}),
-	(...req) =>
-		validate(...req, {
+	(req, res, next) =>
+		validate(req, res, next, {
 			query: {
 				q: validators.string,
 				roles: validators.optional({

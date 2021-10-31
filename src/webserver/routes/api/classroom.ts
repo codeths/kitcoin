@@ -10,8 +10,8 @@ const router = express.Router();
 // Get classes
 router.get(
 	'/classes',
-	async (...req) =>
-		request(...req, {
+	async (req, res, next) =>
+		request(req, res, next, {
 			authentication: true,
 		}),
 	async (req, res) => {
@@ -49,13 +49,13 @@ router.get(
 // Get students in class
 router.get(
 	'/students/:class',
-	async (...req) =>
-		request(...req, {
+	async (req, res, next) =>
+		request(req, res, next, {
 			authentication: true,
 			roles: ['STAFF'],
 		}),
-	(...req) =>
-		validate(...req, {
+	(req, res, next) =>
+		validate(req, res, next, {
 			params: {
 				class: validators.string,
 			},

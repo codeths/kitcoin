@@ -52,8 +52,8 @@ router.get(
 		request(req, res, next, {
 			authentication: true,
 		}),
-	(...req) =>
-		validate(...req, {
+	(req, res, next) =>
+		validate(req, res, next, {
 			params: {
 				id: validators.string,
 			},
@@ -102,12 +102,12 @@ router.get(
 
 router.post(
 	'/storeitem',
-	async (...req) =>
-		request(...req, {
+	async (req, res, next) =>
+		request(req, res, next, {
 			authentication: true,
 		}),
-	(...req) =>
-		validate(...req, {
+	(req, res, next) =>
+		validate(req, res, next, {
 			body: {
 				storeID: validators.string,
 				name: validators.string,
