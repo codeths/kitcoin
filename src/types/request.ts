@@ -40,7 +40,6 @@ export type RequestValidateParts = 'query' | 'params' | 'body';
 export type RequestValidateKeyFunction = (value: unknown) => boolean | string;
 export type RequestValidateKeyOptions = {
 	run: RequestValidateKeyFunction;
-	errorStatus?: number;
 	errorMessage?: string;
 };
 export type RequestValidateKeyOptionsResolvable =
