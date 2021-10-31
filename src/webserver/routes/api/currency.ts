@@ -55,10 +55,10 @@ router.get(
 				},
 				query: {
 					count: Validators.optional(
-						Validators.and(Validators.number, Validators.integer, Validators.gt(0)),
+						Validators.and(Validators.integer, Validators.gt(0)),
 					),
 					page: Validators.optional(
-						Validators.and(Validators.number, Validators.integer, Validators.gt(0)),
+						Validators.and(Validators.integer, Validators.gt(0)),
 					),
 					search: Validators.optional(Validators.string),
 				},
