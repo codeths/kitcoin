@@ -35,15 +35,24 @@ gulp.task('frontend', async () => {
 });
 
 function task(t) {
-	return new Promise((resolve, reject) => t.on('end', resolve));
+	return new Promise((resolve, reject) =>
+		t
+			.on('end', () => resolve(true))
+			.on('error', e => console.error(e) && resolve(false)),
+	);
 }
 
 function delDist() {
 	return del('dist');
 }
 
-function typescript() {
-	return exec('npm run tsc');
+async function typescript() {
+	return new Promise(res => {
+		let child = spawn('tsc', [], {
+			stdio: 'inherit',
+		});
+		child.on('exit', code => res(code === 0));
+	});
 }
 
 function copy(path) {
@@ -54,8 +63,13 @@ function copy(path) {
 		.pipe(gulp.dest('dist'));
 }
 
-function frontend() {
-	return exec('npm run build --prefix frontend');
+async function frontend() {
+	return new Promise(res => {
+		let child = spawn('npm', ['run', 'build', '--prefix', 'frontend'], {
+			stdio: 'inherit',
+		});
+		child.on('exit', code => res(code === 0));
+	});
 }
 
 gulp.task('dev', async () => {
@@ -69,11 +83,15 @@ function dev() {
 			'change',
 			async function (fileName) {
 				console.log(`${fileName} changed.`);
-				await (['ts'].some(x => fileName.endsWith(`.${x}`))
+				let res = await (['ts'].some(x => fileName.endsWith(`.${x}`))
 					? typescript()
-					: task(copy(fileName))),
+					: task(copy(fileName)));
+				if (res) {
 					console.log(`${fileName} done.`);
-				node();
+					node();
+				} else {
+					console.log(`${fileName} failed.`);
+				}
 			},
 		);
 
@@ -84,41 +102,66 @@ function dev() {
 			'!**/node_modules/**/*',
 		]).on('change', async function (fileName) {
 			console.log(`${fileName} changed.`);
-			await frontend();
-			console.log(`${fileName} done.`);
-			node();
+			let res = await frontend();
+			if (res) {
+				console.log(`${fileName} done.`);
+				node();
+			} else {
+				console.log(`${fileName} failed.`);
+			}
 		});
 	}
 
-	var rl = readline.createInterface({input: process.stdin});
+	var rl = readline.createInterface({
+		input: process.stdin,
+	});
 	rl.on('line', async line => {
-		line = line.toLowerCase();
+		line = line.toLowerCase().replace(/\s/g, '');
+		if (!line) return;
+
 		if (['rs', 'restart', 'node'].includes(line)) {
 			console.log('Restarting node');
 			node();
 		} else if (['build', 'gulp'].includes(line)) {
 			console.log('Rebuilding');
 			await delDist();
-			await typescript();
-			await frontend();
-			await task(copy());
-			node();
-			console.log('Done');
+			let res =
+				(await typescript()) &&
+				(await frontend()) &&
+				(await task(copy()));
+			if (res) {
+				console.log(`Done`);
+				node();
+			} else {
+				console.log(`Failed`);
+			}
 		} else if (['ts', 'typescript'].includes(line)) {
 			console.log('Rebuilding typescript');
-			await typescript();
-			node();
-			console.log('Done');
+			let res = await typescript();
+			if (res) {
+				console.log(`Done`);
+				node();
+			} else {
+				console.log(`Failed`);
+			}
 		} else if (['copy', 'cp'].includes(line)) {
 			console.log('Copying');
-			await task(copy());
-			node();
-			console.log('Done');
+			let res = await task(copy());
+			if (res) {
+				console.log(`Done`);
+				node();
+			} else {
+				console.log(`Failed`);
+			}
 		} else if (['frontend', 'fe'].includes(line)) {
 			console.log('Rebuilding frontend');
-			await frontend();
-			node();
-			console.log('Done');
+			let res = await frontend();
+			if (res) {
+				console.log(`Done`);
+				node();
+			} else {
+				console.log(`Failed`);
+			}
 		} else if (
 			['stop', 'abort', 'close', 'cancel', 'exit'].includes(line)
 		) {
@@ -130,6 +173,7 @@ function dev() {
 }
 
 let nodeProcess = null;
+
 function node() {
 	if (args.includes('--no-run')) return;
 	if (nodeProcess) {
@@ -137,16 +181,8 @@ function node() {
 	} else {
 		console.log('Node started');
 	}
-	nodeProcess = spawn('node', ['.']);
-
-	nodeProcess.stdout.setEncoding('utf8');
-	nodeProcess.stdout.on('data', function (data) {
-		console.log(data);
-	});
-
-	nodeProcess.stderr.setEncoding('utf8');
-	nodeProcess.stderr.on('data', function (data) {
-		console.log(data);
+	nodeProcess = spawn('node', ['.'], {
+		stdio: 'inherit',
 	});
 }
 
