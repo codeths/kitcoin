@@ -121,16 +121,38 @@ export class Validators {
 	});
 
 	/**
-	 * Data must be equal to a specified value
+	 * Data must be equal to a specified value or one of the specified values
 	 * @param value Value to compare to
+	 * @param caseSensitive Whether to compare case sensitively
 	 */
-	static streq = (value: string) => ({
+	static streq = (
+		value: string | string[],
+		caseSensitive: boolean = true,
+	) => ({
 		run: (data: unknown): boolean | string => {
-			let isStr = Validators.string().run(data) as boolean;
-			if (!isStr) return '{KEY} must be a string';
-			return data == value;
+			if (!Validators.string().run(data)) return '{KEY} must be a string';
+			if (!Array.isArray(value)) value = [value];
+			if (!caseSensitive) {
+				data = data.toLowerCase();
+				value = value.map(x => x.toLowerCase());
+			}
+			return value.some(x => x == data);
 		},
-		errorMessage: `{KEY} must be equal to ${value}`,
+		errorMessage: `{KEY} must be equal to ${
+			Array.isArray(value) ? `one of: ${value.join(',')}` : value
+		} (case ${caseSensitive ? '' : 'in'}sensitive)`,
+	});
+
+	/**
+	 * Data must match regex pattern
+	 * @param value Regex pattern to match
+	 */
+	static regex = (value: RegExp) => ({
+		run: (data: unknown): boolean | string => {
+			if (!Validators.string().run(data)) return '{KEY} must be a string';
+			return value.test(data as string);
+		},
+		errorMessage: `{KEY} must match ${value}`,
 	});
 
 	/** Data must be a number */
@@ -142,8 +164,7 @@ export class Validators {
 	/** Data must be a stringified number */
 	static numberString = () => ({
 		run: (data: unknown): data is `${number}` => {
-			let isStr = Validators.string().run(data) as boolean;
-			if (!isStr) return false;
+			if (!Validators.string().run(data)) return false;
 			return !isNaN(parseFloat(data as string));
 		},
 		errorMessage: '{KEY} must be a number',
