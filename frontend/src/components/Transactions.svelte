@@ -72,17 +72,25 @@
 			{:else}
 				<h1>No transactions.</h1>
 			{/if}
-			<span
-				>Showing page {transactions.page} of {transactions.pageCount}</span
-			>
-			<button on:click={() => page--} disabled={transactions.page <= 1}
-				>Previous</button
-			>
-			<button
-				on:click={() => page++}
-				disabled={transactions.page >= transactions.pageCount}
-				>Next</button
-			>
+			<div class="pt-4">
+				<div class="text-center mb-2">
+					Showing page {transactions.page} of {transactions.pageCount}
+				</div>
+				<div class="flex justify-center align-center">
+					<button
+						on:click={() => page--}
+						disabled={transactions.page <= 1}
+						class="bg-blue-500 hover:bg-blue-700 text-white border transition-colors duration-300 font-bold py-2 px-4 mx-2 rounded w-32 h-10 flex items-center justify-center text-center"
+						>Previous</button
+					>
+					<button
+						on:click={() => page++}
+						disabled={transactions.page >= transactions.pageCount}
+						class="bg-blue-500 hover:bg-blue-700 text-white border transition-colors duration-300 font-bold py-2 px-4 mx-2 rounded w-32 h-10 flex items-center justify-center text-center"
+						>Next</button
+					>
+				</div>
+			</div>
 		{:catch error}
 			{error}
 			<button
