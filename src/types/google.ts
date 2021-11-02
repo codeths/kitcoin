@@ -1,13 +1,9 @@
-enum ClassroomRolesEnum {
-	'TEACHER',
-	'STUDENT',
-	'ANY',
-}
-export type ClassroomRoles = keyof typeof ClassroomRolesEnum;
+export const ClassroomRolesArray = ['TEACHER', 'STUDENT', 'ANY'] as const;
+export type ClassroomRoles = typeof ClassroomRolesArray[number];
 
 export function isValidClassroomRole(role: unknown): role is ClassroomRoles {
 	return (
 		typeof role == 'string' &&
-		Object.keys(ClassroomRolesEnum).includes(role)
+		ClassroomRolesArray.includes(role as ClassroomRoles)
 	);
 }
