@@ -4,7 +4,7 @@ import {request, Validators} from '../../../helpers/request';
 import Google, {google} from 'googleapis';
 import {getAccessToken} from '../../../helpers/oauth';
 import {ClassroomClient} from '../../../helpers/classroom';
-import {isValidClassroomRole} from '../../../types';
+import {ClassroomRolesArray, isValidClassroomRole} from '../../../types';
 const router = express.Router();
 
 // Get classes
@@ -13,6 +13,21 @@ router.get(
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
+			validators: {
+				query: {
+					role: Validators.optional(
+						Validators.and(Validators.string, {
+							run: role =>
+								isValidClassroomRole(
+									(role as string).toUpperCase(),
+								),
+							errorMessage: `{KEY} must be one of: ${ClassroomRolesArray.join(
+								', ',
+							)} (case insensitive)`,
+						}),
+					),
+				},
+			},
 		}),
 	async (req, res) => {
 		try {
