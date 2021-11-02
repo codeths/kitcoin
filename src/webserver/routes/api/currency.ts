@@ -26,7 +26,6 @@ router.get(
 			if (!req.user) return;
 
 			let {user} = req.params;
-			if (user == 'me') user = req.user.id;
 
 			const dbUser = user == 'me' ? req.user : await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
@@ -69,7 +68,6 @@ router.get(
 			if (!req.user) return;
 
 			let {user} = req.params;
-			if (user == 'me') user = req.user.id;
 
 			let count = numberFromData(req.query.count);
 			let page = numberFromData(req.query.page);
@@ -78,7 +76,12 @@ router.get(
 			const dbUser = user == 'me' ? req.user : await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
 
-			const query = Transaction.find().byUser(user, count, page, search);
+			const query = Transaction.find().byUser(
+				dbUser.id,
+				count,
+				page,
+				search,
+			);
 
 			const [transactions, docCount] = await Promise.all([
 				query.exec(),
@@ -93,7 +96,7 @@ router.get(
 			]);
 
 			res.status(200).send({
-				page,
+				page: page ?? 1,
 				pageCount: Math.ceil(
 					docCount /
 						(query.getOptions().limit ?? transactions.length),
