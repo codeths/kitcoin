@@ -29,8 +29,12 @@ export async function request(
 			return res.status(403).send('Forbidden');
 	}
 
-	const badRequest = validate(req, appliedOptions.validators);
-	if (badRequest) return res.status(400).send(badRequest);
+	try {
+		const badRequest = validate(req, appliedOptions.validators);
+		if (badRequest) return res.status(400).send(badRequest);
+	} catch (e) {
+		return res.status(500).send('Failed to validate request.');
+	}
 
 	next();
 }
@@ -84,7 +88,6 @@ function validate(
 	if (errors.length > 0) return errors.join('<br><br>');
 	return null;
 }
-
 export function stringFromData(data: string): string;
 export function stringFromData(data: unknown): string | null;
 export function stringFromData(data: unknown): string | null {
