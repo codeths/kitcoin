@@ -74,11 +74,12 @@ router.get(
 			validators: {
 				query: {
 					q: Validators.string,
-					roles: Validators.optional({
-						run: (data: unknown) =>
-							typeof data == 'string' && isValidRoles(data),
-						errorMessage: 'Invalid roles list',
-					}),
+					roles: Validators.optional(
+						Validators.and(Validators.string, {
+							run: isValidRoles,
+							errorMessage: 'Invalid roles list',
+						}),
+					),
 					count: Validators.optional(Validators.number),
 				},
 			},
