@@ -6,6 +6,7 @@ import {
 	UserRoleTypes,
 } from '../../../helpers/schema';
 import {request, Validators} from '../../../helpers/request';
+import {requestHasUser} from '../../../types';
 const router = express.Router();
 
 router.patch(
@@ -27,7 +28,8 @@ router.patch(
 		}),
 	async (req, res) => {
 		try {
-			if (!req.user) return;
+			if (!requestHasUser(req)) return;
+
 			let {user, roles} = req.body;
 
 			const dbUser = await User.findById(user);
@@ -53,7 +55,8 @@ router.get(
 			authentication: true,
 		}),
 	async (req, res) => {
-		if (!req.user) return;
+		if (!requestHasUser(req)) return;
+
 		res.status(200).send({
 			name: req.user.name,
 			email: req.user.email,
@@ -82,7 +85,8 @@ router.get(
 		}),
 	async (req, res) => {
 		try {
-			if (!req.user) return;
+			if (!requestHasUser(req)) return;
+
 			const {q, roles, count} = req.query as {
 				q: string;
 				roles?: string;

@@ -6,6 +6,8 @@ import {
 	stringFromData,
 	Validators,
 } from '../../../helpers/request';
+import {requestHasUser} from '../../../types';
+
 const router = express.Router();
 
 // Get user balance
@@ -23,7 +25,7 @@ router.get(
 		}),
 	async (req, res) => {
 		try {
-			if (!req.user) return;
+			if (!requestHasUser(req)) return;
 
 			let {user} = req.params;
 
@@ -65,7 +67,7 @@ router.get(
 		}),
 	async (req, res) => {
 		try {
-			if (!req.user) return;
+			if (!requestHasUser(req)) return;
 
 			let {user} = req.params;
 
@@ -76,12 +78,11 @@ router.get(
 			const dbUser = user == 'me' ? req.user : await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
 
-			const query = Transaction.find().byUser(
-				dbUser.id,
+			const query = Transaction.find().byUser(dbUser.id, {
 				count,
 				page,
 				search,
-			);
+			});
 
 			const [transactions, docCount] = await Promise.all([
 				query.exec(),
@@ -103,7 +104,7 @@ router.get(
 				),
 				docCount,
 				transactions: await Promise.all(
-					transactions.map(t => t.toAPIResponse(dbUser.id)),
+					transactions.map(t => t.toAPIResponse(req.user.id)),
 				),
 			});
 		} catch (e) {
@@ -131,7 +132,7 @@ router.post(
 		}),
 	async (req, res) => {
 		try {
-			if (!req.user) return;
+			if (!requestHasUser(req)) return;
 
 			const {
 				amount,

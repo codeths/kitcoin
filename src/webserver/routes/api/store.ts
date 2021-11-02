@@ -2,6 +2,7 @@ import express from 'express';
 import {ClassroomClient} from '../../../helpers/classroom';
 import {request, Validators} from '../../../helpers/request';
 import {IStoreDoc, IUserDoc, Store} from '../../../helpers/schema';
+import {requestHasUser} from '../../../types';
 const router = express.Router();
 
 async function getStorePerms(
@@ -59,7 +60,7 @@ router.get(
 		}),
 	async (req, res) => {
 		try {
-			if (!req.user) return;
+			if (!requestHasUser(req)) return;
 
 			const {id} = req.params;
 
@@ -116,7 +117,7 @@ router.post(
 		}),
 	async (req, res) => {
 		try {
-			if (!req.user) return;
+			if (!requestHasUser(req)) return;
 
 			const {body} = req;
 

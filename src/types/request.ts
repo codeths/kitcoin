@@ -55,3 +55,9 @@ export type RequestValidateOptions = {
 		  }
 		| undefined;
 };
+
+export function requestHasUser(req: express.Request): req is express.Request & {
+	user: IUserDoc;
+} {
+	return (req.user! as IUserDoc | undefined) != undefined;
+}

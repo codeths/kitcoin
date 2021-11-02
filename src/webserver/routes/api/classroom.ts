@@ -4,7 +4,11 @@ import {request, Validators} from '../../../helpers/request';
 import Google, {google} from 'googleapis';
 import {getAccessToken} from '../../../helpers/oauth';
 import {ClassroomClient} from '../../../helpers/classroom';
-import {ClassroomRolesArray, isValidClassroomRole} from '../../../types';
+import {
+	ClassroomRolesArray,
+	isValidClassroomRole,
+	requestHasUser,
+} from '../../../types';
 const router = express.Router();
 
 // Get classes
@@ -31,7 +35,8 @@ router.get(
 		}),
 	async (req, res) => {
 		try {
-			if (!req.user) return;
+			if (!requestHasUser(req)) return;
+
 			const role = req.query?.role ?? 'ANY';
 			let teaching = typeof role == 'string' && role.toUpperCase();
 			if (!teaching || !isValidClassroomRole(teaching))
@@ -76,7 +81,7 @@ router.get(
 		}),
 	async (req, res) => {
 		try {
-			if (!req.user) return;
+			if (!requestHasUser(req)) return;
 
 			const client = await getAccessToken(req.user);
 			if (!client)
