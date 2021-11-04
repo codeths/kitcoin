@@ -27,14 +27,12 @@
 <Header />
 
 <!-- Content-->
-<div class="mx-8 my-8 lg:mx-24 lg:my-14">
-	<div
-		class="space-y-10 space-x-0 lg:grid lg:grid-cols-12 lg:space-x-10 lg:space-y-0"
-	>
-		<div class="lg:col-span-4 sm:max-w-sm lg:max-w-none">
+<div class="m-8">
+	<div class="lg:grid lg:grid-cols-12">
+		<div class="lg:col-span-4 sm:max-w-sm lg:max-w-none my-8 lg:mx-2">
 			<h1 class="text-3xl font-medium mb-2">Balance</h1>
 			<div
-				class="flex bg-white shadow-md rounded py-10 border-t-8 border-blue-900"
+				class="flex bg-white shadow-md rounded py-10 border-t-8 border-blue-eths"
 			>
 				<h1
 					class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full"
@@ -51,14 +49,14 @@
 				</h1>
 			</div>
 		</div>
-		<div class="lg:col-span-8">
+		<div class="lg:col-span-8 my-8 lg:mx-2">
 			<h1 class="text-3xl font-medium mb-2">What's new</h1>
 			<div class="bg-white shadow-md rounded">
 				<NewItems items={newItems} />
 			</div>
 		</div>
-		<div class="lg:col-span-12">
-			<h1 class="text-4xl font-medium mb-6">Transaction History</h1>
+		<div class="lg:col-span-12 my-8 lg:mx-2">
+			<h1 class="text-4xl font-medium mb-2">Transaction History</h1>
 			<div>
 				<Transactions />
 			</div>
