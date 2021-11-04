@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+	isValidRole,
 	isValidRoles,
 	User,
 	UserRoles,
@@ -76,11 +77,11 @@ router.get(
 					q: Validators.string,
 					roles: Validators.optional(
 						Validators.and(Validators.string, {
-							run: isValidRoles,
+							run: isValidRole,
 							errorMessage: 'Invalid roles list',
 						}),
 					),
-					count: Validators.optional(Validators.number),
+					count: Validators.optional(Validators.anyNumber),
 				},
 			},
 		}),
