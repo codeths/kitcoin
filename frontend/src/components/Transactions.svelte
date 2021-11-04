@@ -3,100 +3,149 @@
 	  Transaction object
 	*/
 	import {getTransactions} from '../utils/api.js';
+	import Loading from './Loading.svelte';
 
-	export let user; // An array of items.
+	export let user;
 	let page = 1;
+	let transactions = {
+		page: 0,
+		pageCount: 0,
+		docCount: 0,
+		transactions: [],
+	};
+	let error = null;
+	let loading = {
+		previous: false,
+		next: false,
+		retry: false,
+		any: false,
+	};
+
+	async function load(p = page, which) {
+		if (which) loading[which] = true;
+		await getTransactions(user, p)
+			.then(res => {
+				error = null;
+				(transactions = res), (page = p);
+			})
+			.catch(e => {
+				error = e;
+				page = p;
+			});
+
+		if (which) loading[which] = false;
+	}
 
 	$: {
-		if (!page) page = 1;
+		if (transactions.page !== page) load(page);
+	}
+
+	$: {
+		loading.any = Object.keys(loading)
+			.filter(x => x !== 'any')
+			.some(k => loading[k]);
 	}
 </script>
 
 <div
 	class="w-full p-4 bg-white rounded shadow-md flex flex-col divide-y divide-gray-300"
 >
-	{#if page}
-		{#await getTransactions(user, page)}
-			<h1>Loading...</h1>
-		{:then transactions}
-			{#if transactions.pageCount !== 0}
-				<table class="w-full table-auto">
-					<thead class="hidden md:table-header-group w-full">
-						<tr class="text-left border-b border-gray-300">
-							<th class="px-2 pb-2">Date</th>
-							<th class="px-2 pb-2">Description</th>
-							<th class="px-2 pb-2">Amount</th>
-						</tr>
-					</thead>
-					<tbody class="w-full divide-y divide-gray-300">
-						{#each transactions.transactions as item}
-							<tr>
-								<td
-									class="px-2 pt-4 md:py-4 block mr-8 md:table-cell md:mr-0 overflow-ellipsis"
-								>
-									{new Date(item.date).toLocaleDateString()}
-									{new Date(item.date).toLocaleTimeString(
-										[],
-										{
-											hour: 'numeric',
-											minute: '2-digit',
-										},
-									)}
-								</td>
-								<td
-									class="px-2 md:py-4 block md:table-cell break-words overflow-ellipsis"
-								>
-									{item.to.me
-										? `From ${item.from.text || 'Unknown'}`
-										: `To ${
-												item.to.text || 'Unknown'
-										  }`}{item.reason
-										? `: ${item.reason}`
-										: ''}
-								</td>
-								<td
-									class="px-2 pb-4 md:py-4 block md:table-cell text-right text-3xl md:text-left md:text-base {item.amount <
-									0
-										? 'text-orange-eths'
-										: 'text-blue-eths'}"
-									>{item.amount < 0 ? '-' : '+'}<span
-										class="icon icon-currency mx-1"
-									/>{Math.abs(
-										item.amount,
-									).toLocaleString()}</td
-								>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			{:else}
-				<h1>No transactions.</h1>
-			{/if}
-			<div class="pt-4">
-				<div class="text-center mb-2">
-					Showing page {transactions.page} of {transactions.pageCount}
-				</div>
-				<div class="flex justify-center align-center">
-					<button
-						on:click={() => page--}
-						disabled={transactions.page <= 1}
-						class="bg-blue-500 hover:bg-blue-700 text-white border transition-colors duration-300 font-bold py-2 px-4 mx-2 rounded w-32 h-10 flex items-center justify-center text-center"
-						>Previous</button
-					>
-					<button
-						on:click={() => page++}
-						disabled={transactions.page >= transactions.pageCount}
-						class="bg-blue-500 hover:bg-blue-700 text-white border transition-colors duration-300 font-bold py-2 px-4 mx-2 rounded w-32 h-10 flex items-center justify-center text-center"
-						>Next</button
-					>
-				</div>
+	{#if transactions.pageCount !== 0}
+		<table class="w-full table-auto">
+			<thead class="hidden md:table-header-group w-full">
+				<tr class="text-left border-b border-gray-300">
+					<th class="px-2 pb-2">Date</th>
+					<th class="px-2 pb-2">Description</th>
+					<th class="px-2 pb-2">Amount</th>
+				</tr>
+			</thead>
+			<tbody class="w-full divide-y divide-gray-300">
+				{#each transactions.transactions as item}
+					<tr>
+						<td
+							class="px-2 pt-4 md:py-4 block mr-8 md:table-cell md:mr-0 overflow-ellipsis"
+						>
+							{new Date(item.date).toLocaleDateString()}
+							{new Date(item.date).toLocaleTimeString([], {
+								hour: 'numeric',
+								minute: '2-digit',
+							})}
+						</td>
+						<td
+							class="px-2 md:py-4 block md:table-cell break-words overflow-ellipsis"
+						>
+							{item.to.me
+								? `From ${item.from.text || 'Unknown'}`
+								: `To ${item.to.text || 'Unknown'}`}{item.reason
+								? `: ${item.reason}`
+								: ''}
+						</td>
+						<td
+							class="px-2 pb-4 md:py-4 block md:table-cell text-right text-3xl md:text-left md:text-base {item.amount <
+							0
+								? 'text-orange-eths'
+								: 'text-blue-eths'}"
+							>{item.amount < 0 ? '-' : '+'}<span
+								class="icon icon-currency mx-1"
+							/>{Math.abs(item.amount).toLocaleString()}</td
+						>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	{:else}
+		<h1>No transactions.</h1>
+	{/if}
+
+	{#if error}
+		<div class="pt-4">
+			<div class="text-center mb-2">
+				{error}
 			</div>
-		{:catch error}
-			{error}
-			<button
-				on:click={() => {
-					page = null;
-				}}>Retry</button
-			>
-		{/await}{/if}
+			<div class="flex justify-center align-center">
+				<button
+					on:click={() => load(page, 'retry')}
+					disabled={loading.any}
+					class="bg-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 text-white border transition-colors duration-300 font-bold py-2 px-4 mx-2 rounded w-32 h-10 flex items-center justify-center text-center"
+				>
+					{#if loading.retry}
+						<Loading height="2rem" />
+					{:else}
+						Retry
+					{/if}
+				</button>
+			</div>
+		</div>
+	{:else}
+		<div class="pt-4">
+			<div class="text-center mb-2">
+				Showing page {transactions.page} of {transactions.pageCount}
+			</div>
+			<div class="flex justify-center align-center">
+				<button
+					on:click={() => load(page - 1, 'previous')}
+					disabled={loading.any || transactions.page <= 1}
+					class="bg-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 text-white border transition-colors duration-300 font-bold py-2 px-4 mx-2 rounded w-32 h-10 flex items-center justify-center text-center"
+				>
+					{#if loading.previous}
+						<Loading height="2rem" />
+					{:else}
+						Previous
+					{/if}</button
+				>
+				<button
+					on:click={() => load(page + 1, 'next')}
+					disabled={loading.any ||
+						transactions.page >= transactions.pageCount}
+					class="bg-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 text-white border transition-colors duration-300 font-bold py-2 px-4 mx-2 rounded w-32 h-10 flex items-center justify-center text-center"
+				>
+					{#if loading.next}
+						<Loading height="2rem" />
+					{:else}
+						Next
+					{/if}</button
+				>
+			</div>
+		</div>
+	{/if}
 </div>
