@@ -2,7 +2,7 @@ import express from 'express';
 import {ClassroomClient} from '../../../helpers/classroom';
 import {numberFromData, request, Validators} from '../../../helpers/request';
 import {IStoreDoc, IUserDoc, Store, StoreItem} from '../../../helpers/schema';
-import {requestHasUser} from '../../../types';
+import {IStoreItemDoc, requestHasUser} from '../../../types';
 const router = express.Router();
 
 async function getStorePerms(
@@ -84,13 +84,10 @@ router.get(
 
 			const {name, description} = store;
 
-			const items = await store.getItems();
-
 			return res.status(200).send({
 				name,
 				description,
 				canManage: permissions.manage,
-				items,
 			});
 		} catch (e) {
 			try {
@@ -148,10 +145,12 @@ router.get(
 		const query = StoreItem.find().byStoreID(id);
 
 		const [items, docCount] = await Promise.all([
-			query.setOptions({
-				skip: (page - 1) * count,
-				limit: count,
-			}),
+			query
+				.setOptions({
+					skip: (page - 1) * count,
+					limit: count,
+				})
+				.exec(),
 			query.clone().countDocuments().exec(),
 		]);
 
@@ -159,7 +158,13 @@ router.get(
 			page,
 			pageCount: Math.ceil(docCount / count),
 			docCount,
-			items,
+			items: items.map(i => ({
+				_id: i._id,
+				name: i.name,
+				description: i.description,
+				quantity: i.quantity,
+				price: i.price,
+			})),
 		});
 	},
 );
@@ -222,68 +227,13 @@ router.get(
 
 		if (!item) return;
 
-		res.status(200).send(item);
-	},
-);
-
-router.post(
-	'/store/:storeID/items',
-	async (req, res, next) =>
-		request(req, res, next, {
-			authentication: true,
-			validators: {
-				params: {
-					storeID: Validators.string,
-				},
-				body: {
-					name: Validators.string,
-					description: Validators.string,
-					price: Validators.number,
-					quantity: Validators.optional(Validators.number),
-				},
-			},
-		}),
-	async (req, res) => {
-		try {
-			if (!requestHasUser(req)) return;
-
-			const {storeID} = req.params;
-			const {name, quantity, description, price} = req.body;
-
-			const store = await Store.findById(storeID)
-				.then(store => {
-					if (!store) {
-						res.status(404).send('Store not found');
-						return null;
-					}
-					return store;
-				})
-				.catch(() => {
-					res.status(400).send('Invalid ID');
-					return null;
-				});
-
-			if (!store) return;
-
-			const permissions = await getStorePerms(store, req.user);
-			if (!permissions.manage) return res.status(403).send('Forbidden');
-
-			const item = await new StoreItem({
-				storeID,
-				name,
-				quantity,
-				description,
-				price,
-			}).save();
-
-			if (!item) return res.status(500).send('Failed to create item');
-
-			return res.status(200).send(item);
-		} catch (e) {
-			try {
-				res.status(500).send('Something went wrong.');
-			} catch (e) {}
-		}
+		res.status(200).send({
+			_id: item._id,
+			name: item.name,
+			description: item.description,
+			quantity: item.quantity,
+			price: item.price,
+		});
 	},
 );
 
@@ -360,7 +310,13 @@ router.patch(
 
 			await item.save();
 
-			res.status(200).send(item);
+			res.status(200).send({
+				_id: item._id,
+				name: item.name,
+				description: item.description,
+				quantity: item.quantity,
+				price: item.price,
+			});
 		} catch (e) {
 			try {
 				res.status(500).send('Something went wrong.');
@@ -429,6 +385,73 @@ router.delete(
 			await item.delete();
 
 			res.status(200).send();
+		} catch (e) {
+			try {
+				res.status(500).send('Something went wrong.');
+			} catch (e) {}
+		}
+	},
+);
+
+router.post(
+	'/store/:storeID/items',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			validators: {
+				params: {
+					storeID: Validators.string,
+				},
+				body: {
+					name: Validators.string,
+					description: Validators.string,
+					price: Validators.number,
+					quantity: Validators.optional(Validators.number),
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			const {storeID} = req.params;
+			const {name, quantity, description, price} = req.body;
+
+			const store = await Store.findById(storeID)
+				.then(store => {
+					if (!store) {
+						res.status(404).send('Store not found');
+						return null;
+					}
+					return store;
+				})
+				.catch(() => {
+					res.status(400).send('Invalid ID');
+					return null;
+				});
+
+			if (!store) return;
+
+			const permissions = await getStorePerms(store, req.user);
+			if (!permissions.manage) return res.status(403).send('Forbidden');
+
+			const item = await new StoreItem({
+				storeID,
+				name,
+				quantity,
+				description,
+				price,
+			}).save();
+
+			if (!item) return res.status(500).send('Failed to create item');
+
+			return res.status(200).send({
+				_id: item._id,
+				name: item.name,
+				description: item.description,
+				quantity: item.quantity,
+				price: item.price,
+			});
 		} catch (e) {
 			try {
 				res.status(500).send('Something went wrong.');
