@@ -4,21 +4,50 @@
 
 > `user` or `id` refers to the document ID in the database
 
-## GET `/transactions/:user`
+# Classroom
 
-Returns all transactions for a user. Requires staff role for retrieving other users' transactions.
+## GET `/classes`
+
+Get a list of classes you are teaching in Google classroom.
 
 ### Params
 
-`:user` (path): The user to get transactions for, or `me` to get for the authenticated user
-
-`count` (query): [Optional] the number of transactions to return. Defaults to 10
-
-`page` (query): [Optional] the page of transactions to return. Defaults to 1
+`role` (query): [Optional] your role in the classroom. One of: `TEACHER`, `STUDENT`, `ANY` (default: `ANY`)
 
 ### Returns
 
-Array of transactions
+Array of classes
+
+```ts
+{
+	id: string,
+	name: string | null,
+	section: string | null,
+}
+[];
+```
+
+### GET `/students/:class`
+
+Get a list of students in a class. Requires staff role.
+
+### Params
+
+`:class` (path): The class ID to get students for. Find using `/classes`
+
+### Returns
+
+Array of students
+
+```ts
+{
+	googleId: string,
+	id: string,
+	name: string | null,
+}[]
+```
+
+# Currency
 
 ## GET `/balance/:user`
 
@@ -34,50 +63,24 @@ The user's balance
 
 ```ts
 {
-	balance: number;
+	balance: number,
 }
 ```
 
-## GET `/classes`
+## GET `/transactions/:user`
 
-Get a list of classes you are teaching in Google classroom. Requires staff role.
+Returns all transactions for a user. Requires staff role for retrieving other users' transactions.
 
 ### Params
 
-None
+`:user` (path): The user to get transactions for, or `me` to get for the authenticated user  
+`count` (query): [Optional] the number of transactions to return. Defaults to 10  
+`page` (query): [Optional] the page of transactions to return. Defaults to 1  
+`search` (query): [Optional] filter transactions by reason text (todo: user search)
 
 ### Returns
 
-Array of classes
-
-```ts
-{
-	id: string;
-	name: string | null;
-	section: string | null;
-}
-[];
-```
-
-### GET `/students/:class`
-
-Get a list of students in a class. Requires staff role.
-
-### Params
-
-`:class`: The class ID to get students for. Find using `/classes`
-
-### Returns
-
-Array of students
-
-```ts
-{
-	id: string;
-	name: string | null;
-}
-[];
-```
+Array of transactions
 
 ### POST `/transactions`
 
@@ -89,15 +92,143 @@ Body:
 
 ```ts
 {
-	amount: number;
-	reason: string | null;
-	user: string; // User ID
+	amount: number,
+	reason: string | null,
+	user: string,
 }
 ```
 
 ### Returns
 
 Transaction object
+
+# Store
+
+## GET `/store/:id`
+
+Get a store's info by its ID
+
+### Params
+
+`:id` (id): Store ID
+
+### Returns
+
+```ts
+{
+	name: string,
+	description: string,
+	canManage: boolean,
+}
+```
+
+## GET `/store/:id/items`
+
+Get a list of a store's items
+
+### Params
+
+`:id` (id): Store ID  
+`count` (query): [Optional] the number of transactions to return. Defaults to 10  
+`page` (query): [Optional] the page of transactions to return. Defaults to 1
+
+### Returns
+
+```ts
+{
+	_id: string,
+	name: string,
+	description: string,
+	quantity: number | null,
+	price: number,
+}[]
+```
+
+## GET `/store/:storeID/item/:id`
+
+Get a store's item by its ID
+
+### Params
+
+`:storeID` (id): Store ID  
+`:id` (id): Item ID
+
+### Returns
+
+```ts
+{
+	_id: string,
+	name: string,
+	description: string,
+	quantity: number | null,
+	price: number,
+}
+```
+
+## PATCH `/store/:storeID/item/:id`
+
+Update a store's item
+
+### Params
+
+`:storeID` (id): Store ID  
+`:id` (id): Item ID  
+`name` (body): [Optional] New name  
+`description` (body): [Optional] New description  
+`price` (body): [Optional] New price  
+`quantity` (body): [Optional] New quantity
+
+### Returns
+
+```ts
+{
+	_id: string,
+	name: string,
+	description: string,
+	quantity: number | null,
+	price: number,
+}
+```
+
+## DELETE `/store/:storeID/item/:id`
+
+Delete store's item
+
+### Params
+
+`:storeID` (id): Store ID  
+`:id` (id): Item ID
+
+### Returns
+
+Nothing
+
+## POST `/store/:storeID/items`
+
+Create a store item
+
+### Params
+
+`:storeID` (id): Store ID  
+`:id` (id): Item ID  
+`name` (body): Name  
+`description` (body): Description  
+`price` (body): Price  
+`quantity` (body): [Optional] New quantity
+
+### Returns
+
+```ts
+{
+	_id: string,
+	name: string,
+	description: string,
+	quantity: number | null,
+	price: number,
+}
+```
+
+# Users
 
 ## PATCH `/roles`
 
