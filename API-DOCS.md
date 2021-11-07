@@ -10,11 +10,11 @@
 
 Get a list of classes you are teaching in Google classroom.
 
-### Params
+### Request
 
 `role` (query): [Optional] your role in the classroom. One of: `TEACHER`, `STUDENT`, `ANY` (default: `ANY`)
 
-### Returns
+### Response
 
 Array of classes
 
@@ -31,11 +31,11 @@ Array of classes
 
 Get a list of students in a class. Requires staff role.
 
-### Params
+### Request
 
 `:class` (path): The class ID to get students for. Find using `/classes`
 
-### Returns
+### Response
 
 Array of students
 
@@ -53,11 +53,11 @@ Array of students
 
 Get the balance for a user. Requires staff role for retrieving other users' transactions.
 
-### Params
+### Request
 
 `:user` (path): The user to get transactions for, or `me` to get for the authenticated user
 
-### Returns
+### Response
 
 The user's balance
 
@@ -71,14 +71,14 @@ The user's balance
 
 Returns all transactions for a user. Requires staff role for retrieving other users' transactions.
 
-### Params
+### Request
 
 `:user` (path): The user to get transactions for, or `me` to get for the authenticated user  
 `count` (query): [Optional] the number of transactions to return. Defaults to 10  
 `page` (query): [Optional] the page of transactions to return. Defaults to 1  
 `search` (query): [Optional] filter transactions by reason text (todo: user search)
 
-### Returns
+### Response
 
 Array of transactions
 
@@ -86,7 +86,7 @@ Array of transactions
 
 Create a transaction. Requires staff role.
 
-### Params
+### Request
 
 Body:
 
@@ -98,7 +98,7 @@ Body:
 }
 ```
 
-### Returns
+### Response
 
 Transaction object
 
@@ -108,11 +108,11 @@ Transaction object
 
 Get a store's info by its ID
 
-### Params
+### Request
 
-`:id` (id): Store ID
+`:id` (path): Store ID
 
-### Returns
+### Response
 
 ```ts
 {
@@ -126,13 +126,13 @@ Get a store's info by its ID
 
 Get a list of a store's items
 
-### Params
+### Request
 
-`:id` (id): Store ID  
+`:id` (path): Store ID  
 `count` (query): [Optional] the number of transactions to return. Defaults to 10  
 `page` (query): [Optional] the page of transactions to return. Defaults to 1
 
-### Returns
+### Response
 
 ```ts
 {
@@ -148,12 +148,12 @@ Get a list of a store's items
 
 Get a store's item by its ID
 
-### Params
+### Request
 
-`:storeID` (id): Store ID  
-`:id` (id): Item ID
+`:storeID` (path): Store ID  
+`:id` (path): Item ID
 
-### Returns
+### Response
 
 ```ts
 {
@@ -169,16 +169,16 @@ Get a store's item by its ID
 
 Update a store's item
 
-### Params
+### Request
 
-`:storeID` (id): Store ID  
-`:id` (id): Item ID  
+`:storeID` (path): Store ID  
+`:id` (path): Item ID  
 `name` (body): [Optional] New name  
 `description` (body): [Optional] New description  
 `price` (body): [Optional] New price  
 `quantity` (body): [Optional] New quantity
 
-### Returns
+### Response
 
 ```ts
 {
@@ -194,12 +194,12 @@ Update a store's item
 
 Delete store's item
 
-### Params
+### Request
 
-`:storeID` (id): Store ID  
-`:id` (id): Item ID
+`:storeID` (path): Store ID  
+`:id` (path): Item ID
 
-### Returns
+### Response
 
 Nothing
 
@@ -207,16 +207,16 @@ Nothing
 
 Create a store item
 
-### Params
+### Request
 
-`:storeID` (id): Store ID  
-`:id` (id): Item ID  
+`:storeID` (path): Store ID  
+`:id` (path): Item ID  
 `name` (body): Name  
 `description` (body): Description  
 `price` (body): Price  
 `quantity` (body): [Optional] New quantity
 
-### Returns
+### Response
 
 ```ts
 {
@@ -234,7 +234,7 @@ Create a store item
 
 Update a user's roles. Requires admin role.
 
-### Params
+### Request
 
 Body:
 
@@ -245,7 +245,7 @@ Body:
 }
 ```
 
-### Returns
+### Response
 
 User object
 
@@ -253,11 +253,11 @@ User object
 
 Get info for authenticated user
 
-### Params
+### Request
 
 None
 
-### Returns
+### Response
 
 ```ts
 {
