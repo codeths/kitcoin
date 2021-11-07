@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import mongostore from 'connect-mongodb-session';
 import {mongo as mongoURL, sessionSecret, port} from '../config/keys.json';
-import {auth, api, docs} from './routes';
+import {auth, api} from './routes';
 import {IUserDoc, User} from '../helpers/schema';
 import path from 'path';
 import {request} from '../helpers/request';
@@ -53,7 +53,6 @@ app.use(
 
 app.use('/auth', auth);
 app.use('/api', api);
-app.use('/docs', docs);
 
 app.use(['/login', '/logout', '/signin', '/signout'], (req, res) => {
 	res.redirect(`/auth${req.originalUrl}`);
@@ -92,6 +91,8 @@ app.get(
 		else res.redirect('/login');
 	},
 );
+
+app.use('/schema', express.static(`${__dirname}/../schema`));
 
 app.get(
 	'/',
