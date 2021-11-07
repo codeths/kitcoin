@@ -219,9 +219,12 @@ const storeItemSchema = new mongoose.Schema<IStoreItemDoc, IStoreItemModel>({
 	name: {type: String, required: true},
 	quantity: Number,
 	description: String,
+	price: Number,
 });
 
-storeItemSchema.query.byStore = function (storeID: string): IStoreItemQueries {
+storeItemSchema.query.byStoreID = function (
+	storeID: string,
+): IStoreItemQueries {
 	return this.where({storeID});
 };
 
