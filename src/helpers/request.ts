@@ -54,34 +54,35 @@ function validate(
 		const part = options[partKey] || {};
 		const data: {[key: string]: unknown} = req[partKey] || {};
 
-		if (typeof data !== 'object') return `Request is missing ${partKey}`;
+		if (typeof data === 'object') {
+			const validatorKeys = Object.keys(part);
 
-		const validatorKeys = Object.keys(data);
+			// Loop through each key of the request data
+			for (let key of validatorKeys) {
+				// Value in request data
+				const value = data[key];
+				// Validator for the key
+				const validatorOptions = part[key];
 
-		// Loop through each key of the request data
-		for (let key of validatorKeys) {
-			// Value in request data
-			const value = data[key];
-			// Validator for the key
-			const validatorOptions = part[key];
+				if (validatorOptions) {
+					// Resolve the validator
+					const validator = Validators.resolve(validatorOptions);
 
-			if (validatorOptions) {
-				// Resolve the validator
-				const validator = Validators.resolve(validatorOptions);
-
-				// Run the validator
-				const valid = validator.run(value);
-				const error = typeof valid == 'string' ? valid : null;
-				if (error)
-					errors.push(
-						(
-							error ||
-							(typeof validatorOptions == 'object' &&
-								validatorOptions.errorMessage) ||
-							'Bad request'
-						).replace(/{KEY}/g, `${key} in ${partKey}`),
-					);
+					// Run the validator
+					const valid = validator.run(value);
+					const error = typeof valid == 'string' ? valid : null;
+					if (error || valid === false)
+						errors.push(
+							(
+								error ||
+								validator.errorMessage ||
+								'{KEY} is invalid'
+							).replace(/{KEY}/g, `${key} in ${partKey}`),
+						);
+				}
 			}
+		} else {
+			errors.push(`Request is missing ${partKey}`);
 		}
 	}
 
