@@ -1,7 +1,7 @@
 import express from 'express';
 import {ClassroomClient} from '../../../helpers/classroom';
-import {request, Validators} from '../../../helpers/request';
-import {IStoreDoc, IUserDoc, Store} from '../../../helpers/schema';
+import {numberFromData, request, Validators} from '../../../helpers/request';
+import {IStoreDoc, IUserDoc, Store, StoreItem} from '../../../helpers/schema';
 import {requestHasUser} from '../../../types';
 const router = express.Router();
 
@@ -100,14 +100,142 @@ router.get(
 	},
 );
 
-router.post(
-	'/storeitem',
+router.get(
+	'/store/:id/items',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
 			validators: {
-				body: {
+				params: {
+					id: Validators.string,
+				},
+				query: {
+					count: Validators.optional(
+						Validators.and(Validators.integer, Validators.gt(0)),
+					),
+					page: Validators.optional(
+						Validators.and(Validators.integer, Validators.gt(0)),
+					),
+				},
+			},
+		}),
+	async (req, res) => {
+		if (!requestHasUser(req)) return;
+
+		const {id} = req.params;
+
+		const store = await Store.findById(id)
+			.then(store => {
+				if (!store) {
+					res.status(404).send('Store not found');
+					return null;
+				}
+				return store;
+			})
+			.catch(() => {
+				res.status(400).send('Invalid ID');
+				return null;
+			});
+
+		if (!store) return;
+
+		const permissions = await getStorePerms(store, req.user);
+		if (!permissions.view) return res.status(403).send('Forbidden');
+
+		let count = numberFromData(req.query.count) ?? 10;
+		let page = numberFromData(req.query.page) ?? 1;
+
+		const query = StoreItem.find().byStoreID(id);
+
+		const [items, docCount] = await Promise.all([
+			query.setOptions({
+				skip: (page - 1) * count,
+				limit: count,
+			}),
+			query.clone().countDocuments().exec(),
+		]);
+
+		res.status(200).send({
+			page,
+			pageCount: Math.ceil(docCount / count),
+			docCount,
+			items,
+		});
+	},
+);
+
+router.get(
+	'/store/:storeID/item/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			validators: {
+				params: {
 					storeID: Validators.string,
+					id: Validators.string,
+				},
+				query: {
+					count: Validators.optional(
+						Validators.and(Validators.integer, Validators.gt(0)),
+					),
+					page: Validators.optional(
+						Validators.and(Validators.integer, Validators.gt(0)),
+					),
+				},
+			},
+		}),
+	async (req, res) => {
+		if (!requestHasUser(req)) return;
+
+		const {storeID, id} = req.params;
+
+		const store = await Store.findById(storeID)
+			.then(store => {
+				if (!store) {
+					res.status(404).send('Store not found');
+					return null;
+				}
+				return store;
+			})
+			.catch(() => {
+				res.status(400).send('Invalid ID');
+				return null;
+			});
+
+		if (!store) return;
+
+		const permissions = await getStorePerms(store, req.user);
+		if (!permissions.view) return res.status(403).send('Forbidden');
+
+		const item = await StoreItem.findById(id)
+			.then(item => {
+				if (!item || item.storeID != storeID) {
+					res.status(404).send('Item not found');
+					return null;
+				}
+				return item;
+			})
+			.catch(() => {
+				res.status(400).send('Invalid ID');
+				return null;
+			});
+
+		if (!item) return;
+
+		res.status(200).send(item);
+	},
+);
+
+router.post(
+	'/store/:storeID/items',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			validators: {
+				params: {
+					storeID: Validators.string,
+				},
+				body: {
 					name: Validators.string,
 					description: Validators.string,
 					price: Validators.number,
@@ -119,9 +247,8 @@ router.post(
 		try {
 			if (!requestHasUser(req)) return;
 
-			const {body} = req;
-
-			const {storeID, name, quantity, description, price} = body;
+			const {storeID} = req.params;
+			const {name, quantity, description, price} = req.body;
 
 			const store = await Store.findById(storeID)
 				.then(store => {
@@ -140,7 +267,173 @@ router.post(
 
 			const permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
-		} catch (e) {}
+
+			const item = await new StoreItem({
+				storeID,
+				name,
+				quantity,
+				description,
+				price,
+			}).save();
+
+			if (!item) return res.status(500).send('Failed to create item');
+
+			return res.status(200).send(item);
+		} catch (e) {
+			try {
+				res.status(500).send('Something went wrong.');
+			} catch (e) {}
+		}
+	},
+);
+
+router.patch(
+	'/store/:storeID/item/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			validators: {
+				params: {
+					storeID: Validators.string,
+					id: Validators.string,
+				},
+				body: {
+					name: Validators.optional(Validators.string),
+					description: Validators.optional(Validators.string),
+					price: Validators.optional(Validators.number),
+					quantity: Validators.optional(Validators.number),
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			const {storeID, id} = req.params;
+			let data = req.body;
+
+			Object.keys(data).forEach(key => {
+				if (
+					!['name', 'description', 'price', 'quantity'].includes(
+						key,
+					) ||
+					data[key] == null ||
+					data[key] == undefined
+				)
+					delete data[key];
+			});
+
+			const store = await Store.findById(storeID)
+				.then(store => {
+					if (!store) {
+						res.status(404).send('Store not found');
+						return null;
+					}
+					return store;
+				})
+				.catch(() => {
+					res.status(400).send('Invalid ID');
+					return null;
+				});
+
+			if (!store) return;
+
+			const permissions = await getStorePerms(store, req.user);
+			if (!permissions.manage) return res.status(403).send('Forbidden');
+
+			const item = await StoreItem.findById(id)
+				.then(item => {
+					if (!item || item.storeID != storeID) {
+						res.status(404).send('Item not found');
+						return null;
+					}
+					return item;
+				})
+				.catch(() => {
+					res.status(400).send('Invalid ID');
+					return null;
+				});
+
+			if (!item) return;
+
+			Object.assign(item, data);
+
+			await item.save();
+
+			res.status(200).send(item);
+		} catch (e) {
+			try {
+				res.status(500).send('Something went wrong.');
+			} catch (e) {}
+		}
+	},
+);
+
+router.delete(
+	'/store/:storeID/item/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			validators: {
+				params: {
+					storeID: Validators.string,
+					id: Validators.string,
+				},
+				body: {
+					name: Validators.optional(Validators.string),
+					description: Validators.optional(Validators.string),
+					price: Validators.optional(Validators.number),
+					quantity: Validators.optional(Validators.number),
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			const {storeID, id} = req.params;
+
+			const store = await Store.findById(storeID)
+				.then(store => {
+					if (!store) {
+						res.status(404).send('Store not found');
+						return null;
+					}
+					return store;
+				})
+				.catch(() => {
+					res.status(400).send('Invalid ID');
+					return null;
+				});
+
+			if (!store) return;
+
+			const permissions = await getStorePerms(store, req.user);
+			if (!permissions.manage) return res.status(403).send('Forbidden');
+
+			const item = await StoreItem.findById(id)
+				.then(item => {
+					if (!item || item.storeID != storeID) {
+						res.status(404).send('Item not found');
+						return null;
+					}
+					return item;
+				})
+				.catch(() => {
+					res.status(400).send('Invalid ID');
+					return null;
+				});
+
+			if (!item) return;
+
+			await item.delete();
+
+			res.status(200).send();
+		} catch (e) {
+			try {
+				res.status(500).send('Something went wrong.');
+			} catch (e) {}
+		}
 	},
 );
 
