@@ -17,6 +17,7 @@ import {
 	IStoreItem,
 	IStoreItemQueries,
 	IStoreItemMethods,
+	IStoreItemsQuery,
 	IStoreItemDoc,
 	IStoreItemModel,
 } from '../types';
@@ -222,9 +223,7 @@ const storeItemSchema = new mongoose.Schema<IStoreItemDoc, IStoreItemModel>({
 	price: Number,
 });
 
-storeItemSchema.query.byStoreID = function (
-	storeID: string,
-): IStoreItemQueries {
+storeItemSchema.query.byStoreID = function (storeID: string): IStoreItemsQuery {
 	return this.where({storeID});
 };
 

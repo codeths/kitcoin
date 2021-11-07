@@ -268,6 +268,9 @@ export type IStoreItemDoc = IStoreItem & IStoreItemMethods & Document<IUser>;
 export type IStoreItemQuery = Query<IStoreItemDoc, IStoreItemDoc> &
 	IStoreItemQueries;
 
+export type IStoreItemsQuery = Query<IStoreItemDoc[], IStoreItemDoc> &
+	IStoreItemQueries;
+
 export interface IStoreItemMethods {
 	getStore(): Promise<IStoreDoc | null>;
 }
@@ -276,7 +279,7 @@ export interface IStoreItemQueries {
 	/**
 	 * @param storeID Store ID (Mongo ID)
 	 */
-	byStoreID(storeID: string): IStoreItemQuery;
+	byStoreID(storeID: string): IStoreItemsQuery;
 }
 
 export interface IStoreItemModel
