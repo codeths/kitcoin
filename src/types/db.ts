@@ -3,15 +3,10 @@ import {
 	Document,
 	Model,
 	ObjectId,
-	Query as DefaultQuery,
+	Query,
 	SaveOptions,
 } from 'mongoose';
 import {MongooseFuzzyModel} from 'mongoose-fuzzy-searching';
-
-export interface Query<ResultType, DocType, THelpers = {}, RawDocType = DocType>
-	extends DefaultQuery<ResultType, DocType, THelpers, RawDocType> {
-	clone(): this;
-}
 
 export interface IUser {
 	/**
@@ -265,6 +260,7 @@ export interface IStoreItem {
 	 * Item description
 	 */
 	description: string;
+	price: number;
 }
 
 export type IStoreItemDoc = IStoreItem & IStoreItemMethods & Document<IUser>;
