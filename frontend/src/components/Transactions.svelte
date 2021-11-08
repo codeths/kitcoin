@@ -85,7 +85,7 @@
 							0
 								? 'text-orange-eths'
 								: 'text-blue-eths'}"
-							>{item.amount < 0 ? '-' : '+'}<span
+							>{item.amount < 0 ? '-' : ''}<span
 								class="icon icon-currency mx-1"
 							/>{Math.abs(item.amount).toLocaleString()}</td
 						>
