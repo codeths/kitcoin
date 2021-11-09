@@ -227,6 +227,10 @@ export interface IStore {
 	 * Mongo IDs of users who can manage this store
 	 */
 	managers: string[];
+	/**
+	 * Mongo IDs of users who can view this store
+	 */
+	users: string[];
 }
 
 export type IStoreDoc = IStore & IStoreMethods & Document<IStore>;

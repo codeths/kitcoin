@@ -203,6 +203,7 @@ const storeSchema = new mongoose.Schema<IStoreDoc, IStoreModel>({
 		required: true,
 	},
 	managers: [String],
+	users: [String],
 });
 
 storeSchema.query.byClassCode = function (classCode: string): IStoreQueries {
