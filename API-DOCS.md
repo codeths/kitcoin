@@ -104,6 +104,24 @@ Transaction object
 
 # Store
 
+## Get `/stores`
+
+Get a list of stores that you have access to.
+
+## Request
+
+None
+
+### Response
+
+```ts
+{
+	name: string,
+	description: string,
+	canManage: boolean,
+}[]
+```
+
 ## GET `/store/:id`
 
 Get a store's info by its ID
