@@ -116,6 +116,7 @@ None
 
 ```ts
 {
+	_id: string
 	name: string,
 	description: string,
 	canManage: boolean,
