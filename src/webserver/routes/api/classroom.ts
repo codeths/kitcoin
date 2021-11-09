@@ -23,7 +23,7 @@ router.get(
 						Validators.and(Validators.string, {
 							run: role =>
 								isValidClassroomRole(
-									(role as string).toUpperCase(),
+									((role || '') as string).toUpperCase(),
 								),
 							errorMessage: `{KEY} must be one of: ${ClassroomRolesArray.join(
 								', ',
