@@ -48,6 +48,66 @@ async function getStorePerms(
 }
 
 router.get(
+	'/stores',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+		}),
+	async (req, res) => {
+		if (!requestHasUser(req)) return;
+
+		let classroomClient = await new ClassroomClient().createClient(
+			req.user,
+		);
+		let classes = await Promise.all([
+			classroomClient.getClassesForRole('TEACHER'),
+			classroomClient.getClassesForRole('STUDENT'),
+		]).then(x =>
+			x
+				.map((x, i) =>
+					(x || [])
+						.filter(x => x.id)
+						.map(x => ({
+							id: x.id as string,
+							role: (i === 0 ? 'TEACHER' : 'STUDENT') as
+								| 'TEACHER'
+								| 'STUDENT',
+						})),
+				)
+				.flat(),
+		);
+
+		const stores = await Store.find({
+			$or: [
+				{
+					public: true,
+				},
+				{
+					classID: {$in: classes.map(x => x.id)},
+				},
+				{
+					managers: req.user.id,
+				},
+			],
+		});
+
+		res.status(200).json(
+			stores.map(x => ({
+				canManage:
+					req.user.hasRole('ADMIN') ||
+					classes.some(
+						c => c.id == x.classID && c.role == 'TEACHER',
+					) ||
+					x.managers.includes(req.user.id),
+				_id: x._id,
+				name: x.name,
+				description: x.description,
+			})),
+		);
+	},
+);
+
+router.get(
 	'/store/:id',
 	async (req, res, next) =>
 		request(req, res, next, {
