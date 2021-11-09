@@ -44,10 +44,11 @@ class ClassroomClient {
 		};
 
 		try {
-			const classes = await google
-				.classroom({version: 'v1', auth: this.client})
-				.courses.list(options || {})
-				.catch(e => null);
+			const classes: Google.Common.GaxiosResponse<Google.classroom_v1.Schema$ListCoursesResponse> | null =
+				await google
+					.classroom({version: 'v1', auth: this.client})
+					.courses.list(options || {})
+					.catch(e => null);
 
 			if (!classes || !classes.data || !classes.data.courses) return null;
 
@@ -75,9 +76,28 @@ class ClassroomClient {
 	}
 
 	/**
+	 * Get class info
+	 * @param courseID Course ID
+	 */
+	public async getClass(courseID: string) {
+		if (!this.client) return null;
+		try {
+			const classInfo = await google
+				.classroom({version: 'v1', auth: this.client})
+				.courses.get({id: courseID})
+				.catch(e => null);
+
+			if (!classInfo || !classInfo.data) return null;
+
+			return classInfo.data;
+		} catch (e) {
+			return null;
+		}
+	}
+
+	/**
 	 * Get a list of students in a class
 	 * @param courseID Course ID
-	 * @returns
 	 */
 	public async getStudents(courseID: string) {
 		if (!this.client) return null;
