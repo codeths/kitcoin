@@ -36,6 +36,8 @@ async function getStorePerms(
 
 	if (store.public) {
 		view = true;
+	} else if (store.users.includes(user.id)) {
+		view = true;
 	} else if (store.classID && classroomClient) {
 		const classes = await classroomClient
 			.getClassesForRole('STUDENT')
@@ -87,6 +89,9 @@ router.get(
 				},
 				{
 					managers: req.user.id,
+				},
+				{
+					users: req.user.id,
 				},
 			],
 		});
