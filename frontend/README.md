@@ -24,7 +24,13 @@ npm run build
 This will create a folder called "build" containing the newly built frontend.  
 If you're going to serve the build, make sure your server is set up to serve `index.html` as the 404 page. This is needed because routify puts the entire frontend in one place, and determines which view to show based on the path, which won't always just be the root.
 
-As of writing, there is not content at the root, and the student dashboard is at _/student_.
+As of writing, there is currently a placeholder page at the root (/) with links to the current pages.
+
+Current pages (as of writing):
+
+-   Student page (/student)
+-   Staff page (/staff)
+-   Store page (/store)
 
 ## Development
 
