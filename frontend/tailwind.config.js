@@ -1,6 +1,11 @@
 module.exports = {
 	/* mode: 'jit',  this causes a problem where the css doesn't change until you reload in snowpack's dev mode */
-	purge: ['index.html', './public/**/*.html', './src/**/*.{js,svelte}'],
+	purge: {
+		content: ['index.html', './public/**/*.html', './src/**/*.{js,svelte}'],
+		options: {
+			safelist: ['opacity-40'], // If you add a class but it never shows up in the build, add it here
+		},
+	},
 	darkMode: false, // or 'media' or 'class'
 	theme: {
 		extend: {

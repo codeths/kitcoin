@@ -37,7 +37,7 @@
 		disabled={buttonStates.left}
 		on:click={() => handleClick('left')}
 	>
-		<img src="assets/arrow_left.png" alt="left arrow" class="h-10 w-10" />
+		<img src="assets/arrow_left.png" alt="&larr" class="h-10 w-10" />
 	</button>
 	<div class="flex-grow overflow-hidden">
 		{#if items.length != 0}
@@ -78,7 +78,7 @@
 	>
 		<img
 			src="assets/arrow_left.png"
-			alt="left arrow"
+			alt="&larr"
 			class="h-10 w-10 transform rotate-180"
 		/>
 	</button>
