@@ -5,6 +5,6 @@
 
 <!-- Head -->
 <SetBodyStyle classString="bg-gray-200" />
-<Header />
+<Header active="1" />
 
 <!-- Content -->

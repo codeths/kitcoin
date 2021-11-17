@@ -3,7 +3,7 @@ module.exports = {
 	purge: {
 		content: ['index.html', './public/**/*.html', './src/**/*.{js,svelte}'],
 		options: {
-			safelist: ['opacity-40'], // If you add a class but it never shows up in the build, add it here
+			safelist: ['opacity-40', 'border-b-4'], // If you add a class but it never shows up in the build, add it here
 		},
 	},
 	darkMode: false, // or 'media' or 'class'
