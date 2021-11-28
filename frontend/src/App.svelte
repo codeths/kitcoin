@@ -1,6 +1,7 @@
 <script>
-	import {Router} from '@roxi/routify';
+	import {Router, isChangingPage} from '@roxi/routify';
 	import {routes} from '../.routify/routes';
+	import SetBodyStyle from './utils/SetBodyStyle.svelte';
 	import {setContext} from 'svelte';
 	import {getUserInfo} from './utils/api';
 
@@ -11,3 +12,8 @@
 </script>
 
 <Router {routes} />
+
+<!--  Reset body styles on page changes  -->
+{#if $isChangingPage}
+	<SetBodyStyle classString="" styleString="" />
+{/if}
