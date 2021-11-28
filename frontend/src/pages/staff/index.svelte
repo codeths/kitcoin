@@ -44,7 +44,6 @@
 	<div class="col-span-4 md:col-span-2">
 		<h1 class="text-3xl font-medium mb-2">Available KitCoin</h1>
 		<div class="lg:col-span-2 sm:max-w-sm lg:max-w-none">
-			<h1 class="text-3xl font-medium mb-2">Balance</h1>
 			<div
 				class="flex bg-white shadow-md rounded py-10 border-t-8 border-blue-900"
 			>

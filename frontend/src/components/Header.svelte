@@ -1,4 +1,6 @@
 <script>
+	import {getContext, onMount} from 'svelte';
+
 	export let active = 0; // Index of active link, defaulting to home
 	const links = [
 		// shown from left to right
@@ -11,6 +13,14 @@
 			to: '/store',
 		},
 	];
+	const userInfo = getContext('userInfo');
+
+	onMount(async () => {
+		//This won't work if we aren't logged in
+		const role = (await userInfo).role;
+		if (role == 'STAFF') links[0].to = '/staff';
+		if (role == 'STUDENT') links[0].to = '/student';
+	});
 </script>
 
 <header>

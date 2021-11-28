@@ -78,4 +78,33 @@ async function getClassStudents(id) {
 	}
 }
 
-export {getBalance, getTransactions, searchUsers, getClasses, getClassStudents};
+//TODO: Find a better way of dealing with roles, this is a bad solution
+async function getUserInfo() {
+	console.warn(
+		'getUserInfo() only returns a single role while the backend supports multiple. Try to avoid use for now.',
+	);
+	const info = await fetch('/api/me').catch(e => null);
+	if (info && info.ok) {
+		try {
+			let userInfo = await info.json();
+			const isStaff = !(await (await fetch('/staff')).redirected); //We are staff if we can get the staff page without a redirect
+			userInfo.role = isStaff ? 'STAFF' : 'STUDENT'; //There is no admin role but this is super hacky what did you expect
+			return userInfo;
+		} catch (e) {
+			throw 'An error occured.';
+		}
+	} else {
+		throw info && info.status == 401
+			? 'Not logged in'
+			: 'An error occured.';
+	}
+}
+
+export {
+	getBalance,
+	getTransactions,
+	searchUsers,
+	getClasses,
+	getClassStudents,
+	getUserInfo,
+};

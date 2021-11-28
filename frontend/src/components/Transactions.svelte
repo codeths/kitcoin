@@ -5,7 +5,7 @@
 	import {getTransactions} from '../utils/api.js';
 	import Loading from './Loading.svelte';
 
-	export let user;
+	export let user = undefined;
 	let page = 1;
 	let transactions = {
 		page: 0,

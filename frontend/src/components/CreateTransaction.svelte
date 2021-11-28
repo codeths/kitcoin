@@ -133,7 +133,7 @@
 		return 'bg-blue-500 hover:bg-blue-700';
 	}
 
-	export let student;
+	export let student = undefined;
 	let query;
 
 	if (student) {
