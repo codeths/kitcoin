@@ -46,7 +46,7 @@ export type RequestValidateKeyOptions = {
 };
 export type RequestValidateKeyOptionsResolvable =
 	| RequestValidateKeyOptions
-	| (() => RequestValidateKeyOptions);
+	| (() => RequestValidateKeyOptionsResolvable);
 
 export type RequestValidateOptions = {
 	[key in RequestValidateParts]?:

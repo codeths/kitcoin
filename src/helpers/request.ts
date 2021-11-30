@@ -114,8 +114,9 @@ export class Validators {
 	static resolve = (
 		validator: RequestValidateKeyOptionsResolvable,
 	): RequestValidateKeyOptions => {
-		if (typeof validator == 'function') return validator();
-		return validator;
+		if (typeof validator !== 'function') return validator;
+		validator = validator();
+		return Validators.resolve(validator);
 	};
 
 	/** Data must be a string */
@@ -343,5 +344,22 @@ export class Validators {
 			Validators.or(Validators.not(Validators.exists), validator).run(
 				data,
 			),
+	});
+
+	/**
+	 * Valid currency amount
+	 */
+	static currency = () => ({
+		run: Validators.and(Validators.anyNumber, Validators.gt(0), {
+			run: (data: unknown): boolean | string => {
+				if (!Validators.anyNumber().run(data))
+					return '{KEY} must be a number';
+				return (
+					Math.round(numberFromData(data) * 100) / 100 ==
+					numberFromData(data)
+				);
+			},
+			errorMessage: '{KEY} cannot have more than 2 decimal places',
+		}).run,
 	});
 }
