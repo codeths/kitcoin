@@ -5,6 +5,7 @@ import {
 	STAFF_OAUTH_URL,
 	oauthCallback,
 } from '../../helpers/oauth';
+import {request} from '../../helpers/request';
 const router = express.Router();
 
 router.get(['/login', '/signin'], async (req, res) => {
@@ -15,14 +16,21 @@ router.get(['/login/staff', '/signin/staff'], async (req, res) => {
 	res.redirect(STAFF_OAUTH_URL);
 });
 
-router.get(['/logout', '/signout'], async (req, res) => {
-	if (!req.session.token) return res.redirect('/');
-	if (req.user) {
-		req.user.tokens.session = null;
-		await req.user.save();
-	}
-	res.redirect('/');
-});
+router.get(
+	['/logout', '/signout'],
+	(req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+		}),
+	async (req, res) => {
+		if (!req.session.token) return res.redirect('/');
+		if (req.user) {
+			req.user.tokens.session = null;
+			await req.user.save();
+		}
+		res.redirect('/');
+	},
+);
 
 router.get('/cbk', async (req, res) => {
 	const code = req.query.code;
