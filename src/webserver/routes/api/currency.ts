@@ -134,12 +134,14 @@ router.post(
 		try {
 			if (!requestHasUser(req)) return;
 
-			const {
+			let {
 				amount,
 				reason,
 				user,
-			}: {amount: number; reason: string; user: string} = req.body;
+			}: {amount: number | `${number}`; reason: string; user: string} =
+				req.body;
 
+			if (typeof amount == 'string') amount = numberFromData(amount);
 			const dbUser = await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
 
