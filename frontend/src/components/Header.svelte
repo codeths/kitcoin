@@ -16,7 +16,7 @@
 		if (roles.includes('STUDENT')) homes.push(['Student Home', '/student']);
 		links.push(['Home', (homes[0] || [, '/'])[1]]);
 
-		links.push(['Store', '/store']);
+		links.push(['Store', userInfo ? '/store' : '/signin']);
 
 		homes = homes;
 		links = links;
