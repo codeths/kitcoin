@@ -46,7 +46,7 @@ router.get('/cbk', async (req, res) => {
 	req.session.token = session;
 
 	// DEBUG
-	return res.redirect('/');
+	return res.redirect('/home');
 });
 
 router.use((req, res) => res.status(404).send());

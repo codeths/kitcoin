@@ -95,13 +95,13 @@ app.get(
 app.use('/schema', express.static(`${__dirname}/../schema`));
 
 app.get(
-	'/',
+	'/home',
 	(...req) => request(...req, {}),
 	(req, res) => {
 		if (req.user) {
 			if (req.user.hasRole('STAFF')) res.redirect('/staff');
 			else if (req.user.hasRole('STUDENT')) res.redirect('/student');
-			else servePage(res);
+			else res.redirect('/');
 		} else {
 			res.redirect('/login');
 		}
