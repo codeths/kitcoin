@@ -4,6 +4,7 @@
 	import Header from '../../components/Header.svelte';
 	import {getBalance, getTransactions} from '../../utils/api.js';
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
+	import Auth from '../../utils/Auth.svelte';
 
 	const newItems = [
 		{img: 'shop_images/beans.png', price: 15, name: 'Beans'},
@@ -24,6 +25,7 @@
 
 <!-- Head  -->
 <SetBodyStyle classString="bg-gray-200" />
+<Auth />
 <Header />
 
 <!-- Content-->

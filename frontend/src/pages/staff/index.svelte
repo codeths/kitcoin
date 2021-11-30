@@ -12,6 +12,7 @@
 		getClassStudents,
 	} from '../../utils/api.js';
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
+	import Auth from '../../utils/Auth.svelte';
 
 	let selectedClass = '';
 	let classList = [];
@@ -31,6 +32,7 @@
 
 <!-- Head -->
 <SetBodyStyle classString="bg-gray-200" />
+<Auth />
 <Header />
 
 <!-- Content -->
