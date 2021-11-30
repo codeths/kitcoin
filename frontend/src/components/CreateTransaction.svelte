@@ -50,7 +50,8 @@
 			if (!v) return e.type == 'blur' ? 'Amount is required' : '';
 			let num = parseFloat(v);
 			if (isNaN(num)) return 'Amount must be an number';
-			if (num % 1 !== 0) return 'Amount must be a whole number';
+			if (Math.round(num * 100) / 100 !== num)
+				return 'Amount cannot have more than 2 decimal places';
 			if (num < 1) return 'Amount must be greater than 0';
 
 			return null;
@@ -89,7 +90,7 @@
 			},
 			body: JSON.stringify({
 				user: values.student,
-				amount: parseInt(values.amount),
+				amount: parseFloat(values.amount),
 				reason: values.reason || null,
 			}),
 		}).catch(() => null);
