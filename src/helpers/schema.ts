@@ -80,6 +80,12 @@ userSchema.methods.setRoles = function (roles: UserRoleTypes[]): void {
 	return;
 };
 
+userSchema.methods.getRoles = function (): UserRoleTypes[] {
+	return Object.keys(UserRoles)
+		.map(x => x as UserRoleTypes)
+		.filter(role => this.hasRole(role));
+};
+
 userSchema.methods.hasRole = function (role: UserRoleTypes): boolean {
 	return (this.roles & UserRoles[role]) === UserRoles[role];
 };

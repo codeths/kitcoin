@@ -56,6 +56,10 @@ export interface IUserMethods {
 	 */
 	setRoles(roles: UserRoleTypes[]): void;
 	/**
+	 * Get array of roles
+	 */
+	getRoles(): UserRoleTypes[];
+	/**
 	 * Check if the user has a role
 	 * @param role The role to check for
 	 */
