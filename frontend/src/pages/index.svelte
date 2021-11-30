@@ -4,7 +4,7 @@
 </script>
 
 <SetBodyStyle classString="bg-gray-200" />
-<Header />
+<Header active="-1" />
 
 <h1>Welcome to KitCoin!</h1>
 <br />

@@ -4,22 +4,16 @@
 	export let active = 0; // Index of active link, defaulting to home
 	const links = [
 		// shown from left to right
-		{
-			text: 'Home',
-			to: '/',
-		},
-		{
-			text: 'Store',
-			to: '/store',
-		},
+		['/', 'Home'],
+		['/store', 'Store'],
 	];
 	const userInfo = getContext('userInfo');
 
 	onMount(async () => {
 		//This won't work if we aren't logged in
 		const role = (await userInfo).role;
-		if (role == 'STAFF') links[0].to = '/staff';
-		if (role == 'STUDENT') links[0].to = '/student';
+		if (role == 'STAFF') links[0][0] = '/staff';
+		if (role == 'STUDENT') links[0][0] = '/student';
 	});
 </script>
 
@@ -40,11 +34,11 @@
 			<!-- TODO: Menu bar collapse -->
 		</div>
 		<div class="hidden md:flex space-x-8 md:space-x-12 mr-5 md:mr-10">
-			{#each links as link, index}
+			{#each links as [link, text], index}
 				<a
 					class="text-white font-medium text-3xl"
 					class:border-b-4={index == active}
-					href={link.to}>{link.text}</a
+					href={link}>{text}</a
 				>
 			{/each}
 		</div>
