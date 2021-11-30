@@ -8,5 +8,6 @@
 <Header active="1" />
 
 <!-- Content -->
-<br />
-<h1 class="text-4xl text-center">Welcome to the Kitcoin Store!!</h1>
+<div class="m-8">
+	<h1 class="text-4xl text-center">Welcome to the Kitcoin Store!!</h1>
+</div>
