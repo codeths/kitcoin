@@ -5,7 +5,7 @@
 
 <!-- Head -->
 <SetBodyStyle classString="bg-gray-200" />
-<Header active="1" />
+<Header />
 
 <!-- Content -->
 <div class="m-8">
