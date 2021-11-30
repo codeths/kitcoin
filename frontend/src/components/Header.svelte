@@ -47,7 +47,7 @@
 		<div class="flex md:hidden">
 			<!-- TODO: Menu bar collapse -->
 		</div>
-		<div class="hidden md:flex space-x-8 md:space-x-12">
+		<div class="hidden md:flex space-x-8 md:space-x-12 md:pr-4">
 			{#each links as [text, link]}
 				<a
 					class="text-white font-medium text-3xl"
