@@ -1,19 +1,33 @@
 <script>
 	import {getContext, onMount} from 'svelte';
+	import {url} from '@roxi/routify';
 
-	export let active = 0; // Index of active link, defaulting to home
-	const links = [
-		// shown from left to right
-		['/', 'Home'],
-		['/store', 'Store'],
-	];
-	const userInfo = getContext('userInfo');
+	let links = [];
+	let homes = [];
+	let ctx = getContext('userInfo');
+	let userInfo;
+	let current = $url() || '/';
 
 	onMount(async () => {
-		//This won't work if we aren't logged in
-		const role = (await userInfo).role;
-		if (role == 'STAFF') links[0][0] = '/staff';
-		if (role == 'STUDENT') links[0][0] = '/student';
+		userInfo = (await ctx) || null;
+		const roles = userInfo?.roles || [];
+		if (roles.includes('ADMIN')) homes.push(['Admin Home', '/admin']);
+		if (roles.includes('STAFF')) homes.push(['Staff Home', '/staff']);
+		if (roles.includes('STUDENT')) homes.push(['Student Home', '/student']);
+		links.push(['Home', (homes[0] || [, '/'])[1]]);
+
+		links.push(['Store', '/store']);
+
+		homes = homes;
+		links = links;
+	});
+
+	let dropEl;
+	let userDrop = false;
+
+	document.addEventListener('click', e => {
+		if (dropEl && dropEl !== e.target && !dropEl.contains(e.target))
+			userDrop = false;
 	});
 </script>
 
@@ -33,14 +47,67 @@
 		<div class="flex md:hidden">
 			<!-- TODO: Menu bar collapse -->
 		</div>
-		<div class="hidden md:flex space-x-8 md:space-x-12 mr-5 md:mr-10">
-			{#each links as [link, text], index}
+		<div class="hidden md:flex space-x-8 md:space-x-12">
+			{#each links as [text, link]}
 				<a
 					class="text-white font-medium text-3xl"
-					class:border-b-4={index == active}
+					class:border-b-4={link == current}
 					href={link}>{text}</a
 				>
 			{/each}
+			{#if userInfo}
+				<div
+					class="relative w-48 max-w-full flex flex-col items-stretch"
+					bind:this={dropEl}
+				>
+					<button
+						id="dropdownButton"
+						class="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-4 py-2.5 text-center flex align-itms-center justify-center h-10"
+						type="button"
+						on:click={() => (userDrop = true)}
+					>
+						{userInfo.name}
+					</button>
+					<div
+						style="top: 3rem"
+						class="flex focus-within:flex absolute bg-white text-base z-10 list-none divide-y divide-gray-100 rounded shadow w-44 dark:bg-gray-700 w-full"
+						class:hidden={!userDrop}
+					>
+						<ul
+							class="py-1 w-full"
+							aria-labelledby="dropdownButton"
+						>
+							{#each homes as [text, link]}
+								<li>
+									<a
+										tabindex="0"
+										href={link}
+										on:click={() => (userDrop = false)}
+										class="text-sm hover:bg-gray-100 text-gray-700 block px-4 py-2"
+										class:bg-gray-100={link == current}
+										>{text}</a
+									>
+								</li>
+							{/each}
+							<li>
+								<a
+									tabindex="0"
+									href="/signout"
+									target="_self"
+									class="text-sm hover:bg-gray-100 text-gray-700 block px-4 py-2"
+									>Sign Out</a
+								>
+							</li>
+						</ul>
+					</div>
+				</div>
+			{:else if userInfo === null}
+				<a
+					href="/signin"
+					target="_self"
+					class="text-white font-medium text-3xl">Sign In</a
+				>
+			{/if}
 		</div>
 	</nav>
 </header>
