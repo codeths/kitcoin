@@ -8,6 +8,8 @@ import {auth, api} from './routes';
 import {IUserDoc, User} from '../helpers/schema';
 import path from 'path';
 import {request} from '../helpers/request';
+import {cpus} from 'os';
+import cluster from 'cluster';
 
 declare module 'express-session' {
 	interface SessionData {
@@ -22,15 +24,24 @@ declare module 'express-serve-static-core' {
 }
 
 const app = express();
+
+let numClusters = cpus().length;
+
+if (numClusters > 1 && cluster.isPrimary) {
+	for (let i = 0; i < numClusters; i++) {
+		cluster.fork();
+	}
+} else {
+	app.listen(port, () => {
+		console.log(`Server listening on port ${port}`);
+	});
+}
+
 const MongoDBStore = mongostore(session);
 
 const store = new MongoDBStore({
 	uri: mongoURL,
 	collection: 'sessions',
-});
-
-app.listen(port, () => {
-	console.log(`Server listening on port ${port}`);
 });
 
 app.set('trust proxy', 1);
