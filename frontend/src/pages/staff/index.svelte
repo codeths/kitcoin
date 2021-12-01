@@ -18,6 +18,10 @@
 	let classList = [];
 	let selectMsg = 'Loading classes...';
 
+	let balance;
+
+	getBalance().then(b => (balance = b));
+
 	getClasses('teacher')
 		.then(classes => {
 			classList = classes.sort((a, b) => a.name.localeCompare(b.name));
@@ -52,15 +56,18 @@
 				<h1
 					class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full"
 				>
-					{#await getBalance()}
-						Loading...
-					{:then balance}
+					{#if typeof balance == 'number'}
 						<span
 							class="icon icon-currency mr-3"
-						/>{balance.toLocaleString()}
-					{:catch error}
-						{error}
-					{/await}
+						/>{balance.toLocaleString([], {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2,
+						})}
+					{:else if balance}
+						{balance}
+					{:else}
+						Loading...
+					{/if}
 				</h1>
 			</div>
 		</div>
