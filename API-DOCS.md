@@ -283,5 +283,6 @@ None
 	name: string;
 	email: string;
 	id: string;
+	roles: ("NONE" | "STUDENT" | "STAFF" | "ADMIN" | "ALL")[];
 }
 ```
