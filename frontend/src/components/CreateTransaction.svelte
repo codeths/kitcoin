@@ -47,7 +47,6 @@
 			return null;
 		},
 		amount: e => {
-			console.log(balance);
 			let v = e.value;
 			if (!v) return e.type == 'blur' ? 'Amount is required' : '';
 			let num = parseFloat(v);
