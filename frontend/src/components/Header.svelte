@@ -16,7 +16,7 @@
 		if (roles.includes('STUDENT')) homes.push(['Student Home', '/student']);
 		links.push(['Home', (homes[0] || [, '/'])[1]]);
 
-		links.push(['Store', userInfo ? '/store' : '/signin']);
+		links.push(['Store', userInfo ? '/store' : ['/signin', true]].flat());
 
 		homes = homes;
 		links = links;
@@ -48,9 +48,10 @@
 			<!-- TODO: Menu bar collapse -->
 		</div>
 		<div class="hidden md:flex space-x-8 md:space-x-12 md:pr-4">
-			{#each links as [text, link]}
+			{#each links as [text, link, navigate]}
 				<a
 					class="text-white font-medium text-3xl"
+					target={navigate ? '_self' : ''}
 					class:border-b-4={link == current}
 					href={link}>{text}</a
 				>
