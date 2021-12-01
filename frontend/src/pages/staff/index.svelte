@@ -44,7 +44,10 @@
 	<div class="col-span-4 md:col-span-2">
 		<h1 class="text-3xl font-medium mb-2">Send KitCoin</h1>
 		<div class="bg-white shadow-md rounded px-8 py-8">
-			<CreateTransaction />
+			<CreateTransaction
+				{balance}
+				on:balance={e => (balance = e.detail)}
+			/>
 		</div>
 	</div>
 	<div class="col-span-4 md:col-span-2">
@@ -143,6 +146,8 @@
 						300,
 					);
 			}}
+			{balance}
+			on:balance={e => (balance = e.detail)}
 		/>
 	</Modal>
 {/if}

@@ -7,6 +7,7 @@
 	import Input from './Input.svelte';
 
 	export let modal = false;
+	export let balance = -1;
 
 	let values = {
 		student: null,
@@ -46,6 +47,7 @@
 			return null;
 		},
 		amount: e => {
+			console.log(balance);
 			let v = e.value;
 			if (!v) return e.type == 'blur' ? 'Amount is required' : '';
 			let num = parseFloat(v);
@@ -53,6 +55,8 @@
 			if (Math.round(num * 100) / 100 !== num)
 				return 'Amount cannot have more than 2 decimal places';
 			if (num < 1) return 'Amount must be greater than 0';
+			if (balance !== -1 && balance < num)
+				return 'You do not have enough money';
 
 			return null;
 		},
@@ -73,9 +77,6 @@
 		values[which] = event.value;
 		errors[which] = res;
 		valid[which] = res == null;
-
-		console.log(which);
-		console.log(valid);
 	}
 
 	async function send(e) {
@@ -103,6 +104,8 @@
 			() => {
 				submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
 				if (res.ok) {
+					balance -= parseFloat(values.amount);
+					dispatch('balance', balance);
 					Object.keys(values).forEach(x => {
 						values[x] = null;
 						errors[x] = null;
