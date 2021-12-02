@@ -1,4 +1,5 @@
 <script>
+	import {getContext} from 'svelte';
 	import Header from '../../components/Header.svelte';
 	import CreateTransaction from '../../components/CreateTransaction.svelte';
 	import Modal from '../../components/Modal.svelte';
@@ -19,6 +20,19 @@
 	let selectMsg = 'Loading classes...';
 
 	let balance;
+
+	let ctx = getContext('userInfo');
+	let userInfo;
+	let showPermsModal = false;
+	(async () => {
+		userInfo = (await ctx) || null;
+		console.log(userInfo);
+		if (!userInfo) return;
+		showPermsModal = [
+			'https://www.googleapis.com/auth/classroom.courses.readonly',
+			'https://www.googleapis.com/auth/classroom.rosters.readonly',
+		].some(x => !userInfo.scopes.includes(x));
+	})();
 
 	getBalance().then(b => (balance = b));
 
@@ -149,6 +163,29 @@
 			{balance}
 			on:balance={e => (balance = e.detail)}
 		/>
+	</Modal>
+{/if}
+{#if showPermsModal}
+	<Modal title="Missing Permissions" canclose="false">
+		<p>
+			KitCoin is unable to access your Google Classroom classes. Please
+			log in again using the link below and make sure to click the
+			checkboxes.
+		</p>
+		<img
+			src="/assets/perms-image.png"
+			class="w-full my-4"
+			alt="How to enable the permissions"
+		/>
+		<div class="flex flex-col items-end pt-4 border-t-2 border-gray-300">
+			<a
+				target="_self"
+				href="/login/staff"
+				class="bg-blue-500 hover:bg-blue-700 text-white border transition-colors duration-300 font-bold px-4 rounded w-32 h-10 flex items-center justify-center text-center"
+			>
+				Log In
+			</a>
+		</div>
 	</Modal>
 {/if}
 
