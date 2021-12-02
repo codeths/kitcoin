@@ -179,7 +179,7 @@
 		<div class="flex flex-col items-end pt-4 border-t-2 border-gray-300">
 			<a
 				target="_self"
-				href="/login/staff"
+				href="/login/staff?hint=true"
 				class="bg-blue-500 hover:bg-blue-700 text-white border transition-colors duration-300 font-bold px-4 rounded w-32 h-10 flex items-center justify-center text-center"
 			>
 				Log In

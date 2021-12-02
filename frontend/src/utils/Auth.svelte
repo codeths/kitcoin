@@ -3,8 +3,9 @@
 
 	let ctx = getContext('userInfo');
 	(async () => {
-		if (!(await ctx)) {
-			window.location.href = '/signin';
+		let info = (await ctx) || null;
+		if (!info || !info.authorized) {
+			window.location.href = '/signin?hint=true';
 		}
 	})();
 </script>
