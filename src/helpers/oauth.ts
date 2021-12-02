@@ -1,7 +1,10 @@
-const STUDENT_USER_SCOPES = ['profile', 'email'];
+const STUDENT_USER_SCOPES = [
+	'profile',
+	'email',
+	'https://www.googleapis.com/auth/classroom.courses.readonly',
+];
 const TEACHER_USER_SCOPES = [
 	...STUDENT_USER_SCOPES,
-	'https://www.googleapis.com/auth/classroom.courses.readonly',
 	'https://www.googleapis.com/auth/classroom.rosters.readonly',
 ];
 
@@ -38,13 +41,13 @@ async function getAccessToken(
 		refresh_token: user.tokens.refresh,
 		expiry_date: user.tokens.expires?.getTime(),
 	});
-
 	const token = await oauth2Client.getAccessToken().catch(() => null);
 	if (!token || !token.token) return null;
 	if (token.token !== user.tokens.access) {
 		user.tokens.access = token.token;
 		const info = await oauth2Client.getTokenInfo(token.token);
 		user.tokens.expires = new Date(info.expiry_date);
+		user.tokens.scopes = info.scopes;
 		await user.save();
 	}
 	return oauth2Client;
@@ -76,7 +79,7 @@ export async function oauthCallback(code: string, session: string) {
 			.getToken(code)
 			.catch(() => reject({error: 'Invalid code'}));
 		if (!tokens) return;
-		const {refresh_token, access_token, expiry_date} = tokens.tokens;
+		const {refresh_token, access_token, expiry_date, scope} = tokens.tokens;
 
 		if (!refresh_token || !access_token || !expiry_date)
 			return reject({error: 'No tokens'});
@@ -131,6 +134,7 @@ export async function oauthCallback(code: string, session: string) {
 			access: access_token,
 			expires: new Date(expiry_date),
 			session,
+			scopes: (scope || '').split(' '),
 		};
 
 		user = await user.save();
