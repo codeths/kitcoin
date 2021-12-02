@@ -8,6 +8,7 @@ import {
 } from '../../../helpers/schema';
 import {request, Validators} from '../../../helpers/request';
 import {requestHasUser} from '../../../types';
+import {getAccessToken} from '../../../helpers/oauth';
 const router = express.Router();
 
 router.patch(
@@ -58,12 +59,15 @@ router.get(
 	async (req, res) => {
 		if (!requestHasUser(req)) return;
 
+		let authorized = !!(await getAccessToken(req.user));
+
 		res.status(200).send({
 			name: req.user.name,
 			email: req.user.email,
 			id: req.user.id,
 			roles: req.user.getRoles(),
 			scopes: req.user.tokens.scopes,
+			authorized,
 		});
 	},
 );

@@ -285,5 +285,6 @@ None
 	id: string;
 	roles: ("NONE" | "STUDENT" | "STAFF" | "ADMIN" | "ALL")[];
 	scopes: string[];
+	authorized: boolean; // Valid OAuth Credentials
 }
 ```
