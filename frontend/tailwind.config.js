@@ -3,7 +3,20 @@ module.exports = {
 	purge: {
 		content: ['index.html', './public/**/*.html', './src/**/*.{js,svelte}'],
 		options: {
-			safelist: ['opacity-40', 'border-b-4', 'bg-gray-100'], // If you add a class but it never shows up in the build, add it here
+			safelist: [
+				'opacity-40',
+				'border-b-4',
+				'bg-gray-100',
+				'bg-blue-500',
+				'bg-blue-700',
+				'bg-red-500',
+				'bg-green-500',
+				'hover:bg-blue-700',
+				'hover:bg-blue-800',
+				'hover:bg-red-700',
+				'hover:bg-green-700',
+				'disabled:bg-gray-400',
+			], // If you add a class but it never shows up in the build, add it here
 		},
 	},
 	darkMode: false, // or 'media' or 'class'
