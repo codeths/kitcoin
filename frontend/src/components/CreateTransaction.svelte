@@ -5,6 +5,7 @@
 	import StudentSearch from './StudentSearch.svelte';
 	import Loading from './Loading.svelte';
 	import Input from './Input.svelte';
+	import Button from '../components/Button.svelte';
 
 	export let modal = false;
 	export let balance = -1;
@@ -98,6 +99,7 @@
 		let end = new Date();
 		let wait = 1500 - (end.getTime() - start.getTime());
 
+		let resetTimeout;
 		clearTimeout(loadTimeout);
 		loadTimeout = setTimeout(
 			() => {
@@ -117,7 +119,8 @@
 				if (modal && res && res.ok) {
 					dispatch('close', res && res.ok);
 				} else {
-					setTimeout(() => {
+					clearTimeout(resetTimeout);
+					resetTimeout = setTimeout(() => {
 						submitStatus = null;
 					}, 3000);
 				}
@@ -128,12 +131,10 @@
 		return false;
 	}
 
-	function btnColor(submitStatus, hasError) {
-		if (submitStatus == 'LOADING') return 'bg-gray-500 cursor-not-allowed';
-		if (submitStatus == 'SUCCESS' && !modal) return 'bg-green-500';
-		if (submitStatus == 'ERROR') return 'bg-red-500';
-		if (hasError) return 'bg-gray-400 cursor-not-allowed';
-		return 'bg-blue-500 hover:bg-blue-700';
+	function btnColor(submitStatus) {
+		if (submitStatus == 'SUCCESS' && !modal) return 'green';
+		if (submitStatus == 'ERROR') return 'red';
+		return 'blue';
 	}
 
 	export let student = undefined;
@@ -179,13 +180,10 @@
 			? 'justify-end'
 			: 'justify-start'}"
 	>
-		<button
+		<Button
 			on:click={send}
 			disabled={hasError || submitStatus == 'LOADING'}
-			class="{btnColor(
-				submitStatus,
-				hasError,
-			)} transition-colors duration-300 text-white font-bold py-2 px-4 rounded w-32 h-10 flex items-center justify-center text-center"
+			bg={btnColor(submitStatus)}
 		>
 			{#if submitStatus == 'LOADING'}
 				<Loading height="2rem" />
@@ -196,14 +194,16 @@
 			{:else}
 				Send
 			{/if}
-		</button>
+		</Button>
 		{#if modal}
-			<button
+			<Button
 				on:click={() => dispatch('close')}
-				class="border transition-colors duration-300 font-bold py-2 px-4 rounded w-32 h-10 flex items-center justify-center text-center"
+				bg="white"
+				bgDarkness=""
+				textColor="black"
 			>
 				Close
-			</button>
+			</Button>
 		{/if}
 	</div>
 </form>

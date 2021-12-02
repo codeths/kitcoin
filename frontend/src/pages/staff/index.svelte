@@ -3,6 +3,7 @@
 	import Header from '../../components/Header.svelte';
 	import CreateTransaction from '../../components/CreateTransaction.svelte';
 	import Modal from '../../components/Modal.svelte';
+	import Button from '../../components/Button.svelte';
 	import ToastContainer from '../../components/ToastContainer.svelte';
 	let toastContainer;
 
@@ -113,10 +114,15 @@
 				{:then students}
 					<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 						{#each students.sort( (a, b) => a.name.localeCompare(b.name), ) as student}
-							<button
-								class="shadow border rounded hover:shadow-md hover:bg-gray-100 transition-all transition-colors duration-300 py-2 px-4 mx-4 my-2 rounded flex items-center justify-center text-center"
+							<Button
+								class="w-auto border shadow hover:shadow-md mx-4 my-2"
+								bg="white"
+								bgDarkness=""
+								hoverBg="gray"
+								hoverDarkness="100"
+								textColor="black"
 								on:click={() => (modalStudent = student)}
-								>{student.name}</button
+								>{student.name}</Button
 							>
 						{/each}
 					</div>
@@ -177,13 +183,7 @@
 			alt="How to enable the permissions"
 		/>
 		<div class="flex flex-col items-end pt-4 border-t-2 border-gray-300">
-			<a
-				target="_self"
-				href="/login/staff?hint=true"
-				class="bg-blue-500 hover:bg-blue-700 text-white border transition-colors duration-300 font-bold px-4 rounded w-32 h-10 flex items-center justify-center text-center"
-			>
-				Log In
-			</a>
+			<Button target="_self" href="/login/staff?hint=true">Log In</Button>
 		</div>
 	</Modal>
 {/if}

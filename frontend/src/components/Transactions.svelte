@@ -3,6 +3,7 @@
 	  Transaction object
 	*/
 	import {getTransactions} from '../utils/api.js';
+	import Button from '../components/Button.svelte';
 	import Loading from './Loading.svelte';
 
 	export let user = undefined;
@@ -103,17 +104,16 @@
 				{error}
 			</div>
 			<div class="flex justify-center align-center">
-				<button
+				<Button
 					on:click={() => load(page, 'retry')}
 					disabled={loading.any}
-					class="bg-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 text-white border transition-colors duration-300 font-bold py-2 px-4 mx-2 rounded w-32 h-10 flex items-center justify-center text-center"
 				>
 					{#if loading.retry}
 						<Loading height="2rem" />
 					{:else}
 						Retry
 					{/if}
-				</button>
+				</Button>
 			</div>
 		</div>
 	{:else}
@@ -122,28 +122,28 @@
 				Showing page {transactions.page} of {transactions.pageCount}
 			</div>
 			<div class="flex justify-center align-center">
-				<button
+				<Button
 					on:click={() => load(page - 1, 'previous')}
+					class="mx-2"
 					disabled={loading.any || transactions.page <= 1}
-					class="bg-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 text-white border transition-colors duration-300 font-bold py-2 px-4 mx-2 rounded w-32 h-10 flex items-center justify-center text-center"
 				>
 					{#if loading.previous}
 						<Loading height="2rem" />
 					{:else}
 						Previous
-					{/if}</button
+					{/if}</Button
 				>
-				<button
+				<Button
 					on:click={() => load(page + 1, 'next')}
+					class="mx-2"
 					disabled={loading.any ||
 						transactions.page >= transactions.pageCount}
-					class="bg-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 text-white border transition-colors duration-300 font-bold py-2 px-4 mx-2 rounded w-32 h-10 flex items-center justify-center text-center"
 				>
 					{#if loading.next}
 						<Loading height="2rem" />
 					{:else}
 						Next
-					{/if}</button
+					{/if}</Button
 				>
 			</div>
 		</div>

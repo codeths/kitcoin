@@ -1,6 +1,7 @@
 <script>
 	import {getContext, onMount} from 'svelte';
 	import {url} from '@roxi/routify';
+	import Button from '../components/Button.svelte';
 
 	let links = [];
 	let homes = [];
@@ -61,14 +62,15 @@
 					class="relative w-48 max-w-full flex flex-col items-stretch"
 					bind:this={dropEl}
 				>
-					<button
+					<Button
 						id="dropdownButton"
-						class="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-4 py-2.5 text-center flex align-itms-center justify-center h-10"
-						type="button"
+						class="rounded-lg px-4 py-2.5 w-auto"
+						bgDarkness="700"
+						hoverDarkness="800"
 						on:click={() => (userDrop = true)}
 					>
 						{userInfo.name}
-					</button>
+					</Button>
 					<div
 						style="top: 3rem"
 						class="flex focus-within:flex absolute bg-white text-base z-10 list-none divide-y divide-gray-100 rounded shadow w-44 dark:bg-gray-700 w-full"
