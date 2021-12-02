@@ -284,5 +284,6 @@ None
 	email: string;
 	id: string;
 	roles: ("NONE" | "STUDENT" | "STAFF" | "ADMIN" | "ALL")[];
+	scopes: string[];
 }
 ```

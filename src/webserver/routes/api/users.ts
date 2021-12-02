@@ -63,6 +63,7 @@ router.get(
 			email: req.user.email,
 			id: req.user.id,
 			roles: req.user.getRoles(),
+			scopes: req.user.tokens.scopes,
 		});
 	},
 );
