@@ -18,6 +18,10 @@ export interface IUser {
 	 */
 	googleID: string;
 	/**
+	 * The user's school ID
+	 */
+	schoolID: string;
+	/**
 	 * The user's name
 	 */
 	name: string | null;
@@ -86,6 +90,7 @@ export type IUserQuery = Query<IUserDoc, IUserDoc> & IUserQueries;
 
 export interface IUserQueries {
 	byId(googleID: string): IUserQuery;
+	byStudentId(studentID: string): IUserQuery;
 	byEmail(email: string): IUserQuery;
 	byToken(token: string): IUserQuery;
 }

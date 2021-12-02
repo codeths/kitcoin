@@ -32,6 +32,9 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>({
 		type: String,
 		required: true,
 	},
+	schoolID: {
+		type: String,
+	},
 	name: {
 		type: String,
 	},
@@ -73,6 +76,10 @@ userSchema.query.byEmail = function (email: string): IUserQueries {
 
 userSchema.query.byId = function (googleID: string): IUserQueries {
 	return this.where({googleID});
+};
+
+userSchema.query.byStudentId = function (studentID: string): IUserQueries {
+	return this.where({studentID});
 };
 
 userSchema.query.byToken = function (token: string): IUserQueries {

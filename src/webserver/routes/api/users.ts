@@ -117,18 +117,28 @@ router.get(
 				roles: {$bitsAnySet: roleBitfield},
 			});
 
-			res.status(200).send(
-				results
-					.map(x => x.toJSON())
-					.filter(x => x.confidenceScore > 5)
-					.slice(0, countNum)
-					.map(user => ({
-						name: user.name,
-						email: user.email,
-						id: user._id,
-						confidence: user.confidenceScore,
-					})),
-			);
+			const byID =
+				q.match(/^\d{5,6}$/) && (await User.findOne().byStudentId(q));
+
+			let list = results
+				.filter(x => x.confidenceScore > 5)
+				.sort((a, b) => b.confidenceScore - a.confidenceScore)
+				.map(user => ({
+					name: user.name,
+					email: user.email,
+					id: user._id,
+					confidence: user.confidenceScore,
+				}));
+
+			if (byID)
+				list.unshift({
+					name: byID.name,
+					email: byID.email,
+					id: byID._id,
+					confidence: 100,
+				});
+
+			res.status(200).send(list.slice(0, countNum));
 		} catch (e) {
 			try {
 				res.status(500).send('An error occured.');
