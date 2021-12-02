@@ -168,7 +168,8 @@
 	<Modal title="Missing Permissions" canclose="false">
 		<p>
 			KitCoin is unable to access your Google Classroom classes. Please
-			log in again and make sure to click these checkboxes:
+			log in again using the button below and make sure to click these
+			checkboxes:
 		</p>
 		<img
 			src="/assets/perms-image.png"
