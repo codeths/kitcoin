@@ -26,7 +26,6 @@
 	let showPermsModal = false;
 	(async () => {
 		userInfo = (await ctx) || null;
-		console.log(userInfo);
 		if (!userInfo) return;
 		showPermsModal = [
 			'https://www.googleapis.com/auth/classroom.courses.readonly',
