@@ -44,7 +44,10 @@
 					{:then balance}
 						<span
 							class="icon icon-currency mr-3"
-						/>{balance.toLocaleString()}
+						/>{balance.toLocaleString([], {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2,
+						})}
 					{:catch error}
 						{error}
 					{/await}
