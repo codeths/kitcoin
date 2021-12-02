@@ -67,7 +67,7 @@
 						class="rounded-lg px-4 py-2.5 w-auto"
 						bgDarkness="700"
 						hoverDarkness="800"
-						on:click={() => (userDrop = true)}
+						on:click={() => (userDrop = !userDrop)}
 					>
 						{userInfo.name}
 					</Button>
