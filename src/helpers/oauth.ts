@@ -1,12 +1,18 @@
-const STUDENT_USER_SCOPES = [
-	'profile',
-	'email',
-	'https://www.googleapis.com/auth/classroom.courses.readonly',
-];
-const TEACHER_USER_SCOPES = [
-	...STUDENT_USER_SCOPES,
-	'https://www.googleapis.com/auth/classroom.rosters.readonly',
-];
+const OAUTH_SCOPES = {
+	STUDENT: [
+		'profile',
+		'email',
+		'https://www.googleapis.com/auth/classroom.courses.readonly',
+	],
+	STAFF: [
+		'profile',
+		'email',
+		'https://www.googleapis.com/auth/classroom.courses.readonly',
+		'https://www.googleapis.com/auth/classroom.rosters.readonly',
+	],
+};
+
+type ScopeType = keyof typeof OAUTH_SCOPES;
 
 import {google, Auth} from 'googleapis';
 import {client_id, client_secret, redirect_url} from '../config/keys.json';
@@ -53,19 +59,26 @@ async function getAccessToken(
 	return oauth2Client;
 }
 
-function getAuthURL(scopes: string[]) {
+function getAuthURL({
+	scopes = OAUTH_SCOPES.STUDENT,
+	user,
+	prompt = 'consent',
+}: {
+	scopes?: string[] | ScopeType;
+	user?: string | undefined;
+	prompt?: 'none' | 'consent' | 'select_account' | undefined;
+}) {
+	if (!Array.isArray(scopes)) scopes = OAUTH_SCOPES[scopes];
 	const auth = getOAuth2Client();
 	return auth.generateAuthUrl({
 		access_type: 'offline',
 		scope: scopes,
 		redirect_uri: redirect_url,
-		prompt: 'consent',
+		prompt,
 		include_granted_scopes: true,
+		login_hint: user,
 	});
 }
-
-const STUDENT_OAUTH_URL = getAuthURL(STUDENT_USER_SCOPES);
-const STAFF_OAUTH_URL = getAuthURL(TEACHER_USER_SCOPES);
 
 /**
  * Handle OAuth2 callback
@@ -143,4 +156,4 @@ export async function oauthCallback(code: string, session: string) {
 	});
 }
 
-export {STUDENT_OAUTH_URL, STAFF_OAUTH_URL, getOAuth2Client, getAccessToken};
+export {getAuthURL, getOAuth2Client, getAccessToken};
