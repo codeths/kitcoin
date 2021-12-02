@@ -51,7 +51,7 @@
 			{#each links as [text, link, navigate]}
 				<a
 					class="text-white font-medium text-3xl"
-					target={navigate ? '_self' : ''}
+					target={navigate ? '_self' : null}
 					class:border-b-4={link == current}
 					href={link}>{text}</a
 				>
