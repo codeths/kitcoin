@@ -145,7 +145,7 @@ router.post(
 			const dbUser = await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
 			if (dbUser.id == req.user.id)
-				return res.status(400).send('Cannot self to yourself');
+				return res.status(400).send('Cannot send to yourself');
 
 			if (req.user.balance < amount)
 				return res.status(403).send('Your balance is too low!');
