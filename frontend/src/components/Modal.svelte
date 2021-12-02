@@ -3,6 +3,7 @@
 	const dispatch = createEventDispatcher();
 
 	export let title = '';
+	export let canclose = 'true';
 	let modal;
 	let hide = true;
 
@@ -16,7 +17,7 @@
 	}
 
 	document.addEventListener('keydown', e => {
-		if (e.key == 'Escape') {
+		if (e.key == 'Escape' && canclose == 'true') {
 			close();
 		}
 	});
