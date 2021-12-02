@@ -56,6 +56,10 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>({
 			type: String,
 			default: null,
 		},
+		scopes: {
+			type: [String],
+			default: [],
+		},
 	},
 	roles: {type: Number, default: UserRoles.STUDENT},
 });

@@ -38,6 +38,10 @@ export interface IUser {
 		 * Session token
 		 */
 		session: string | null;
+		/**
+		 * Authorized scopes
+		 */
+		scopes: string[];
 	};
 	/**
 	 * The user's balance
