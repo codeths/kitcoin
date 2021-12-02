@@ -1,20 +1,45 @@
 import express from 'express';
 import crypto from 'crypto';
-import {
-	STUDENT_OAUTH_URL,
-	STAFF_OAUTH_URL,
-	oauthCallback,
-} from '../../helpers/oauth';
+import {getAuthURL, oauthCallback} from '../../helpers/oauth';
 import {request} from '../../helpers/request';
 const router = express.Router();
 
-router.get(['/login', '/signin'], async (req, res) => {
-	res.redirect(STUDENT_OAUTH_URL);
-});
+router.get(
+	['/login', '/signin'],
+	(req, res, next) =>
+		request(req, res, next, {
+			authentication: false,
+		}),
+	async (req, res) => {
+		res.redirect(
+			getAuthURL({
+				user:
+					req.query.hint == 'true' && req.user
+						? req.user.googleID
+						: undefined,
+			}),
+		);
+	},
+);
 
-router.get(['/login/staff', '/signin/staff'], async (req, res) => {
-	res.redirect(STAFF_OAUTH_URL);
-});
+router.get(
+	['/login/staff', '/signin/staff'],
+	(req, res, next) =>
+		request(req, res, next, {
+			authentication: false,
+		}),
+	async (req, res) => {
+		res.redirect(
+			getAuthURL({
+				scopes: 'STAFF',
+				user:
+					req.query.hint == 'true' && req.user
+						? req.user.googleID
+						: undefined,
+			}),
+		);
+	},
+);
 
 router.get(
 	['/logout', '/signout'],
