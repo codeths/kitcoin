@@ -105,7 +105,6 @@ function dev() {
 			let res = await frontend();
 			if (res) {
 				console.log(`${fileName} done.`);
-				node();
 			} else {
 				console.log(`${fileName} failed.`);
 			}
