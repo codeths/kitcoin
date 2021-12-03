@@ -1,20 +1,24 @@
 <script>
 	import {getContext, onMount} from 'svelte';
 	import Header from '../../components/Header.svelte';
-	import Auth from '../../utils/Auth.svelte';
 	import ItemDisplay from '../../components/ItemDisplay.svelte';
 
-	let customStoresAvailable = false;
-	let ctx = getContext('userInfo');
-	onMount(async () => {
-		if (await ctx) customStoresAvailable = true; //User can only see custom stores if they're logged in
-	});
+	let stores = [];
+	let publicStores = [];
+	let privateStores = [];
 
-	const stores = [
-		{title: 'Succulent Store', owner: 'Plant Enthusiast'},
-		{title: 'Purple Things', owner: 'Lavender Enjoyer'},
-		{title: 'Blahaj Store', owner: 'IKEA'},
-	];
+	(async () => {
+		let res = await fetch('/api/stores');
+		try {
+			if (res && res.ok) stores = await res.json();
+		} catch (e) {}
+	})();
+
+	$: {
+		publicStores = stores.filter(x => x.public);
+		privateStores = stores.filter(x => !x.public);
+	}
+
 	const categories = [
 		//TODO: Use an image instead of a color for the background?
 		//Be sure to add any colors used to Tailwind's safelist (Ex: 'from-{color}-300' and 'to-{color}-200')
@@ -41,7 +45,6 @@
 </script>
 
 <!-- Head -->
-<Auth />
 <Header sticky />
 
 <!-- Content -->
@@ -59,29 +62,34 @@
 	</div>
 </div>
 
-{#if customStoresAvailable && stores.length != 0}
-	<div class="p-6 mt-6">
-		<h2 class="text-4xl font-bold mb-6">Custom Stores</h2>
-		<div
-			class="bg-gray-200 rounded-md filter drop-shadow-md flex overflow-x-auto space-x-3.5 p-4 max-w-min"
-		>
-			{#each stores as store}
+{#if stores.length > 0}
+	{#each [['Public', publicStores], ['Private', privateStores]] as [category, stores]}
+		{#if stores.length > 0}
+			<div class="p-6 mt-6">
+				<h2 class="text-4xl font-bold mb-6">{category} Stores</h2>
 				<div
-					class="p-2 bg-blue-200 hover:bg-blue-300 transition-colors duration-150 rounded-lg border-2 border-gray-400 min-w-max"
+					class="bg-gray-200 rounded-md filter drop-shadow-md flex overflow-x-auto space-x-3.5 p-4 max-w-min"
 				>
-					<p class="text-2xl font-semibold leading-relaxed">
-						{store.title}
-					</p>
-					<p class="italic">
-						by <span
-							class="text-lg not-italic font-semibold text-gray-800"
-							>{store.owner}</span
+					{#each stores as store}
+						<div
+							class="p-2 bg-blue-200 hover:bg-blue-300 transition-colors duration-150 rounded-lg border-2 border-gray-400 min-w-max"
 						>
-					</p>
+							<p class="text-2xl font-semibold leading-relaxed">
+								{store.name}
+							</p>
+							{#if store.description}
+								<p class="italic">
+									{store.description}
+								</p>
+							{/if}
+						</div>
+					{/each}
 				</div>
-			{/each}
-		</div>
-	</div>
+			</div>
+		{/if}
+	{/each}
+{:else}
+	<h2>No stores available</h2>
 {/if}
 
 {#if categories.length != 0}
