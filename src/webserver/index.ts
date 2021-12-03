@@ -10,6 +10,7 @@ import path from 'path';
 import {request} from '../helpers/request';
 import {cpus} from 'os';
 import cluster from 'cluster';
+import {handleLogin} from './routes/auth';
 
 declare module 'express-session' {
 	interface SessionData {
@@ -78,8 +79,12 @@ app.get(
 	(...req) => request(...req, {}),
 	(req, res) => {
 		if (req.user && req.user.hasRole('STUDENT')) servePage(res);
-		else if (req.user) res.redirect('/');
-		else res.redirect('/login');
+		else if (req.user) res.redirect('/home');
+		else
+			handleLogin(req, res, {
+				redirect: true,
+				hint: true,
+			});
 	},
 );
 
@@ -88,8 +93,12 @@ app.get(
 	(...req) => request(...req, {}),
 	(req, res) => {
 		if (req.user && req.user.hasRole('STAFF')) servePage(res);
-		else if (req.user) res.redirect('/');
-		else res.redirect('/login');
+		else if (req.user) res.redirect('/home');
+		else
+			handleLogin(req, res, {
+				redirect: true,
+				hint: true,
+			});
 	},
 );
 
@@ -98,8 +107,12 @@ app.get(
 	(...req) => request(...req, {}),
 	(req, res) => {
 		if (req.user && req.user.hasRole('ADMIN')) servePage(res);
-		else if (req.user) res.redirect('/');
-		else res.redirect('/login');
+		else if (req.user) res.redirect('/home');
+		else
+			handleLogin(req, res, {
+				redirect: true,
+				hint: true,
+			});
 	},
 );
 
@@ -114,7 +127,7 @@ app.get(
 			else if (req.user.hasRole('STUDENT')) res.redirect('/student');
 			else res.redirect('/');
 		} else {
-			res.redirect('/login');
+			handleLogin(req, res);
 		}
 	},
 );

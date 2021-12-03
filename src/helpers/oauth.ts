@@ -13,6 +13,7 @@ const OAUTH_SCOPES = {
 };
 
 type ScopeType = keyof typeof OAUTH_SCOPES;
+type PromptType = 'none' | 'consent' | 'select_account';
 
 import {google, Auth} from 'googleapis';
 import {client_id, client_secret, redirect_url} from '../config/keys.json';
@@ -66,7 +67,7 @@ function getAuthURL({
 }: {
 	scopes?: string[] | ScopeType;
 	user?: string | undefined;
-	prompt?: 'none' | 'consent' | 'select_account' | undefined;
+	prompt?: PromptType | undefined;
 }) {
 	if (!Array.isArray(scopes)) scopes = OAUTH_SCOPES[scopes];
 	const auth = getOAuth2Client();
@@ -156,4 +157,4 @@ export async function oauthCallback(code: string, session: string) {
 	});
 }
 
-export {getAuthURL, getOAuth2Client, getAccessToken};
+export {getAuthURL, ScopeType, PromptType, getOAuth2Client, getAccessToken};

@@ -1,8 +1,48 @@
 import express from 'express';
 import crypto from 'crypto';
-import {getAuthURL, oauthCallback} from '../../helpers/oauth';
+import {
+	getAuthURL,
+	oauthCallback,
+	ScopeType,
+	PromptType,
+} from '../../helpers/oauth';
 import {request} from '../../helpers/request';
 const router = express.Router();
+
+function handleLogin(
+	req: express.Request,
+	res: express.Response,
+	{
+		scopes,
+		prompt,
+		redirect,
+		hint,
+	}: {
+		hint?: boolean | undefined;
+		scopes?: string[] | ScopeType | undefined;
+		prompt?: PromptType | undefined;
+		redirect?: true | string | undefined;
+	} = {},
+) {
+	if (redirect)
+		res.cookie(
+			'redirect',
+			encodeURIComponent(redirect == true ? req.path : redirect),
+			{
+				maxAge: 1000 * 60 * 5,
+			},
+		);
+	res.redirect(
+		getAuthURL({
+			scopes,
+			prompt,
+			user:
+				(hint || req.query.hint == 'true') && req.user
+					? req.user.googleID
+					: undefined,
+		}),
+	);
+}
 
 router.get(
 	['/login', '/signin'],
@@ -11,14 +51,7 @@ router.get(
 			authentication: false,
 		}),
 	async (req, res) => {
-		res.redirect(
-			getAuthURL({
-				user:
-					req.query.hint == 'true' && req.user
-						? req.user.googleID
-						: undefined,
-			}),
-		);
+		handleLogin(req, res);
 	},
 );
 
@@ -29,15 +62,9 @@ router.get(
 			authentication: false,
 		}),
 	async (req, res) => {
-		res.redirect(
-			getAuthURL({
-				scopes: 'STAFF',
-				user:
-					req.query.hint == 'true' && req.user
-						? req.user.googleID
-						: undefined,
-			}),
-		);
+		handleLogin(req, res, {
+			scopes: 'STAFF',
+		});
 	},
 );
 
@@ -70,10 +97,10 @@ router.get('/cbk', async (req, res) => {
 	if (!user) return;
 	req.session.token = session;
 
-	// DEBUG
-	return res.redirect('/home');
+	return res.redirect(decodeURIComponent(req.cookies.redirect || '/home'));
 });
 
 router.use((req, res) => res.status(404).send());
 
 export default router;
+export {handleLogin};
