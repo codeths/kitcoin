@@ -24,6 +24,14 @@ function handleLogin(
 		redirect?: true | string | undefined;
 	} = {},
 ) {
+	if (
+		!redirect &&
+		typeof req.query.redirect == 'string' &&
+		['/student', '/staff', '/admin', '/store', '/home'].includes(
+			decodeURIComponent(req.query.redirect),
+		)
+	)
+		redirect = decodeURIComponent(req.query.redirect);
 	if (redirect)
 		res.cookie(
 			'redirect',
