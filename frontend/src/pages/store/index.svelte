@@ -3,6 +3,7 @@
 	import Header from '../../components/Header.svelte';
 	import ItemDisplay from '../../components/ItemDisplay.svelte';
 	import Loading from '../../components/Loading.svelte';
+	import Button from '../../components/Button.svelte';
 
 	let stores = [];
 
@@ -35,6 +36,34 @@
 		if (!res || !res.ok) throw new Error('Failed to fetch stores');
 		return await res.json();
 	}
+
+	let selectedStore = null;
+	let loading = false;
+	let error;
+	let items = null;
+	let currentPage = 1;
+
+	async function load(store, page, which = true) {
+		try {
+			if (store) {
+				if (selectedStore !== store) items = null;
+				selectedStore = store;
+			}
+			loading = which;
+			let res = await fetch(
+				`/api/store/${selectedStore._id}/items?page=${page}&count=12`,
+			).catch(e => {});
+			loading = false;
+			if (!res || !res.ok) throw new Error('Failed to fetch items');
+			error = false;
+			items = await res.json();
+			if (page) currentPage = page;
+			return;
+		} catch (e) {
+			loading = false;
+			error = true;
+		}
+	}
 </script>
 
 <!-- Head -->
@@ -65,7 +94,8 @@
 				class="bg-gray-200 rounded-md filter drop-shadow-md flex overflow-x-auto space-x-3.5 p-4 max-w-min"
 			>
 				{#each stores as store}
-					<div
+					<button
+						on:click={() => load(store, 1)}
 						class="p-2 {store.canManage
 							? 'bg-yellow-200 hover:bg-yellow-300'
 							: 'bg-blue-200 hover:bg-blue-300'} transition-colors duration-150 rounded-lg border-2 border-gray-400 min-w-max"
@@ -88,7 +118,7 @@
 							{/if}
 							{#if store.canManage} | You can manage{/if}
 						</p>
-					</div>
+					</button>
 				{/each}
 			</div>
 		{:else}
@@ -98,6 +128,79 @@
 		<h2>Error loading stores</h2>
 	{/await}
 </div>
+
+{#if selectedStore}
+	<div class="p-6 mt-12">
+		<h2 class="text-4xl font-bold mb-6">{selectedStore.name}</h2>
+		{#if error || !items || items.docCount == 0}
+			<h2>
+				{#if error}
+					An Error Occured
+				{:else}
+					No Items
+				{/if}
+			</h2>
+			<br />
+			<Button
+				on:click={() => load(null, currentPage ?? 1, 'refresh')}
+				class="mx-2"
+				disabled={loading}
+			>
+				{#if loading == 'refresh'}
+					<Loading height="2rem" />
+				{:else if error}
+					Retry
+				{:else}
+					Refresh
+				{/if}
+			</Button>
+		{:else}
+			<div class="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+				{#each items.items as item}
+					<div class="p-4 border shadow">
+						<p class="text-3xl font-semibold text-gray-800">
+							{item.name}
+						</p>
+						{#if item.description}
+							<p class="text-xl mt-4">
+								{item.description}
+							</p>
+						{/if}
+					</div>
+				{/each}
+			</div>
+			<div class="pt-4">
+				<div class="text-center mb-2">
+					Showing page {items.page} of {items.pageCount}
+				</div>
+				<div class="flex justify-center align-center">
+					<Button
+						on:click={() => load(null, currentPage - 1, 'previous')}
+						class="mx-2"
+						disabled={loading || currentPage <= 1}
+					>
+						{#if loading == 'previous'}
+							<Loading height="2rem" />
+						{:else}
+							Previous
+						{/if}
+					</Button>
+					<Button
+						on:click={() => load(null, currentPage + 1, 'next')}
+						class="mx-2"
+						disabled={loading || currentPage >= items.pageCount}
+					>
+						{#if loading == 'next'}
+							<Loading height="2rem" />
+						{:else}
+							Next
+						{/if}
+					</Button>
+				</div>
+			</div>
+		{/if}
+	</div>
+{/if}
 
 {#if categories.length != 0}
 	<div class="p-6 mt-12">
