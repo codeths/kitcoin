@@ -69,13 +69,17 @@ router.get(
 			},
 		];
 
-		let teachingClasses: string[] = [];
+		let classes: {
+			id: string;
+			name: string | null;
+			role: 'TEACHER' | 'STUDENT';
+		}[] = [];
 
 		if (requestHasUser(req)) {
 			let classroomClient = await new ClassroomClient().createClient(
 				req.user,
 			);
-			let classes = await Promise.all([
+			classes = await Promise.all([
 				classroomClient.getClassesForRole('TEACHER'),
 				classroomClient.getClassesForRole('STUDENT'),
 			]).then(x =>
@@ -85,6 +89,7 @@ router.get(
 							.filter(x => x.id)
 							.map(x => ({
 								id: x.id as string,
+								name: x.name || null,
 								role: (i === 0 ? 'TEACHER' : 'STUDENT') as
 									| 'TEACHER'
 									| 'STUDENT',
@@ -92,10 +97,6 @@ router.get(
 					)
 					.flat(),
 			);
-
-			teachingClasses = classes
-				.filter(x => x.role === 'TEACHER')
-				.map(x => x.id);
 
 			query.push({classID: {$in: classes.map(x => x.id)}});
 			query.push({
@@ -114,13 +115,17 @@ router.get(
 			stores.map(x => ({
 				canManage: req.user
 					? req.user.hasRole('ADMIN') ||
-					  (x.classID && teachingClasses.includes(x.classID)) ||
+					  (x.classID &&
+							classes
+								.filter(x => x.role === 'TEACHER')
+								.some(c => c.id == x.classID)) ||
 					  x.managers.includes(req.user.id)
 					: false,
 				_id: x._id,
 				name: x.name,
 				description: x.description,
 				public: x.public,
+				className: classes.find(c => c.id == x.classID)?.name || null,
 			})),
 		);
 	},
