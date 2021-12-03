@@ -120,6 +120,7 @@ None
 	name: string,
 	description: string,
 	canManage: boolean,
+	public: boolean,
 }[]
 ```
 

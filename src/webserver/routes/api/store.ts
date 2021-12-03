@@ -107,6 +107,7 @@ router.get(
 				_id: x._id,
 				name: x.name,
 				description: x.description,
+				public: x.public,
 			})),
 		);
 	},
