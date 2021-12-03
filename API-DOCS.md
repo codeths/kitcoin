@@ -20,9 +20,9 @@ Array of classes
 
 ```ts
 {
-	id: string,
-	name: string | null,
-	section: string | null,
+	id: string;
+	name: string | null;
+	section: string | null;
 }
 [];
 ```
@@ -41,10 +41,11 @@ Array of students
 
 ```ts
 {
-	googleId: string,
-	id: string,
-	name: string | null,
-}[]
+	googleId: string;
+	id: string;
+	name: string | null;
+}
+[];
 ```
 
 # Currency
@@ -63,7 +64,7 @@ The user's balance
 
 ```ts
 {
-	balance: number,
+	balance: number;
 }
 ```
 
@@ -92,9 +93,9 @@ Body:
 
 ```ts
 {
-	amount: number,
-	reason: string | null,
-	user: string,
+	amount: number;
+	reason: string | null;
+	user: string;
 }
 ```
 
@@ -116,13 +117,14 @@ None
 
 ```ts
 {
-	_id: string
-	name: string,
-	description: string,
-	canManage: boolean,
-	public: boolean,
-	className: string | null,
-}[]
+	_id: string;
+	name: string;
+	description: string;
+	canManage: boolean;
+	public: boolean;
+	className: string | null;
+}
+[];
 ```
 
 ## GET `/store/:id`
@@ -137,9 +139,9 @@ Get a store's info by its ID
 
 ```ts
 {
-	name: string,
-	description: string,
-	canManage: boolean,
+	name: string;
+	description: string;
+	canManage: boolean;
 }
 ```
 
@@ -157,12 +159,13 @@ Get a list of a store's items
 
 ```ts
 {
-	_id: string,
-	name: string,
-	description: string,
-	quantity: number | null,
-	price: number,
-}[]
+	_id: string;
+	name: string;
+	description: string;
+	quantity: number | null;
+	price: number;
+}
+[];
 ```
 
 ## GET `/store/:storeID/item/:id`
@@ -178,11 +181,11 @@ Get a store's item by its ID
 
 ```ts
 {
-	_id: string,
-	name: string,
-	description: string,
-	quantity: number | null,
-	price: number,
+	_id: string;
+	name: string;
+	description: string;
+	quantity: number | null;
+	price: number;
 }
 ```
 
@@ -203,11 +206,11 @@ Update a store's item
 
 ```ts
 {
-	_id: string,
-	name: string,
-	description: string,
-	quantity: number | null,
-	price: number,
+	_id: string;
+	name: string;
+	description: string;
+	quantity: number | null;
+	price: number;
 }
 ```
 
@@ -241,11 +244,11 @@ Create a store item
 
 ```ts
 {
-	_id: string,
-	name: string,
-	description: string,
-	quantity: number | null,
-	price: number,
+	_id: string;
+	name: string;
+	description: string;
+	quantity: number | null;
+	price: number;
 }
 ```
 
@@ -262,7 +265,7 @@ Body:
 ```ts
 {
 	user: string; // User ID
-	roles: ("NONE" | "STUDENT" | "STAFF" | "ADMIN" | "ALL")[];
+	roles: ("NONE" | "STUDENT" | "STAFF" | "ADMIN" | "ALL")[]
 }
 ```
 
@@ -285,8 +288,8 @@ None
 	name: string;
 	email: string;
 	id: string;
-	roles: ("NONE" | "STUDENT" | "STAFF" | "ADMIN" | "ALL")[];
-	scopes: string[];
+	roles: ("NONE" | "STUDENT" | "STAFF" | "ADMIN" | "ALL")[]
+	scopes: string[]
 	authorized: boolean; // Valid OAuth Credentials
 }
 ```
