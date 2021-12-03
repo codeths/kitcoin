@@ -1,4 +1,5 @@
 import express from 'express';
+import {FilterQuery} from 'mongoose';
 import {ClassroomClient} from '../../../helpers/classroom';
 import {numberFromData, request, Validators} from '../../../helpers/request';
 import {IStoreDoc, IUserDoc, Store, StoreItem} from '../../../helpers/schema';
@@ -7,11 +8,17 @@ const router = express.Router();
 
 async function getStorePerms(
 	store: IStoreDoc,
-	user: IUserDoc,
+	user: IUserDoc | undefined,
 ): Promise<{
 	view: boolean;
 	manage: boolean;
 }> {
+	if (!user)
+		return {
+			view: store.public,
+			manage: false,
+		};
+
 	let view = false,
 		manage = false,
 		classroomClient = await new ClassroomClient().createClient(user);
@@ -53,57 +60,63 @@ router.get(
 	'/stores',
 	async (req, res, next) =>
 		request(req, res, next, {
-			authentication: true,
+			authentication: false,
 		}),
 	async (req, res) => {
-		if (!requestHasUser(req)) return;
+		let query: FilterQuery<IStoreDoc>[] = [
+			{
+				public: true,
+			},
+		];
 
-		let classroomClient = await new ClassroomClient().createClient(
-			req.user,
-		);
-		let classes = await Promise.all([
-			classroomClient.getClassesForRole('TEACHER'),
-			classroomClient.getClassesForRole('STUDENT'),
-		]).then(x =>
-			x
-				.map((x, i) =>
-					(x || [])
-						.filter(x => x.id)
-						.map(x => ({
-							id: x.id as string,
-							role: (i === 0 ? 'TEACHER' : 'STUDENT') as
-								| 'TEACHER'
-								| 'STUDENT',
-						})),
-				)
-				.flat(),
-		);
+		let teachingClasses: string[] = [];
+
+		if (requestHasUser(req)) {
+			let classroomClient = await new ClassroomClient().createClient(
+				req.user,
+			);
+			let classes = await Promise.all([
+				classroomClient.getClassesForRole('TEACHER'),
+				classroomClient.getClassesForRole('STUDENT'),
+			]).then(x =>
+				x
+					.map((x, i) =>
+						(x || [])
+							.filter(x => x.id)
+							.map(x => ({
+								id: x.id as string,
+								role: (i === 0 ? 'TEACHER' : 'STUDENT') as
+									| 'TEACHER'
+									| 'STUDENT',
+							})),
+					)
+					.flat(),
+			);
+
+			teachingClasses = classes
+				.filter(x => x.role === 'TEACHER')
+				.map(x => x.id);
+
+			query.push({classID: {$in: classes.map(x => x.id)}});
+			query.push({
+				managers: req.user.id,
+			});
+			query.push({
+				users: req.user.id,
+			});
+		}
 
 		const stores = await Store.find({
-			$or: [
-				{
-					public: true,
-				},
-				{
-					classID: {$in: classes.map(x => x.id)},
-				},
-				{
-					managers: req.user.id,
-				},
-				{
-					users: req.user.id,
-				},
-			],
+			$or: query,
 		});
 
 		res.status(200).json(
 			stores.map(x => ({
-				canManage:
-					req.user.hasRole('ADMIN') ||
-					classes.some(
-						c => c.id == x.classID && c.role == 'TEACHER',
-					) ||
-					x.managers.includes(req.user.id),
+				canManage: req.user
+					? req.user.hasRole('ADMIN') ||
+					  (x.classID && teachingClasses.includes(x.classID)) ||
+					  x.managers.includes(req.user.id)
+					: false,
 				_id: x._id,
 				name: x.name,
 				description: x.description,
@@ -117,7 +130,7 @@ router.get(
 	'/store/:id',
 	async (req, res, next) =>
 		request(req, res, next, {
-			authentication: true,
+			authentication: false,
 			validators: {
 				params: {
 					id: Validators.string,
@@ -126,8 +139,6 @@ router.get(
 		}),
 	async (req, res) => {
 		try {
-			if (!requestHasUser(req)) return;
-
 			const {id} = req.params;
 
 			const store = await Store.findById(id)
@@ -167,7 +178,7 @@ router.get(
 	'/store/:id/items',
 	async (req, res, next) =>
 		request(req, res, next, {
-			authentication: true,
+			authentication: false,
 			validators: {
 				params: {
 					id: Validators.string,
@@ -183,8 +194,6 @@ router.get(
 			},
 		}),
 	async (req, res) => {
-		if (!requestHasUser(req)) return;
-
 		const {id} = req.params;
 
 		const store = await Store.findById(id)
@@ -239,7 +248,7 @@ router.get(
 	'/store/:storeID/item/:id',
 	async (req, res, next) =>
 		request(req, res, next, {
-			authentication: true,
+			authentication: false,
 			validators: {
 				params: {
 					storeID: Validators.string,
@@ -256,8 +265,6 @@ router.get(
 			},
 		}),
 	async (req, res) => {
-		if (!requestHasUser(req)) return;
-
 		const {storeID, id} = req.params;
 
 		const store = await Store.findById(storeID)
