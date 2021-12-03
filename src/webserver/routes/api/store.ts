@@ -221,6 +221,7 @@ router.get(
 
 		const [items, docCount] = await Promise.all([
 			query
+				.clone()
 				.setOptions({
 					skip: (page - 1) * count,
 					limit: count,
