@@ -2,22 +2,9 @@
 	import {getContext, onMount} from 'svelte';
 	import Header from '../../components/Header.svelte';
 	import ItemDisplay from '../../components/ItemDisplay.svelte';
+	import Loading from '../../components/Loading.svelte';
 
 	let stores = [];
-	let publicStores = [];
-	let privateStores = [];
-
-	(async () => {
-		let res = await fetch('/api/stores');
-		try {
-			if (res && res.ok) stores = await res.json();
-		} catch (e) {}
-	})();
-
-	$: {
-		publicStores = stores.filter(x => x.public);
-		privateStores = stores.filter(x => !x.public);
-	}
 
 	const categories = [
 		//TODO: Use an image instead of a color for the background?
@@ -42,6 +29,12 @@
 		},
 		{img: 'shop_images/banana.png', price: 20000, name: 'Banana'},
 	];
+
+	async function getStores() {
+		let res = await fetch('/api/stores');
+		if (!res || !res.ok) throw new Error('Failed to fetch stores');
+		return await res.json();
+	}
 </script>
 
 <!-- Head -->
@@ -62,35 +55,49 @@
 	</div>
 </div>
 
-{#if stores.length > 0}
-	{#each [['Public', publicStores], ['Private', privateStores]] as [category, stores]}
+<div class="p-6 mt-6">
+	{#await getStores()}
+		Loading...
+	{:then stores}
 		{#if stores.length > 0}
-			<div class="p-6 mt-6">
-				<h2 class="text-4xl font-bold mb-6">{category} Stores</h2>
-				<div
-					class="bg-gray-200 rounded-md filter drop-shadow-md flex overflow-x-auto space-x-3.5 p-4 max-w-min"
-				>
-					{#each stores as store}
-						<div
-							class="p-2 bg-blue-200 hover:bg-blue-300 transition-colors duration-150 rounded-lg border-2 border-gray-400 min-w-max"
-						>
-							<p class="text-2xl font-semibold leading-relaxed">
-								{store.name}
+			<h2 class="text-4xl font-bold mb-6">Your Stores</h2>
+			<div
+				class="bg-gray-200 rounded-md filter drop-shadow-md flex overflow-x-auto space-x-3.5 p-4 max-w-min"
+			>
+				{#each stores as store}
+					<div
+						class="p-2 {store.canManage
+							? 'bg-yellow-200 hover:bg-yellow-300'
+							: 'bg-blue-200 hover:bg-blue-300'} transition-colors duration-150 rounded-lg border-2 border-gray-400 min-w-max"
+					>
+						<p class="text-2xl font-semibold leading-relaxed">
+							{store.name}
+						</p>
+						{#if store.description}
+							<p>
+								{store.description}
 							</p>
-							{#if store.description}
-								<p class="italic">
-									{store.description}
-								</p>
+						{/if}
+						<p class="italic">
+							{#if store.public}
+								Available to everyone
+							{:else if store.className}
+								For {store.className}
+							{:else}
+								Private
 							{/if}
-						</div>
-					{/each}
-				</div>
+							{#if store.canManage} | You can manage{/if}
+						</p>
+					</div>
+				{/each}
 			</div>
+		{:else}
+			<h2>No stores available</h2>
 		{/if}
-	{/each}
-{:else}
-	<h2>No stores available</h2>
-{/if}
+	{:catch}
+		<h2>Error loading stores</h2>
+	{/await}
+</div>
 
 {#if categories.length != 0}
 	<div class="p-6 mt-12">
