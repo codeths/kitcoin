@@ -3,6 +3,7 @@
 	import {url} from '@roxi/routify';
 	import Button from '../components/Button.svelte';
 
+	export let sticky = false;
 	let links = [];
 	let homes = [];
 	let ctx = getContext('userInfo');
@@ -32,7 +33,7 @@
 	});
 </script>
 
-<header>
+<header class={sticky ? 'sticky top-0 z-10' : null}>
 	<nav
 		class="w-full bg-blue-eths text-white p-3 flex justify-between items-center shadow-xl"
 	>
@@ -72,8 +73,7 @@
 						{userInfo.name}
 					</Button>
 					<div
-						style="top: 3rem"
-						class="flex focus-within:flex absolute bg-white text-base z-10 list-none divide-y divide-gray-100 rounded shadow w-44 dark:bg-gray-700 w-full"
+						class="flex focus-within:flex absolute bg-white text-base z-10 list-none divide-y divide-gray-100 rounded shadow w-44 dark:bg-gray-700 w-full top-12"
 						class:hidden={!userDrop}
 					>
 						<ul
