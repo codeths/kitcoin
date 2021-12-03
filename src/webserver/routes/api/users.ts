@@ -121,6 +121,7 @@ router.get(
 				q.match(/^\d{5,6}$/) && (await User.findOne().byStudentId(q));
 
 			let list = results
+				.map(x => x.toJSON())
 				.filter(x => x.confidenceScore > 5)
 				.sort((a, b) => b.confidenceScore - a.confidenceScore)
 				.map(user => ({
