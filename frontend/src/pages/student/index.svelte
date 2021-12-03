@@ -1,5 +1,5 @@
 <script>
-	import NewItems from '../../components/NewItems.svelte';
+	import ItemDisplay from '../../components/ItemDisplay.svelte';
 	import Transactions from '../../components/Transactions.svelte';
 	import Header from '../../components/Header.svelte';
 	import {getBalance, getTransactions} from '../../utils/api.js';
@@ -57,7 +57,7 @@
 		<div class="lg:col-span-8 my-8 lg:mx-2">
 			<h1 class="text-3xl font-medium mb-2">What's new</h1>
 			<div class="bg-white shadow-md rounded">
-				<NewItems items={newItems} />
+				<ItemDisplay items={newItems} />
 			</div>
 		</div>
 		<div class="lg:col-span-12 my-8 lg:mx-2">
