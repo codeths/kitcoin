@@ -5,6 +5,18 @@
 	import Loading from '../../components/Loading.svelte';
 	import Button from '../../components/Button.svelte';
 
+	let ctx = getContext('userInfo');
+	let authMsg = null;
+	(async () => {
+		let info = (await ctx) || null;
+		if (!info) return (authMsg = 'NO_USER');
+		if (
+			!info.scopes.includes(
+				'https://www.googleapis.com/auth/classroom.courses.readonly',
+			)
+		)
+			authMsg = 'CLASSROOM';
+	})();
 	let stores = [];
 
 	const categories = [
@@ -84,12 +96,27 @@
 	</div>
 </div>
 
+<h2 class="text-4xl font-bold mb-6">Your Stores</h2>
+{#if authMsg}
+	<div class="">
+		{#if authMsg == 'NO_USER'}
+			You are not logged in. <a
+				href="/signin?redirect=%2Fstore&hint=true"
+				target="_self">Sign in</a
+			> to view your private stores.
+		{:else if authMsg == 'CLASSROOM'}
+			KitCoin is unable to access your Google Classroom classes. <a
+				href="/signin?redirect=%2Fstore&hint=true"
+				target="_self">Sign in</a
+			> again to grant the permission.
+		{/if}
+	</div>
+{/if}
 <div class="p-6 mt-6">
 	{#await getStores()}
 		Loading...
 	{:then stores}
 		{#if stores.length > 0}
-			<h2 class="text-4xl font-bold mb-6">Your Stores</h2>
 			<div
 				class="bg-gray-200 rounded-md filter drop-shadow-md flex overflow-x-auto space-x-3.5 p-4 max-w-min"
 			>
