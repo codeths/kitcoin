@@ -9,6 +9,15 @@ import {
 import {request} from '../../helpers/request';
 const router = express.Router();
 
+const ALLOWED_REDIRECTS: (string | RegExp)[] = [
+	'/student',
+	'/staff',
+	'/admin',
+	'/store',
+	'/home',
+	/\/store\/\w+/,
+];
+
 function handleLogin(
 	req: express.Request,
 	res: express.Response,
@@ -24,14 +33,19 @@ function handleLogin(
 		redirect?: true | string | undefined;
 	} = {},
 ) {
+	if (!redirect && typeof req.query.redirect == 'string')
+		redirect = decodeURIComponent(req.query.redirect).toLowerCase();
 	if (
-		!redirect &&
-		typeof req.query.redirect == 'string' &&
-		['/student', '/staff', '/admin', '/store', '/home'].includes(
-			decodeURIComponent(req.query.redirect),
+		redirect &&
+		typeof redirect === 'string' &&
+		!ALLOWED_REDIRECTS.some(r =>
+			r instanceof RegExp
+				? new RegExp(`^${r.source}$`).test(redirect as string)
+				: r === redirect,
 		)
 	)
-		redirect = decodeURIComponent(req.query.redirect);
+		redirect = undefined;
+
 	if (redirect)
 		res.cookie(
 			'redirect',
