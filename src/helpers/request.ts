@@ -162,7 +162,8 @@ export class Validators {
 
 	/** Data must be a number */
 	static number = () => ({
-		run: (data: unknown): data is number => typeof data === 'number',
+		run: (data: unknown): data is number =>
+			typeof data === 'number' && !isNaN(data) && isFinite(data),
 		errorMessage: '{KEY} must be a number',
 	});
 
@@ -170,7 +171,8 @@ export class Validators {
 	static numberString = () => ({
 		run: (data: unknown): data is `${number}` => {
 			if (!Validators.string().run(data)) return false;
-			return !isNaN(parseFloat(data as string));
+			let num = parseFloat(data as string);
+			return !isNaN(num) && isFinite(num);
 		},
 		errorMessage: '{KEY} must be a number',
 	});
