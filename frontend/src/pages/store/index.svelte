@@ -37,6 +37,7 @@
 	];
 
 	async function getStores() {
+		if ($storeInfo) return $storeInfo;
 		let res = await fetch('/api/stores');
 		if (!res || !res.ok) throw new Error('Failed to fetch stores');
 		let json = await res.json();
