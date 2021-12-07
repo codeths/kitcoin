@@ -25,7 +25,7 @@
 	.loader {
 		color: var(--color);
 		font-size: calc(var(--height) * 0.25);
-		margin: calc(var(--height) * 2) auto;
+		margin: 0 auto;
 		position: relative;
 		-webkit-transform: translateZ(0);
 		-ms-transform: translateZ(0);
