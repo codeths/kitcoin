@@ -1,10 +1,13 @@
 <script>
+	import {metatags} from '@roxi/routify';
 	import ItemDisplay from '../../components/ItemDisplay.svelte';
 	import Transactions from '../../components/Transactions.svelte';
 	import Header from '../../components/Header.svelte';
 	import {getBalance, getTransactions} from '../../utils/api.js';
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
 	import Auth from '../../utils/Auth.svelte';
+
+	metatags.title = 'Student Home';
 
 	const newItems = [
 		{img: 'shop_images/beans.png', price: 15, name: 'Beans'},

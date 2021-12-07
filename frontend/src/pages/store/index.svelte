@@ -1,11 +1,13 @@
 <script>
 	import {getContext, onMount} from 'svelte';
-	import {url} from '@roxi/routify';
+	import {url, metatags} from '@roxi/routify';
 	import Header from '../../components/Header.svelte';
 	import ItemDisplay from '../../components/ItemDisplay.svelte';
 	import Loading from '../../components/Loading.svelte';
 	import Button from '../../components/Button.svelte';
 	import {storeInfo, getStores} from '../../utils/store.js';
+
+	metatags.title = 'Stores - Kitcoin';
 
 	let ctx = getContext('userInfo');
 	let authMsg = null;

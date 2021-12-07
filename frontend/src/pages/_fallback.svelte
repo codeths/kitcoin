@@ -1,7 +1,10 @@
 <script>
+	import {metatags} from '@roxi/routify';
 	import Header from '../components/Header.svelte';
 	import Button from '../components/Button.svelte';
 	import SetBodyStyle from '../utils/SetBodyStyle.svelte';
+
+	metatags.title = '404 - Kitcoin';
 </script>
 
 <!-- Head -->

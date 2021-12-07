@@ -1,9 +1,11 @@
 <script>
-	import {Router, isChangingPage} from '@roxi/routify';
+	import {Router, isChangingPage, metatags} from '@roxi/routify';
 	import {routes} from '../.routify/routes';
 	import SetBodyStyle from './utils/SetBodyStyle.svelte';
 	import {setContext} from 'svelte';
 	import {getUserInfo} from './utils/api';
+
+	metatags.title = 'Kitcoin';
 
 	const userInfoPromise = getUserInfo().catch(e =>
 		console.error('Failed to get user info: ', e),

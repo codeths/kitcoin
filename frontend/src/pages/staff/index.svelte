@@ -1,4 +1,5 @@
 <script>
+	import {metatags} from '@roxi/routify';
 	import {getContext} from 'svelte';
 	import Header from '../../components/Header.svelte';
 	import CreateTransaction from '../../components/CreateTransaction.svelte';
@@ -15,6 +16,8 @@
 	} from '../../utils/api.js';
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
 	import Auth from '../../utils/Auth.svelte';
+
+	metatags.title = 'Staff Home - Kitcoin';
 
 	let selectedClass = '';
 	let classList = [];

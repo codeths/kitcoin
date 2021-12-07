@@ -1,5 +1,5 @@
 <script>
-	import {params, url} from '@roxi/routify';
+	import {params, url, metatags} from '@roxi/routify';
 	import {getContext, onMount} from 'svelte';
 	import Header from '../../components/Header.svelte';
 	import ItemDisplay from '../../components/ItemDisplay.svelte';
@@ -15,13 +15,21 @@
 
 	let info = $storeInfo;
 
+	storeInfo.subscribe(newInfo => {
+		info = newInfo;
+	});
+
 	let storeID;
 	$: {
 		storeID = $params.store;
+		let store = (info || []).find(s => s._id === storeID);
 		if (storeID) {
 			load(null, null, true);
 			if (!info) getStores(storeID);
 		}
+		metatags.title = `Store${
+			store && store.name ? ` - ${store.name}` : ''
+		} - Kitcoin`;
 	}
 
 	let ctx = getContext('userInfo');
