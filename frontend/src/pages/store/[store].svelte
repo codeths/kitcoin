@@ -62,7 +62,16 @@
 	async function load(page, which, useCache) {
 		try {
 			loading = which || true;
-			items = await getItems(storeID, page || currentPage, useCache);
+			let newItems = await getItems(
+				storeID,
+				page || currentPage,
+				useCache,
+			);
+			items = {
+				...newItems,
+				items: items ? [] : newItems,
+			};
+			setTimeout(() => (items = newItems), 0);
 			if (items.page < items.pageCount)
 				getItems(storeID, items.page + 1, true);
 			loading = false;
@@ -70,6 +79,7 @@
 			if (page) currentPage = page;
 			return;
 		} catch (e) {
+			console.log(e);
 			loading = false;
 			error = true;
 		}
@@ -121,9 +131,10 @@
 						{/if}
 						<p class="flex-grow" />
 						<img
-							class="mt-6 object-contain max-h-80"
+							class="store-item mt-6 object-contain max-h-80"
 							src="/api/store/{storeID}/item/{item._id}/image.png"
 							alt={item.name}
+							onload="this.style.display = ''"
 							onerror="this.style.display = 'none'"
 						/>
 					</div>
