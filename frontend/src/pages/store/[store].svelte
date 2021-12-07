@@ -121,7 +121,7 @@
 						{/if}
 						<p class="flex-grow" />
 						<img
-							class="mt-6"
+							class="mt-6 object-contain max-h-80"
 							src="/api/store/{storeID}/item/{item._id}/image.png"
 							alt={item.name}
 							onerror="this.style.display = 'none'"
