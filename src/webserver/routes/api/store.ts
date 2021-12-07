@@ -394,7 +394,7 @@ router.patch(
 			},
 		}),
 	express.raw({
-		type: ['image/png', 'image/jpeg', 'image/webp'],
+		type: ['image/png', 'image/jpeg'],
 		limit: 1024 * 1024 * 5,
 	}),
 	async (req, res) => {
@@ -443,7 +443,7 @@ router.patch(
 				image = await jimp
 					.read(image)
 					.then(image => image.getBufferAsync(jimp.MIME_PNG))
-					.catch(() => {
+					.catch(e => {
 						res.status(400).send('Invalid image');
 						return null;
 					});
@@ -457,7 +457,6 @@ router.patch(
 			);
 			return res.status(200).send();
 		} catch (e) {
-			console.log(e);
 			try {
 				res.status(500).send('Something went wrong.');
 			} catch (e) {}
@@ -611,6 +610,12 @@ router.delete(
 			if (!item) return;
 
 			await item.delete();
+
+			try {
+				fs.rmSync(
+					path.resolve('uploads', 'storeitems', `${item._id}.png`),
+				);
+			} catch (e) {}
 
 			res.status(200).send();
 		} catch (e) {
