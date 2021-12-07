@@ -66,10 +66,10 @@
 		<h1 class="text-3xl font-medium mb-2">Available KitCoin</h1>
 		<div class="lg:col-span-2 sm:max-w-sm lg:max-w-none">
 			<div
-				class="flex bg-white shadow-md rounded py-10 border-t-8 border-blue-900"
+				class="flex bg-white shadow-md rounded py-10 min-h-40 border-t-8 border-blue-900"
 			>
 				<h1
-					class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full"
+					class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full h-full"
 				>
 					{#if typeof balance == 'number'}
 						<span
