@@ -1,17 +1,11 @@
 <script>
 	import {params, url, metatags} from '@roxi/routify';
-	import {getContext, onMount} from 'svelte';
+	import {getContext} from 'svelte';
 	import Header from '../../components/Header.svelte';
-	import ItemDisplay from '../../components/ItemDisplay.svelte';
 	import Loading from '../../components/Loading.svelte';
 	import Button from '../../components/Button.svelte';
-	import {
-		storeInfo,
-		storeItemInfo,
-		storeItemPages,
-		getStores,
-		getItems,
-	} from '../../utils/store.js';
+	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
+	import {storeInfo, getStores, getItems} from '../../utils/store.js';
 
 	let info = $storeInfo;
 
@@ -83,6 +77,7 @@
 </script>
 
 <!-- Head -->
+<SetBodyStyle classString="bg-gray-200" />
 <Header sticky />
 
 <!-- Content -->
@@ -107,7 +102,7 @@
 		{:else}
 			<div class="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 				{#each items.items as item}
-					<div class="p-4 border shadow flex flex-col">
+					<div class="p-4 bg-white border shadow flex flex-col">
 						<p class="text-3xl font-semibold text-gray-800">
 							{item.name}
 						</p>

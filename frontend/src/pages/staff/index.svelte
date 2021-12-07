@@ -7,13 +7,7 @@
 	import Button from '../../components/Button.svelte';
 	import ToastContainer from '../../components/ToastContainer.svelte';
 	let toastContainer;
-
-	import {
-		getBalance,
-		getTransactions,
-		getClasses,
-		getClassStudents,
-	} from '../../utils/api.js';
+	import {getBalance, getClasses, getClassStudents} from '../../utils/api.js';
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
 	import Auth from '../../utils/Auth.svelte';
 

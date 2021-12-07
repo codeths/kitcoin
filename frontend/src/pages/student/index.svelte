@@ -3,7 +3,7 @@
 	import ItemDisplay from '../../components/ItemDisplay.svelte';
 	import Transactions from '../../components/Transactions.svelte';
 	import Header from '../../components/Header.svelte';
-	import {getBalance, getTransactions} from '../../utils/api.js';
+	import {getBalance} from '../../utils/api.js';
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
 	import Auth from '../../utils/Auth.svelte';
 

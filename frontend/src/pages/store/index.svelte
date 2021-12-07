@@ -1,11 +1,10 @@
 <script>
-	import {getContext, onMount} from 'svelte';
+	import {getContext} from 'svelte';
 	import {url, metatags} from '@roxi/routify';
 	import Header from '../../components/Header.svelte';
 	import ItemDisplay from '../../components/ItemDisplay.svelte';
-	import Loading from '../../components/Loading.svelte';
-	import Button from '../../components/Button.svelte';
-	import {storeInfo, getStores} from '../../utils/store.js';
+	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
+	import {getStores} from '../../utils/store.js';
 
 	metatags.title = 'Stores - Kitcoin';
 
@@ -40,6 +39,7 @@
 </script>
 
 <!-- Head -->
+<SetBodyStyle classString="bg-gray-200" />
 <Header sticky />
 
 <!-- Content -->
@@ -71,7 +71,7 @@
 	{:then stores}
 		{#if stores.length > 0}
 			<div
-				class="bg-gray-200 rounded-md filter drop-shadow-md flex overflow-x-auto space-x-3.5 p-4 max-w-min"
+				class="bg-white rounded-md filter drop-shadow-md flex overflow-x-auto space-x-3.5 p-4"
 			>
 				{#each stores as store}
 					<a
@@ -111,7 +111,7 @@
 	{#if newItems.length != 0}
 		<div class="p-6 mt-12">
 			<h2 class="text-4xl font-bold mb-6">New Arrivals</h2>
-			<div class="bg-gray-200 rounded-md filter drop-shadow-md">
+			<div class="bg-white rounded-md filter drop-shadow-md">
 				<ItemDisplay items={newItems} />
 			</div>
 		</div>
