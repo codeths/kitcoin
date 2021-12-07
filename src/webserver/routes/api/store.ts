@@ -1,5 +1,7 @@
 import express from 'express';
 import {FilterQuery} from 'mongoose';
+import fs from 'fs';
+import path from 'path';
 import {ClassroomClient} from '../../../helpers/classroom';
 import {numberFromData, request, Validators} from '../../../helpers/request';
 import {IStoreDoc, IUserDoc, Store, StoreItem} from '../../../helpers/schema';
@@ -260,14 +262,6 @@ router.get(
 					storeID: Validators.string,
 					id: Validators.string,
 				},
-				query: {
-					count: Validators.optional(
-						Validators.and(Validators.integer, Validators.gt(0)),
-					),
-					page: Validators.optional(
-						Validators.and(Validators.integer, Validators.gt(0)),
-					),
-				},
 			},
 		}),
 	async (req, res) => {
@@ -313,6 +307,70 @@ router.get(
 			quantity: item.quantity,
 			price: item.price,
 		});
+	},
+);
+
+router.get(
+	'/store/:storeID/item/:id/image.png',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: false,
+			validators: {
+				params: {
+					storeID: Validators.string,
+					id: Validators.string,
+				},
+			},
+		}),
+	async (req, res) => {
+		const {storeID, id} = req.params;
+
+		const store = await Store.findById(storeID)
+			.then(store => {
+				if (!store) {
+					res.status(404).send('Store not found');
+					return null;
+				}
+				return store;
+			})
+			.catch(() => {
+				res.status(400).send('Invalid ID');
+				return null;
+			});
+
+		if (!store) return;
+
+		const permissions = await getStorePerms(store, req.user);
+		if (!permissions.view) return res.status(403).send('Forbidden');
+
+		const item = await StoreItem.findById(id)
+			.then(item => {
+				if (!item || item.storeID != storeID) {
+					res.status(404).send('Item not found');
+					return null;
+				}
+				return item;
+			})
+			.catch(() => {
+				res.status(400).send('Invalid ID');
+				return null;
+			});
+
+		if (!item) return;
+
+		let image;
+		try {
+			image = fs.readFileSync(
+				path.resolve('uploads', 'storeitems', `${item._id}.png`),
+			);
+		} catch (e) {}
+
+		if (image) {
+			res.setHeader('Content-Type', 'image/png');
+			res.status(200).send(image);
+		} else {
+			res.status(404).send('No image');
+		}
 	},
 );
 
