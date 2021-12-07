@@ -7,7 +7,7 @@
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
 	import Auth from '../../utils/Auth.svelte';
 
-	metatags.title = 'Student Home';
+	metatags.title = 'Student Home - Kitcoin';
 
 	const newItems = [
 		{img: 'shop_images/beans.png', price: 15, name: 'Beans'},
