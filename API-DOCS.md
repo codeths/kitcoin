@@ -235,7 +235,7 @@ Upload a store's item image
 
 `:storeID` (path): Store ID  
 `:id` (path): Item ID  
-Body should contain the image as `image/png` or `image/jpeg` (will be converted to PNG)
+Body should contain the image as `image/png`, `image/jpeg`, `image/webp` (will be converted to PNG)
 
 ### Response
 
