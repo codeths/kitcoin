@@ -23,7 +23,7 @@
 	}
 
 	.loader {
-		color: #ffffff;
+		color: var(--color);
 		font-size: calc(var(--height) * 0.25);
 		margin: calc(var(--height) * 2) auto;
 		position: relative;
