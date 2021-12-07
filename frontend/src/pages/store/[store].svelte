@@ -13,13 +13,15 @@
 		info = newInfo;
 	});
 
-	let storeID;
+	let storeID, store;
 	$: {
-		storeID = $params.store;
-		let store = (info || []).find(s => s._id === storeID);
-		if (storeID) {
-			load(null, null, true);
-			if (!info) getStores(storeID);
+		if (storeID !== $params.store) {
+			storeID = $params.store;
+			store = (info || []).find(s => s._id === storeID);
+			if (storeID) {
+				load(null, null, true);
+				if (!info) getStores(storeID);
+			}
 		}
 		metatags.title = `Store${
 			store && store.name ? ` - ${store.name}` : ''
