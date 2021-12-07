@@ -9,12 +9,20 @@
 		storeInfo,
 		storeItemInfo,
 		storeItemPages,
+		getStores,
+		getItems,
 	} from '../../utils/store.js';
 
 	let info = $storeInfo;
 
 	let storeID;
-	$: storeID = $params.store;
+	$: {
+		storeID = $params.store;
+		if (storeID) {
+			load(null, null, true);
+			if (!info) getStores(storeID);
+		}
+	}
 
 	let ctx = getContext('userInfo');
 	let authMsg = null;
@@ -26,10 +34,7 @@
 
 	async function getStore() {
 		let cachedInfo = info && info.find(x => x._id === storeID);
-		if (cachedInfo) {
-			load(null, null, true);
-			return cachedInfo;
-		}
+		if (cachedInfo) return cachedInfo;
 		let res = await fetch(`/api/store/${storeID}`).catch(e => {});
 		if (!res) throw 'Could not fetch store';
 		if (res.status == 403) {
@@ -49,46 +54,18 @@
 		let json = await res.json().catch(e => {
 			throw 'Could not fetch store';
 		});
-		load(null, null, true);
 		return json;
 	}
 
 	async function load(page, which, useCache) {
-		let cached = ($storeItemPages[storeID] || [])[page || currentPage];
-		cache: if (cached && useCache) {
-			cached.items = cached.items.map(x => $storeItemInfo[x]);
-			if (cached.items.some(x => !x)) break cache;
-			items = cached;
-			loading = false;
-			error = false;
-			if (page) currentPage = page;
-			return;
-		}
 		try {
 			loading = which || true;
-			let res = await fetch(
-				`/api/store/${storeID}/items?page=${
-					page || currentPage
-				}&count=12`,
-			).catch(e => {});
+			items = await getItems(storeID, page || currentPage, useCache);
+			if (items.page < items.pageCount)
+				getItems(storeID, items.page + 1, true);
 			loading = false;
-			if (!res || !res.ok) throw new Error('Failed to fetch items');
 			error = false;
-			items = await res.json();
 			if (page) currentPage = page;
-			storeItemInfo.update(v => {
-				items.items.forEach(item => {
-					v[item._id] = item;
-				});
-				return v;
-			});
-			storeItemPages.update(v => {
-				if (!v[storeID]) v[storeID] = [];
-				let page = Object.assign({}, items);
-				page.items = page.items.map(x => x._id);
-				v[storeID][currentPage] = page;
-				return v;
-			});
 			return;
 		} catch (e) {
 			loading = false;

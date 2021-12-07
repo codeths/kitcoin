@@ -1,11 +1,11 @@
 <script>
 	import {getContext, onMount} from 'svelte';
-	import {url, prefetch} from '@roxi/routify';
+	import {url} from '@roxi/routify';
 	import Header from '../../components/Header.svelte';
 	import ItemDisplay from '../../components/ItemDisplay.svelte';
 	import Loading from '../../components/Loading.svelte';
 	import Button from '../../components/Button.svelte';
-	import {storeInfo} from '../../utils/store.js';
+	import {storeInfo, getStores} from '../../utils/store.js';
 
 	let ctx = getContext('userInfo');
 	let authMsg = null;
@@ -35,15 +35,6 @@
 		},
 		{img: '/shop_images/banana.png', price: 20000, name: 'Banana'},
 	];
-
-	async function getStores() {
-		if ($storeInfo) return $storeInfo;
-		let res = await fetch('/api/stores');
-		if (!res || !res.ok) throw new Error('Failed to fetch stores');
-		let json = await res.json();
-		storeInfo.set(json);
-		return json;
-	}
 </script>
 
 <!-- Head -->
@@ -83,7 +74,6 @@
 				{#each stores as store}
 					<a
 						href={$url('./:store', {store: store._id})}
-						use:prefetch
 						class="p-2 {store.canManage
 							? 'bg-yellow-200 hover:bg-yellow-300'
 							: 'bg-blue-200 hover:bg-blue-300'} transition-colors duration-150 rounded-lg border-2 border-gray-400 min-w-max"
