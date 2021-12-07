@@ -439,7 +439,7 @@ router.patch(
 
 			if (!item) return;
 
-			if (req.get('Content-Type') == 'image/jpeg') {
+			if (req.get('Content-Type') !== 'image/png') {
 				image = await jimp
 					.read(image)
 					.then(image => image.getBufferAsync(jimp.MIME_PNG))
