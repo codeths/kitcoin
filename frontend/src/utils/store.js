@@ -24,7 +24,7 @@ export async function getItems(store, page, useCache) {
 		return items;
 	}
 	let res = await fetch(
-		`/api/store/${store}/items?page=${page}&count=1`,
+		`/api/store/${store}/items?page=${page}&count=12`,
 	).catch(e => {});
 	if (!res || !res.ok) throw new Error('Failed to fetch items');
 	let items = await res.json();
