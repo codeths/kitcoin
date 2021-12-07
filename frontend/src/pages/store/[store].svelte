@@ -69,7 +69,7 @@
 			);
 			items = {
 				...newItems,
-				items: items ? [] : newItems,
+				items: items ? [] : newItems.items,
 			};
 			setTimeout(() => (items = newItems), 0);
 			if (items.page < items.pageCount)
@@ -79,7 +79,6 @@
 			if (page) currentPage = page;
 			return;
 		} catch (e) {
-			console.log(e);
 			loading = false;
 			error = true;
 		}
@@ -99,7 +98,7 @@
 		<h2 class="text-4xl font-bold text-center">Loading...</h2>
 	{:then store}
 		<h2 class="text-4xl font-bold mb-6">{store.name}</h2>
-		{#if error || !items || items.docCount == 0}
+		{#if error || !items || !items.items || items.docCount == 0}
 			<h2 class="text-center">
 				{#if error}
 					An Error Occured
