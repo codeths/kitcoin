@@ -29,3 +29,8 @@ body {
 .break-words {
 	word-break: break-word;
 }
+
+.flex-break {
+	flex-basis: 100%;
+	height: 0;
+}
