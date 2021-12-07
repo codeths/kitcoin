@@ -5,7 +5,11 @@
 	import ItemDisplay from '../../components/ItemDisplay.svelte';
 	import Loading from '../../components/Loading.svelte';
 	import Button from '../../components/Button.svelte';
-	import {storeInfo} from '../../utils/store.js';
+	import {
+		storeInfo,
+		storeItemInfo,
+		storeItemPages,
+	} from '../../utils/store.js';
 
 	let info = $storeInfo;
 
@@ -23,7 +27,7 @@
 	async function getStore() {
 		let cachedInfo = info && info.find(x => x._id === storeID);
 		if (cachedInfo) {
-			load();
+			load(null, null, true);
 			return cachedInfo;
 		}
 		let res = await fetch(`/api/store/${storeID}`).catch(e => {});
@@ -45,11 +49,21 @@
 		let json = await res.json().catch(e => {
 			throw 'Could not fetch store';
 		});
-		load();
+		load(null, null, true);
 		return json;
 	}
 
-	async function load(page, which) {
+	async function load(page, which, useCache) {
+		let cached = ($storeItemPages[storeID] || [])[page || currentPage];
+		cache: if (cached && useCache) {
+			cached.items = cached.items.map(x => $storeItemInfo[x]);
+			if (cached.items.some(x => !x)) break cache;
+			items = cached;
+			loading = false;
+			error = false;
+			if (page) currentPage = page;
+			return;
+		}
 		try {
 			loading = which || true;
 			let res = await fetch(
@@ -62,6 +76,19 @@
 			error = false;
 			items = await res.json();
 			if (page) currentPage = page;
+			storeItemInfo.update(v => {
+				items.items.forEach(item => {
+					v[item._id] = item;
+				});
+				return v;
+			});
+			storeItemPages.update(v => {
+				if (!v[storeID]) v[storeID] = [];
+				let page = Object.assign({}, items);
+				page.items = page.items.map(x => x._id);
+				v[storeID][currentPage] = page;
+				return v;
+			});
 			return;
 		} catch (e) {
 			loading = false;
@@ -109,10 +136,14 @@
 			</div>
 		{/if}
 
-		<div class="flex justify-center align-center pt-4">
-			{#if items && items.pageCount > 1}
+		<div class="flex flex-wrap justify-center align-center pt-4">
+			{#if items}
+				<h2 class="text-center mb-2">
+					Showing page {items.page} of {items.pageCount}
+				</h2>
+				<div class="flex-break" />
 				<Button
-					on:click={() => load(null, currentPage - 1, 'previous')}
+					on:click={() => load(currentPage - 1, 'previous', true)}
 					class="mx-2"
 					disabled={loading || currentPage <= 1}
 				>
@@ -123,7 +154,7 @@
 					{/if}
 				</Button>
 				<Button
-					on:click={() => load(null, currentPage + 1, 'next')}
+					on:click={() => load(currentPage + 1, 'next', true)}
 					class="mx-2"
 					disabled={loading || currentPage >= items.pageCount}
 				>
@@ -135,7 +166,7 @@
 				</Button>
 			{:else}
 				<Button
-					on:click={() => load(null, currentPage ?? 1, 'refresh')}
+					on:click={() => load(currentPage ?? 1, 'refresh')}
 					class="mx-2"
 					disabled={loading}
 				>
