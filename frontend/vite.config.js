@@ -6,6 +6,7 @@ export default defineConfig({
 	plugins: [svelte()],
 	build: {
 		outDir: 'build',
+		sourcemap: true,
 	},
 	optimizeDeps: {
 		exclude: ['@roxi/ssr'],
