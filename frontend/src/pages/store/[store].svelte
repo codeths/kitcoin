@@ -103,11 +103,24 @@
 						<p class="text-3xl font-semibold text-gray-800">
 							{item.name}
 						</p>
+						<p class="text-2xl font-semibold text-gray-800">
+							<span
+								class="icon icon-currency mr-3"
+							/>{item.price.toLocaleString([], {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2,
+							})}
+						</p>
 						{#if item.description}
-							<p class="text-xl mt-4">
+							<p class="text-xl mt-2">
 								{item.description}
 							</p>
 						{/if}
+						<img
+							src="/api/store/{storeID}/item/{item._id}/image.png"
+							alt={item.name}
+							onerror="this.style.display = 'none'"
+						/>
 					</div>
 				{/each}
 			</div>
