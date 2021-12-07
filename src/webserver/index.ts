@@ -63,6 +63,11 @@ app.use(
 	}),
 );
 
+app.use((req, res, next) => {
+	res.setHeader('Cache-Control', 'private, max-age=604800');
+	next();
+});
+
 app.use('/auth', auth);
 app.use('/api', api);
 
