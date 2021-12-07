@@ -9,9 +9,28 @@
 		console.error('Failed to get user info: ', e),
 	);
 	setContext('userInfo', userInfoPromise);
+
+	let favicon = 'favicon';
+
+	function handleMediaQuery() {
+		favicon = window.matchMedia('(prefers-color-scheme: dark)').matches
+			? 'favicon-dark'
+			: 'favicon';
+	}
+
+	if (window.matchMedia) {
+		handleMediaQuery();
+		window
+			.matchMedia('(prefers-color-scheme: dark)')
+			.addEventListener('change', handleMediaQuery);
+	}
 </script>
 
 <Router {routes} />
+
+<svelte:head>
+	<link rel="icon" href="/{favicon}.ico" />
+</svelte:head>
 
 <!--  Reset body styles on page changes  -->
 {#if $isChangingPage}
