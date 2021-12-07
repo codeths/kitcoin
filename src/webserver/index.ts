@@ -7,7 +7,7 @@ import {mongo as mongoURL, sessionSecret, port} from '../config/keys.json';
 import {auth, api} from './routes';
 import {IUserDoc, User} from '../helpers/schema';
 import path from 'path';
-import {request} from '../helpers/request';
+import {cacheMiddleware, request} from '../helpers/request';
 import {cpus} from 'os';
 import cluster from 'cluster';
 import {handleLogin} from './routes/auth';
@@ -63,11 +63,6 @@ app.use(
 	}),
 );
 
-app.use((req, res, next) => {
-	res.setHeader('Cache-Control', 'private, max-age=604800');
-	next();
-});
-
 app.use('/auth', auth);
 app.use('/api', api);
 
@@ -81,6 +76,7 @@ function servePage(res: express.Response) {
 
 app.get(
 	'/student',
+	cacheMiddleware,
 	(...req) => request(...req, {}),
 	(req, res) => {
 		if (req.user && req.user.hasRole('STUDENT')) servePage(res);
@@ -95,6 +91,7 @@ app.get(
 
 app.get(
 	'/staff',
+	cacheMiddleware,
 	(...req) => request(...req, {}),
 	(req, res) => {
 		if (req.user && req.user.hasRole('STAFF')) servePage(res);
@@ -109,6 +106,7 @@ app.get(
 
 app.get(
 	'/admin',
+	cacheMiddleware,
 	(...req) => request(...req, {}),
 	(req, res) => {
 		if (req.user && req.user.hasRole('ADMIN')) servePage(res);
@@ -137,10 +135,11 @@ app.get(
 	},
 );
 
-app.use(express.static(`${__dirname}/../../frontend/build`));
+app.use(cacheMiddleware, express.static(`${__dirname}/../../frontend/build`));
 
 app.get(
 	'*',
+	cacheMiddleware,
 	(...req) => request(...req, {}),
 	(req, res) => {
 		servePage(res);

@@ -3,7 +3,12 @@ import {FilterQuery} from 'mongoose';
 import fs from 'fs';
 import path from 'path';
 import {ClassroomClient} from '../../../helpers/classroom';
-import {numberFromData, request, Validators} from '../../../helpers/request';
+import {
+	numberFromData,
+	request,
+	Validators,
+	cacheMiddleware,
+} from '../../../helpers/request';
 import {IStoreDoc, IUserDoc, Store, StoreItem} from '../../../helpers/schema';
 import {IStoreItemDoc, requestHasUser} from '../../../types';
 const router = express.Router();
@@ -312,6 +317,7 @@ router.get(
 
 router.get(
 	'/store/:storeID/item/:id/image.png',
+	cacheMiddleware,
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: false,

@@ -365,3 +365,12 @@ export class Validators {
 		}).run,
 	});
 }
+
+export let cacheMiddleware = (
+	req: express.Request,
+	res: express.Response,
+	next: express.NextFunction,
+) => {
+	res.setHeader('Cache-Control', 'private, max-age=604800');
+	next();
+};
