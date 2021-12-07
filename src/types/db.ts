@@ -276,7 +276,7 @@ export interface IStoreItem {
 	/**
 	 * Item description
 	 */
-	description: string;
+	description?: string;
 	price: number;
 }
 

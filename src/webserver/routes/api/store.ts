@@ -394,7 +394,7 @@ router.patch(
 			},
 		}),
 	express.raw({
-		type: ['image/png', 'image/jpeg'],
+		type: ['image/png', 'image/jpeg', 'image/webp'],
 		limit: 1024 * 1024 * 5,
 	}),
 	async (req, res) => {
@@ -632,7 +632,7 @@ router.post(
 				},
 				body: {
 					name: Validators.string,
-					description: Validators.string,
+					description: Validators.optional(Validators.string),
 					price: Validators.number,
 					quantity: Validators.optional(Validators.number),
 				},

@@ -237,7 +237,7 @@ const storeItemSchema = new mongoose.Schema<IStoreItemDoc, IStoreItemModel>({
 	storeID: {type: String, required: true},
 	name: {type: String, required: true},
 	quantity: Number,
-	description: String,
+	description: {type: String, default: ''},
 	price: Number,
 });
 

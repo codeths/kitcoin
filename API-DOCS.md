@@ -263,7 +263,7 @@ Create a store item
 `:storeID` (path): Store ID  
 `:id` (path): Item ID  
 `name` (body): Name  
-`description` (body): Description  
+`description` (body): [Optional] Description  
 `price` (body): Price  
 `quantity` (body): [Optional] New quantity
 
