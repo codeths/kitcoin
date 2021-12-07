@@ -99,7 +99,7 @@
 		{:else}
 			<div class="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 				{#each items.items as item}
-					<div class="p-4 border shadow">
+					<div class="p-4 border shadow flex flex-col">
 						<p class="text-3xl font-semibold text-gray-800">
 							{item.name}
 						</p>
@@ -112,11 +112,13 @@
 							})}
 						</p>
 						{#if item.description}
-							<p class="text-xl mt-2">
+							<p class="text-xl mt-2 whitespace-pre-wrap">
 								{item.description}
 							</p>
 						{/if}
+						<p class="flex-grow" />
 						<img
+							class="mt-6"
 							src="/api/store/{storeID}/item/{item._id}/image.png"
 							alt={item.name}
 							onerror="this.style.display = 'none'"
