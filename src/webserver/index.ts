@@ -1,6 +1,5 @@
 import express from 'express';
 import session from 'express-session';
-import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import mongostore from 'connect-mongodb-session';
 import {mongo as mongoURL, sessionSecret, port} from '../config/keys.json';

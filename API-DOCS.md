@@ -189,6 +189,19 @@ Get a store's item by its ID
 }
 ```
 
+## GET `/store/:storeID/item/:id/image.png`
+
+Get a store item's image
+
+### Request
+
+`:storeID` (path): Store ID  
+`:id` (path): Item ID
+
+### Response
+
+The image if exists (png), otherwise will return a 404
+
 ## PATCH `/store/:storeID/item/:id`
 
 Update a store's item
@@ -213,6 +226,20 @@ Update a store's item
 	price: number;
 }
 ```
+
+## PATCH `/store/:storeID/item/:id/image`
+
+Upload a store's item image
+
+### Request
+
+`:storeID` (path): Store ID  
+`:id` (path): Item ID  
+Body should contain the image as `image/png` or `image/jpeg` (will be converted to PNG)
+
+### Response
+
+Nothing
 
 ## DELETE `/store/:storeID/item/:id`
 

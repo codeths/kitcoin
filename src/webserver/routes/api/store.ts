@@ -1,4 +1,5 @@
 import express from 'express';
+import jimp from 'jimp';
 import {FilterQuery} from 'mongoose';
 import fs from 'fs';
 import path from 'path';
@@ -376,6 +377,90 @@ router.get(
 			res.status(200).send(image);
 		} else {
 			res.status(404).send('No image');
+		}
+	},
+);
+
+router.patch(
+	'/store/:storeID/item/:id/image',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			validators: {
+				params: {
+					storeID: Validators.string,
+					id: Validators.string,
+				},
+			},
+		}),
+	express.raw({
+		type: ['image/png', 'image/jpeg'],
+		limit: 1024 * 1024 * 5,
+	}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			const {storeID, id} = req.params;
+			let image = req.body;
+			if (!image || !(image instanceof Buffer))
+				return res.status(400).send('Invalid image');
+
+			const store = await Store.findById(storeID)
+				.then(store => {
+					if (!store) {
+						res.status(404).send('Store not found');
+						return null;
+					}
+					return store;
+				})
+				.catch(() => {
+					res.status(400).send('Invalid ID');
+					return null;
+				});
+
+			if (!store) return;
+
+			const permissions = await getStorePerms(store, req.user);
+			if (!permissions.manage) return res.status(403).send('Forbidden');
+
+			const item = await StoreItem.findById(id)
+				.then(item => {
+					if (!item || item.storeID != storeID) {
+						res.status(404).send('Item not found');
+						return null;
+					}
+					return item;
+				})
+				.catch(() => {
+					res.status(400).send('Invalid ID');
+					return null;
+				});
+
+			if (!item) return;
+
+			if (req.get('Content-Type') == 'image/jpeg') {
+				image = await jimp
+					.read(image)
+					.then(image => image.getBufferAsync(jimp.MIME_PNG))
+					.catch(() => {
+						res.status(400).send('Invalid image');
+						return null;
+					});
+
+				if (!image) return;
+			}
+
+			fs.writeFileSync(
+				path.resolve('uploads', 'storeitems', `${item._id}.png`),
+				image,
+			);
+			return res.status(200).send();
+		} catch (e) {
+			console.log(e);
+			try {
+				res.status(500).send('Something went wrong.');
+			} catch (e) {}
 		}
 	},
 );
