@@ -2,6 +2,7 @@
 	import {getContext} from 'svelte';
 	import {url, metatags} from '@roxi/routify';
 	import Header from '../../components/Header.svelte';
+	import Loading from '../../components/Loading.svelte';
 	import ItemDisplay from '../../components/ItemDisplay.svelte';
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
 	import {getStores} from '../../utils/store.js';
@@ -67,7 +68,7 @@
 		</div>
 	{/if}
 	{#await getStores()}
-		<h2>Loading...</h2>
+		<Loading height="2rem" color="#000000" />
 	{:then stores}
 		{#if stores.length > 0}
 			<div

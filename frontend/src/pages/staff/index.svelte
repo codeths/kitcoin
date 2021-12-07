@@ -2,6 +2,7 @@
 	import {metatags} from '@roxi/routify';
 	import {getContext} from 'svelte';
 	import Header from '../../components/Header.svelte';
+	import Loading from '../../components/Loading.svelte';
 	import CreateTransaction from '../../components/CreateTransaction.svelte';
 	import Modal from '../../components/Modal.svelte';
 	import Button from '../../components/Button.svelte';
@@ -80,7 +81,7 @@
 					{:else if balance}
 						{balance}
 					{:else}
-						Loading...
+						<Loading height="2rem" color="#000000" />
 					{/if}
 				</h1>
 			</div>

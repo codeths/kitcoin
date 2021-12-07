@@ -95,7 +95,7 @@
 		Back to store list
 	</Button>
 	{#await getStore()}
-		<h2 class="text-4xl font-bold text-center">Loading...</h2>
+		<Loading height="2rem" color="#000000" />
 	{:then store}
 		<h2 class="text-4xl font-bold mb-6">{store.name}</h2>
 		{#if error || !items || !items.items || items.docCount == 0}
@@ -103,7 +103,7 @@
 				{#if error}
 					An Error Occured
 				{:else if loading && !items}
-					Loading...
+					<Loading height="2rem" color="#000000" />
 				{:else}
 					No Items
 				{/if}

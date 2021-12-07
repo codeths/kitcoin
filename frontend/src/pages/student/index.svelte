@@ -3,6 +3,7 @@
 	import ItemDisplay from '../../components/ItemDisplay.svelte';
 	import Transactions from '../../components/Transactions.svelte';
 	import Header from '../../components/Header.svelte';
+	import Loading from '../../components/Loading.svelte';
 	import {getBalance} from '../../utils/api.js';
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
 	import Auth from '../../utils/Auth.svelte';
@@ -43,7 +44,7 @@
 					class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full"
 				>
 					{#await getBalance()}
-						Loading...
+						<Loading height="2rem" color="#000000" />
 					{:then balance}
 						<span
 							class="icon icon-currency mr-3"

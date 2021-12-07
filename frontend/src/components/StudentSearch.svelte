@@ -2,6 +2,7 @@
 	import {createEventDispatcher} from 'svelte';
 	import {searchUsers} from '../utils/api';
 	import Input from './Input.svelte';
+	import Loading from './Loading.svelte';
 	const dispatch = createEventDispatcher();
 
 	let results = null;
@@ -133,10 +134,10 @@
 						>{result.name}
 					</button>
 				{/each}
+			{:else if loading}
+				<Loading height="2rem" color="#000000" />
 			{:else}
-				<span class="p-2 w-full text-left block"
-					>{loading ? 'Loading...' : 'No Results'}</span
-				>
+				<span class="p-2 w-full text-left block">No Results</span>
 			{/if}
 		</div>
 	</div>
