@@ -43,7 +43,7 @@
 <Header sticky />
 
 <!-- Content -->
-<div class="p-6 mt-6">
+<div class="p-12 mt-6">
 	<h2 class="text-4xl font-bold mb-6">Your Stores</h2>
 	{#if authMsg}
 		<div class="inline-block my-4 p-4 rounded bg-red-200">
@@ -71,12 +71,12 @@
 	{:then stores}
 		{#if stores.length > 0}
 			<div
-				class="bg-white rounded-md filter drop-shadow-md flex overflow-x-auto space-x-3.5 p-4"
+				class="bg-white rounded-md filter drop-shadow-md flex flex-wrap	overflow-x-auto p-4"
 			>
 				{#each stores as store}
 					<a
 						href={$url('./:store', {store: store._id})}
-						class="p-2 {store.canManage
+						class="m-2 p-2 {store.canManage
 							? 'bg-yellow-200 hover:bg-yellow-300'
 							: 'bg-blue-200 hover:bg-blue-300'} transition-colors duration-150 rounded-lg border-2 border-gray-400 min-w-max"
 					>
@@ -109,7 +109,7 @@
 	{/await}
 
 	{#if newItems.length != 0}
-		<div class="p-6 mt-12">
+		<div class="mt-12">
 			<h2 class="text-4xl font-bold mb-6">New Arrivals</h2>
 			<div class="bg-white rounded-md filter drop-shadow-md">
 				<ItemDisplay items={newItems} />
