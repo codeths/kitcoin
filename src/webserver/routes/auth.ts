@@ -33,6 +33,7 @@ function handleLogin(
 		redirect?: true | string | undefined;
 	} = {},
 ) {
+	res.clearCookie('redirect');
 	if (!redirect && typeof req.query.redirect == 'string')
 		redirect = decodeURIComponent(req.query.redirect).toLowerCase();
 	if (
@@ -46,6 +47,7 @@ function handleLogin(
 	)
 		redirect = undefined;
 
+	res.clearCookie('redirect');
 	if (redirect)
 		res.cookie(
 			'redirect',
@@ -118,6 +120,7 @@ router.get('/cbk', async (req, res) => {
 
 	if (!user) return;
 	req.session.token = session;
+	res.clearCookie('redirect');
 
 	return res.redirect(decodeURIComponent(req.cookies.redirect || '/home'));
 });
