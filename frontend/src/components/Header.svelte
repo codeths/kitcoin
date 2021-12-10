@@ -50,7 +50,7 @@
 				<div class="navbar-end">
 					<div class="dropdown dropdown-end">
 						<div class="btn btn-ghost" tabindex="0">
-							<i class="fas fa-user" />
+							<span class="icon-user" />
 						</div>
 						<ul
 							tabindex="0"
@@ -102,7 +102,7 @@
 							for="nav-drawer"
 							class="btn btn-square btn-ghost"
 						>
-							<i class="fas fa-bars" />
+							<span class="icon-menu" />
 						</label>
 					</div>
 				</div>
