@@ -47,7 +47,7 @@
 						<Loading height="2rem" color="#000000" />
 					{:then balance}
 						<span
-							class="icon icon-currency mr-3"
+							class="icon-currency mr-3"
 						/>{balance.toLocaleString([], {
 							minimumFractionDigits: 2,
 							maximumFractionDigits: 2,

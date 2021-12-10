@@ -34,30 +34,23 @@
 </script>
 
 <header class={sticky ? 'sticky top-0 z-10' : null}>
-	<nav
-		class="w-full bg-blue-eths text-white p-3 flex justify-between items-center shadow-xl"
-	>
-		<div>
-			<a href="/">
-				<h2
-					class="text-white font-light text-5xl ml-2 md:ml-4 flex justify-center items-center"
-				>
-					<span class="icon icon-logo mr-1" />Kitcoin
+	<div class="navbar w-full bg-blue-eths text-white p-3 shadow-xl">
+		<div class="navbar-start">
+			<a href="/" class="mx-2">
+				<h2 class="text-4xl">
+					<span class="icon-logo mr-1" />Kitcoin
 				</h2></a
 			>
-		</div>
-		<div class="flex md:hidden">
-			<!-- TODO: Menu bar collapse -->
-		</div>
-		<div class="hidden md:flex space-x-8 md:space-x-12 md:pr-4">
-			{#each links as [text, link, navigate]}
-				<a
-					class="text-white font-medium text-3xl"
-					target={navigate ? '_self' : null}
-					class:border-b-4={link == current}
-					href={link}>{text}</a
-				>
-			{/each}
+			<div class="hidden md:flex mx-2">
+				{#each links as [text, link, navigate]}
+					<a
+						class="btn btn-ghost btn-sm rounded-btn text-xl font-medium"
+						target={navigate ? '_self' : null}
+						class:border-b-4={link == current}
+						href={link}>{text}</a
+					>
+				{/each}
+			</div>
 			{#if userInfo}
 				<div
 					class="relative w-48 max-w-full flex flex-col items-stretch"
@@ -112,5 +105,5 @@
 				>
 			{/if}
 		</div>
-	</nav>
+	</div>
 </header>

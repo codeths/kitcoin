@@ -101,7 +101,7 @@
 								class="text-2xl font-bold flex items-center justify-start"
 							>
 								<span
-									class="icon icon-currency mr-1"
+									class="icon-currency mr-1"
 								/>{item.price.toLocaleString()}
 							</h1>
 						</div>

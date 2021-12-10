@@ -87,7 +87,7 @@
 								? 'text-orange-eths'
 								: 'text-blue-eths'}"
 							>{item.amount < 0 ? '-' : ''}<span
-								class="icon icon-currency mx-1"
+								class="icon-currency mx-1"
 							/>{Math.abs(item.amount).toLocaleString([], {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2,

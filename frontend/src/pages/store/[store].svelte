@@ -111,7 +111,7 @@
 		>
 			<span>
 				Your balance: <span
-					class="icon icon-currency mr-1"
+					class="icon-currency mr-1"
 				/>{balance.toLocaleString([], {
 					minimumFractionDigits: 2,
 					maximumFractionDigits: 2,
@@ -149,7 +149,7 @@
 								: 'text-gray-800'}"
 						>
 							<span
-								class="icon icon-currency mr-3"
+								class="icon-currency mr-3"
 							/>{item.price.toLocaleString([], {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2,
