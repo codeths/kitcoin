@@ -41,7 +41,7 @@
 							<a
 								class="btn btn-ghost btn-sm rounded-btn text-xl font-medium"
 								target={navigate ? '_self' : null}
-								class:border-b-4={link == current}
+								class:border-white={link == current}
 								href={link}>{text}</a
 							>
 						{/each}
