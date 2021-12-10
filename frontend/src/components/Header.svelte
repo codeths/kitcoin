@@ -39,7 +39,7 @@
 					<div class="hidden md:flex mx-2">
 						{#each links as [text, link, navigate]}
 							<a
-								class="btn btn-ghost btn-sm rounded-btn text-xl font-medium"
+								class="btn btn-ghost btn-sm rounded-btn text-xl font-medium hover:border-white"
 								target={navigate ? '_self' : null}
 								class:border-white={link == current}
 								href={link}>{text}</a
