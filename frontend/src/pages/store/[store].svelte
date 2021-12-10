@@ -142,7 +142,12 @@
 						<p class="text-3xl font-semibold text-gray-800">
 							{item.name}
 						</p>
-						<p class="text-2xl font-semibold text-gray-800">
+						<p
+							class="text-2xl font-semibold {balance !== null &&
+							balance < item.price
+								? 'text-red-500'
+								: 'text-gray-800'}"
+						>
 							<span
 								class="icon icon-currency mr-3"
 							/>{item.price.toLocaleString([], {
