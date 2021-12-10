@@ -34,6 +34,11 @@ gulp.task('frontend', async () => {
 	return;
 });
 
+gulp.task('icons', async () => {
+	await icons();
+	return;
+});
+
 function task(t) {
 	return new Promise((resolve, reject) =>
 		t
@@ -72,6 +77,15 @@ async function frontend() {
 	});
 }
 
+async function icons() {
+	return new Promise(res => {
+		let child = spawn('npm', ['run', 'icons', '--prefix', 'frontend'], {
+			stdio: 'inherit',
+		});
+		child.on('exit', code => res(code === 0));
+	});
+}
+
 gulp.task('dev', async () => {
 	dev();
 });
@@ -102,7 +116,11 @@ function dev() {
 			'!**/node_modules/**/*',
 		]).on('change', async function (fileName) {
 			console.log(`${fileName} changed.`);
-			let res = await frontend();
+			let res = await (fileName.startsWith(
+				'frontend/public/assets/icons/',
+			) || fileName == 'fantasticonrc.js'
+				? icons
+				: frontend)();
 			if (res) {
 				console.log(`${fileName} done.`);
 			} else {
@@ -157,7 +175,14 @@ function dev() {
 			let res = await frontend();
 			if (res) {
 				console.log(`Done`);
-				node();
+			} else {
+				console.log(`Failed`);
+			}
+		} else if (['icon', 'icons'].includes(line)) {
+			console.log('Rebuilding icons');
+			let res = await icons();
+			if (res) {
+				console.log(`Done`);
 			} else {
 				console.log(`Failed`);
 			}
