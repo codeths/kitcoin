@@ -15,9 +15,8 @@ body {
 	min-height: 100vh;
 }
 
-.icon {
+span[class^='icon-']::before {
 	font-size: calc(1em * var(--cap-height));
-	line-height: 1;
 }
 
 @layer utilities {
