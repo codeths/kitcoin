@@ -5,12 +5,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.transactions th,
-.transactions td {
-	padding-top: 0.5rem;
-	padding-bottom: 0.5rem;
-}
-
 :root {
 	--cap-height: 0.715;
 }
