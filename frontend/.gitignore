@@ -2,3 +2,5 @@ node_modules
 build
 .DS_Store
 .routify
+public/assets/icons.css
+public/assets/icons.ttf
