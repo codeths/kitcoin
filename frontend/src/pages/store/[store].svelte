@@ -6,6 +6,7 @@
 	import Button from '../../components/Button.svelte';
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
 	import {storeInfo, getStores, getItems} from '../../utils/store.js';
+	import {getBalance} from '../../utils/api.js';
 
 	let info = $storeInfo;
 
@@ -85,6 +86,11 @@
 			error = true;
 		}
 	}
+
+	let balance = null;
+	(async () => {
+		balance = await getBalance().catch(e => null);
+	})();
 </script>
 
 <!-- Head -->
@@ -92,10 +98,29 @@
 <Header sticky />
 
 <!-- Content -->
-<div class="p-6 mt-6">
-	<Button href={$url('.')} class="inline-flex mb-8 w-auto">
+<div class="flex flex-row flex-wrap justify-between items-center my-6">
+	<Button
+		href={$url('.')}
+		class="inline-flex flex-col self-center my-4 w-auto mx-6"
+	>
 		Back to store list
 	</Button>
+	{#if balance !== null}
+		<div
+			class="inline-flex flex-col self-center p-4 bg-white rounded mx-6 my-4"
+		>
+			<span>
+				Your balance: <span
+					class="icon icon-currency mr-1"
+				/>{balance.toLocaleString([], {
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2,
+				})}</span
+			>
+		</div>
+	{/if}
+</div>
+<div class="p-6">
 	{#await getStore()}
 		<Loading height="2rem" color="#000000" />
 	{:then store}
