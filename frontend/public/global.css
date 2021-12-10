@@ -20,17 +20,26 @@ body {
 	min-height: 100vh;
 }
 
-.baseline::after {
-	content: '';
-	height: 100%;
-	display: inline-block;
-}
+@layer utilities {
+	@variants responsive {
+		.flex-break {
+			flex-basis: 100%;
+			height: 0;
+		}
 
-.break-words {
-	word-break: break-word;
-}
+		.flex-no-break {
+			flex-basis: none;
+			display: none;
+		}
+	}
 
-.flex-break {
-	flex-basis: 100%;
-	height: 0;
+	.break-words {
+		word-break: break-word;
+	}
+
+	.baseline::after {
+		content: '';
+		height: 100%;
+		display: inline-block;
+	}
 }
