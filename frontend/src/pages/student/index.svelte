@@ -34,7 +34,7 @@
 		<div class="lg:col-span-4 sm:max-w-sm lg:max-w-none my-8 lg:mx-2">
 			<h1 class="text-3xl font-medium mb-2">Balance</h1>
 			<div
-				class="flex bg-white shadow-md rounded py-10 min-h-40 border-t-8 border-blue-eths"
+				class="flex bg-base-200 shadow-md rounded py-10 min-h-40 border-t-8 border-blue-eths"
 			>
 				<h1
 					class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full h-full"
@@ -56,7 +56,7 @@
 		</div>
 		<div class="lg:col-span-8 my-8 lg:mx-2">
 			<h1 class="text-3xl font-medium mb-2">What's new</h1>
-			<div class="bg-white shadow-md rounded">
+			<div class="bg-base-200 shadow-md rounded">
 				<ItemDisplay items={newItems} />
 			</div>
 		</div>

@@ -101,7 +101,7 @@
 	</Button>
 	{#if balance !== null}
 		<div
-			class="inline-flex flex-col self-center p-4 bg-white rounded mx-6 my-4"
+			class="inline-flex flex-col self-center p-4 bg-base-200 rounded mx-6 my-4"
 		>
 			<span>
 				Your balance: <span
@@ -132,7 +132,7 @@
 		{:else}
 			<div class="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 				{#each items.items as item}
-					<div class="p-4 bg-white border shadow flex flex-col">
+					<div class="p-4 bg-base-200 border shadow flex flex-col">
 						<p class="text-3xl font-semibold text-gray-800">
 							{item.name}
 						</p>

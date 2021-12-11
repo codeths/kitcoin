@@ -25,7 +25,7 @@
 	});
 </script>
 
-<SetBodyStyle class="bg-base-200" />
+<SetBodyStyle class="bg-base-100" />
 
 <header>
 	<div class="drawer h-screen">
@@ -41,7 +41,7 @@
 					<div class="hidden md:flex mx-2 nav-links-parent">
 						{#each links as [text, link, navigate]}
 							<a
-								class="btn btn-ghost btn-sm text-xl font-medium nav-link"
+								class="btn btn-ghost !bg-transparent !outline-none btn-sm text-xl font-medium nav-link"
 								target={navigate ? '_self' : null}
 								class:active={link == current}
 								href={link}>{text}</a

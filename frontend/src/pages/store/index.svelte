@@ -89,7 +89,7 @@
 	{:then stores}
 		{#if stores.length > 0}
 			<div
-				class="bg-white rounded-md filter drop-shadow-md flex flex-wrap	overflow-x-auto p-4"
+				class="bg-base-200 rounded-md filter drop-shadow-md flex flex-wrap	overflow-x-auto p-4"
 			>
 				{#each stores as store}
 					<a
@@ -129,7 +129,7 @@
 	{#if newItems.length != 0}
 		<div class="mt-12">
 			<h2 class="text-4xl font-bold mb-6">New Arrivals</h2>
-			<div class="bg-white rounded-md filter drop-shadow-md">
+			<div class="bg-base-200 rounded-md filter drop-shadow-md">
 				<ItemDisplay items={newItems} />
 			</div>
 		</div>
