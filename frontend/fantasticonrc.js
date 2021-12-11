@@ -4,4 +4,5 @@ module.exports = {
 	fontTypes: ['ttf'],
 	assetTypes: ['css'],
 	tag: 'span',
+	normalize: true,
 };
