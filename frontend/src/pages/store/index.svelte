@@ -3,7 +3,6 @@
 	import {url, metatags} from '@roxi/routify';
 	import Loading from '../../components/Loading.svelte';
 	import ItemDisplay from '../../components/ItemDisplay.svelte';
-	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
 	import {getStores} from '../../utils/store.js';
 
 	metatags.title = 'Stores - Kitcoin';
@@ -37,9 +36,6 @@
 		{img: '/shop_images/banana.png', price: 20000, name: 'Banana'},
 	];
 </script>
-
-<!-- Head -->
-<SetBodyStyle classString="bg-gray-200" />
 
 <!-- Content -->
 <div class="p-12 mt-6">

@@ -4,7 +4,6 @@
 	import Transactions from '../../components/Transactions.svelte';
 	import Loading from '../../components/Loading.svelte';
 	import {getBalance} from '../../utils/api.js';
-	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
 	import Auth from '../../utils/Auth.svelte';
 
 	metatags.title = 'Student Home - Kitcoin';
@@ -27,7 +26,6 @@
 </script>
 
 <!-- Head  -->
-<SetBodyStyle classString="bg-gray-200" />
 <Auth />
 
 <!-- Content-->

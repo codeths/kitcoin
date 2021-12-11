@@ -1,13 +1,9 @@
 <script>
 	import {metatags} from '@roxi/routify';
 	import Button from '../components/Button.svelte';
-	import SetBodyStyle from '../utils/SetBodyStyle.svelte';
 
 	metatags.title = '404 - Kitcoin';
 </script>
-
-<!-- Head -->
-<SetBodyStyle classString="bg-gray-200 flex flex-col" />
 
 <!-- Content -->
 <div class="m-8 flex flex-col flex-1 justify-center items-center">

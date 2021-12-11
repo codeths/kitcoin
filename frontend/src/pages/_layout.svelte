@@ -2,6 +2,7 @@
 	import {getContext, onMount} from 'svelte';
 	import {url} from '@roxi/routify';
 	import Button from '../components/Button.svelte';
+	import SetBodyStyle from '../utils/SetBodyStyle.svelte';
 
 	let links = [];
 	let homes = [];
@@ -23,6 +24,8 @@
 		links = links;
 	});
 </script>
+
+<SetBodyStyle class="bg-base-200" />
 
 <header>
 	<div class="drawer h-screen">

@@ -8,7 +8,6 @@
 	import ToastContainer from '../../components/ToastContainer.svelte';
 	let toastContainer;
 	import {getBalance, getClasses, getClassStudents} from '../../utils/api.js';
-	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
 	import Auth from '../../utils/Auth.svelte';
 
 	metatags.title = 'Staff Home - Kitcoin';
@@ -46,7 +45,6 @@
 </script>
 
 <!-- Head -->
-<SetBodyStyle classString="bg-gray-200" />
 <Auth />
 
 <!-- Content -->
