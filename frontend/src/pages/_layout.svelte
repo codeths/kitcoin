@@ -51,7 +51,11 @@
 				<div class="navbar-end">
 					<div class="dropdown dropdown-end hidden md:inline-block">
 						<div class="btn btn-ghost" tabindex="0">
-							<span class="icon-user text-4xl" />
+							<span
+								class="{userInfo
+									? 'icon-user'
+									: 'icon-user-slash'} text-4xl"
+							/>
 						</div>
 						<ul
 							tabindex="0"
