@@ -67,7 +67,7 @@
 				>
 					{#if typeof balance == 'number'}
 						<span
-							class="icon icon-currency mr-3"
+							class="icon-currency mr-3"
 						/>{balance.toLocaleString([], {
 							minimumFractionDigits: 2,
 							maximumFractionDigits: 2,
