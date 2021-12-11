@@ -36,12 +36,35 @@
 		},
 		{img: '/shop_images/banana.png', price: 20000, name: 'Banana'},
 	];
+	const categories = [
+		//These are for the highlighted store (wildkit store)
+		//TODO: Use an image instead of a color for the background?
+		//Be sure to add any colors used to Tailwind's safelist (Ex: 'from-{color}-300' and 'to-{color}-200')
+		['Blahaj', 'blue'],
+		['Food', 'yellow'],
+		['Apple', 'green'],
+		['Supreme', 'red'],
+	];
 </script>
 
 <!-- Head -->
 <SetBodyStyle classString="bg-gray-200" />
 
 <!-- Content -->
+<div class="bg-blue-200">
+	<div
+		class="py-28 md:py-36 lg:py-44 xl:py-56 mx-auto text-center max-w-7xl px-2"
+	>
+		<h1 class="text-6xl font-black">Welcome to the Kitcoin Store!!</h1>
+		<br />
+		<p class="text-3xl text-gray-700">
+			Here you can buy lots of cool stuff with your hard earned Kitcoin.
+			Check out our awesome selection of Beans&trade; and get your Supreme
+			Bricks while they're still in stock!
+		</p>
+	</div>
+</div>
+
 <div class="p-12 mt-6">
 	<h2 class="text-4xl font-bold mb-6">Your Stores</h2>
 	{#if authMsg}
@@ -112,6 +135,30 @@
 			<h2 class="text-4xl font-bold mb-6">New Arrivals</h2>
 			<div class="bg-white rounded-md filter drop-shadow-md">
 				<ItemDisplay items={newItems} />
+			</div>
+		</div>
+	{/if}
+
+	{#if categories.length != 0}
+		<!-- Placeholder for now, not a big priority. These would be for the main store -->
+		<div class="mt-12">
+			<h2 class="text-4xl font-bold mb-6">Categories</h2>
+			<div
+				class="lg:grid lg:grid-cols-3 xl:grid-cols-4 gap-10 space-y-10 lg:space-y-0"
+			>
+				{#each categories as [category, color]}
+					<div
+						class="relative h-72 lg:h-80 xl:h-96 bg-gradient-to-t from-{color ||
+							'gray'}-300 to-{color ||
+							'gray'}-200 rounded-xl max-w-screen-md lg:max-w-none mx-auto lg:mx-0 filter drop-shadow-md"
+					>
+						<p
+							class="text-3xl font-semibold absolute bottom-0 mx-8 lg:mx-12 mb-12 text-gray-800"
+						>
+							{category}
+						</p>
+					</div>
+				{/each}
 			</div>
 		</div>
 	{/if}
