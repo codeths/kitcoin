@@ -40,7 +40,7 @@
 					class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full h-full"
 				>
 					{#await getBalance()}
-						<Loading height="2rem" color="#000000" />
+						<Loading height="2rem" />
 					{:then balance}
 						<span
 							class="icon-currency mr-3"
