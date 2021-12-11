@@ -1,12 +1,11 @@
 <script>
-	import {metatags} from '@roxi/routify';
+	import {metatags, beforeUrlChange} from '@roxi/routify';
 	import {getContext} from 'svelte';
 	import Loading from '../../components/Loading.svelte';
 	import CreateTransaction from '../../components/CreateTransaction.svelte';
 	import ToastContainer from '../../components/ToastContainer.svelte';
 	let toastContainer;
 	import {getBalance, getClasses, getClassStudents} from '../../utils/api.js';
-	import Auth from '../../utils/Auth.svelte';
 
 	metatags.title = 'Staff Home - Kitcoin';
 
@@ -17,15 +16,17 @@
 	let balance;
 
 	let ctx = getContext('userInfo');
-	let userInfo;
 	let showPermsModal = false;
+
 	(async () => {
-		userInfo = (await ctx) || null;
-		if (!userInfo) return;
+		let info = (await ctx) || null;
+		if (!info || !info.roles.includes('STAFF')) {
+			window.location.reload();
+		}
 		showPermsModal = [
 			'https://www.googleapis.com/auth/classroom.courses.readonly',
 			'https://www.googleapis.com/auth/classroom.rosters.readonly',
-		].some(x => !userInfo.scopes.includes(x));
+		].some(x => !info.scopes.includes(x));
 	})();
 
 	getBalance().then(b => (balance = b));
@@ -41,9 +42,6 @@
 	let modalStudent = null,
 		showModal = false;
 </script>
-
-<!-- Head -->
-<Auth />
 
 <!-- Content -->
 <div class="grid gap-4 grid-cols-4 mx-14 my-8 lg:mx-24 lg:my-14">

@@ -1,10 +1,10 @@
 <script>
 	import {metatags} from '@roxi/routify';
+	import {getContext} from 'svelte';
 	import ItemDisplay from '../../components/ItemDisplay.svelte';
 	import Transactions from '../../components/Transactions.svelte';
 	import Loading from '../../components/Loading.svelte';
 	import {getBalance} from '../../utils/api.js';
-	import Auth from '../../utils/Auth.svelte';
 
 	metatags.title = 'Student Home - Kitcoin';
 
@@ -23,10 +23,15 @@
 		},
 		{img: 'shop_images/banana.png', price: 20000, name: 'Banana'},
 	];
-</script>
 
-<!-- Head  -->
-<Auth />
+	let ctx = getContext('userInfo');
+	let userInfo;
+	(async () => {
+		userInfo = (await ctx) || null;
+		if (!userInfo) return;
+		if (!userInfo.roles.includes('STUDENT')) window.location.reload();
+	})();
+</script>
 
 <!-- Content-->
 <div class="m-8">
