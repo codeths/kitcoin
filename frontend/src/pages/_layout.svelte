@@ -55,7 +55,7 @@
 						</div>
 						<ul
 							tabindex="0"
-							class="p-2 shadow menu dropdown-content bg-base-100 text-base-content rounded-box w-52"
+							class="p-2 shadow menu dropdown-content bg-base-200 text-base-content rounded-box w-52"
 						>
 							{#if userInfo}
 								{#if homes.length > 1}
