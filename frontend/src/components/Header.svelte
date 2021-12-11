@@ -27,8 +27,10 @@
 
 <header class={sticky ? 'sticky top-0 z-10' : null}>
 	<div class="drawer">
+		<!-- add class h-screen once below is fixed -->
 		<input id="nav-drawer" type="checkbox" class="drawer-toggle" />
-		<div class="flex flex-col drawer-content">
+		<div class="flex flex-col">
+			<!-- add class drawer-content once below is fixed -->
 			<div class="navbar w-full bg-blue-eths text-white p-3 shadow-xl">
 				<div class="navbar-start">
 					<a href="/" class="mx-2">
@@ -36,12 +38,12 @@
 							<span class="icon-logo mr-1" />Kitcoin
 						</h2></a
 					>
-					<div class="hidden md:flex mx-2">
+					<div class="hidden md:flex mx-2 nav-links-parent">
 						{#each links as [text, link, navigate]}
 							<a
-								class="btn btn-ghost btn-sm rounded-btn text-xl font-medium hover:border-white"
+								class="btn btn-ghost btn-sm text-xl font-medium nav-link"
 								target={navigate ? '_self' : null}
-								class:border-white={link == current}
+								class:active={link == current}
 								href={link}>{text}</a
 							>
 						{/each}
@@ -102,13 +104,15 @@
 							for="nav-drawer"
 							class="btn btn-square btn-ghost"
 						>
-							<span class="icon-menu" />
+							<span class="icon-menu text-xl" />
 						</label>
 					</div>
 				</div>
 			</div>
+			<!-- All page content needs to go here! -->
 		</div>
-		<div class="drawer-side">
+		<div class="drawer-side !hidden">
+			<!-- temporarily disabling until we can get the page content where it needs to be -->
 			<label for="nav-drawer" class="drawer-overlay" />
 			<ul class="p-4 overflow-y-auto menu w-80 bg-base-100">
 				{#each links as [text, link, navigate]}
