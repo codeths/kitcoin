@@ -1,7 +1,6 @@
 <script>
 	import {getContext} from 'svelte';
 	import {url, metatags} from '@roxi/routify';
-	import Header from '../../components/Header.svelte';
 	import Loading from '../../components/Loading.svelte';
 	import ItemDisplay from '../../components/ItemDisplay.svelte';
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
@@ -41,7 +40,6 @@
 
 <!-- Head -->
 <SetBodyStyle classString="bg-gray-200" />
-<Header sticky />
 
 <!-- Content -->
 <div class="p-12 mt-6">

@@ -1,7 +1,6 @@
 <script>
 	import {params, url, metatags} from '@roxi/routify';
 	import {getContext} from 'svelte';
-	import Header from '../../components/Header.svelte';
 	import Loading from '../../components/Loading.svelte';
 	import Button from '../../components/Button.svelte';
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
@@ -95,7 +94,6 @@
 
 <!-- Head -->
 <SetBodyStyle classString="bg-gray-200" />
-<Header sticky />
 
 <!-- Content -->
 <div class="flex flex-row flex-wrap justify-between items-center my-6">

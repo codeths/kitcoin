@@ -1,6 +1,5 @@
 <script>
 	import {metatags} from '@roxi/routify';
-	import Header from '../components/Header.svelte';
 	import Button from '../components/Button.svelte';
 	import SetBodyStyle from '../utils/SetBodyStyle.svelte';
 
@@ -9,7 +8,6 @@
 
 <!-- Head -->
 <SetBodyStyle classString="bg-gray-200 flex flex-col" />
-<Header />
 
 <!-- Content -->
 <div class="m-8 flex flex-col flex-1 justify-center items-center">

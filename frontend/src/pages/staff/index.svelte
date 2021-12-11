@@ -1,7 +1,6 @@
 <script>
 	import {metatags} from '@roxi/routify';
 	import {getContext} from 'svelte';
-	import Header from '../../components/Header.svelte';
 	import Loading from '../../components/Loading.svelte';
 	import CreateTransaction from '../../components/CreateTransaction.svelte';
 	import Modal from '../../components/Modal.svelte';
@@ -49,7 +48,6 @@
 <!-- Head -->
 <SetBodyStyle classString="bg-gray-200" />
 <Auth />
-<Header />
 
 <!-- Content -->
 <div class="grid gap-4 grid-cols-4 mx-14 my-8 lg:mx-24 lg:my-14">

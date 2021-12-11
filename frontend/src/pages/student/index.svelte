@@ -2,7 +2,6 @@
 	import {metatags} from '@roxi/routify';
 	import ItemDisplay from '../../components/ItemDisplay.svelte';
 	import Transactions from '../../components/Transactions.svelte';
-	import Header from '../../components/Header.svelte';
 	import Loading from '../../components/Loading.svelte';
 	import {getBalance} from '../../utils/api.js';
 	import SetBodyStyle from '../../utils/SetBodyStyle.svelte';
@@ -30,7 +29,6 @@
 <!-- Head  -->
 <SetBodyStyle classString="bg-gray-200" />
 <Auth />
-<Header />
 
 <!-- Content-->
 <div class="m-8">

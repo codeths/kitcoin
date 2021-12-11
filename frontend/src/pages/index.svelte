@@ -1,13 +1,11 @@
 <script>
 	import {metatags} from '@roxi/routify';
-	import Header from '../components/Header.svelte';
 	import SetBodyStyle from '../utils/SetBodyStyle.svelte';
 
 	metatags.title = 'Kitcoin';
 </script>
 
 <SetBodyStyle classString="bg-gray-200" />
-<Header />
 
 <div class="m-8">
 	<h1>Welcome to KitCoin!</h1>

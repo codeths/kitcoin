@@ -3,7 +3,6 @@
 	import {url} from '@roxi/routify';
 	import Button from '../components/Button.svelte';
 
-	export let sticky = false;
 	let links = [];
 	let homes = [];
 	let ctx = getContext('userInfo');
@@ -25,12 +24,10 @@
 	});
 </script>
 
-<header class={sticky ? 'sticky top-0 z-10' : null}>
-	<div class="drawer">
-		<!-- add class h-screen once below is fixed -->
+<header>
+	<div class="drawer h-screen">
 		<input id="nav-drawer" type="checkbox" class="drawer-toggle" />
-		<div class="flex flex-col">
-			<!-- add class drawer-content once below is fixed -->
+		<div class="drawer-content flex flex-col">
 			<div class="navbar w-full bg-blue-eths text-white p-3 shadow-xl">
 				<div class="navbar-start">
 					<a href="/" class="mx-2">
@@ -109,10 +106,9 @@
 					</div>
 				</div>
 			</div>
-			<!-- All page content needs to go here! -->
+			<slot />
 		</div>
-		<div class="drawer-side !hidden">
-			<!-- temporarily disabling until we can get the page content where it needs to be -->
+		<div class="drawer-side">
 			<label for="nav-drawer" class="drawer-overlay" />
 			<ul class="p-4 overflow-y-auto menu w-80 bg-base-100">
 				{#each links as [text, link, navigate]}
