@@ -49,21 +49,15 @@
 					</div>
 				</div>
 				<div class="navbar-end">
-					<div class="dropdown dropdown-end">
+					<div class="dropdown dropdown-end hidden md:inline-block">
 						<div class="btn btn-ghost" tabindex="0">
-							<span class="icon-user" />
+							<span class="icon-user text-4xl" />
 						</div>
 						<ul
 							tabindex="0"
 							class="p-2 shadow menu dropdown-content bg-base-100 text-base-content rounded-box w-52"
 						>
 							{#if userInfo}
-								<li class="px-3 py-1">
-									{userInfo.name}
-								</li>
-								<div
-									class="divider my-0 before:bg-base-300 after:bg-base-300"
-								/>
 								{#if homes.length > 1}
 									{#each homes as [text, link]}
 										<li>
@@ -103,7 +97,7 @@
 							for="nav-drawer"
 							class="btn btn-square btn-ghost"
 						>
-							<span class="icon-menu text-xl" />
+							<span class="icon-menu text-4xl" />
 						</label>
 					</div>
 				</div>
@@ -117,7 +111,7 @@
 					for="nav-drawer"
 					class="btn btn-ghost btn-square p-1 self-end font-medium"
 				>
-					<span class="icon-close" /></label
+					<span class="icon-close text-4xl" /></label
 				>
 				<li>
 					{#each links as [text, link, navigate]}
@@ -129,6 +123,36 @@
 							>
 						</li>
 					{/each}
+					<div
+						class="divider my-0 before:bg-base-300 after:bg-base-300"
+					/>
+					{#if userInfo}
+						{#if homes.length > 1}
+							{#each homes as [text, link]}
+								<li>
+									<a
+										class="px-3 py-1 {link == current
+											? '!cursor-not-allowed bg-base-300 hover:active:bg-base-300'
+											: ''}"
+										href={link}
+										disabled={link == current}>{text}</a
+									>
+								</li>
+							{/each}
+							<div
+								class="divider my-0 before:bg-base-300 after:bg-base-300"
+							/>
+						{/if}
+						<li>
+							<a class="px-3 py-1" href="/signout" target="_self"
+								>Sign Out</a
+							>
+						</li>
+					{:else}
+						<a class="px-3 py-1" href="/signin" target="_self"
+							>Sign In</a
+						>
+					{/if}
 				</li>
 			</div>
 		</div>
