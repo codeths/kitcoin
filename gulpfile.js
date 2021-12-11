@@ -9,7 +9,7 @@ let args = process.argv.slice(2);
 gulp.task('default', async () => {
 	await delDist();
 	await typescript();
-	await frontend();
+	await icons();
 	await task(copy());
 	return;
 });
@@ -112,6 +112,8 @@ function dev() {
 		gulp.watch([
 			'frontend/**/*',
 			'!frontend/build/**/*',
+			'!frontend/public/assets/icons.ttf',
+			'!frontend/public/assets/icons.css',
 			'!frontend/.routify/**/*',
 			'!**/node_modules/**/*',
 		]).on('change', async function (fileName) {
