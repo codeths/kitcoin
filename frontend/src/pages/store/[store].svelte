@@ -2,7 +2,6 @@
 	import {params, url, metatags} from '@roxi/routify';
 	import {getContext} from 'svelte';
 	import Loading from '../../components/Loading.svelte';
-	import Button from '../../components/Button.svelte';
 	import {storeInfo, getStores, getItems} from '../../utils/store.js';
 	import {getBalance} from '../../utils/api.js';
 
@@ -93,15 +92,15 @@
 
 <!-- Content -->
 <div class="flex flex-row flex-wrap justify-between items-center my-6">
-	<Button
+	<button
 		href={$url('.')}
-		class="inline-flex flex-col self-center my-4 w-auto mx-6"
+		class="btn btn-primary inline-flex flex-col self-center my-4 w-auto mx-6"
 	>
 		Back to store list
-	</Button>
+	</button>
 	{#if balance !== null}
 		<div
-			class="inline-flex flex-col self-center p-4 bg-base-200 rounded mx-6 my-4"
+			class="inline-flex flex-col self-center p-4 bg-base-200 rounded-lg mx-6 my-4"
 		>
 			<span>
 				Your balance: <span
@@ -116,7 +115,7 @@
 </div>
 <div class="p-6">
 	{#await getStore()}
-		<Loading height="2rem" color="#000000" />
+		<Loading height="2rem" />
 	{:then store}
 		<h2 class="text-4xl font-bold mb-6">{store.name}</h2>
 		{#if error || !items || !items.items || items.docCount == 0}
@@ -124,7 +123,7 @@
 				{#if error}
 					An Error Occured
 				{:else if loading && !items}
-					<Loading height="2rem" color="#000000" />
+					<Loading height="2rem" />
 				{:else}
 					No Items
 				{/if}
@@ -132,15 +131,17 @@
 		{:else}
 			<div class="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 				{#each items.items as item}
-					<div class="p-4 bg-base-200 border shadow flex flex-col">
-						<p class="text-3xl font-semibold text-gray-800">
+					<div
+						class="p-4 bg-base-200 shadow rounded-lg flex flex-col"
+					>
+						<p class="text-3xl font-semibold">
 							{item.name}
 						</p>
 						<p
 							class="text-2xl font-semibold {balance !== null &&
 							balance < item.price
 								? 'text-red-500'
-								: 'text-gray-800'}"
+								: ''}"
 						>
 							<span
 								class="icon-currency mr-3"
@@ -173,9 +174,9 @@
 					Showing page {items.page} of {items.pageCount}
 				</h2>
 				<div class="flex-break" />
-				<Button
+				<button
 					on:click={() => load(currentPage - 1, 'previous', true)}
-					class="mx-2"
+					class="btn btn-primary w-40 mx-2"
 					disabled={loading || currentPage <= 1}
 				>
 					{#if loading == 'previous'}
@@ -183,10 +184,10 @@
 					{:else}
 						Previous
 					{/if}
-				</Button>
-				<Button
+				</button>
+				<button
 					on:click={() => load(currentPage + 1, 'next', true)}
-					class="mx-2"
+					class="btn btn-primary w-40 mx-2"
 					disabled={loading || currentPage >= items.pageCount}
 				>
 					{#if loading == 'next'}
@@ -194,11 +195,11 @@
 					{:else}
 						Next
 					{/if}
-				</Button>
+				</button>
 			{:else}
-				<Button
+				<button
 					on:click={() => load(currentPage ?? 1, 'refresh')}
-					class="mx-2"
+					class="btn btn-primary w-40 mx-2"
 					disabled={loading}
 				>
 					{#if loading == 'refresh'}
@@ -208,30 +209,36 @@
 					{:else}
 						Refresh
 					{/if}
-				</Button>
+				</button>
 			{/if}
 		</div>
 	{:catch error}
 		<h2>{error}</h2>
 		{#if authMsg}
-			<div class="inline-block my-4 p-4 rounded bg-red-200">
-				{#if authMsg == 'NO_USER'}
-					You are not logged in. <a
-						href="/signin?redirect={encodeURIComponent(
-							window.location.pathname,
-						)}&hint=true"
-						class="underline font-bold"
-						target="_self">Sign in</a
-					> to view your private stores.
-				{:else if authMsg == 'CLASSROOM'}
-					KitCoin is unable to access your Google Classroom classes. <a
-						href="/signin?redirect={encodeURIComponent(
-							window.location.pathname,
-						)}&hint=true"
-						class="underline font-bold"
-						target="_self">Sign in</a
-					> again to grant the permission.
-				{/if}
+			<div class="alert alert-warning my-4">
+				<div class="flex-1">
+					<span class="icon-warning" />
+					<span>
+						{#if authMsg == 'NO_USER'}
+							You are not logged in. <a
+								href="/signin?redirect={encodeURIComponent(
+									window.location.pathname,
+								)}&hint=true"
+								class="link font-bold"
+								target="_self">Sign in</a
+							> to view your private stores.
+						{:else if authMsg == 'CLASSROOM'}
+							KitCoin is unable to access your Google Classroom
+							classes. <a
+								href="/signin?redirect={encodeURIComponent(
+									window.location.pathname,
+								)}&hint=true"
+								class="link font-bold"
+								target="_self">Sign in</a
+							> again to grant the permission.
+						{/if}
+					</span>
+				</div>
 			</div>
 		{/if}
 	{/await}

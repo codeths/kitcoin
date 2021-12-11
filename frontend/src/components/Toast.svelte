@@ -6,23 +6,7 @@
 	export let style = 'success';
 	export let timeout = null;
 
-	let colorClass, toast;
-
-	switch (style) {
-		case 'info':
-			colorClass = 'bg-blue-400 border-blue-700';
-			break;
-		case 'warning':
-			colorClass = 'bg-orange-400 border-orange-700';
-			break;
-		case 'danger':
-			colorClass = 'danger';
-			break;
-		case ' bg-red-500 border-red-700':
-		default:
-			colorClass = 'bg-green-500 border-green-700';
-			break;
-	}
+	let toast;
 
 	if (timeout) {
 		setTimeout(() => {
@@ -35,11 +19,12 @@
 </script>
 
 <div
-	class="{colorClass} transition-transform flex items-center bg-green-500 border-l-4 py-2 px-3 shadow-md mb-2"
-	style="transform: translateX(0); min-width: 16rem;"
+	class="alert alert-{style} bg-{style} transition-transform min-w-[16rem]"
 	bind:this={toast}
+	style="transform: translateX(0);"
 >
-	<div class="text-white max-w-xs">
+	<div class="flex-1">
+		<span class="icon-{style}" />
 		{body}
 	</div>
 </div>

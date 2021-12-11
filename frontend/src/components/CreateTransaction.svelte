@@ -5,7 +5,6 @@
 	import StudentSearch from './StudentSearch.svelte';
 	import Loading from './Loading.svelte';
 	import Input from './Input.svelte';
-	import Button from '../components/Button.svelte';
 
 	export let modal = false;
 	export let balance = -1;
@@ -132,9 +131,9 @@
 	}
 
 	function btnColor(submitStatus) {
-		if (submitStatus == 'SUCCESS' && !modal) return 'green';
-		if (submitStatus == 'ERROR') return 'red';
-		return 'blue';
+		if (submitStatus == 'SUCCESS' && !modal) return 'btn-success';
+		if (submitStatus == 'ERROR') return 'btn-error';
+		return 'btn-primary';
 	}
 
 	export let student = undefined;
@@ -180,13 +179,20 @@
 			? 'justify-end'
 			: 'justify-start'}"
 	>
-		<Button
+		<button
 			on:click={send}
-			disabled={hasError || submitStatus == 'LOADING'}
-			bg={btnColor(submitStatus)}
+			disabled={submitStatus || hasError}
+			class="btn {btnColor(
+				submitStatus,
+			)} px-12 !pointer-events-auto disabled:cursor-not-allowed disabled:border-0"
+			class:!bg-base-100={hasError && !submitStatus}
+			class:btn-active={submitStatus}
+			class:!text-primary-content={submitStatus}
 		>
 			{#if submitStatus == 'LOADING'}
-				<Loading height="2rem" />
+				<div class="px-2">
+					<Loading height="2rem" />
+				</div>
 			{:else if submitStatus == 'SUCCESS'}
 				Sent
 			{:else if submitStatus == 'ERROR'}
@@ -194,16 +200,11 @@
 			{:else}
 				Send
 			{/if}
-		</Button>
+		</button>
 		{#if modal}
-			<Button
-				on:click={() => dispatch('close')}
-				bg="white"
-				bgDarkness=""
-				textColor="black"
-			>
+			<button on:click={() => dispatch('close')} class="btn px-12">
 				Close
-			</Button>
+			</button>
 		{/if}
 	</div>
 </form>

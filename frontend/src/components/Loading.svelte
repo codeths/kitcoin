@@ -1,12 +1,8 @@
 <script>
-	export let color = '';
 	export let height = '';
 </script>
 
-<div
-	class="loader"
-	style="--color: {color || '#FFFFFF'}; --height: {height || '5rem'};"
-/>
+<div class="loader" style="--height: {height || '5rem'};" />
 
 <style>
 	.loader,
@@ -23,7 +19,6 @@
 	}
 
 	.loader {
-		color: var(--color);
 		font-size: calc(var(--height) * 0.25);
 		margin: 0 auto;
 		position: relative;

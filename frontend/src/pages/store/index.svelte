@@ -64,28 +64,34 @@
 <div class="p-12 mt-6">
 	<h2 class="text-4xl font-bold mb-6">Your Stores</h2>
 	{#if authMsg}
-		<div class="inline-block my-4 p-4 rounded bg-red-200">
-			{#if authMsg == 'NO_USER'}
-				You are not logged in. <a
-					href="/signin?redirect={encodeURIComponent(
-						window.location.pathname,
-					)}&hint=true"
-					class="underline font-bold"
-					target="_self">Sign in</a
-				> to view your private stores.
-			{:else if authMsg == 'CLASSROOM'}
-				KitCoin is unable to access your Google Classroom classes. <a
-					href="/signin?redirect={encodeURIComponent(
-						window.location.pathname,
-					)}&hint=true"
-					class="underline font-bold"
-					target="_self">Sign in</a
-				> again to grant the permission.
-			{/if}
+		<div class="alert alert-warning my-4">
+			<div class="flex-1">
+				<span class="icon-warning" />
+				<span>
+					{#if authMsg == 'NO_USER'}
+						You are not logged in. <a
+							href="/signin?redirect={encodeURIComponent(
+								window.location.pathname,
+							)}&hint=true"
+							class="link font-bold"
+							target="_self">Sign in</a
+						> to view your private stores.
+					{:else if authMsg == 'CLASSROOM'}
+						KitCoin is unable to access your Google Classroom
+						classes. <a
+							href="/signin?redirect={encodeURIComponent(
+								window.location.pathname,
+							)}&hint=true"
+							class="link font-bold"
+							target="_self">Sign in</a
+						> again to grant the permission.
+					{/if}
+				</span>
+			</div>
 		</div>
 	{/if}
 	{#await getStores()}
-		<Loading height="2rem" color="#000000" />
+		<Loading height="2rem" />
 	{:then stores}
 		{#if stores.length > 0}
 			<div

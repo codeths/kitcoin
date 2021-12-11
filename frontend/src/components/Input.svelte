@@ -3,9 +3,6 @@
 
 	const dispatch = createEventDispatcher();
 
-	let borderStyle = '',
-		textStyle = '';
-
 	export let value = '';
 	export let label = '';
 	export let valid = false;
@@ -15,21 +12,6 @@
 	export let disabled = false;
 	export let focus = false;
 
-	let className =
-		'border shadow rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline disabled:bg-gray-200 disabled:cursor-not-allowed';
-	$: {
-		if (error) {
-			borderStyle = 'border-red-500';
-			textStyle = 'text-red-500';
-		} else if (valid) {
-			borderStyle = 'border-green-500';
-			textStyle = '';
-		} else {
-			borderStyle = '';
-			textStyle = '';
-		}
-	}
-
 	function handle(e) {
 		dispatch('validate', {
 			type: e.type,
@@ -37,12 +19,6 @@
 			element: input,
 		});
 	}
-
-	let tag = `<${type}
-		class=""
-		placeholder="${label}"
-		on:input="${handle}" on:focus="${handle}" on:blur="${handle}" bind:value="${value}"
-	></${type}>`;
 
 	onMount(() => {
 		if (input && type !== 'textarea') {
@@ -53,12 +29,14 @@
 </script>
 
 <div class="my-2">
-	<label class="{textStyle} block text-sm font-bold mb-2" for="reason">
-		{error || label}
+	<label class="label" for="">
+		<span class="label-text"> {label} </span>
 	</label>
 	{#if type == 'textarea'}
 		<textarea
-			class="{className} {borderStyle}"
+			class="textarea w-full"
+			class:textarea-success={valid}
+			class:textarea-error={error}
 			{disabled}
 			placeholder={label}
 			on:input={handle}
@@ -72,7 +50,9 @@
 		/>
 	{:else}
 		<input
-			class="{className} {borderStyle}"
+			class="input w-full"
+			class:input-success={valid}
+			class:input-error={error}
 			{disabled}
 			placeholder={label}
 			on:input={handle}
@@ -85,4 +65,9 @@
 			bind:this={input}
 		/>
 	{/if}
+	<slot name="after-input" />
+	{#if error}
+		<label class="label" for="">
+			<span class="label-text-alt text-error"> {error} </span>
+		</label>{/if}
 </div>

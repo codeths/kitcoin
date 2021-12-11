@@ -3,8 +3,6 @@
 	import {getContext} from 'svelte';
 	import Loading from '../../components/Loading.svelte';
 	import CreateTransaction from '../../components/CreateTransaction.svelte';
-	import Modal from '../../components/Modal.svelte';
-	import Button from '../../components/Button.svelte';
 	import ToastContainer from '../../components/ToastContainer.svelte';
 	let toastContainer;
 	import {getBalance, getClasses, getClassStudents} from '../../utils/api.js';
@@ -41,7 +39,7 @@
 			selectMsg = err;
 		});
 	let modalStudent = null,
-		modal = null;
+		showModal = false;
 </script>
 
 <!-- Head -->
@@ -62,7 +60,7 @@
 		<h1 class="text-3xl font-medium mb-2">Available KitCoin</h1>
 		<div class="lg:col-span-2 sm:max-w-sm lg:max-w-none">
 			<div
-				class="flex bg-base-200 shadow-md rounded py-10 min-h-40 border-t-8 border-blue-900"
+				class="flex bg-base-200 shadow-md rounded py-10 min-h-40 border-t-8 border-blue-eths"
 			>
 				<h1
 					class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full h-full"
@@ -77,7 +75,7 @@
 					{:else if balance}
 						{balance}
 					{:else}
-						<Loading height="2rem" color="#000000" />
+						<Loading height="2rem" />
 					{/if}
 				</h1>
 			</div>
@@ -85,10 +83,7 @@
 	</div>
 	<div class="col-span-4">
 		<div class="bg-base-200 shadow-md rounded px-8 py-8">
-			<select
-				bind:value={selectedClass}
-				class="border shadow rounded w-full py-2 px-3 mb-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-			>
+			<select bind:value={selectedClass} class="select w-full mb-4">
 				<option disabled value="" selected>
 					{selectMsg}
 				</option>
@@ -108,15 +103,11 @@
 				{:then students}
 					<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 						{#each students.sort( (a, b) => a.name.localeCompare(b.name), ) as student}
-							<Button
-								class="w-auto border shadow hover:shadow-md mx-4 my-2"
-								bg="white"
-								bgDarkness=""
-								hoverBg="gray"
-								hoverDarkness="100"
-								textColor="black"
+							<label
+								for="studentmodal"
+								class="w-auto btn btn-neutral btn-outline mx-4 my-2"
 								on:click={() => (modalStudent = student)}
-								>{student.name}</Button
+								>{student.name}</label
 							>
 						{/each}
 					</div>
@@ -132,23 +123,23 @@
 	</div>
 </div>
 
-{#if modalStudent}
-	<Modal
-		title="Send KitCoin"
-		on:close={e => {
-			modalStudent = null;
-		}}
-		on:confirm={() => {
-			modalStudent = null;
-		}}
-		bind:this={modal}
-	>
+<input
+	type="checkbox"
+	id="studentmodal"
+	class="modal-toggle"
+	bind:checked={showModal}
+/>
+<label class="modal" for="studentmodal">
+	<div class="modal-box">
+		<h2 class="text-2xl text-medium mb-4">
+			Send KitCoin to {modalStudent?.name}
+		</h2>
 		<CreateTransaction
 			modal="true"
 			student={modalStudent}
 			class="w-full"
 			on:close={e => {
-				modal.close();
+				showModal = false;
 				if (e && e.detail == true)
 					setTimeout(
 						() =>
@@ -162,24 +153,33 @@
 			{balance}
 			on:balance={e => (balance = e.detail)}
 		/>
-	</Modal>
-{/if}
+	</div>
+</label>
 {#if showPermsModal}
-	<Modal title="Missing Permissions" canclose="false">
-		<p>
-			KitCoin is unable to access your Google Classroom classes. Please
-			log in again using the button below and make sure to click these
-			checkboxes:
-		</p>
-		<img
-			src="/assets/perms-image.png"
-			class="w-full mt-2 mb-4 border"
-			alt="How to enable the permissions"
-		/>
-		<div class="flex flex-col items-end pt-4 border-t-2 border-gray-300">
-			<Button target="_self" href="/login/staff?hint=true">Log In</Button>
+	<div class="modal modal-open">
+		<div class="modal-box">
+			<h2 class="text-2xl text-medium mb-4">Missing Permissions</h2>
+			<p>
+				KitCoin is unable to access your Google Classroom classes.
+				Please log in again using the button below and make sure to
+				click these checkboxes:
+			</p>
+			<img
+				src="/assets/perms-image.png"
+				class="w-full mt-2 mb-4 border rounded-lg"
+				alt="How to enable the permissions"
+			/>
+			<div
+				class="flex flex-col items-end pt-4 border-t-2 border-gray-300"
+			>
+				<a
+					class="btn btn-primary px-12"
+					target="_self"
+					href="/login/staff?hint=true">Log In</a
+				>
+			</div>
 		</div>
-	</Modal>
+	</div>
 {/if}
 
 <ToastContainer bind:this={toastContainer} />

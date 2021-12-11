@@ -3,7 +3,6 @@
 	  Transaction object
 	*/
 	import {getTransactions} from '../utils/api.js';
-	import Button from '../components/Button.svelte';
 	import Loading from './Loading.svelte';
 
 	export let user = undefined;
@@ -49,7 +48,7 @@
 </script>
 
 <div
-	class="w-full p-4 bg-white rounded shadow-md flex flex-col divide-y divide-gray-300"
+	class="w-full p-4 bg-base-200 rounded shadow-md flex flex-col divide-y divide-gray-300"
 >
 	{#if transactions.pageCount !== 0}
 		<table class="w-full table-auto">
@@ -85,7 +84,7 @@
 							class="px-2 pb-4 md:py-4 block md:table-cell text-right text-3xl md:text-left md:text-base {item.amount <
 							0
 								? 'text-orange-eths'
-								: 'text-blue-eths'}"
+								: 'text-base'}"
 							>{item.amount < 0 ? '-' : ''}<span
 								class="icon-currency mx-1"
 							/>{Math.abs(item.amount).toLocaleString([], {
@@ -107,7 +106,8 @@
 				{error}
 			</div>
 			<div class="flex justify-center align-center">
-				<Button
+				<button
+					class="btn btn-primary w-40"
 					on:click={() => load(page, 'retry')}
 					disabled={loading.any}
 				>
@@ -116,7 +116,7 @@
 					{:else}
 						Retry
 					{/if}
-				</Button>
+				</button>
 			</div>
 		</div>
 	{:else}
@@ -125,20 +125,23 @@
 				Showing page {transactions.page} of {transactions.pageCount}
 			</div>
 			<div class="flex justify-center align-center">
-				<Button
+				<button
+					class="btn btn-primary w-40 mx-2"
+					class:bg-base-100={transactions.page <= 1}
 					on:click={() => load(page - 1, 'previous')}
-					class="mx-2"
 					disabled={loading.any || transactions.page <= 1}
 				>
 					{#if loading.previous}
 						<Loading height="2rem" />
 					{:else}
 						Previous
-					{/if}</Button
-				>
-				<Button
+					{/if}
+				</button>
+				<button
+					class="btn btn-primary w-40 mx-2"
+					class:bg-base-100={transactions.page >=
+						transactions.pageCount}
 					on:click={() => load(page + 1, 'next')}
-					class="mx-2"
 					disabled={loading.any ||
 						transactions.page >= transactions.pageCount}
 				>
@@ -146,8 +149,8 @@
 						<Loading height="2rem" />
 					{:else}
 						Next
-					{/if}</Button
-				>
+					{/if}
+				</button>
 			</div>
 		</div>
 	{/if}

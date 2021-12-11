@@ -9,8 +9,8 @@
 		.map(x => ({id: x[0], ...x[1]}))
 		.filter(x => x.timeout > Date.now());
 
-	export function toast(body, style) {
-		toasts.set(id, {style, body, timeout: Date.now() + 5000});
+	export function toast(body, style, duration = 5000) {
+		toasts.set(id, {style, body, timeout: Date.now() + duration});
 		toasts = toasts;
 		id++;
 	}
