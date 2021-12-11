@@ -110,17 +110,25 @@
 		</div>
 		<div class="drawer-side">
 			<label for="nav-drawer" class="drawer-overlay" />
-			<ul class="p-4 overflow-y-auto menu w-80 bg-base-100">
-				{#each links as [text, link, navigate]}
-					<li>
-						<a
-							class:bg-base-300={link == current}
-							target={navigate ? '_self' : null}
-							href={link}>{text}</a
-						>
-					</li>
-				{/each}
-			</ul>
+			<div class="p-4 overflow-y-auto menu w-80 bg-base-100">
+				<label
+					for="nav-drawer"
+					class="btn btn-ghost btn-square p-1 self-end font-medium"
+				>
+					<span class="icon-close" /></label
+				>
+				<li>
+					{#each links as [text, link, navigate]}
+						<li>
+							<a
+								class:bg-base-300={link == current}
+								target={navigate ? '_self' : null}
+								href={link}>{text}</a
+							>
+						</li>
+					{/each}
+				</li>
+			</div>
 		</div>
 	</div>
 </header>
