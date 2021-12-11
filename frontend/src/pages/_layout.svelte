@@ -1,7 +1,6 @@
 <script>
 	import {getContext, onMount} from 'svelte';
 	import {url} from '@roxi/routify';
-	import Button from '../components/Button.svelte';
 	import SetBodyStyle from '../utils/SetBodyStyle.svelte';
 
 	let links = [];
