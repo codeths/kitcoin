@@ -6,7 +6,6 @@
 		beforeUrlChange,
 	} from '@roxi/routify';
 	import {routes} from '../.routify/routes';
-	import SetBodyStyle from './utils/SetBodyStyle.svelte';
 	import {setContext} from 'svelte';
 	import {getUserInfo} from './utils/api';
 	import {userInfo} from './utils/store';
@@ -71,8 +70,3 @@
 <svelte:head>
 	<link rel="icon" href="/{favicon}.ico" />
 </svelte:head>
-
-<!--  Reset body styles on page changes  -->
-{#if $isChangingPage}
-	<SetBodyStyle classString="" styleString="" />
-{/if}

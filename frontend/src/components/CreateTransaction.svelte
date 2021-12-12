@@ -185,7 +185,8 @@
 			class="btn {btnColor(
 				submitStatus,
 			)} px-12 !pointer-events-auto disabled:cursor-not-allowed disabled:border-0"
-			class:!bg-base-100={hasError && !submitStatus}
+			class:!bg-base-300={hasError && !submitStatus}
+			class:hover:!bg-base-300={hasError && !submitStatus}
 			class:btn-active={submitStatus}
 			class:!text-primary-content={submitStatus}
 		>

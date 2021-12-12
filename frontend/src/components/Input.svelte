@@ -34,7 +34,7 @@
 	</label>
 	{#if type == 'textarea'}
 		<textarea
-			class="textarea w-full"
+			class="textarea textarea-bordered w-full"
 			class:textarea-success={valid}
 			class:textarea-error={error}
 			{disabled}
@@ -50,7 +50,7 @@
 		/>
 	{:else}
 		<input
-			class="input w-full"
+			class="input input-bordered	w-full"
 			class:input-success={valid}
 			class:input-error={error}
 			{disabled}

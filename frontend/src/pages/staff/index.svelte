@@ -81,7 +81,10 @@
 	</div>
 	<div class="col-span-4">
 		<div class="bg-base-200 shadow-md rounded px-8 py-8">
-			<select bind:value={selectedClass} class="select w-full mb-4">
+			<select
+				bind:value={selectedClass}
+				class="select select-bordered w-full mb-4"
+			>
 				<option disabled value="" selected>
 					{selectMsg}
 				</option>
