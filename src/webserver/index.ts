@@ -79,7 +79,7 @@ app.get(
 	(...req) => request(...req, {}),
 	(req, res) => {
 		if (req.user && req.user.hasRole('STUDENT')) servePage(res);
-		else if (req.user) res.redirect('/home');
+		else if (req.user) res.redirect('/');
 		else
 			handleLogin(req, res, {
 				redirect: true,
@@ -94,7 +94,7 @@ app.get(
 	(...req) => request(...req, {}),
 	(req, res) => {
 		if (req.user && req.user.hasRole('STAFF')) servePage(res);
-		else if (req.user) res.redirect('/home');
+		else if (req.user) res.redirect('/');
 		else
 			handleLogin(req, res, {
 				redirect: true,
@@ -109,7 +109,7 @@ app.get(
 	(...req) => request(...req, {}),
 	(req, res) => {
 		if (req.user && req.user.hasRole('ADMIN')) servePage(res);
-		else if (req.user) res.redirect('/home');
+		else if (req.user) res.redirect('/');
 		else
 			handleLogin(req, res, {
 				redirect: true,
@@ -120,17 +120,19 @@ app.get(
 
 app.use('/schema', express.static(`${__dirname}/../schema`));
 
+app.get('/home', (req, res) => res.redirect('/'));
+
 app.get(
-	'/home',
+	'/',
 	(...req) => request(...req, {}),
 	(req, res) => {
 		if (req.user) {
-			if (req.user.hasRole('STAFF')) res.redirect('/staff');
-			else if (req.user.hasRole('STUDENT')) res.redirect('/student');
-			else res.redirect('/');
-		} else {
-			handleLogin(req, res);
+			if (req.user.hasRole('STAFF')) return res.redirect('/staff');
+			else if (req.user.hasRole('STUDENT'))
+				return res.redirect('/student');
 		}
+
+		servePage(res);
 	},
 );
 

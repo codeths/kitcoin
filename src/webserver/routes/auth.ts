@@ -14,7 +14,7 @@ const ALLOWED_REDIRECTS: (string | RegExp)[] = [
 	'/staff',
 	'/admin',
 	'/store',
-	'/home',
+	'/',
 	/\/store\/\w+/,
 ];
 
@@ -122,7 +122,7 @@ router.get('/cbk', async (req, res) => {
 	req.session.token = session;
 	res.clearCookie('redirect');
 
-	return res.redirect(decodeURIComponent(req.cookies.redirect || '/home'));
+	return res.redirect(decodeURIComponent(req.cookies.redirect || '/'));
 });
 
 router.use((req, res) => res.status(404).send());
