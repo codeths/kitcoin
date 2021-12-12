@@ -47,6 +47,7 @@
 			on:blur
 			bind:value
 			bind:this={input}
+			{...$$restProps}
 		/>
 	{:else}
 		<input
@@ -63,6 +64,7 @@
 			on:blur
 			bind:value
 			bind:this={input}
+			{...$$restProps}
 		/>
 	{/if}
 	<slot name="after-input" />
