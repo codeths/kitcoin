@@ -139,25 +139,27 @@
 		<h2 class="text-2xl text-medium mb-4">
 			Send Kitcoin to {modalStudent?.name}
 		</h2>
-		<CreateTransaction
-			modal="true"
-			student={modalStudent}
-			class="w-full"
-			on:close={e => {
-				showModal = false;
-				if (e && e.detail == true)
-					setTimeout(
-						() =>
-							toastContainer.toast(
-								'Transaction sent!',
-								'success',
-							),
-						300,
-					);
-			}}
-			{balance}
-			on:balance={e => (balance = e.detail)}
-		/>
+		{#key modalStudent}
+			<CreateTransaction
+				modal="true"
+				student={modalStudent}
+				class="w-full"
+				on:close={e => {
+					showModal = false;
+					if (e && e.detail == true)
+						setTimeout(
+							() =>
+								toastContainer.toast(
+									'Transaction sent!',
+									'success',
+								),
+							300,
+						);
+				}}
+				{balance}
+				on:balance={e => (balance = e.detail)}
+			/>
+		{/key}
 	</div>
 </label>
 {#if showPermsModal}

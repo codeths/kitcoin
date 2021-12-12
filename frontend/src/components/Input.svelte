@@ -24,7 +24,7 @@
 		if (input && type !== 'textarea') {
 			input.type = type;
 		}
-		if (focus) input.focus();
+		if (focus) setTimeout(() => input.focus(), 0);
 	});
 </script>
 
