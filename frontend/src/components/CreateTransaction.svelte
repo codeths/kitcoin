@@ -177,7 +177,7 @@
 	<div
 		class="flex items-center space-x-2 {modal
 			? 'justify-end'
-			: 'justify-start'}"
+			: 'justify-start mt-4'}"
 	>
 		<button
 			on:click={send}
