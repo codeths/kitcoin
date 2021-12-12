@@ -9,6 +9,8 @@
 	let userInfo;
 	let current = $url() || '/';
 
+	let homePath = '/';
+
 	onMount(async () => {
 		userInfo = (await ctx) || null;
 		const roles = userInfo?.roles || [];
@@ -16,6 +18,7 @@
 		if (roles.includes('STAFF')) homes.push(['Staff Home', '/staff']);
 		if (roles.includes('STUDENT')) homes.push(['Student Home', '/student']);
 		links.push(['Home', (homes[0] || [, '/'])[1]]);
+		homePath = links[0][1];
 
 		links.push(['Store', '/store']);
 
@@ -32,7 +35,7 @@
 		<div class="drawer-content flex flex-col">
 			<div class="navbar w-full bg-blue-eths text-white p-3 shadow-xl">
 				<div class="navbar-start">
-					<a href="/" class="mx-2">
+					<a href={homePath} class="mx-2">
 						<h2 class="text-4xl">
 							<span class="icon-logo mr-1" />Kitcoin
 						</h2></a
