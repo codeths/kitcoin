@@ -28,7 +28,7 @@
 	});
 </script>
 
-<div class="my-2">
+<div>
 	<label class="label" for="">
 		<span class="label-text"> {label} </span>
 	</label>
