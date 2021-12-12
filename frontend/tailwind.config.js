@@ -24,9 +24,9 @@ module.exports = {
 		'hover:bg-red-700',
 		'hover:bg-green-700',
 		'disabled:bg-gray-400',
-		'alert-success',
-		'alert-warning',
-		'alert-error',
+		'bg-success/80',
+		'bg-warning/80',
+		'bg-error/80',
 	], // If you add a class but it never shows up in the build, add it here
 	theme: {
 		extend: {
