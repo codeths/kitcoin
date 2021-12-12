@@ -25,6 +25,12 @@
 		homes = homes;
 		links = links;
 	});
+
+	function formatLink(link) {
+		if (link == '/') return '/index';
+
+		return link;
+	}
 </script>
 
 <SetBodyStyle class="bg-base-100" />
@@ -45,7 +51,7 @@
 							<a
 								class="btn btn-ghost !bg-transparent !outline-none btn-sm text-xl font-medium nav-link"
 								target={navigate ? '_self' : null}
-								class:active={$isActive(link)}
+								class:active={$isActive(formatLink(link))}
 								href={link}>{text}</a
 							>
 						{/each}
@@ -75,8 +81,9 @@
 													? '!cursor-not-allowed bg-base-300 hover:active:bg-base-300'
 													: ''}"
 												href={link}
-												disabled={$isActive(link)}
-												>{text}</a
+												disabled={$isActive(
+													formatLink(link),
+												)}>{text}</a
 											>
 										</li>
 									{/each}
@@ -127,7 +134,7 @@
 					{#each links as [text, link, navigate]}
 						<li>
 							<a
-								class:bg-base-300={$isActive(link)}
+								class:bg-base-300={$isActive(formatLink(link))}
 								target={navigate ? '_self' : null}
 								href={link}>{text}</a
 							>
@@ -141,11 +148,14 @@
 							{#each homes as [text, link]}
 								<li>
 									<a
-										class="px-3 py-1 {$isActive(link)
+										class="px-3 py-1 {$isActive(
+											formatLink(link),
+										)
 											? '!cursor-not-allowed bg-base-300 hover:active:bg-base-300'
 											: ''}"
 										href={link}
-										disabled={$isActive(link)}>{text}</a
+										disabled={$isActive(formatLink(link))}
+										>{text}</a
 									>
 								</li>
 							{/each}
