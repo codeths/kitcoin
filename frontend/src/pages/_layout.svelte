@@ -35,7 +35,7 @@
 <div class="drawer h-screen">
 	<input id="nav-drawer" type="checkbox" class="drawer-toggle" />
 	<div class="drawer-content flex flex-col">
-		<div class="navbar w-full bg-blue-eths text-white p-3 shadow-xl">
+		<div class="navbar w-full bg-blue-eths text-white p-3 shadow-xl h-16">
 			<div class="navbar-start">
 				<a href={homePath} class="mx-2">
 					<h2 class="text-4xl">
@@ -106,7 +106,7 @@
 				</div>
 			</div>
 		</div>
-		<div>
+		<div class="flex grow relative">
 			<slot decorator={_transition} />
 		</div>
 	</div>
