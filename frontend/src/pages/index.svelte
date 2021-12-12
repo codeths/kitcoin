@@ -4,14 +4,16 @@
 	metatags.title = 'Kitcoin';
 </script>
 
-<div class="m-8">
-	<h1>Welcome to Kitcoin!</h1>
-	<br />
-	<p>This is a placeholder page so there isn't a 404 when you go to /</p>
-	<br />
-	<p>
-		Current pages (click to visit): <a href="/student">Student</a>|<a
-			href="/staff">Staff</a
-		>|<a href="/store">Store</a> (currently blank)
-	</p>
+<div class="hero absolute min-h-full">
+	<div class="text-center hero-content">
+		<div class="max-w-md">
+			<h1 class="mb-5 text-5xl font-bold">Kitcoin</h1>
+			<p class="mb-5">
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce
+				luctus diam eget ligula posuere blandit. Proin placerat nisl
+				dolor, vitae tempus elit euismod at.
+			</p>
+			<a class="btn btn-primary" href="/signin">Sign In</a>
+		</div>
+	</div>
 </div>
