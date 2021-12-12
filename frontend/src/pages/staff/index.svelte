@@ -44,82 +44,86 @@
 </script>
 
 <!-- Content -->
-<div class="grid gap-4 grid-cols-4 mx-14 my-8 lg:mx-24 lg:my-14">
-	<div class="col-span-4 md:col-span-2">
-		<h1 class="text-3xl font-medium mb-2">Send Kitcoin</h1>
-		<div class="bg-base-200 shadow-md rounded px-8 py-8">
-			<CreateTransaction
-				{balance}
-				on:balance={e => (balance = e.detail)}
-			/>
-		</div>
-	</div>
-	<div class="col-span-4 md:col-span-2">
-		<h1 class="text-3xl font-medium mb-2">Available Kitcoin</h1>
-		<div class="lg:col-span-2 sm:max-w-sm lg:max-w-none">
-			<div
-				class="flex bg-base-200 shadow-md rounded py-10 min-h-40 border-t-8 border-blue-eths"
-			>
-				<h1
-					class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full h-full"
-				>
-					{#if typeof balance == 'number'}
-						<span
-							class="icon-currency mr-3"
-						/>{balance.toLocaleString([], {
-							minimumFractionDigits: 2,
-							maximumFractionDigits: 2,
-						})}
-					{:else if balance}
-						{balance}
-					{:else}
-						<Loading height="2rem" />
-					{/if}
-				</h1>
+<div class="m-8">
+	<div class="lg:grid lg:grid-cols-12">
+		<div class="lg:col-span-7 lg:mx-2 my-4">
+			<h1 class="text-3xl font-medium mb-2">Send Kitcoin</h1>
+			<div class="bg-base-200 shadow-md rounded px-8 py-8">
+				<CreateTransaction
+					{balance}
+					on:balance={e => (balance = e.detail)}
+				/>
 			</div>
 		</div>
-	</div>
-	<div class="col-span-4">
-		<div class="bg-base-200 shadow-md rounded px-8 py-8">
-			<select
-				bind:value={selectedClass}
-				class="select select-bordered w-full mb-4"
-			>
-				<option disabled value="" selected>
-					{selectMsg}
-				</option>
-				{#each classList as classroom}
-					<option value={classroom.id}>
-						{classroom.name}
+		<div class="lg:col-span-5 lg:mx-2 my-4">
+			<h1 class="text-3xl font-medium mb-2">Available Kitcoin</h1>
+			<div class="lg:col-span-2 sm:max-w-sm lg:max-w-none">
+				<div
+					class="flex bg-base-200 shadow-md rounded py-10 min-h-40 border-t-8 border-blue-eths"
+				>
+					<h1
+						class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full h-full"
+					>
+						{#if typeof balance == 'number'}
+							<span
+								class="icon-currency mr-3"
+							/>{balance.toLocaleString([], {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2,
+							})}
+						{:else if balance}
+							{balance}
+						{:else}
+							<Loading height="2rem" />
+						{/if}
+					</h1>
+				</div>
+			</div>
+		</div>
+		<div class="lg:col-span-12 lg:mx-2 my-4">
+			<div class="bg-base-200 shadow-md rounded px-8 py-8">
+				<select
+					bind:value={selectedClass}
+					class="select select-bordered w-full mb-4"
+				>
+					<option disabled value="" selected>
+						{selectMsg}
 					</option>
-				{/each}
-			</select>
-			{#if selectedClass}
-				{#await getClassStudents(selectedClass)}
-					<span
-						class="text-center text-1xl sm:text-3xl xl:text-4xl font-medium inline-block w-full"
-					>
-						Loading students...
-					</span>
-				{:then students}
-					<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-						{#each students.sort( (a, b) => a.name.localeCompare(b.name), ) as student}
-							<label
-								for="studentmodal"
-								class="w-auto btn btn-neutral btn-outline mx-4 my-2"
-								on:click={() => (modalStudent = student)}
-								>{student.name}</label
-							>
-						{/each}
-					</div>
-				{:catch error}
-					<span
-						class="text-center text-1xl sm:text-3xl xl:text-4xl font-medium inline-block w-full"
-					>
-						{error}
-					</span>
-				{/await}
-			{/if}
+					{#each classList as classroom}
+						<option value={classroom.id}>
+							{classroom.name}
+						</option>
+					{/each}
+				</select>
+				{#if selectedClass}
+					{#await getClassStudents(selectedClass)}
+						<span
+							class="text-center text-1xl sm:text-3xl xl:text-4xl font-medium inline-block w-full"
+						>
+							Loading students...
+						</span>
+					{:then students}
+						<div
+							class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+						>
+							{#each students.sort( (a, b) => a.name.localeCompare(b.name), ) as student}
+								<label
+									for="studentmodal"
+									class="w-auto btn btn-neutral btn-outline mx-4 my-2"
+									on:click={() => (modalStudent = student)}
+									>{student.name}</label
+								>
+							{/each}
+						</div>
+					{:catch error}
+						<span
+							class="text-center text-1xl sm:text-3xl xl:text-4xl font-medium inline-block w-full"
+						>
+							{error}
+						</span>
+					{/await}
+				{/if}
+			</div>
 		</div>
 	</div>
 </div>

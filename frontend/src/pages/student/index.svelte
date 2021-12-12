@@ -36,7 +36,7 @@
 <!-- Content-->
 <div class="m-8">
 	<div class="lg:grid lg:grid-cols-12">
-		<div class="lg:col-span-4 sm:max-w-sm lg:max-w-none my-8 lg:mx-2">
+		<div class="lg:col-span-4 sm:max-w-sm lg:max-w-none my-4 lg:mx-2">
 			<h1 class="text-3xl font-medium mb-2">Balance</h1>
 			<div
 				class="flex bg-base-200 shadow-md rounded py-10 min-h-40 border-t-8 border-blue-eths"
@@ -59,13 +59,13 @@
 				</h1>
 			</div>
 		</div>
-		<div class="lg:col-span-8 my-8 lg:mx-2">
+		<div class="lg:col-span-8 my-4 lg:mx-2">
 			<h1 class="text-3xl font-medium mb-2">What's new</h1>
 			<div class="bg-base-200 shadow-md rounded">
 				<ItemDisplay items={newItems} />
 			</div>
 		</div>
-		<div class="lg:col-span-12 my-8 lg:mx-2">
+		<div class="lg:col-span-12 my-4 lg:mx-2">
 			<h1 class="text-4xl font-medium mb-2">Transaction History</h1>
 			<div>
 				<Transactions />
