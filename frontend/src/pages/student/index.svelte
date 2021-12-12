@@ -34,7 +34,7 @@
 </script>
 
 <!-- Content-->
-<div class="m-8">
+<div class="mx-8 my-4">
 	<div class="lg:grid lg:grid-cols-12">
 		<div class="lg:col-span-4 sm:max-w-sm lg:max-w-none my-4 lg:mx-2">
 			<h1 class="text-3xl font-medium mb-2">Balance</h1>

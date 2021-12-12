@@ -44,7 +44,7 @@
 </script>
 
 <!-- Content -->
-<div class="m-8">
+<div class="mx-8 my-4">
 	<div class="lg:grid lg:grid-cols-12">
 		<div class="lg:col-span-7 lg:mx-2 my-4">
 			<h1 class="text-3xl font-medium mb-2">Send Kitcoin</h1>
