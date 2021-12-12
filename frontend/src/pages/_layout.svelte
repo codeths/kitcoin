@@ -1,13 +1,13 @@
 <script>
 	import {getContext, onMount} from 'svelte';
-	import {url} from '@roxi/routify';
+	import {isActive} from '@roxi/routify';
 	import SetBodyStyle from '../utils/SetBodyStyle.svelte';
+	import _transition from './_transition.svelte';
 
 	let links = [];
 	let homes = [];
 	let ctx = getContext('userInfo');
 	let userInfo;
-	let current = $url() || '/';
 
 	let homePath = '/';
 
@@ -45,7 +45,7 @@
 							<a
 								class="btn btn-ghost !bg-transparent !outline-none btn-sm text-xl font-medium nav-link"
 								target={navigate ? '_self' : null}
-								class:active={link == current}
+								class:active={$isActive(link)}
 								href={link}>{text}</a
 							>
 						{/each}
@@ -69,12 +69,13 @@
 									{#each homes as [text, link]}
 										<li>
 											<a
-												class="px-3 py-1 {link ==
-												current
+												class="px-3 py-1 {$isActive(
+													link,
+												)
 													? '!cursor-not-allowed bg-base-300 hover:active:bg-base-300'
 													: ''}"
 												href={link}
-												disabled={link == current}
+												disabled={$isActive(link)}
 												>{text}</a
 											>
 										</li>
@@ -109,7 +110,9 @@
 					</div>
 				</div>
 			</div>
-			<slot />
+			<div>
+				<slot decorator={_transition} />
+			</div>
 		</div>
 		<div class="drawer-side">
 			<label for="nav-drawer" class="drawer-overlay" />
@@ -124,7 +127,7 @@
 					{#each links as [text, link, navigate]}
 						<li>
 							<a
-								class:bg-base-300={link == current}
+								class:bg-base-300={$isActive(link)}
 								target={navigate ? '_self' : null}
 								href={link}>{text}</a
 							>
@@ -138,11 +141,11 @@
 							{#each homes as [text, link]}
 								<li>
 									<a
-										class="px-3 py-1 {link == current
+										class="px-3 py-1 {$isActive(link)
 											? '!cursor-not-allowed bg-base-300 hover:active:bg-base-300'
 											: ''}"
 										href={link}
-										disabled={link == current}>{text}</a
+										disabled={$isActive(link)}>{text}</a
 									>
 								</li>
 							{/each}
