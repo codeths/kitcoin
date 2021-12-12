@@ -1,4 +1,4 @@
-# KitCoin
+# Kitcoin
 
 ## Install
 
