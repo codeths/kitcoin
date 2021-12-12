@@ -77,7 +77,7 @@
 							target="_self">Sign in</a
 						> to view your private stores.
 					{:else if authMsg == 'CLASSROOM'}
-						KitCoin is unable to access your Google Classroom
+						Kitcoin is unable to access your Google Classroom
 						classes. <a
 							href="/signin?redirect={encodeURIComponent(
 								window.location.pathname,

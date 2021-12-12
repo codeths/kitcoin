@@ -46,7 +46,7 @@
 <!-- Content -->
 <div class="grid gap-4 grid-cols-4 mx-14 my-8 lg:mx-24 lg:my-14">
 	<div class="col-span-4 md:col-span-2">
-		<h1 class="text-3xl font-medium mb-2">Send KitCoin</h1>
+		<h1 class="text-3xl font-medium mb-2">Send Kitcoin</h1>
 		<div class="bg-base-200 shadow-md rounded px-8 py-8">
 			<CreateTransaction
 				{balance}
@@ -55,7 +55,7 @@
 		</div>
 	</div>
 	<div class="col-span-4 md:col-span-2">
-		<h1 class="text-3xl font-medium mb-2">Available KitCoin</h1>
+		<h1 class="text-3xl font-medium mb-2">Available Kitcoin</h1>
 		<div class="lg:col-span-2 sm:max-w-sm lg:max-w-none">
 			<div
 				class="flex bg-base-200 shadow-md rounded py-10 min-h-40 border-t-8 border-blue-eths"
@@ -133,7 +133,7 @@
 <label class="modal" for="studentmodal">
 	<div class="modal-box">
 		<h2 class="text-2xl text-medium mb-4">
-			Send KitCoin to {modalStudent?.name}
+			Send Kitcoin to {modalStudent?.name}
 		</h2>
 		<CreateTransaction
 			modal="true"
@@ -161,7 +161,7 @@
 		<div class="modal-box">
 			<h2 class="text-2xl text-medium mb-4">Missing Permissions</h2>
 			<p>
-				KitCoin is unable to access your Google Classroom classes.
+				Kitcoin is unable to access your Google Classroom classes.
 				Please log in again using the button below and make sure to
 				click these checkboxes:
 			</p>

@@ -5,7 +5,7 @@
 </script>
 
 <div class="m-8">
-	<h1>Welcome to KitCoin!</h1>
+	<h1>Welcome to Kitcoin!</h1>
 	<br />
 	<p>This is a placeholder page so there isn't a 404 when you go to /</p>
 	<br />
