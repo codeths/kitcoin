@@ -278,6 +278,10 @@ export interface IStoreItem {
 	 */
 	description?: string;
 	price: number;
+	/**
+	 * Hash of the item's image
+	 */
+	imageHash: string | null;
 }
 
 export type IStoreItemDoc = IStoreItem & IStoreItemMethods & Document<IUser>;

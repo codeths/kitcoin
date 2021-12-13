@@ -3,6 +3,7 @@ import jimp from 'jimp';
 import {FilterQuery} from 'mongoose';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import {ClassroomClient} from '../../../helpers/classroom';
 import {
 	numberFromData,
@@ -253,6 +254,7 @@ router.get(
 				description: i.description,
 				quantity: i.quantity,
 				price: i.price,
+				imageHash: i.imageHash,
 			})),
 		});
 	},
@@ -312,6 +314,7 @@ router.get(
 			description: item.description,
 			quantity: item.quantity,
 			price: item.price,
+			imageHash: item.imageHash,
 		});
 	},
 );
@@ -451,10 +454,17 @@ router.patch(
 				if (!image) return;
 			}
 
+			const hashSum = crypto.createHash('sha256');
+			hashSum.update(image);
+			const hash = hashSum.digest('hex');
+
 			fs.writeFileSync(
 				path.resolve('uploads', 'storeitems', `${item._id}.png`),
 				image,
 			);
+
+			item.imageHash = hash;
+			await item.save();
 			return res.status(200).send();
 		} catch (e) {
 			try {

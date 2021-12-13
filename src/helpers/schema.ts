@@ -239,6 +239,7 @@ const storeItemSchema = new mongoose.Schema<IStoreItemDoc, IStoreItemModel>({
 	quantity: Number,
 	description: {type: String, default: ''},
 	price: Number,
+	imageHash: String,
 });
 
 storeItemSchema.query.byStoreID = function (storeID: string): IStoreItemsQuery {
