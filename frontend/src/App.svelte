@@ -63,6 +63,19 @@
 		'/staff': 'STAFF',
 		'/student': 'STUDENT',
 	};
+
+	window.addEventListener(
+		'dragover',
+		e =>
+			!(e.target && e.target.classList.contains('filedrop')) &&
+			e.preventDefault(),
+	);
+	window.addEventListener(
+		'drop',
+		e =>
+			!(e.target && e.target.classList.contains('filedrop')) &&
+			e.preventDefault(),
+	);
 </script>
 
 <Router {routes} />
