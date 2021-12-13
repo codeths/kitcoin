@@ -265,7 +265,7 @@
 					type: 'blur',
 				});
 			});
-			editToggle.checked = false;
+			editToggle = false;
 			setTimeout(
 				() =>
 					toastContainer.toast(
@@ -295,7 +295,7 @@
 			method: 'DELETE',
 		}).catch(() => null);
 
-		editToggle.checked = false;
+		editToggle = false;
 		submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
 		Object.keys(values).forEach(x => {
 			values[x] = null;
@@ -324,6 +324,15 @@
 
 		load();
 	}
+
+	window.addEventListener('keydown', e => {
+		if (
+			e.key == 'Escape' &&
+			editToggle &&
+			confirm('Are you sure you want to close this?')
+		)
+			editToggle = false;
+	});
 </script>
 
 <!-- Content -->
@@ -505,7 +514,7 @@
 	type="checkbox"
 	id="editmodal"
 	class="modal-toggle"
-	bind:this={editToggle}
+	bind:checked={editToggle}
 />
 <div class="modal">
 	<div class="modal-box">
@@ -613,7 +622,8 @@
 						for="editmodal"
 						class="btn px-12"
 						on:click={e =>
-							!confirm('Are you sure?') && e.preventDefault()}
+							!confirm('Are you sure you want to close this?') &&
+							e.preventDefault()}
 					>
 						Close
 					</label>
