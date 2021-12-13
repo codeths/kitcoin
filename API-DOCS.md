@@ -164,6 +164,7 @@ Get a list of a store's items
 	description: string;
 	quantity: number | null;
 	price: number;
+	imageHash: string | null;
 }
 [];
 ```
@@ -186,6 +187,7 @@ Get a store's item by its ID
 	description: string;
 	quantity: number | null;
 	price: number;
+	imageHash: string | null;
 }
 ```
 
@@ -224,6 +226,7 @@ Update a store's item
 	description: string;
 	quantity: number | null;
 	price: number;
+	imageHash: string | null;
 }
 ```
 
@@ -276,6 +279,7 @@ Create a store item
 	description: string;
 	quantity: number | null;
 	price: number;
+	imageHash: null;
 }
 ```
 
