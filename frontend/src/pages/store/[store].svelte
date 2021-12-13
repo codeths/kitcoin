@@ -189,11 +189,27 @@
 	}
 
 	let resetTimeout;
+	let imageUpload;
+	let imageUploadDrag = false;
+
+	$: {
+		if (imageUpload && imageUpload[0]) {
+			if (imageUpload[0].size > 5 * 1024 * 1024) {
+				alert('Image must be less than 5MB');
+				imageUpload = null;
+			} else if (
+				!['image/png', 'image/jpeg'].includes(imageUpload[0].type)
+			) {
+				alert('Image must be a PNG or JPEG');
+				imageUpload = null;
+			}
+		}
+	}
 	async function manageItems(e) {
 		e.preventDefault();
 		if (hasError) return false;
 		submitStatus = 'LOADING';
-		const res = await fetch(
+		let res = await fetch(
 			editItem
 				? `/api/store/${storeID}/item/${editItem ? editItem._id : ''}`
 				: `/api/store/${storeID}/items`,
@@ -211,7 +227,27 @@
 			},
 		).catch(() => null);
 
-		submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
+		let json = res && res.ok ? await res.json() : null;
+
+		let imageRes;
+		if (imageUpload && imageUpload[0] && json) {
+			imageRes = await fetch(
+				`/api/store/${storeID}/item/${json._id}/image`,
+				{
+					method: 'PATCH',
+					body: imageUpload[0],
+				},
+			).catch(() => null);
+		}
+
+		if (imageRes && imageRes.ok) json = await imageRes.json();
+
+		submitStatus =
+			res &&
+			res.ok &&
+			(!imageUpload || !imageUpload[0] || (imageRes && imageRes.ok))
+				? 'SUCCESS'
+				: 'ERROR';
 		if (submitStatus == 'SUCCESS') {
 			Object.keys(values).forEach(x => {
 				values[x] = null;
@@ -424,7 +460,7 @@
 	class="modal-toggle"
 	bind:this={editToggle}
 />
-<label class="modal" for="editmodal">
+<div class="modal">
 	<div class="modal-box">
 		<h2 class="text-2xl text-medium mb-4">
 			{editItem ? `Edit ${editItem.name}` : 'Create item'}
@@ -463,9 +499,38 @@
 				bind:valid={valid.quantity}
 				on:validate={e => validate('quantity', e.detail)}
 			/>
+			<label class="label" for="">
+				Image (optional) - PNG or JPEG, max 5MB
+			</label>
+			<label
+				for="fileinput"
+				class="btn btn-primary relative cursor-pointer w-full"
+				>{imageUploadDrag
+					? 'Drop file to upload'
+					: imageUpload && imageUpload[0]
+					? imageUpload[0].name
+					: 'Select a file or drag one here'}
+				<input
+					type="file"
+					id="fileinput"
+					class="absolute top-0 right-0 bottom-0 left-0 opacity-0 w-full h-full"
+					bind:files={imageUpload}
+					on:dragenter={() => (imageUploadDrag = true)}
+					on:dragleave={() => (imageUploadDrag = false)}
+					on:drop={() => (imageUploadDrag = false)}
+					accept="image/png image/jpeg"
+				/></label
+			>
 			<div class="divider" />
 			<div class="flex items-center space-x-2 justify-end">
-				<label for="editmodal" class="btn px-12"> Close </label>
+				<label
+					for="editmodal"
+					class="btn px-12"
+					on:click={e =>
+						!confirm('Are you sure?') && e.preventDefault()}
+				>
+					Close
+				</label>
 				<button
 					on:click={manageItems}
 					disabled={submitStatus || hasError}
@@ -490,6 +555,6 @@
 			</div>
 		{/key}
 	</div>
-</label>
+</div>
 
 <ToastContainer bind:this={toastContainer} />
