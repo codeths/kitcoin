@@ -2,6 +2,9 @@
 	import {params, url, metatags} from '@roxi/routify';
 	import {getContext} from 'svelte';
 	import Loading from '../../components/Loading.svelte';
+	import Input from '../../components/Input.svelte';
+	import ToastContainer from '../../components/ToastContainer.svelte';
+	let toastContainer;
 	import {storeInfo, getStores, getItems} from '../../utils/store.js';
 	import {getBalance} from '../../utils/api.js';
 
@@ -67,11 +70,7 @@
 				page || currentPage,
 				useCache,
 			);
-			items = {
-				...newItems,
-				items: items ? [] : newItems.items,
-			};
-			setTimeout(() => (items = newItems), 0);
+			items = newItems;
 			if (items.page < items.pageCount)
 				getItems(storeID, items.page + 1, true);
 			loading = false;
@@ -88,16 +87,170 @@
 	(async () => {
 		balance = await getBalance().catch(e => null);
 	})();
+
+	let values = {
+		name: null,
+		description: null,
+		price: null,
+		quantity: null,
+	};
+
+	let errors = {
+		name: null,
+		description: null,
+		price: null,
+		quantity: null,
+	};
+
+	let valid = {
+		name: null,
+		description: null,
+		price: null,
+		quantity: null,
+	};
+
+	let inputs = {};
+
+	let hasError = true;
+
+	$: {
+		hasError = Object.values(valid).some(v => !v);
+	}
+
+	let formValidators = {
+		name: e => {
+			let v = e.value;
+			if (!v) return e && e.type == 'blur' ? 'Name is required' : '';
+			return null;
+		},
+		description: e => {
+			let v = e.value;
+			return null;
+		},
+		price: e => {
+			let v = e.value;
+			if (!v) return e.type == 'blur' ? 'Price is required' : '';
+			let num = parseFloat(v);
+			if (isNaN(num)) return 'Price must be an number';
+			if (Math.round(num * 100) / 100 !== num)
+				return 'Price cannot have more than 2 decimal places';
+			if (num <= 0) return 'Price must be greater than 0';
+
+			return null;
+		},
+		quantity: e => {
+			let v = e.value;
+			if (!v) return null;
+			let num = parseFloat(v);
+			if (isNaN(num))
+				return e.type == 'focus' ? 'Quantity must be an number' : '';
+			if (Math.round(num) !== num)
+				return e.type == 'focus'
+					? 'Quantity must be a while number'
+					: '';
+			if (num <= 0)
+				return e.type == 'focus'
+					? 'Quantity must be greater than 0'
+					: '';
+
+			return null;
+		},
+	};
+
+	let submitStatus = null;
+	let loadTimeout;
+
+	function validate(which, event) {
+		clearTimeout(loadTimeout);
+		submitStatus = null;
+		let res = formValidators[which](event);
+
+		values[which] = event.value;
+		errors[which] = res;
+		valid[which] = res == null;
+	}
+
+	let editItem, editToggle;
+
+	function itemModal(item) {
+		editItem = item;
+		if (item) {
+			values.name = item.name;
+			values.description = item.description;
+			values.price = item.price;
+			values.quantity = item.quantity;
+		} else {
+			Object.keys(values).forEach(k => (values[k] = null));
+		}
+
+		Object.keys(values).forEach(k =>
+			validate(k, {type: 'focus', value: values[k]}),
+		);
+	}
+
+	let resetTimeout;
+	async function manageItems(e) {
+		e.preventDefault();
+		if (hasError) return false;
+		submitStatus = 'LOADING';
+		const res = await fetch(
+			editItem
+				? `/api/store/${storeID}/item/${editItem ? editItem._id : ''}`
+				: `/api/store/${storeID}/items`,
+			{
+				method: editItem ? 'PATCH' : 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					name: values.name,
+					description: values.description || null,
+					price: parseFloat(values.price),
+					quantity: parseFloat(values.quantity) || null,
+				}),
+			},
+		).catch(() => null);
+
+		submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
+		if (submitStatus == 'SUCCESS') {
+			Object.keys(values).forEach(x => {
+				values[x] = null;
+				errors[x] = null;
+				valid[x] = !formValidators[x]({
+					value: '',
+					type: 'blur',
+				});
+			});
+			editToggle.checked = false;
+			setTimeout(
+				() =>
+					toastContainer.toast(
+						editItem ? 'Item updated' : 'Item created',
+						'success',
+					),
+				300,
+			);
+
+			load();
+		} else {
+			clearTimeout(resetTimeout);
+			resetTimeout = setTimeout(() => {
+				submitStatus = null;
+			}, 3000);
+		}
+
+		return false;
+	}
 </script>
 
 <!-- Content -->
 <div class="flex flex-row flex-wrap justify-between items-center my-6">
-	<button
+	<a
 		href={$url('.')}
 		class="btn btn-primary inline-flex flex-col self-center my-4 w-auto mx-6"
 	>
 		Back to store list
-	</button>
+	</a>
 	{#if balance !== null}
 		<div
 			class="inline-flex flex-col self-center p-4 bg-base-200 rounded-lg mx-6 my-4"
@@ -113,11 +266,18 @@
 		</div>
 	{/if}
 </div>
-<div class="p-6">
+<div class="p-6 flex flex-col">
 	{#await getStore()}
 		<Loading height="2rem" />
 	{:then store}
 		<h2 class="text-4xl font-bold mb-6">{store.name}</h2>
+		{#if store.canManage}
+			<label
+				for="editmodal"
+				class="btn btn-primary self-end mb-4 modal-button"
+				on:click={() => itemModal()}>New Item</label
+			>
+		{/if}
 		{#if error || !items || !items.items || items.docCount == 0}
 			<h2 class="text-center">
 				{#if error}
@@ -134,9 +294,19 @@
 					<div
 						class="p-4 bg-base-200 shadow rounded-lg flex flex-col"
 					>
-						<p class="text-3xl font-semibold">
-							{item.name}
-						</p>
+						<div class="flex flex-row justify-between items-center">
+							<p class="inline-flex text-3xl font-semibold">
+								{item.name}
+							</p>
+							{#if store.canManage}
+								<label
+									for="editmodal"
+									class="inline-flex btn btn-circle btn-ghost text-3xl modal-button"
+									on:click={() => itemModal(item)}
+									><span class="icon-edit" /></label
+								>
+							{/if}
+						</div>
 						<p
 							class="text-2xl font-semibold {balance !== null &&
 							balance < item.price
@@ -156,13 +326,17 @@
 							</p>
 						{/if}
 						<p class="flex-grow" />
-						<img
-							class="store-item mt-6 object-contain max-h-80"
-							src="/api/store/{storeID}/item/{item._id}/image.png"
-							alt={item.name}
-							onload="this.style.display = ''"
-							onerror="this.style.display = 'none'"
-						/>
+						{#key item.imageHash}
+							{#if item.imageHash}
+								<img
+									class="store-item mt-6 object-contain max-h-80"
+									src="/api/store/{storeID}/item/{item._id}/image.png"
+									alt={item.name}
+									onload="this.style.display = ''"
+									onerror="this.style.display = 'none'"
+								/>
+							{/if}
+						{/key}
 					</div>
 				{/each}
 			</div>
@@ -243,3 +417,79 @@
 		{/if}
 	{/await}
 </div>
+
+<input
+	type="checkbox"
+	id="editmodal"
+	class="modal-toggle"
+	bind:this={editToggle}
+/>
+<label class="modal" for="editmodal">
+	<div class="modal-box">
+		<h2 class="text-2xl text-medium mb-4">
+			{editItem ? `Edit ${editItem.name}` : 'Create item'}
+		</h2>
+		{#key editItem}
+			<Input
+				label="Name"
+				bind:this={inputs.name}
+				bind:value={values.name}
+				bind:error={errors.name}
+				bind:valid={valid.name}
+				on:validate={e => validate('name', e.detail)}
+			/>
+			<Input
+				label="Description (optional)"
+				type="textarea"
+				bind:this={inputs.description}
+				bind:value={values.description}
+				bind:error={errors.description}
+				bind:valid={valid.description}
+				on:validate={e => validate('description', e.detail)}
+			/>
+			<Input
+				label="Price"
+				bind:this={inputs.price}
+				bind:value={values.price}
+				bind:error={errors.price}
+				bind:valid={valid.price}
+				on:validate={e => validate('price', e.detail)}
+			/>
+			<Input
+				label="Quantity (optional)"
+				bind:this={inputs.quantity}
+				bind:value={values.quantity}
+				bind:error={errors.quantity}
+				bind:valid={valid.quantity}
+				on:validate={e => validate('quantity', e.detail)}
+			/>
+			<div class="divider" />
+			<div class="flex items-center space-x-2 justify-end">
+				<label for="editmodal" class="btn px-12"> Close </label>
+				<button
+					on:click={manageItems}
+					disabled={submitStatus || hasError}
+					class="btn {submitStatus == 'ERROR'
+						? 'btn-error'
+						: 'btn-primary'} px-12 !pointer-events-auto disabled:cursor-not-allowed disabled:border-0"
+					class:!bg-base-300={hasError && !submitStatus}
+					class:hover:!bg-base-300={hasError && !submitStatus}
+					class:btn-active={submitStatus}
+					class:!text-primary-content={submitStatus}
+				>
+					{#if submitStatus == 'LOADING'}
+						<div class="px-2">
+							<Loading height="2rem" />
+						</div>
+					{:else if submitStatus == 'ERROR'}
+						Error
+					{:else}
+						{editItem ? 'Edit' : 'Create'}
+					{/if}
+				</button>
+			</div>
+		{/key}
+	</div>
+</label>
+
+<ToastContainer bind:this={toastContainer} />
