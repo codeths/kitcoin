@@ -644,6 +644,82 @@ router.delete(
 	},
 );
 
+router.delete(
+	'/store/:storeID/item/:id/image',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			validators: {
+				params: {
+					storeID: Validators.string,
+					id: Validators.string,
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			const {storeID, id} = req.params;
+
+			const store = await Store.findById(storeID)
+				.then(store => {
+					if (!store) {
+						res.status(404).send('Store not found');
+						return null;
+					}
+					return store;
+				})
+				.catch(() => {
+					res.status(400).send('Invalid ID');
+					return null;
+				});
+
+			if (!store) return;
+
+			const permissions = await getStorePerms(store, req.user);
+			if (!permissions.manage) return res.status(403).send('Forbidden');
+
+			const item = await StoreItem.findById(id)
+				.then(item => {
+					if (!item || item.storeID != storeID) {
+						res.status(404).send('Item not found');
+						return null;
+					}
+					return item;
+				})
+				.catch(() => {
+					res.status(400).send('Invalid ID');
+					return null;
+				});
+
+			if (!item) return;
+
+			try {
+				fs.rmSync(
+					path.resolve('uploads', 'storeitems', `${item._id}.png`),
+				);
+			} catch (e) {}
+
+			item.imageHash = null;
+			await item.save();
+			
+			return res.status(200).send({
+				_id: item._id,
+				name: item.name,
+				description: item.description,
+				quantity: item.quantity,
+				price: item.price,
+				imageHash: item.imageHash,
+			});
+		} catch (e) {
+			try {
+				res.status(500).send('Something went wrong.');
+			} catch (e) {}
+		}
+	},
+);
+
 router.post(
 	'/store/:storeID/items',
 	async (req, res, next) =>

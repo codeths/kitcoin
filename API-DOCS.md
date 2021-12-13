@@ -253,6 +253,15 @@ Delete store's item
 `:storeID` (path): Store ID  
 `:id` (path): Item ID
 
+## DELETE `/store/:storeID/item/:id/image`
+
+Delete store's item image
+
+### Request
+
+`:storeID` (path): Store ID  
+`:id` (path): Item ID
+
 ### Response
 
 Nothing
