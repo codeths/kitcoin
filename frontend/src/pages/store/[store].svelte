@@ -143,13 +143,13 @@
 			if (!v) return null;
 			let num = parseFloat(v);
 			if (isNaN(num))
-				return e.type == 'focus' ? 'Quantity must be an number' : '';
+				return e.type !== 'focus' ? 'Quantity must be an number' : '';
 			if (Math.round(num) !== num)
-				return e.type == 'focus'
+				return e.type !== 'focus'
 					? 'Quantity must be a while number'
 					: '';
 			if (num <= 0)
-				return e.type == 'focus'
+				return e.type !== 'focus'
 					? 'Quantity must be greater than 0'
 					: '';
 
