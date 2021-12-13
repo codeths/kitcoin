@@ -21,8 +21,8 @@
 	}
 </script>
 
-<div class="flex flex-col jusctify-center fixed right-0 top-0 m-4">
-	{#each toastArray as {style, body, timeout, id}}
+<div class="flex flex-col justify-center fixed right-0 top-0 m-4">
+	{#each toastArray as { style, body, timeout, id }}
 		<Toast {style} {body} {timeout} on:close={() => removeToast(id)} />
 	{/each}
 </div>
