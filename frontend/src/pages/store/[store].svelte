@@ -277,6 +277,45 @@
 
 		return false;
 	}
+
+	async function deleteItem() {
+		if (!confirm(`Are you sure you want to delete ${editItem.name}?`))
+			return;
+		submitStatus = 'LOADING';
+
+		let res = await fetch(`/api/store/${storeID}/item/${editItem._id}`, {
+			method: 'DELETE',
+		}).catch(() => null);
+
+		editToggle.checked = false;
+		submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
+		Object.keys(values).forEach(x => {
+			values[x] = null;
+			errors[x] = null;
+			valid[x] = !formValidators[x]({
+				value: '',
+				type: 'blur',
+			});
+		});
+		if (submitStatus == 'SUCCESS') {
+			setTimeout(
+				() =>
+					toastContainer.toast(
+						`${editItem.name} deleted.`,
+						'success',
+					),
+				300,
+			);
+		} else {
+			setTimeout(
+				() => toastContainer.toast('Error deleting item.', 'error'),
+				300,
+			);
+			return;
+		}
+
+		load();
+	}
 </script>
 
 <!-- Content -->
@@ -462,9 +501,19 @@
 />
 <div class="modal">
 	<div class="modal-box">
-		<h2 class="text-2xl text-medium mb-4">
-			{editItem ? `Edit ${editItem.name}` : 'Create item'}
-		</h2>
+		<div class="flex flex-row justify-between items-center mb-4">
+			<h2 class="inline-flex text-2xl text-medium">
+				{editItem ? `Edit ${editItem.name}` : 'Create item'}
+			</h2>
+			{#if editItem}
+				<button
+					class="inline-flex btn btn-circle btn-ghost text-3xl modal-button"
+					on:click={deleteItem}
+				>
+					<span class="icon-delete" />
+				</button>
+			{/if}
+		</div>
 		{#key editItem}
 			<Input
 				label="Name"
