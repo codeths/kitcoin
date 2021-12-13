@@ -465,7 +465,14 @@ router.patch(
 
 			item.imageHash = hash;
 			await item.save();
-			return res.status(200).send();
+			return res.status(200).send({
+				_id: item._id,
+				name: item.name,
+				description: item.description,
+				quantity: item.quantity,
+				price: item.price,
+				imageHash: item.imageHash,
+			});
 		} catch (e) {
 			try {
 				res.status(500).send('Something went wrong.');
@@ -553,6 +560,7 @@ router.patch(
 				description: item.description,
 				quantity: item.quantity,
 				price: item.price,
+				imageHash: item.imageHash,
 			});
 		} catch (e) {
 			try {
@@ -694,6 +702,7 @@ router.post(
 				description: item.description,
 				quantity: item.quantity,
 				price: item.price,
+				imageHash: item.imageHash,
 			});
 		} catch (e) {
 			try {
