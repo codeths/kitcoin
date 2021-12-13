@@ -182,6 +182,8 @@
 		} else {
 			Object.keys(values).forEach(k => (values[k] = null));
 		}
+		imageUploadValue = '';
+		deleteImage = false;
 
 		Object.keys(values).forEach(k =>
 			validate(k, {type: 'focus', value: values[k]}),
@@ -190,18 +192,20 @@
 
 	let resetTimeout;
 	let imageUpload;
+	let imageUploadValue;
+	let deleteImage;
 	let imageUploadDrag = false;
 
 	$: {
 		if (imageUpload && imageUpload[0]) {
 			if (imageUpload[0].size > 5 * 1024 * 1024) {
 				alert('Image must be less than 5MB');
-				imageUpload = null;
+				imageUploadValue = '';
 			} else if (
 				!['image/png', 'image/jpeg'].includes(imageUpload[0].type)
 			) {
 				alert('Image must be a PNG or JPEG');
-				imageUpload = null;
+				imageUploadValue = '';
 			}
 		}
 	}
@@ -230,12 +234,16 @@
 		let json = res && res.ok ? await res.json() : null;
 
 		let imageRes;
-		if (imageUpload && imageUpload[0] && json) {
+		if (
+			((imageUpload && imageUpload[0] && imageUploadValue) ||
+				deleteImage) &&
+			json
+		) {
 			imageRes = await fetch(
 				`/api/store/${storeID}/item/${json._id}/image`,
 				{
-					method: 'PATCH',
-					body: imageUpload[0],
+					method: deleteImage ? 'DELETE' : 'PATCH',
+					body: deleteImage ? null : imageUpload[0],
 				},
 			).catch(() => null);
 		}
@@ -552,25 +560,53 @@
 				<label class="label" for="">
 					Image (optional) - PNG or JPEG, max 5MB
 				</label>
-				<label
-					for="fileinput"
-					class="btn btn-primary relative cursor-pointer w-full"
-					>{imageUploadDrag
-						? 'Drop file to upload'
-						: imageUpload && imageUpload[0]
-						? imageUpload[0].name
-						: 'Select a file or drag one here'}
-					<input
-						type="file"
-						id="fileinput"
-						class="absolute top-0 right-0 bottom-0 left-0 opacity-0 w-full h-full filedrop"
-						bind:files={imageUpload}
-						on:dragenter={() => (imageUploadDrag = true)}
-						on:dragleave={() => (imageUploadDrag = false)}
-						on:drop={() => (imageUploadDrag = false)}
-						accept="image/png image/jpeg"
-					/></label
-				>
+				<div class="flex w-full">
+					<label
+						for="fileinput"
+						class="btn btn-primary relative cursor-pointer flex-grow"
+						>{imageUploadDrag
+							? 'Drop file to upload'
+							: imageUpload && imageUpload[0] && imageUploadValue
+							? imageUpload[0].name
+							: 'Select a file or drag one here'}
+						<input
+							type="file"
+							id="fileinput"
+							class="absolute top-0 right-0 bottom-0 left-0 opacity-0 w-full h-full filedrop"
+							bind:files={imageUpload}
+							bind:value={imageUploadValue}
+							on:dragenter={() => (imageUploadDrag = true)}
+							on:dragleave={() => (imageUploadDrag = false)}
+							on:drop={() => (imageUploadDrag = false)}
+							accept="image/png image/jpeg"
+						/></label
+					>
+					{#if imageUpload && imageUpload[0] && imageUploadValue}
+						<button
+							type="button"
+							class="btn btn-ghost text-3xl ml-2"
+							on:click={() => (imageUploadValue = '')}
+						>
+							<span class="icon-close" />
+						</button>
+					{/if}
+				</div>
+				{#if editItem && editItem.imageHash}
+					<div class="divider">OR</div>
+					<label class="cursor-pointer label justify-start ">
+						<input
+							type="checkbox"
+							class="checkbox checkbox-primary"
+							bind:value={deleteImage}
+							on:change={() => {
+								if (deleteImage) imageUploadValue = '';
+							}}
+						/>
+						<span class="label-text mx-2"
+							>Delete existing image</span
+						>
+					</label>
+				{/if}
 				<div class="divider" />
 				<div class="flex items-center space-x-2 justify-end">
 					<label
