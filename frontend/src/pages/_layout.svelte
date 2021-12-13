@@ -45,7 +45,7 @@
 				<div class="hidden md:flex mx-2 nav-links-parent">
 					{#each links as [text, link, navigate]}
 						<a
-							class="btn btn-ghost !bg-transparent !outline-none btn-sm text-xl font-medium nav-link"
+							class="btn btn-ghost rounded !bg-transparent btn-sm text-xl font-medium nav-link focus-visible:outline-webkit p-1 m-1 h-auto"
 							target={navigate ? '_self' : null}
 							class:active={$isActive(formatLink(link))}
 							href={link}>{text}</a

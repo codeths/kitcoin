@@ -43,16 +43,15 @@ span[class^='icon-']::before {
 		pointer-events: none;
 	}
 
-	.nav-links-parent:hover .nav-link:not(:hover)::after {
+	.nav-links-parent:hover .nav-link:not(:hover):not(:focus)::after,
+	.nav-links-parent:focus-within .nav-link:not(:hover):not(:focus)::after {
 		width: 0% !important;
 	}
 
 	.nav-link {
 		pointer-events: auto;
-		border-radius: 0;
-		padding: 0;
-		margin: 0.5rem;
 		position: relative;
+		box-shadow: none !important;
 	}
 
 	.nav-link.active:after {
@@ -72,7 +71,12 @@ span[class^='icon-']::before {
 		transition: width 0.5s;
 	}
 
-	.nav-link:hover:after {
+	.nav-link:hover:after,
+	.nav-link:focus:after {
 		width: 100%;
+	}
+
+	.outline-webkit {
+		outline: -webkit-focus-ring-color auto 1px !important;
 	}
 }
