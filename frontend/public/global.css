@@ -79,4 +79,8 @@ span[class^='icon-']::before {
 	.outline-webkit {
 		outline: -webkit-focus-ring-color auto 1px !important;
 	}
+
+	.modal-toggle {
+		position: fixed;
+	}
 }

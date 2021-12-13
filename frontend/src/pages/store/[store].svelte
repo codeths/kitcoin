@@ -515,93 +515,95 @@
 			{/if}
 		</div>
 		{#key editItem}
-			<Input
-				label="Name"
-				bind:this={inputs.name}
-				bind:value={values.name}
-				bind:error={errors.name}
-				bind:valid={valid.name}
-				on:validate={e => validate('name', e.detail)}
-			/>
-			<Input
-				label="Description (optional)"
-				type="textarea"
-				bind:this={inputs.description}
-				bind:value={values.description}
-				bind:error={errors.description}
-				bind:valid={valid.description}
-				on:validate={e => validate('description', e.detail)}
-			/>
-			<Input
-				label="Price"
-				bind:this={inputs.price}
-				bind:value={values.price}
-				bind:error={errors.price}
-				bind:valid={valid.price}
-				on:validate={e => validate('price', e.detail)}
-			/>
-			<Input
-				label="Quantity (optional)"
-				bind:this={inputs.quantity}
-				bind:value={values.quantity}
-				bind:error={errors.quantity}
-				bind:valid={valid.quantity}
-				on:validate={e => validate('quantity', e.detail)}
-			/>
-			<label class="label" for="">
-				Image (optional) - PNG or JPEG, max 5MB
-			</label>
-			<label
-				for="fileinput"
-				class="btn btn-primary relative cursor-pointer w-full"
-				>{imageUploadDrag
-					? 'Drop file to upload'
-					: imageUpload && imageUpload[0]
-					? imageUpload[0].name
-					: 'Select a file or drag one here'}
-				<input
-					type="file"
-					id="fileinput"
-					class="absolute top-0 right-0 bottom-0 left-0 opacity-0 w-full h-full"
-					bind:files={imageUpload}
-					on:dragenter={() => (imageUploadDrag = true)}
-					on:dragleave={() => (imageUploadDrag = false)}
-					on:drop={() => (imageUploadDrag = false)}
-					accept="image/png image/jpeg"
-				/></label
-			>
-			<div class="divider" />
-			<div class="flex items-center space-x-2 justify-end">
-				<label
-					for="editmodal"
-					class="btn px-12"
-					on:click={e =>
-						!confirm('Are you sure?') && e.preventDefault()}
-				>
-					Close
+			<form on:submit={manageItems}>
+				<Input
+					label="Name"
+					bind:this={inputs.name}
+					bind:value={values.name}
+					bind:error={errors.name}
+					bind:valid={valid.name}
+					on:validate={e => validate('name', e.detail)}
+				/>
+				<Input
+					label="Description (optional)"
+					type="textarea"
+					bind:this={inputs.description}
+					bind:value={values.description}
+					bind:error={errors.description}
+					bind:valid={valid.description}
+					on:validate={e => validate('description', e.detail)}
+				/>
+				<Input
+					label="Price"
+					bind:this={inputs.price}
+					bind:value={values.price}
+					bind:error={errors.price}
+					bind:valid={valid.price}
+					on:validate={e => validate('price', e.detail)}
+				/>
+				<Input
+					label="Quantity (optional)"
+					bind:this={inputs.quantity}
+					bind:value={values.quantity}
+					bind:error={errors.quantity}
+					bind:valid={valid.quantity}
+					on:validate={e => validate('quantity', e.detail)}
+				/>
+				<label class="label" for="">
+					Image (optional) - PNG or JPEG, max 5MB
 				</label>
-				<button
-					on:click={manageItems}
-					disabled={submitStatus || hasError}
-					class="btn {submitStatus == 'ERROR'
-						? 'btn-error'
-						: 'btn-primary'} px-12 !pointer-events-auto disabled:cursor-not-allowed disabled:border-0"
-					class:!bg-base-300={hasError && !submitStatus}
-					class:hover:!bg-base-300={hasError && !submitStatus}
-					class:btn-active={submitStatus}
-					class:!text-primary-content={submitStatus}
+				<label
+					for="fileinput"
+					class="btn btn-primary relative cursor-pointer w-full"
+					>{imageUploadDrag
+						? 'Drop file to upload'
+						: imageUpload && imageUpload[0]
+						? imageUpload[0].name
+						: 'Select a file or drag one here'}
+					<input
+						type="file"
+						id="fileinput"
+						class="absolute top-0 right-0 bottom-0 left-0 opacity-0 w-full h-full filedrop"
+						bind:files={imageUpload}
+						on:dragenter={() => (imageUploadDrag = true)}
+						on:dragleave={() => (imageUploadDrag = false)}
+						on:drop={() => (imageUploadDrag = false)}
+						accept="image/png image/jpeg"
+					/></label
 				>
-					{#if submitStatus == 'LOADING'}
-						<div class="px-2">
-							<Loading height="2rem" />
-						</div>
-					{:else if submitStatus == 'ERROR'}
-						Error
-					{:else}
-						{editItem ? 'Edit' : 'Create'}
-					{/if}
-				</button>
-			</div>
+				<div class="divider" />
+				<div class="flex items-center space-x-2 justify-end">
+					<label
+						for="editmodal"
+						class="btn px-12"
+						on:click={e =>
+							!confirm('Are you sure?') && e.preventDefault()}
+					>
+						Close
+					</label>
+					<button
+						on:click={manageItems}
+						disabled={submitStatus || hasError}
+						class="btn {submitStatus == 'ERROR'
+							? 'btn-error'
+							: 'btn-primary'} px-12 !pointer-events-auto disabled:cursor-not-allowed disabled:border-0"
+						class:!bg-base-300={hasError && !submitStatus}
+						class:hover:!bg-base-300={hasError && !submitStatus}
+						class:btn-active={submitStatus}
+						class:!text-primary-content={submitStatus}
+					>
+						{#if submitStatus == 'LOADING'}
+							<div class="px-2">
+								<Loading height="2rem" />
+							</div>
+						{:else if submitStatus == 'ERROR'}
+							Error
+						{:else}
+							{editItem ? 'Edit' : 'Create'}
+						{/if}
+					</button>
+				</div>
+			</form>
 		{/key}
 	</div>
 </div>
