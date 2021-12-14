@@ -13,7 +13,7 @@
 				luctus diam eget ligula posuere blandit. Proin placerat nisl
 				dolor, vitae tempus elit euismod at.
 			</p>
-			<a class="btn btn-primary" href="/signin">Sign In</a>
+			<a class="btn btn-primary" href="/signin" target="_self">Sign In</a>
 		</div>
 	</div>
 </div>
