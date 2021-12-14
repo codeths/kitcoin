@@ -10,7 +10,7 @@
 
 	if (timeout) {
 		setTimeout(() => {
-			toast.style.transform = 'translateX(calc(100% + 1rem))';
+			if (toast) toast.style.transform = 'translateX(calc(100% + 1rem))';
 			setTimeout(() => {
 				dispatch('close');
 			}, 300);
