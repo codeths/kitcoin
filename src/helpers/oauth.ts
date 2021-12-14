@@ -66,10 +66,12 @@ async function getAccessToken(
 
 function getAuthURL({
 	redirect,
+	state,
 	scopes = OAUTH_SCOPES.STUDENT,
 	user,
 	prompt = 'consent',
 }: {
+	state: string;
 	redirect: string;
 	scopes?: string[] | ScopeType;
 	user?: string | undefined;
@@ -80,6 +82,7 @@ function getAuthURL({
 	return auth.generateAuthUrl({
 		access_type: 'offline',
 		scope: scopes,
+		state,
 		redirect_uri: redirect,
 		prompt,
 		include_granted_scopes: true,

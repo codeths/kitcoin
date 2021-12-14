@@ -15,6 +15,7 @@ const ALLOWED_REDIRECTS: (string | RegExp)[] = [
 	'/staff',
 	'/admin',
 	'/store',
+	'/home',
 	'/',
 	/\/store\/\w+/,
 ];
@@ -34,9 +35,9 @@ function handleLogin(
 		redirect?: true | string | undefined;
 	} = {},
 ) {
-	res.clearCookie('redirect');
 	if (!redirect && typeof req.query.redirect == 'string')
 		redirect = decodeURIComponent(req.query.redirect).toLowerCase();
+	if (redirect === true) redirect = req.path;
 	if (
 		redirect &&
 		typeof redirect === 'string' &&
@@ -48,17 +49,14 @@ function handleLogin(
 	)
 		redirect = undefined;
 
-	res.clearCookie('redirect');
-	if (redirect)
-		res.cookie(
-			'redirect',
-			encodeURIComponent(redirect == true ? req.path : redirect),
-			{
-				maxAge: 1000 * 60 * 5,
-			},
-		);
+	res.clearCookie('state');
+	let state = `${crypto.randomBytes(8).toString('hex')}-${encodeURIComponent(
+		redirect || '/',
+	)}`;
+	res.cookie('state', state);
 	res.redirect(
 		getAuthURL({
+			state,
 			redirect: getRedirectUrl(req),
 			scopes,
 			prompt,
@@ -115,6 +113,33 @@ router.get('/cbk', async (req, res) => {
 	if (!code || typeof code !== 'string')
 		return res.status(400).send('Missing code');
 
+	const cookieState = req.cookies.state;
+	const reqState = req.query.state;
+	let [, redirect] = (
+		(typeof cookieState == 'string' && cookieState) ||
+		(typeof reqState == 'string' && reqState) ||
+		''
+	).split('-');
+	if (redirect) redirect = decodeURIComponent(redirect);
+	if (
+		!redirect ||
+		!ALLOWED_REDIRECTS.some(r =>
+			r instanceof RegExp
+				? new RegExp(`^${r.source}$`).test(redirect as string)
+				: r === redirect,
+		)
+	)
+		redirect = '/';
+
+	if (!reqState || typeof reqState !== 'string')
+		return res
+			.status(400)
+			.redirect(`/auth/login?redirect=${encodeURIComponent(redirect)}`);
+	if (reqState !== cookieState)
+		return res
+			.status(403)
+			.redirect(`/auth/login?redirect=${encodeURIComponent(redirect)}`);
+
 	const session = crypto.randomBytes(48).toString('base64');
 	const user = await oauthCallback(code, session, getRedirectUrl(req)).catch(
 		err => {
@@ -124,9 +149,9 @@ router.get('/cbk', async (req, res) => {
 
 	if (!user) return;
 	req.session.token = session;
-	res.clearCookie('redirect');
+	res.clearCookie('state');
 
-	return res.redirect(decodeURIComponent(req.cookies.redirect || '/'));
+	return res.redirect(redirect);
 });
 
 router.use((req, res) => res.status(404).send());
