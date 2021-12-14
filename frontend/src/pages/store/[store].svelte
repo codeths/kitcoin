@@ -383,7 +383,9 @@
 				{/if}
 			</h2>
 		{:else}
-			<div class="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+			<div
+				class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+			>
 				{#each items.items as item}
 					<div
 						class="p-4 bg-base-200 shadow rounded-lg flex flex-col"

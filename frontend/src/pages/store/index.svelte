@@ -80,7 +80,7 @@
 		<Loading height="2rem" />
 	{:then stores}
 		{#if stores.length > 0}
-			<div class="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+			<div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 				{#each stores as store}
 					<a
 						href={$url('./:store', {store: store._id})}
