@@ -84,11 +84,23 @@
 				{#each stores as store}
 					<a
 						href={$url('./:store', {store: store._id})}
-						class="p-4 bg-base-200 hover:bg-primary hover:text-primary-content hover:scale-110 shadow rounded-lg flex flex-col transition duration-300"
+						class="group p-4 bg-base-200 hover:bg-primary hover:text-primary-content hover:scale-110 shadow rounded-lg flex flex-col transition duration-300"
 					>
-						<p class="text-2xl font-semibold leading-relaxed">
-							{store.name}
-						</p>
+						<div class="flex flex-row justify-between items-center">
+							<p class="inline-flex text-2xl font-semibold">
+								{store.name}
+							</p>
+							{#if store.canManage}
+								<div
+									data-tip="You can manage this store"
+									class="tooltip"
+								>
+									<span
+										class="inline-flex icon-crown text-2xl h-full text-primary group-hover:text-primary-content"
+									/>
+								</div>
+							{/if}
+						</div>
 						{#if store.description}
 							<p>
 								{store.description}
@@ -102,7 +114,6 @@
 							{:else}
 								Private
 							{/if}
-							{#if store.canManage} | You can manage{/if}
 						</p>
 					</a>
 				{/each}
