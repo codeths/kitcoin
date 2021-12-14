@@ -1,16 +1,9 @@
 <script>
-	import {
-		Router,
-		isChangingPage,
-		metatags,
-		beforeUrlChange,
-	} from '@roxi/routify';
+	import {Router, beforeUrlChange} from '@roxi/routify';
 	import {routes} from '../.routify/routes';
 	import {setContext} from 'svelte';
 	import {getUserInfo} from './utils/api';
 	import {userInfo} from './utils/store';
-
-	metatags.title = 'Kitcoin';
 
 	let info = undefined;
 	const userInfoPromise = getUserInfo().catch(e => {
