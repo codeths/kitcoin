@@ -50,9 +50,9 @@
 <div class="p-12 mt-6">
 	<h2 class="text-4xl font-bold mb-6">Your Stores</h2>
 	{#if authMsg}
-		<div class="alert alert-warning my-4">
-			<div class="flex-1">
-				<span class="icon-warning" />
+		<div class="alert alert-error my-4">
+			<div class="flex-1 items-center">
+				<span class="icon-warning text-2xl align-middle mr-2" />
 				<span>
 					{#if authMsg == 'NO_USER'}
 						You are not logged in. <a

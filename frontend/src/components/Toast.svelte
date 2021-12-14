@@ -23,8 +23,8 @@
 	bind:this={toast}
 	style="transform: translateX(0);"
 >
-	<div class="flex-1">
-		<span class="icon-{style} text-xl mr-1 align-middle" />
+	<div class="flex-1 items-center">
+		<span class="icon-{style} text-2xl mr-2 align-middle" />
 		<span>{body}</span>
 	</div>
 </div>
