@@ -47,20 +47,6 @@
 </script>
 
 <!-- Content -->
-<div class="bg-blue-200">
-	<div
-		class="py-28 md:py-36 lg:py-44 xl:py-56 mx-auto text-center max-w-7xl px-2"
-	>
-		<h1 class="text-6xl font-black">Welcome to the Kitcoin Store!!</h1>
-		<br />
-		<p class="text-3xl text-gray-700">
-			Here you can buy lots of cool stuff with your hard earned Kitcoin.
-			Check out our awesome selection of Beans&trade; and get your Supreme
-			Bricks while they're still in stock!
-		</p>
-	</div>
-</div>
-
 <div class="p-12 mt-6">
 	<h2 class="text-4xl font-bold mb-6">Your Stores</h2>
 	{#if authMsg}
@@ -94,15 +80,11 @@
 		<Loading height="2rem" />
 	{:then stores}
 		{#if stores.length > 0}
-			<div
-				class="bg-base-200 rounded-md filter drop-shadow-md flex flex-wrap	overflow-x-auto p-4"
-			>
+			<div class="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 				{#each stores as store}
 					<a
 						href={$url('./:store', {store: store._id})}
-						class="m-2 p-2 {store.canManage
-							? 'bg-yellow-200 hover:bg-yellow-300'
-							: 'bg-blue-200 hover:bg-blue-300'} transition-colors duration-150 rounded-lg border-2 border-gray-400 min-w-max"
+						class="p-4 bg-base-200 hover:bg-primary hover:text-primary-content hover:scale-110 shadow rounded-lg flex flex-col transition duration-300"
 					>
 						<p class="text-2xl font-semibold leading-relaxed">
 							{store.name}
