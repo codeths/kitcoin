@@ -5,6 +5,7 @@ import {
 	oauthCallback,
 	ScopeType,
 	PromptType,
+	getRedirectUrl,
 } from '../../helpers/oauth';
 import {request} from '../../helpers/request';
 const router = express.Router();
@@ -58,6 +59,7 @@ function handleLogin(
 		);
 	res.redirect(
 		getAuthURL({
+			redirect: getRedirectUrl(req),
 			scopes,
 			prompt,
 			user:
@@ -114,9 +116,11 @@ router.get('/cbk', async (req, res) => {
 		return res.status(400).send('Missing code');
 
 	const session = crypto.randomBytes(48).toString('base64');
-	const user = await oauthCallback(code, session).catch(err => {
-		res.status(401).send(err);
-	});
+	const user = await oauthCallback(code, session, getRedirectUrl(req)).catch(
+		err => {
+			res.status(401).send(err);
+		},
+	);
 
 	if (!user) return;
 	req.session.token = session;

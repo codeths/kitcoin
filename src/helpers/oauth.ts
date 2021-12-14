@@ -16,7 +16,8 @@ type ScopeType = keyof typeof OAUTH_SCOPES;
 type PromptType = 'none' | 'consent' | 'select_account';
 
 import {google, Auth} from 'googleapis';
-import {client_id, client_secret, redirect_url} from '../config/keys.json';
+import express from 'express';
+import {client_id, client_secret} from '../config/keys.json';
 import {User, IUserDoc} from './schema';
 
 /**
@@ -24,7 +25,10 @@ import {User, IUserDoc} from './schema';
  * @param credentials Tokens
  * @returns Google OAuth2 client
  */
-function getOAuth2Client(credentials?: Auth.Credentials): Auth.OAuth2Client {
+function getOAuth2Client(
+	credentials?: Auth.Credentials,
+	redirect_url?: string,
+): Auth.OAuth2Client {
 	const client = new google.auth.OAuth2(
 		client_id,
 		client_secret,
@@ -61,10 +65,12 @@ async function getAccessToken(
 }
 
 function getAuthURL({
+	redirect,
 	scopes = OAUTH_SCOPES.STUDENT,
 	user,
 	prompt = 'consent',
 }: {
+	redirect: string;
 	scopes?: string[] | ScopeType;
 	user?: string | undefined;
 	prompt?: PromptType | undefined;
@@ -74,7 +80,7 @@ function getAuthURL({
 	return auth.generateAuthUrl({
 		access_type: 'offline',
 		scope: scopes,
-		redirect_uri: redirect_url,
+		redirect_uri: redirect,
 		prompt,
 		include_granted_scopes: true,
 		login_hint: user,
@@ -86,9 +92,13 @@ function getAuthURL({
  * @param {string} code Code from callback query string
  * @param {string} session Session ID
  */
-export async function oauthCallback(code: string, session: string) {
+export async function oauthCallback(
+	code: string,
+	session: string,
+	redirect: string,
+) {
 	return new Promise<IUserDoc>(async (resolve, reject) => {
-		const auth = getOAuth2Client();
+		const auth = getOAuth2Client(undefined, redirect);
 		const tokens = await auth
 			.getToken(code)
 			.catch(() => reject({error: 'Invalid code'}));
@@ -157,4 +167,15 @@ export async function oauthCallback(code: string, session: string) {
 	});
 }
 
-export {getAuthURL, ScopeType, PromptType, getOAuth2Client, getAccessToken};
+function getRedirectUrl(req: express.Request) {
+	return `${req.protocol}://${req.get('host')}/auth/cbk`;
+}
+
+export {
+	getAuthURL,
+	ScopeType,
+	PromptType,
+	getOAuth2Client,
+	getAccessToken,
+	getRedirectUrl,
+};
