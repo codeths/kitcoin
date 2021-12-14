@@ -1,4 +1,5 @@
 import express from 'express';
+import {tossr} from 'tossr';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import mongostore from 'connect-mongodb-session';
@@ -69,16 +70,22 @@ app.use(['/login', '/logout', '/signin', '/signout'], (req, res) => {
 	res.redirect(`/auth${req.originalUrl}`);
 });
 
-function servePage(res: express.Response) {
-	res.sendFile(path.resolve(`${__dirname}/../../frontend/build/index.html`));
+async function servePage(req: express.Request, res: express.Response) {
+	const html = await tossr(
+		'frontend/build/index.html',
+		'frontend/build/main.js',
+		req.url,
+		{inlineDynamicImports: true},
+	);
+	res.send(html);
 }
 
 app.get(
 	'/student',
 	cacheMiddleware,
 	(...req) => request(...req, {}),
-	(req, res) => {
-		if (req.user && req.user.hasRole('STUDENT')) servePage(res);
+	async (req, res) => {
+		if (req.user && req.user.hasRole('STUDENT')) servePage(req, res);
 		else if (req.user) res.redirect('/');
 		else
 			handleLogin(req, res, {
@@ -92,8 +99,8 @@ app.get(
 	'/staff',
 	cacheMiddleware,
 	(...req) => request(...req, {}),
-	(req, res) => {
-		if (req.user && req.user.hasRole('STAFF')) servePage(res);
+	async (req, res) => {
+		if (req.user && req.user.hasRole('STAFF')) servePage(req, res);
 		else if (req.user) res.redirect('/');
 		else
 			handleLogin(req, res, {
@@ -108,7 +115,7 @@ app.get(
 	cacheMiddleware,
 	(...req) => request(...req, {}),
 	(req, res) => {
-		if (req.user && req.user.hasRole('ADMIN')) servePage(res);
+		if (req.user && req.user.hasRole('ADMIN')) servePage(req, res);
 		else if (req.user) res.redirect('/');
 		else
 			handleLogin(req, res, {
@@ -132,7 +139,7 @@ app.get(
 				return res.redirect('/student');
 		}
 
-		servePage(res);
+		servePage(req, res);
 	},
 );
 
@@ -143,6 +150,6 @@ app.get(
 	cacheMiddleware,
 	(...req) => request(...req, {}),
 	(req, res) => {
-		servePage(res);
+		servePage(req, res);
 	},
 );
