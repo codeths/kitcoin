@@ -202,9 +202,11 @@
 				alert('Image must be less than 5MB');
 				imageUploadValue = '';
 			} else if (
-				!['image/png', 'image/jpeg'].includes(imageUpload[0].type)
+				!['image/png', 'image/jpeg', 'image/webp'].includes(
+					imageUpload[0].type,
+				)
 			) {
-				alert('Image must be a PNG or JPEG');
+				alert('Image must be a PNG, JPEG, or WEBP');
 				imageUploadValue = '';
 			}
 		}
@@ -422,7 +424,7 @@
 							{#if item.imageHash}
 								<img
 									class="store-item mt-6 object-contain max-h-80"
-									src="/api/store/{storeID}/item/{item._id}/image.png"
+									src="/api/store/{storeID}/item/{item._id}/image"
 									alt={item.name}
 									onload="this.style.display = ''"
 									onerror="this.style.display = 'none'"
@@ -567,7 +569,7 @@
 					on:validate={e => validate('quantity', e.detail)}
 				/>
 				<label class="label" for="">
-					Image (optional) - PNG or JPEG, max 5MB
+					Image (optional) - PNG, JPEG, or WEBP, max 5MB
 				</label>
 				<div class="flex w-full">
 					<label
@@ -587,7 +589,7 @@
 							on:dragenter={() => (imageUploadDrag = true)}
 							on:dragleave={() => (imageUploadDrag = false)}
 							on:drop={() => (imageUploadDrag = false)}
-							accept="image/png image/jpeg"
+							accept="image/png image/jpeg image/webp"
 						/></label
 					>
 					{#if imageUpload && imageUpload[0] && imageUploadValue}
