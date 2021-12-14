@@ -576,7 +576,7 @@
 				<div class="flex w-full">
 					<label
 						for="fileinput"
-						class="btn btn-primary relative cursor-pointer flex-grow"
+						class="btn btn-primary relative flex-grow"
 						>{imageUploadDrag
 							? 'Drop file to upload'
 							: imageUpload && imageUpload[0] && imageUploadValue
@@ -585,7 +585,7 @@
 						<input
 							type="file"
 							id="fileinput"
-							class="absolute top-0 right-0 bottom-0 left-0 opacity-0 w-full h-full filedrop"
+							class="absolute top-0 right-0 bottom-0 left-0 opacity-0 w-full h-full filedrop cursor-pointer"
 							bind:files={imageUpload}
 							bind:value={imageUploadValue}
 							on:dragenter={() => (imageUploadDrag = true)}
