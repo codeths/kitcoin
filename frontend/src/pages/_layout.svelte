@@ -1,6 +1,6 @@
 <script>
 	import {getContext, onMount} from 'svelte';
-	import {isActive} from '@roxi/routify';
+	import {afterPageLoad, isActive} from '@roxi/routify';
 	import _transition from './_transition.svelte';
 
 	let links = [];
@@ -30,10 +30,21 @@
 
 		return link;
 	}
+
+	$afterPageLoad(() => {
+		drawerOpen = false;
+	});
+
+	let drawerOpen;
 </script>
 
 <div class="drawer h-screen">
-	<input id="nav-drawer" type="checkbox" class="drawer-toggle" />
+	<input
+		id="nav-drawer"
+		type="checkbox"
+		class="drawer-toggle"
+		bind:checked={drawerOpen}
+	/>
 	<div class="drawer-content flex flex-col">
 		<div class="navbar w-full bg-blue-eths text-white p-3 shadow-xl h-16">
 			<div class="navbar-start">
