@@ -1,5 +1,5 @@
 import express from 'express';
-import jimp from 'jimp';
+import sharp from 'sharp';
 import {FilterQuery} from 'mongoose';
 import fs from 'fs';
 import path from 'path';
@@ -320,7 +320,7 @@ router.get(
 );
 
 router.get(
-	'/store/:storeID/item/:id/image.png',
+	'/store/:storeID/item/:id/image',
 	cacheMiddleware,
 	async (req, res, next) =>
 		request(req, res, next, {
@@ -371,12 +371,12 @@ router.get(
 		let image;
 		try {
 			image = fs.readFileSync(
-				path.resolve('uploads', 'storeitems', `${item._id}.png`),
+				path.resolve('uploads', 'storeitems', `${item._id}.webp`),
 			);
 		} catch (e) {}
 
 		if (image) {
-			res.setHeader('Content-Type', 'image/png');
+			res.setHeader('Content-Type', 'image/webp');
 			res.status(200).send(image);
 		} else {
 			res.status(404).send('No image');
@@ -397,7 +397,7 @@ router.patch(
 			},
 		}),
 	express.raw({
-		type: ['image/png', 'image/jpeg'],
+		type: ['image/png', 'image/jpeg', 'image/webp'],
 		limit: 1024 * 1024 * 5,
 	}),
 	async (req, res) => {
@@ -442,24 +442,23 @@ router.patch(
 
 			if (!item) return;
 
-			if (req.get('Content-Type') !== 'image/png') {
-				image = await jimp
-					.read(image)
-					.then(image => image.getBufferAsync(jimp.MIME_PNG))
-					.catch(e => {
-						res.status(400).send('Invalid image');
-						return null;
-					});
+			image = await sharp(image)
+				.resize({width: 512, height: 512, fit: 'inside'})
+				.webp()
+				.toBuffer()
+				.catch(e => {
+					res.status(400).send('Invalid image');
+					return null;
+				});
 
-				if (!image) return;
-			}
+			if (!image) return;
 
 			const hashSum = crypto.createHash('sha256');
 			hashSum.update(image);
 			const hash = hashSum.digest('hex');
 
 			fs.writeFileSync(
-				path.resolve('uploads', 'storeitems', `${item._id}.png`),
+				path.resolve('uploads', 'storeitems', `${item._id}.webp`),
 				image,
 			);
 
@@ -631,7 +630,7 @@ router.delete(
 
 			try {
 				fs.rmSync(
-					path.resolve('uploads', 'storeitems', `${item._id}.png`),
+					path.resolve('uploads', 'storeitems', `${item._id}.webp`),
 				);
 			} catch (e) {}
 
@@ -697,13 +696,13 @@ router.delete(
 
 			try {
 				fs.rmSync(
-					path.resolve('uploads', 'storeitems', `${item._id}.png`),
+					path.resolve('uploads', 'storeitems', `${item._id}.webp`),
 				);
 			} catch (e) {}
 
 			item.imageHash = null;
 			await item.save();
-			
+
 			return res.status(200).send({
 				_id: item._id,
 				name: item.name,

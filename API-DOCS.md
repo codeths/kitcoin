@@ -191,7 +191,7 @@ Get a store's item by its ID
 }
 ```
 
-## GET `/store/:storeID/item/:id/image.png`
+## GET `/store/:storeID/item/:id/image`
 
 Get a store item's image
 
@@ -202,7 +202,7 @@ Get a store item's image
 
 ### Response
 
-The image if exists (png), otherwise will return a 404
+The image if exists (webp), otherwise will return a 404
 
 ## PATCH `/store/:storeID/item/:id`
 
@@ -238,7 +238,7 @@ Upload a store's item image
 
 `:storeID` (path): Store ID  
 `:id` (path): Item ID  
-Body should contain the image as `image/png` or `image/jpeg` (will be converted to PNG)
+Body should contain the image as `image/png`, `image/jpeg`, or `image/webp` (will be converted to webp)
 
 ### Response
 
