@@ -19,7 +19,7 @@
 </script>
 
 <div
-	class="alert text-white bg-{style}/80 transition-transform min-w-[16rem] px-4 py-2"
+	class="alert text-white bg-{style}/80 transition-transform min-w-[16rem] px-4 py-2 my-2"
 	bind:this={toast}
 	style="transform: translateX(0);"
 >
