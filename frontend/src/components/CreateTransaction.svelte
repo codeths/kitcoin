@@ -179,6 +179,11 @@
 			? 'justify-end'
 			: 'justify-start mt-4'}"
 	>
+		{#if modal}
+			<button on:click={() => dispatch('close')} class="btn px-12">
+				Close
+			</button>
+		{/if}
 		<button
 			on:click={send}
 			disabled={submitStatus || hasError}
@@ -202,10 +207,5 @@
 				Send
 			{/if}
 		</button>
-		{#if modal}
-			<button on:click={() => dispatch('close')} class="btn px-12">
-				Close
-			</button>
-		{/if}
 	</div>
 </form>
