@@ -2,8 +2,6 @@
 	import {metatags} from '@roxi/routify';
 
 	metatags.title = 'Kitcoin';
-	metatags.description =
-		'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce luctus diam eget ligula posuere blandit.';
 </script>
 
 <div class="hero absolute min-h-full">
