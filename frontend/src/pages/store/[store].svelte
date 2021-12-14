@@ -410,7 +410,7 @@
 								: ''}"
 						>
 							<span
-								class="icon-currency mr-3"
+								class="icon-currency mr-1"
 							/>{item.price.toLocaleString([], {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2,
