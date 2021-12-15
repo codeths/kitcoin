@@ -109,8 +109,8 @@
 						<p class="italic">
 							{#if store.public}
 								Available to everyone
-							{:else if store.className}
-								For {store.className}
+							{:else if store.classNames.length > 0}
+								For {store.classNames.join(', ')}
 							{:else}
 								Private
 							{/if}
