@@ -150,7 +150,7 @@ router.get(
 			authentication: false,
 			validators: {
 				params: {
-					id: Validators.string,
+					id: Validators.objectID,
 				},
 			},
 		}),
@@ -198,7 +198,7 @@ router.get(
 			authentication: false,
 			validators: {
 				params: {
-					id: Validators.string,
+					id: Validators.objectID,
 				},
 				query: {
 					count: Validators.optional(
@@ -270,8 +270,8 @@ router.get(
 			authentication: false,
 			validators: {
 				params: {
-					storeID: Validators.string,
-					id: Validators.string,
+					storeID: Validators.objectID,
+					id: Validators.objectID,
 				},
 			},
 		}),
@@ -330,8 +330,8 @@ router.get(
 			authentication: false,
 			validators: {
 				params: {
-					storeID: Validators.string,
-					id: Validators.string,
+					storeID: Validators.objectID,
+					id: Validators.objectID,
 				},
 			},
 		}),
@@ -394,8 +394,8 @@ router.patch(
 			authentication: true,
 			validators: {
 				params: {
-					storeID: Validators.string,
-					id: Validators.string,
+					storeID: Validators.objectID,
+					id: Validators.objectID,
 				},
 			},
 		}),
@@ -490,8 +490,8 @@ router.patch(
 			authentication: true,
 			validators: {
 				params: {
-					storeID: Validators.string,
-					id: Validators.string,
+					storeID: Validators.objectID,
+					id: Validators.objectID,
 				},
 				body: {
 					name: Validators.optional(Validators.string),
@@ -579,8 +579,8 @@ router.delete(
 			authentication: true,
 			validators: {
 				params: {
-					storeID: Validators.string,
-					id: Validators.string,
+					storeID: Validators.objectID,
+					id: Validators.objectID,
 				},
 				body: {
 					name: Validators.optional(Validators.string),
@@ -653,8 +653,8 @@ router.delete(
 			authentication: true,
 			validators: {
 				params: {
-					storeID: Validators.string,
-					id: Validators.string,
+					storeID: Validators.objectID,
+					id: Validators.objectID,
 				},
 			},
 		}),
@@ -729,7 +729,7 @@ router.post(
 			authentication: true,
 			validators: {
 				params: {
-					storeID: Validators.string,
+					storeID: Validators.objectID,
 				},
 				body: {
 					name: Validators.string,

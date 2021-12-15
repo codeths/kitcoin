@@ -19,7 +19,7 @@ router.get(
 			roles: req.params?.user == 'me' ? undefined : ['STAFF', 'ADMIN'],
 			validators: {
 				params: {
-					user: Validators.string,
+					user: Validators.objectID,
 				},
 			},
 		}),
@@ -52,7 +52,7 @@ router.get(
 			roles: req.params?.user == 'me' ? undefined : ['STAFF', 'ADMIN'],
 			validators: {
 				params: {
-					user: Validators.string,
+					user: Validators.objectID,
 				},
 				query: {
 					count: Validators.optional(
@@ -126,7 +126,7 @@ router.post(
 				body: {
 					amount: Validators.currency,
 					reason: Validators.optional(Validators.string),
-					user: Validators.string,
+					user: Validators.arrayOrValue(Validators.objectID),
 				},
 			},
 		}),
@@ -138,8 +138,13 @@ router.post(
 				amount,
 				reason,
 				user,
-			}: {amount: number | `${number}`; reason: string; user: string} =
-				req.body;
+			}: {
+				amount: number | `${number}`;
+				reason: string;
+				user: string | string[];
+			} = req.body;
+
+			if (!Array.isArray(user)) user = [user];
 
 			if (typeof amount == 'string') amount = numberFromData(amount);
 			const dbUser = await User.findById(user);

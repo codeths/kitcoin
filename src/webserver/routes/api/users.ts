@@ -19,7 +19,7 @@ router.patch(
 			roles: ['ADMIN'],
 			validators: {
 				body: {
-					user: Validators.string,
+					user: Validators.objectID,
 					roles: {
 						run: (data: unknown) =>
 							typeof data == 'string' && isValidRoles(data),

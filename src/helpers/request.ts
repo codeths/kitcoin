@@ -9,6 +9,7 @@ import {
 	RequestValidateKeyOptionsResolvable,
 } from '../types';
 import {User} from './schema';
+import {isValidObjectId} from 'mongoose';
 
 export async function request(
 	req: express.Request,
@@ -349,6 +350,36 @@ export class Validators {
 	});
 
 	/**
+	 * All array items match validator
+	 * @param validator Validator to run on array values
+	 */
+	static array = (validator: RequestValidateKeyOptionsResolvable) => ({
+		run: (data: unknown): boolean | string => {
+			if (!Array.isArray(data)) return '{KEY} must be an array';
+			validator = Validators.resolve(validator);
+			let results = data.map(x => x.run(x));
+			let errors = results
+				.filter(x => x !== true)
+				.map(x =>
+					(x || x.errorMessage || '{KEY} is invalid').replace(
+						/\{KEY\}/g,
+						'{KEY}[{INDEX}]',
+					),
+				);
+			if (errors.length > 0) return errors.join('<br>');
+			return true;
+		},
+	});
+
+	/**
+	 * Validator must match value (if not array) or all values in array
+	 */
+	static arrayOrValue = (validator: RequestValidateKeyOptionsResolvable) => ({
+		run: (data: unknown): boolean | string =>
+			Validators.or(Validators.array(validator), validator).run(data),
+	});
+
+	/**
 	 * Valid currency amount
 	 */
 	static currency = () => ({
@@ -363,6 +394,13 @@ export class Validators {
 			},
 			errorMessage: '{KEY} cannot have more than 2 decimal places',
 		}).run,
+	});
+
+	/** Valid mongoBD object ID */
+	static objectID = () => ({
+		run: (data: unknown): boolean | string => {
+			return isValidObjectId(data) || '{KEY} must be a valid ObjectID';
+		},
 	});
 }
 
