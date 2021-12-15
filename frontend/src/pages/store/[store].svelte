@@ -20,8 +20,8 @@
 			storeID = $params.store;
 			store = (info || []).find(s => s._id === storeID);
 			if (storeID) {
-				load(null, null, true);
-				if (!info) getStores(storeID);
+				load();
+				if (!info) getStores();
 			}
 		}
 		metatags.title = `Store${
@@ -36,6 +36,8 @@
 	let error;
 	let items = null;
 	let currentPage = 1;
+	let totalPages = 1;
+	const ITEMS_PER_PAGE = 12;
 
 	async function getStore() {
 		let cachedInfo = info && info.find(x => x._id === storeID);
@@ -62,22 +64,22 @@
 		return json;
 	}
 
-	async function load(page, which, useCache) {
+	async function load(page, useCache = true) {
 		try {
-			loading = which || true;
-			let newItems = await getItems(
-				storeID,
-				page || currentPage,
-				useCache,
-			);
-			items = newItems;
-			if (items.page < items.pageCount)
-				getItems(storeID, items.page + 1, true);
+			loading = true;
+			let newItems = await getItems(storeID, useCache);
+			totalPages = Math.ceil(newItems.length / ITEMS_PER_PAGE);
 			loading = false;
 			error = false;
 			if (page) currentPage = page;
+			items = newItems.slice(
+				(currentPage - 1) * ITEMS_PER_PAGE,
+				currentPage * ITEMS_PER_PAGE,
+			);
+
 			return;
 		} catch (e) {
+			console.log(e);
 			loading = false;
 			error = true;
 		}
@@ -277,7 +279,7 @@
 				300,
 			);
 
-			load();
+			load(undefined, false);
 		} else {
 			clearTimeout(resetTimeout);
 			resetTimeout = setTimeout(() => {
@@ -324,7 +326,7 @@
 			return;
 		}
 
-		load();
+		load(undefined, false);
 	}
 
 	window.addEventListener('keydown', e => {
@@ -372,7 +374,7 @@
 				on:click={() => itemModal()}>New Item</label
 			>
 		{/if}
-		{#if error || !items || !items.items || items.docCount == 0}
+		{#if error || !items || items.length == 0}
 			<h2 class="text-center">
 				{#if error}
 					An Error Occured
@@ -386,7 +388,7 @@
 			<div
 				class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
 			>
-				{#each items.items as item}
+				{#each items as item}
 					<div
 						class="p-4 bg-base-200 shadow rounded-lg flex flex-col"
 					>
@@ -441,44 +443,22 @@
 		<div class="flex flex-wrap justify-center align-center pt-4">
 			{#if items}
 				<h2 class="text-center mb-2">
-					Showing page {items.page} of {items.pageCount}
+					Showing page {currentPage} of {totalPages}
 				</h2>
 				<div class="flex-break" />
 				<button
-					on:click={() => load(currentPage - 1, 'previous', true)}
+					on:click={() => load(currentPage - 1)}
 					class="btn btn-primary w-40 mx-2"
 					disabled={loading || currentPage <= 1}
 				>
-					{#if loading == 'previous'}
-						<Loading height="2rem" />
-					{:else}
-						Previous
-					{/if}
+					Previous
 				</button>
 				<button
-					on:click={() => load(currentPage + 1, 'next', true)}
+					on:click={() => load(currentPage + 1)}
 					class="btn btn-primary w-40 mx-2"
-					disabled={loading || currentPage >= items.pageCount}
+					disabled={loading || currentPage >= totalPages}
 				>
-					{#if loading == 'next'}
-						<Loading height="2rem" />
-					{:else}
-						Next
-					{/if}
-				</button>
-			{:else}
-				<button
-					on:click={() => load(currentPage ?? 1, 'refresh')}
-					class="btn btn-primary w-40 mx-2"
-					disabled={loading}
-				>
-					{#if loading == 'refresh'}
-						<Loading height="2rem" />
-					{:else if error}
-						Retry
-					{:else}
-						Refresh
-					{/if}
+					Next
 				</button>
 			{/if}
 		</div>
