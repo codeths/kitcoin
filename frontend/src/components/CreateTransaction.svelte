@@ -89,7 +89,7 @@
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				user: values.student,
+				user: values.student.split(' '),
 				amount: parseFloat(values.amount),
 				reason: values.reason || null,
 			}),
@@ -140,8 +140,18 @@
 	let query;
 
 	if (student) {
-		values.student = student.id;
-		query = student.name;
+		let array = student instanceof Map;
+		if (array && array.size === 1) {
+			student = Array.from(student.values())[0];
+			array = false;
+		}
+		if (array) {
+			values.student = Array.from(student.keys()).join(' ');
+			query = `${student.size} students`;
+		} else {
+			values.student = student.id;
+			query = student.name;
+		}
 		valid.student = true;
 	}
 </script>

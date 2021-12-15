@@ -41,6 +41,35 @@
 		});
 	let modalStudent = null,
 		showModal = false;
+
+	let multiSelect = false;
+	let multiSelectStudents = new Map();
+
+	$: {
+		if (!multiSelect) multiSelectStudents.clear();
+	}
+
+	function toggle(student) {
+		multiSelectStudents.has(student.id)
+			? multiSelectStudents.delete(student.id)
+			: multiSelectStudents.set(student.id, student);
+		multiSelectStudents = multiSelectStudents;
+	}
+
+	let students = null;
+	async function classroomSelect() {
+		students = null;
+		multiSelect = false;
+		students = await getClassStudents(selectedClass).catch(e =>
+			e.toString(),
+		);
+	}
+	let allSelected = false;
+	$: {
+		if (students && typeof students !== 'string' && selectedClass) {
+			allSelected = students.every(s => multiSelectStudents.has(s.id));
+		}
+	}
 </script>
 
 <!-- Content -->
@@ -84,6 +113,7 @@
 			<div class="bg-base-200 shadow-md rounded px-8 py-8">
 				<select
 					bind:value={selectedClass}
+					on:change={classroomSelect}
 					class="select select-bordered w-full mb-4"
 				>
 					<option disabled value="" selected>
@@ -96,32 +126,105 @@
 					{/each}
 				</select>
 				{#if selectedClass}
-					{#await getClassStudents(selectedClass)}
+					{#if !students}
 						<span
 							class="text-center text-1xl sm:text-3xl xl:text-4xl font-medium inline-block w-full"
 						>
 							Loading students...
 						</span>
-					{:then students}
-						<div
-							class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-						>
-							{#each students.sort( (a, b) => a.name.localeCompare(b.name), ) as student}
-								<label
-									for="studentmodal"
-									class="w-auto btn btn-neutral btn-outline mx-4 my-2"
-									on:click={() => (modalStudent = student)}
-									>{student.name}</label
-								>
-							{/each}
-						</div>
-					{:catch error}
+					{:else if typeof students == 'string'}
 						<span
 							class="text-center text-1xl sm:text-3xl xl:text-4xl font-medium inline-block w-full"
 						>
-							{error}
+							{students}
 						</span>
-					{/await}
+					{:else}
+						<input
+							type="checkbox"
+							class="hidden"
+							bind:checked={multiSelect}
+							id="multiselect"
+						/>
+						<div
+							class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+						>
+							<label
+								for="multiselect"
+								type="checkbox"
+								class="btn btn-primary mx-4 my-2"
+								class:btn-outline={!multiSelect}
+								class:btn-secondary={multiSelect}
+								>{multiSelect
+									? 'Select One'
+									: 'Select Multiple'}</label
+							>
+
+							{#if multiSelect}
+								<label
+									for="studentmodal"
+									type="checkbox"
+									class="btn btn-secondary mx-4 my-2"
+									disabled={multiSelectStudents.size == 0 ||
+										null}
+									on:click={() =>
+										(modalStudent = multiSelectStudents)}
+									>Manage {multiSelectStudents.size} student{multiSelectStudents.size ==
+									1
+										? ''
+										: 's'}</label
+								>
+								<div class="flex items-center mx-4 my-2">
+									<input
+										type="checkbox"
+										id="selectall"
+										class="checkbox checkbox-secondary"
+										bind:checked={allSelected}
+										on:input={e => {
+											if (allSelected) {
+												multiSelectStudents.clear();
+											} else {
+												students.forEach(s =>
+													multiSelectStudents.set(
+														s.id,
+														s,
+													),
+												);
+											}
+											multiSelectStudents =
+												multiSelectStudents;
+										}}
+									/>
+									<label for="selectall" class="label"
+										>Select All</label
+									>
+								</div>
+							{/if}
+							<div class="divider col-start-1 col-span-full" />
+							{#each students.sort( (a, b) => a.name.localeCompare(b.name), ) as student}
+								{#if multiSelect}
+									<button
+										class="w-auto btn btn-neutral mx-4 my-2"
+										class:btn-outline={!multiSelectStudents.has(
+											student.id,
+										)}
+										class:btn-primary={multiSelectStudents.has(
+											student.id,
+										)}
+										on:click={() => toggle(student)}
+										>{student.name}</button
+									>
+								{:else}
+									<label
+										for="studentmodal"
+										class="w-auto btn btn-neutral btn-outline mx-4 my-2"
+										on:click={() =>
+											(modalStudent = student)}
+										>{student.name}</label
+									>
+								{/if}
+							{/each}
+						</div>
+					{/if}
 				{/if}
 			</div>
 		</div>
@@ -137,7 +240,11 @@
 <label class="modal" for="studentmodal">
 	<div class="modal-box">
 		<h2 class="text-2xl text-medium mb-4">
-			Send Kitcoin to {modalStudent?.name}
+			Send Kitcoin to {multiSelect && multiSelectStudents.size !== 0
+				? multiSelectStudents.size > 1
+					? `${multiSelectStudents.size} students`
+					: Array.from(multiSelectStudents.values())[0].name
+				: modalStudent?.name}
 		</h2>
 		{#key modalStudent}
 			<CreateTransaction
