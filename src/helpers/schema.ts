@@ -213,7 +213,7 @@ transactionSchema.methods.toAPIResponse = async function (
 const storeSchema = new mongoose.Schema<IStoreDoc, IStoreModel>({
 	name: {type: String, required: true},
 	description: String,
-	classID: String,
+	classIDs: [String],
 	public: {
 		type: Boolean,
 		default: false,
@@ -224,14 +224,14 @@ const storeSchema = new mongoose.Schema<IStoreDoc, IStoreModel>({
 });
 
 storeSchema.query.byClassCode = function (classCode: string): IStoreQueries {
-	return this.where({classID: classCode});
+	return this.where({classIDs: classCode});
 };
 
 storeSchema.methods.getItems = async function (): Promise<IStoreItemDoc[]> {
 	return await StoreItem.where({storeID: this.id});
 };
 
-storeSchema.index({classID: 1});
+storeSchema.index({classIDs: 1});
 
 const storeItemSchema = new mongoose.Schema<IStoreItemDoc, IStoreItemModel>({
 	storeID: {type: String, required: true},

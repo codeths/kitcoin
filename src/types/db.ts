@@ -231,7 +231,7 @@ export interface IStore {
 	/**
 	 * Google classroom ID (if applicable)
 	 */
-	classID: string | null;
+	classIDs: string[];
 	/**
 	 * Should the store be shown to everyone
 	 */

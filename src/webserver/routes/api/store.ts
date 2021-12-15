@@ -36,12 +36,12 @@ async function getStorePerms(
 		manage = true;
 	} else if (store.managers.includes(user.id)) {
 		manage = true;
-	} else if (store.classID && classroomClient) {
+	} else if (store.classIDs && classroomClient) {
 		const teaching = await classroomClient
 			.getClassesForRole('TEACHER')
 			.then(x => (x || []).map(x => x.id));
 
-		if (teaching.includes(store.classID)) manage = true;
+		if (store.classIDs.some(x => teaching.includes(x))) manage = true;
 	}
 
 	if (manage)
@@ -54,12 +54,12 @@ async function getStorePerms(
 		view = true;
 	} else if (store.users.includes(user.id)) {
 		view = true;
-	} else if (store.classID && classroomClient) {
+	} else if (store.classIDs && classroomClient) {
 		const classes = await classroomClient
 			.getClassesForRole('STUDENT')
 			.then(x => (x || []).map(x => x.id));
 
-		if (classes.includes(store.classID)) view = true;
+		if (store.classIDs.some(x => classes.includes(x))) view = true;
 	}
 
 	return {view, manage};
@@ -107,7 +107,7 @@ router.get(
 					.flat(),
 			);
 
-			query.push({classID: {$in: classes.map(x => x.id)}});
+			query.push({classIDs: {$in: classes.map(x => x.id)}});
 			query.push({
 				managers: req.user.id,
 			});
@@ -124,17 +124,20 @@ router.get(
 			stores.map(x => ({
 				canManage: req.user
 					? req.user.hasRole('ADMIN') ||
-					  (x.classID &&
+					  (x.classIDs &&
 							classes
 								.filter(x => x.role === 'TEACHER')
-								.some(c => c.id == x.classID)) ||
+								.some(c => x.classIDs.includes(c.id))) ||
 					  x.managers.includes(req.user.id)
 					: false,
 				_id: x._id,
 				name: x.name,
 				description: x.description,
 				public: x.public,
-				className: classes.find(c => c.id == x.classID)?.name || null,
+				classNames:
+					classes
+						.filter(c => x.classIDs.includes(c.id))
+						.map(x => x.name) || null,
 			})),
 		);
 	},

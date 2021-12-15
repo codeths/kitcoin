@@ -122,7 +122,7 @@ None
 	description: string;
 	canManage: boolean;
 	public: boolean;
-	className: string | null;
+	classNames: string[];
 }
 [];
 ```
