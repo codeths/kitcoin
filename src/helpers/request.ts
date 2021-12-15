@@ -356,16 +356,18 @@ export class Validators {
 	static array = (validator: RequestValidateKeyOptionsResolvable) => ({
 		run: (data: unknown): boolean | string => {
 			if (!Array.isArray(data)) return '{KEY} must be an array';
-			validator = Validators.resolve(validator);
-			let results = data.map(x => x.run(x));
+			let v = Validators.resolve(validator);
+			let results = data.map(x => v.run(x));
 			let errors = results
-				.filter(x => x !== true)
-				.map(x =>
-					(x || x.errorMessage || '{KEY} is invalid').replace(
-						/\{KEY\}/g,
-						'{KEY}[{INDEX}]',
-					),
-				);
+				.map(
+					(x, i) =>
+						x == true ||
+						(x || v.errorMessage || '{KEY} is invalid').replace(
+							/\{KEY\}/g,
+							`{KEY} (index ${i})`,
+						),
+				)
+				.filter(x => x !== true);
 			if (errors.length > 0) return errors.join('<br>');
 			return true;
 		},
@@ -376,7 +378,10 @@ export class Validators {
 	 */
 	static arrayOrValue = (validator: RequestValidateKeyOptionsResolvable) => ({
 		run: (data: unknown): boolean | string =>
-			Validators.or(Validators.array(validator), validator).run(data),
+			(Array.isArray(data)
+				? Validators.array(validator)
+				: Validators.resolve(validator)
+			).run(data),
 	});
 
 	/**
