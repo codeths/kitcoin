@@ -19,7 +19,10 @@ router.get(
 			roles: req.params?.user == 'me' ? undefined : ['STAFF', 'ADMIN'],
 			validators: {
 				params: {
-					user: Validators.objectID,
+					user: Validators.or(
+						Validators.objectID,
+						Validators.streq('me'),
+					),
 				},
 			},
 		}),
@@ -52,7 +55,10 @@ router.get(
 			roles: req.params?.user == 'me' ? undefined : ['STAFF', 'ADMIN'],
 			validators: {
 				params: {
-					user: Validators.objectID,
+					user: Validators.or(
+						Validators.objectID,
+						Validators.streq('me'),
+					),
 				},
 				query: {
 					count: Validators.optional(
@@ -145,35 +151,38 @@ router.post(
 			} = req.body;
 
 			if (!Array.isArray(user)) user = [user];
+			user = user.filter(u => u != req.user.id);
 
 			if (typeof amount == 'string') amount = numberFromData(amount);
-			const dbUser = await User.findById(user);
-			if (!dbUser) return res.status(404).send('Invalid user');
-			if (dbUser.id == req.user.id)
-				return res.status(400).send('Cannot send to yourself');
+			let dbUsers = await Promise.all(
+				user.map(user => User.findById(user)),
+			);
+			dbUsers = dbUsers.filter(u => u);
 
-			if (req.user.balance < amount)
+			if (req.user.balance < amount * dbUsers.length)
 				return res.status(403).send('Your balance is too low!');
 
-			const transaction = await new Transaction({
-				amount,
-				reason: reason || null,
-				from: {
-					id: req.user.id,
-				},
-				to: {
-					id: dbUser.id,
-				},
-			}).save();
+			const transactions = await Promise.all(
+				dbUsers.map(async dbUser => {
+					let t = await new Transaction({
+						amount,
+						reason: reason || null,
+						from: {
+							id: req.user.id,
+						},
+						to: {
+							id: dbUser!.id,
+						},
+					}).save();
+					dbUser!.balance += amount as number;
+					await dbUser!.save();
+					return t.toAPIResponse(req.user.id);
+				}),
+			);
+			req.user.balance -= amount * transactions.length;
+			await req.user.save();
 
-			if (transaction) {
-				dbUser.balance += amount;
-				req.user.balance -= amount;
-				await dbUser.save();
-				await req.user.save();
-			}
-
-			res.status(200).send(await transaction.toAPIResponse(req.user.id));
+			res.status(200).send(transactions);
 		} catch (e) {
 			try {
 				res.status(500).send('An error occured.');

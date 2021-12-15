@@ -95,7 +95,7 @@ Body:
 {
 	amount: number;
 	reason: string | null;
-	user: string;
+	user: string | string[];
 }
 ```
 
