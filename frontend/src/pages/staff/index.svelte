@@ -44,9 +44,13 @@
 
 	let multiSelect = false;
 	let multiSelectStudents = new Map();
+	let allSelected = false;
 
 	$: {
-		if (!multiSelect) multiSelectStudents.clear();
+		if (!multiSelect) {
+			multiSelectStudents.clear();
+			allSelected = false;
+		}
 	}
 
 	function toggle(student) {
@@ -64,7 +68,6 @@
 			e.toString(),
 		);
 	}
-	let allSelected = false;
 	$: {
 		if (students && typeof students !== 'string' && selectedClass) {
 			allSelected = students.every(s => multiSelectStudents.has(s.id));
