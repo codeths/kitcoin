@@ -101,7 +101,14 @@ Body:
 
 ### Response
 
-Transaction object(s). If input user is an array, the response will be an array of transactions.
+```ts
+{
+	page: number;
+	pageCount: number;
+	docCount: number;
+	transactions: ITransactionAPIResponse[];
+}
+```
 
 # Store
 
@@ -151,9 +158,7 @@ Get a list of a store's items
 
 ### Request
 
-`:id` (path): Store ID  
-`count` (query): [Optional] the number of transactions to return. Defaults to 10  
-`page` (query): [Optional] the page of transactions to return. Defaults to 1
+`:id` (path): Store ID
 
 ### Response
 

@@ -200,14 +200,6 @@ router.get(
 				params: {
 					id: Validators.objectID,
 				},
-				query: {
-					count: Validators.optional(
-						Validators.and(Validators.integer, Validators.gt(0)),
-					),
-					page: Validators.optional(
-						Validators.and(Validators.integer, Validators.gt(0)),
-					),
-				},
 			},
 		}),
 	async (req, res) => {
@@ -231,27 +223,10 @@ router.get(
 		const permissions = await getStorePerms(store, req.user);
 		if (!permissions.view) return res.status(403).send('Forbidden');
 
-		let count = numberFromData(req.query.count) ?? 10;
-		let page = numberFromData(req.query.page) ?? 1;
+		const items = await StoreItem.find().byStoreID(id);
 
-		const query = StoreItem.find().byStoreID(id);
-
-		const [items, docCount] = await Promise.all([
-			query
-				.clone()
-				.setOptions({
-					skip: (page - 1) * count,
-					limit: count,
-				})
-				.exec(),
-			query.clone().countDocuments().exec(),
-		]);
-
-		res.status(200).send({
-			page,
-			pageCount: Math.ceil(docCount / count),
-			docCount,
-			items: items.map(i => ({
+		res.status(200).send(
+			items.map(i => ({
 				_id: i._id,
 				name: i.name,
 				description: i.description,
@@ -259,7 +234,7 @@ router.get(
 				price: i.price,
 				imageHash: i.imageHash,
 			})),
-		});
+		);
 	},
 );
 
