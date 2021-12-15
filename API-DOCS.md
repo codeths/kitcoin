@@ -101,7 +101,7 @@ Body:
 
 ### Response
 
-Transaction object
+Transaction object(s). If input user is an array, the response will be an array of transactions.
 
 # Store
 

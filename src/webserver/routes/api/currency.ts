@@ -150,6 +150,8 @@ router.post(
 				user: string | string[];
 			} = req.body;
 
+			let returnArray = Array.isArray(user);
+
 			if (!Array.isArray(user)) user = [user];
 			user = user.filter(u => u != req.user.id);
 
@@ -182,7 +184,7 @@ router.post(
 			req.user.balance -= amount * transactions.length;
 			await req.user.save();
 
-			res.status(200).send(transactions);
+			res.status(200).send(returnArray ? transactions : transactions[0]);
 		} catch (e) {
 			try {
 				res.status(500).send('An error occured.');
