@@ -11,9 +11,13 @@
 	let results = null;
 
 	async function getStudents(text) {
-		results = (await searchUsers(text, 15, ['STUDENT']).catch(e => [])).map(
-			x => ({text: x.name, value: x.id}),
-		);
+		if (!text) {
+			results = null;
+		} else {
+			results = (
+				await searchUsers(text, 15, ['STUDENT']).catch(e => [])
+			).map(x => ({text: x.name, value: x.id}));
+		}
 	}
 </script>
 
@@ -24,6 +28,7 @@
 	bind:query
 	bind:error
 	on:validate
+	on:change
 	on:search={e => getStudents(e.detail)}
 	{...$$restProps}
 />

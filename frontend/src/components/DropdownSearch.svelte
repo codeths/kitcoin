@@ -61,6 +61,7 @@
 	function setValue(e, data) {
 		e.preventDefault();
 		validate('blur', data.value, data.text);
+		dispatch('change', {target: input.input, value: data.value});
 		value = data.value;
 		query = data.text;
 		results = null;
@@ -74,21 +75,18 @@
 	let loading = false;
 	async function getResults(text, resetValue = false) {
 		if (!text) text = '';
+		text = text.trim();
 		if (resetValue && value) {
 			value = '';
 			dispatch('change', value);
 		}
-		if (text.replace(/[ \n]/g, '') == '') {
-			results = null;
-		} else {
-			try {
-				loading = true;
-				dispatch('search', text);
-			} catch (e) {
-				results = [];
-			}
-			loading = false;
+		try {
+			loading = true;
+			dispatch('search', text);
+		} catch (e) {
+			results = [];
 		}
+		loading = false;
 	}
 </script>
 
@@ -129,8 +127,14 @@
 								on:blur={blur}
 								tabindex="0"
 								bind:this={resultEls[index]}
-								>{result.text}
-							</button>
+								><span>
+									{#if result.html}
+										{@html result.html}
+									{:else}
+										{result.text}
+									{/if}
+								</span></button
+							>
 						{/each}
 					{:else if loading}
 						<div class="py-2">

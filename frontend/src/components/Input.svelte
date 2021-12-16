@@ -47,6 +47,7 @@
 			on:input={handle}
 			on:focus={handle}
 			on:blur={handle}
+			on:change
 			on:input
 			on:focus
 			on:blur
@@ -64,6 +65,7 @@
 			on:input={handle}
 			on:focus={handle}
 			on:blur={handle}
+			on:change
 			on:input
 			on:focus
 			on:blur
