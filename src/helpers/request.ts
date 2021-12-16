@@ -103,12 +103,22 @@ export function numberFromData(data: unknown): number | null {
 	let number;
 	if (Validators.numberString().run(data))
 		number = parseFloat(data as string);
-	else if (Validators.number().run(data)) number = data as number;
+	else if (Validators.number().run(data)) number = data;
 	else return null;
 
 	if (isNaN(number)) return null;
 
 	return number;
+}
+
+export function booleanFromData(data: boolean | `${boolean}`): boolean;
+export function booleanFromData(data: unknown): boolean | null;
+export function booleanFromData(data: unknown): boolean | null {
+	let boolean = null;
+	if (Validators.booleanString().run(data)) boolean = data === 'true';
+	else if (Validators.boolean().run(data)) boolean = data;
+
+	return boolean;
 }
 
 export class Validators {
@@ -199,6 +209,22 @@ export class Validators {
 	/** Data must be a boolean */
 	static boolean = () => ({
 		run: (data: unknown): data is boolean => typeof data === 'boolean',
+		errorMessage: '{KEY} must be a boolean',
+	});
+
+	/** Data must be a stringified boolean */
+	static booleanString = () => ({
+		run: (data: unknown): data is `${boolean}` =>
+			(Validators.string().run(data) &&
+				Validators.streq(['true', 'false']).run(data)) === true,
+		errorMessage: '{KEY} must be a boolean',
+	});
+
+	/** Data must be a boolean or stringified boolean */
+	static anyBoolean = () => ({
+		run: (data: unknown): data is boolean | `${boolean}` =>
+			Validators.boolean().run(data) ||
+			Validators.booleanString().run(data),
 		errorMessage: '{KEY} must be a boolean',
 	});
 
