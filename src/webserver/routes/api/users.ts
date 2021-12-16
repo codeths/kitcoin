@@ -138,7 +138,6 @@ router.get(
 
 			let list = results
 				.map(x => x.toJSON())
-				.filter(x => x.confidenceScore > 5)
 				.sort((a, b) => b.confidenceScore - a.confidenceScore)
 				.map(user => ({
 					name: user.name,
@@ -155,7 +154,13 @@ router.get(
 					confidence: 100,
 				});
 
-			res.status(200).send(list.slice(0, countNum));
+			let filtered = list.filter(x => x.confidence >= 25);
+			if (filtered.length == 0)
+				filtered = list.filter(x => x.confidence >= 10);
+			if (filtered.length == 0)
+				filtered = list.filter(x => x.confidence >= 5);
+
+			res.status(200).send(filtered.slice(0, countNum));
 		} catch (e) {
 			try {
 				res.status(500).send('An error occured.');

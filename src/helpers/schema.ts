@@ -113,12 +113,10 @@ userSchema.plugin(fuzzySearch, {
 	fields: [
 		{
 			name: 'name',
-			minLength: 3,
 			weight: 3,
 		},
 		{
 			name: 'email',
-			minLength: 3,
 			weight: 1,
 			prefixOnly: true,
 		},
