@@ -75,16 +75,18 @@
 							class="px-2 md:py-4 block md:table-cell break-words overflow-ellipsis"
 						>
 							{item.to.me
-								? `From ${item.from.text || 'Unknown'}`
-								: `To ${item.to.text || 'Unknown'}`}{item.reason
-								? `: ${item.reason}`
-								: ''}
+								? `${item.from.id ? 'From ' : ''}${
+										item.from.text || 'Unknown'
+								  }`
+								: `${item.to.id ? 'To ' : ''}${
+										item.to.text || 'Unknown'
+								  }`}{item.reason ? `: ${item.reason}` : ''}
 						</td>
 						<td
-							class="px-2 pb-4 md:py-4 block md:table-cell text-right text-3xl md:text-left md:text-base {item.amount <
+							class="px-2 pb-4 md:py-4 block md:table-cell text-right text-3xl md:text-left md:text-base-100 {item.amount <
 							0
 								? 'text-orange-eths'
-								: 'text-base'}"
+								: 'text-base-100'}"
 							>{item.amount < 0 ? '-' : ''}<span
 								class="icon-currency mr-1"
 							/>{Math.abs(item.amount).toLocaleString([], {
