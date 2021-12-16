@@ -256,7 +256,8 @@
 				class="w-full"
 				on:close={e => {
 					showModal = false;
-					if (e && e.detail == true)
+					if (e && e.detail == true) {
+						multiSelect = false;
 						setTimeout(
 							() =>
 								toastContainer.toast(
@@ -265,6 +266,7 @@
 								),
 							300,
 						);
+					}
 				}}
 				{balance}
 				on:balance={e => (balance = e.detail)}
