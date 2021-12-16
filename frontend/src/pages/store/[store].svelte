@@ -33,6 +33,7 @@
 	}
 
 	let ctx = getContext('userInfo');
+	let userInfo;
 	let authMsg = null;
 
 	let loading = false;
@@ -47,12 +48,12 @@
 		if (cachedInfo) return cachedInfo;
 		let res = await fetch(`/api/store/${storeID}`).catch(e => {});
 		if (!res) throw 'Could not fetch store';
+		userInfo = (await ctx) || null;
 		if (res.status == 403) {
-			let info = (await ctx) || null;
-			if (!info) authMsg = 'NO_USER';
+			if (!userInfo) authMsg = 'NO_USER';
 			if (
-				info &&
-				!info.scopes.includes(
+				userInfo &&
+				!userInfo.scopes.includes(
 					'https://www.googleapis.com/auth/classroom.courses.readonly',
 				)
 			)
@@ -399,11 +400,13 @@
 					class="btn btn-primary self-end px-12 mx-1 modal-button"
 					on:click={() => transactionForm.reset()}>Sell Item</label
 				>
-				<label
-					for="editmodal"
-					class="btn btn-secondary self-end px-12 mx-1 modal-button"
-					on:click={() => manageFormModal()}>New Item</label
-				>
+				{#if userInfo.roles.includes('STAFF')}
+					<label
+						for="editmodal"
+						class="btn btn-secondary self-end px-12 mx-1 modal-button"
+						on:click={() => manageFormModal()}>New Item</label
+					>
+				{/if}
 			</div>
 		{/if}
 		{#if error || !items || items.length == 0}
