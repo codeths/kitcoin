@@ -53,7 +53,7 @@ function handleLogin(
 		redirect || '/',
 	)}`;
 	res.cookie('state', state, {
-		secure: process.env.NODE_ENV === 'production',
+		domain: req.hostname,
 	});
 	res.redirect(
 		getAuthURL({
