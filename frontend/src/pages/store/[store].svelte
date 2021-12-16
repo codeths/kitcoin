@@ -143,6 +143,7 @@
 	let editItem, editToggle;
 
 	function manageFormModal(item) {
+		submitStatus = null;
 		editItem = item;
 		manageForm.reset();
 		if (item) {
@@ -327,25 +328,32 @@
 
 		let res = await fetch(`/api/store/${storeID}/sell`, {
 			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
 			body: JSON.stringify({
 				user: transactionFormData.values.student,
 				item: transactionFormData.values.item,
 			}),
 		}).catch(() => null);
 
-		transactionToggle = false;
 		submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
+		clearTimeout(resetTimeout);
+		resetTimeout = setTimeout(() => {
+			submitStatus = null;
+		}, 5000);
 		if (submitStatus == 'SUCCESS') {
-			setTimeout(
-				() => toastContainer.toast(`Sold ${editItem.name}.`, 'success'),
-				300,
+			transactionToggle = false;
+			toastContainer.toast(
+				`Sold ${
+					items.find(x => x._id == transactionFormData.values.item)
+						.name
+				}.`,
+				'success',
 			);
 		} else {
-			setTimeout(
-				() => toastContainer.toast('Error selling item.', 'error'),
-				300,
-			);
-			return;
+			let text = res && (await res.text());
+			if (text) toastContainer.toast(text, 'error');
 		}
 
 		load(undefined, false);
@@ -398,7 +406,10 @@
 				<label
 					for="transactionmodal"
 					class="btn btn-primary self-end px-12 mx-1 modal-button"
-					on:click={() => transactionForm.reset()}>Sell Item</label
+					on:click={() => {
+						submitStatus = null;
+						transactionForm.reset();
+					}}>Sell Item</label
 				>
 				{#if userInfo.roles.includes('STAFF')}
 					<label
@@ -651,8 +662,9 @@
 						Close
 					</label>
 					<button
-						on:click={manageItems}
-						disabled={submitStatus || !manageFormData.isValid}
+						type="submit"
+						disabled={submitStatus == 'LOADING' ||
+							!manageFormData.isValid}
 						class="btn {submitStatus == 'ERROR'
 							? 'btn-error'
 							: 'btn-primary'} px-12 disabled:border-0"
@@ -681,60 +693,64 @@
 />
 <div class="modal">
 	<div class="modal-box">
-		<Form
-			on:submit={createTransaction}
-			on:update={() =>
-				Object.keys(transactionFormData).forEach(
-					key => (transactionFormData[key] = transactionForm[key]),
-				)}
-			bind:this={transactionForm}
-			validators={transactionValidate}
-		>
-			<StudentSearch
-				name="student"
-				bind:value={transactionFormData.values.student}
-				bind:error={transactionFormData.errors.student}
-				on:validate={transactionForm.validate}
-			/>
-			<DropdownSearch
-				name="item"
-				label="Item"
-				bind:results={itemResults}
-				bind:value={transactionFormData.values.item}
-				bind:error={transactionFormData.errors.item}
-				on:validate={transactionForm.validate}
-				on:search={e => itemSearch(e.detail)}
-			/>
-			<div class="divider" />
-			<div class="flex items-center space-x-2 justify-end">
-				<label
-					for="transactionmodal"
-					class="btn px-12"
-					on:click={e =>
-						!confirm('Are you sure you want to close this?') &&
-						e.preventDefault()}
-				>
-					Close
-				</label>
-				<button
-					on:click={createTransaction}
-					disabled={submitStatus || !transactionFormData.isValid}
-					class="btn {submitStatus == 'ERROR'
-						? 'btn-error'
-						: 'btn-primary'} px-12 disabled:border-0"
-				>
-					{#if submitStatus == 'LOADING'}
-						<div class="px-2">
-							<Loading height="2rem" />
-						</div>
-					{:else if submitStatus == 'ERROR'}
-						Error
-					{:else}
-						Sell
-					{/if}
-				</button>
-			</div>
-		</Form>
+		{#key transactionToggle}
+			<Form
+				on:submit={createTransaction}
+				on:update={() =>
+					Object.keys(transactionFormData).forEach(
+						key =>
+							(transactionFormData[key] = transactionForm[key]),
+					)}
+				bind:this={transactionForm}
+				validators={transactionValidate}
+			>
+				<StudentSearch
+					name="student"
+					bind:value={transactionFormData.values.student}
+					bind:error={transactionFormData.errors.student}
+					on:validate={transactionForm.validate}
+					autofocus
+				/>
+				<DropdownSearch
+					name="item"
+					label="Item"
+					bind:results={itemResults}
+					bind:value={transactionFormData.values.item}
+					bind:error={transactionFormData.errors.item}
+					on:validate={transactionForm.validate}
+					on:search={e => itemSearch(e.detail)}
+				/>
+				<div class="divider" />
+				<div class="flex items-center space-x-2 justify-end">
+					<label
+						for="transactionmodal"
+						class="btn px-12"
+						on:click={e =>
+							!confirm('Are you sure you want to close this?') &&
+							e.preventDefault()}
+					>
+						Close
+					</label>
+					<button
+						type="submit"
+						disabled={submitStatus == 'LOADING' ||
+							!transactionFormData.isValid}
+						class="btn {submitStatus == 'ERROR'
+							? 'btn-error'
+							: 'btn-primary'} px-12 disabled:border-0"
+					>
+						{#if submitStatus == 'LOADING'}
+							<div class="px-2">
+								<Loading height="2rem" />
+							</div>
+						{:else if submitStatus == 'ERROR'}
+							Error
+						{:else}
+							Sell
+						{/if}
+					</button>
+				</div>
+			</Form>{/key}
 	</div>
 </div>
 
