@@ -44,11 +44,11 @@
 	const ITEMS_PER_PAGE = 12;
 
 	async function getStore() {
+		userInfo = (await ctx) || null;
 		let cachedInfo = info && info.find(x => x._id === storeID);
 		if (cachedInfo) return cachedInfo;
 		let res = await fetch(`/api/store/${storeID}`).catch(e => {});
 		if (!res) throw 'Could not fetch store';
-		userInfo = (await ctx) || null;
 		if (res.status == 403) {
 			if (!userInfo) authMsg = 'NO_USER';
 			if (
