@@ -49,11 +49,12 @@ function handleLogin(
 	)
 		redirect = undefined;
 
-	res.clearCookie('state');
 	let state = `${crypto.randomBytes(8).toString('hex')}-${encodeURIComponent(
 		redirect || '/',
 	)}`;
-	res.cookie('state', state);
+	res.cookie('state', state, {
+		secure: process.env.NODE_ENV === 'production',
+	});
 	res.redirect(
 		getAuthURL({
 			state,
