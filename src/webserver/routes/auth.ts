@@ -54,7 +54,8 @@ function handleLogin(
 	)}`;
 	res.clearCookie('state');
 	res.cookie('state', state);
-	res.status(307).redirect(
+	res.redirect(
+		307,
 		getAuthURL({
 			state,
 			redirect: getRedirectUrl(req),
