@@ -1,3 +1,5 @@
+<svelte:options accessors={true} />
+
 <script>
 	import {createEventDispatcher, onMount} from 'svelte';
 
@@ -5,7 +7,6 @@
 
 	export let value = '';
 	export let label = '';
-	export let valid = false;
 	export let error = '';
 	export let type = 'input';
 	export let input = null;
@@ -15,8 +16,8 @@
 	function handle(e) {
 		dispatch('validate', {
 			type: e.type,
+			target: e.target,
 			value: e.target.value,
-			element: input,
 		});
 	}
 
@@ -25,6 +26,10 @@
 			input.type = type;
 		}
 		if (focus) setTimeout(() => input.focus(), 0);
+		handle({
+			target: input,
+			value: '',
+		});
 	});
 </script>
 
@@ -35,7 +40,7 @@
 	{#if type == 'textarea'}
 		<textarea
 			class="textarea textarea-bordered w-full"
-			class:textarea-success={valid}
+			class:textarea-success={error === null}
 			class:textarea-error={error}
 			{disabled}
 			placeholder={label}
@@ -52,7 +57,7 @@
 	{:else}
 		<input
 			class="input input-bordered	w-full"
-			class:input-success={valid}
+			class:input-success={error === null}
 			class:input-error={error}
 			{disabled}
 			placeholder={label}

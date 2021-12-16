@@ -5,35 +5,17 @@
 	import StudentSearch from './StudentSearch.svelte';
 	import Loading from './Loading.svelte';
 	import Input from './Input.svelte';
+	import Form from './Form.svelte';
 
 	export let modal = false;
 	export let balance = -1;
 
-	let values = {
-		student: null,
-		amount: null,
-		reason: null,
+	let formData = {
+		isValid: false,
+		values: {},
+		errors: {},
 	};
-
-	let errors = {
-		student: null,
-		amount: null,
-		reason: null,
-	};
-
-	let valid = {
-		student: false,
-		amount: false,
-		reason: true,
-	};
-
-	let inputs = {};
-
-	let hasError = true;
-
-	$: {
-		hasError = Object.values(valid).some(v => !v);
-	}
+	let form = formData;
 
 	let formValidators = {
 		student: e => {
@@ -68,19 +50,7 @@
 	let submitStatus = null;
 	let loadTimeout;
 
-	function validate(which, event) {
-		clearTimeout(loadTimeout);
-		submitStatus = null;
-		let res = formValidators[which](event);
-
-		values[which] = event.value;
-		errors[which] = res;
-		valid[which] = res == null;
-	}
-
-	async function send(e) {
-		e.preventDefault();
-		if (hasError) return false;
+	async function send() {
 		let start = new Date();
 		submitStatus = 'LOADING';
 		const res = await fetch('/api/transactions', {
@@ -89,9 +59,9 @@
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				user: values.student.split(' '),
-				amount: parseFloat(values.amount),
-				reason: values.reason || null,
+				user: formData.values.student.split(' '),
+				amount: parseFloat(formData.values.amount),
+				reason: formData.values.reason || null,
 			}),
 		}).catch(() => null);
 
@@ -104,16 +74,9 @@
 			() => {
 				submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
 				if (res.ok) {
-					balance -= parseFloat(values.amount);
+					balance -= parseFloat(formData.values.amount);
 					dispatch('balance', balance);
-					Object.keys(values).forEach(x => {
-						values[x] = null;
-						errors[x] = null;
-						valid[x] = !formValidators[x]({
-							value: '',
-							type: 'blur',
-						});
-					});
+					if (form.reset) form.reset();
 				}
 				if (modal && res && res.ok) {
 					dispatch('close', res && res.ok);
@@ -131,8 +94,10 @@
 	}
 
 	function btnColor(submitStatus) {
-		if (submitStatus == 'SUCCESS' && !modal) return 'btn-success';
-		if (submitStatus == 'ERROR') return 'btn-error';
+		if (submitStatus == 'SUCCESS' && !modal)
+			return 'btn-success btn-active !text-base-content';
+		if (submitStatus == 'ERROR')
+			return 'btn-error btn-active !text-base-content';
 		return 'btn-primary';
 	}
 
@@ -146,43 +111,46 @@
 			array = false;
 		}
 		if (array) {
-			values.student = Array.from(student.keys()).join(' ');
+			formData.values.student = Array.from(student.keys()).join(' ');
 			query = `${student.size} students`;
 		} else {
-			values.student = student.id;
+			formData.values.student = student.id;
 			query = student.name;
 		}
-		valid.student = true;
+		formData.errors.student = null;
 	}
 </script>
 
-<form on:submit={send}>
+<Form
+	on:submit={send}
+	on:update={() =>
+		Object.keys(formData).forEach(key => (formData[key] = form[key]))}
+	bind:this={form}
+	validators={formValidators}
+>
 	<StudentSearch
+		name="student"
 		disabled={student ? true : false}
 		{query}
-		bind:this={inputs.student}
-		bind:value={values.student}
-		bind:error={errors.student}
-		bind:valid={valid.student}
-		on:validate={e => validate('student', e.detail)}
+		bind:value={formData.values.student}
+		bind:error={formData.errors.student}
+		on:validate={form.validate}
 	/>
 	<Input
+		name="amount"
 		label="Amount"
 		focus={modal}
-		bind:this={inputs.amount}
-		bind:value={values.amount}
-		bind:error={errors.amount}
-		bind:valid={valid.amount}
-		on:validate={e => validate('amount', e.detail)}
+		bind:value={formData.values.amount}
+		bind:error={formData.errors.amount}
+		on:validate={form.validate}
 	/>
 	<Input
+		name="reason"
 		label="Reason (Optional)"
 		type="textarea"
-		bind:this={inputs.reason}
-		bind:value={values.reason}
-		bind:error={errors.reason}
-		bind:valid={valid.reason}
-		on:validate={e => validate('reason', e.detail)}
+		bind:value={formData.values.reason}
+		bind:error={formData.errors.reason}
+		on:validate={form.validate}
 	/>
 	<div
 		class="flex items-center space-x-2 {modal
@@ -190,20 +158,18 @@
 			: 'justify-start mt-4'}"
 	>
 		{#if modal}
-			<button on:click={() => dispatch('close')} class="btn px-12">
+			<button
+				type="button"
+				on:click={() => dispatch('close')}
+				class="btn px-12"
+			>
 				Close
 			</button>
 		{/if}
 		<button
-			on:click={send}
-			disabled={submitStatus || hasError}
-			class="btn {btnColor(
-				submitStatus,
-			)} px-12 !pointer-events-auto disabled:cursor-not-allowed disabled:border-0"
-			class:!bg-base-300={hasError && !submitStatus}
-			class:hover:!bg-base-300={hasError && !submitStatus}
-			class:btn-active={submitStatus}
-			class:!text-primary-content={submitStatus}
+			type="submit"
+			disabled={submitStatus || !formData.isValid}
+			class="btn {btnColor(submitStatus)} px-12 disabled:border-0"
 		>
 			{#if submitStatus == 'LOADING'}
 				<div class="px-2">
@@ -218,4 +184,4 @@
 			{/if}
 		</button>
 	</div>
-</form>
+</Form>

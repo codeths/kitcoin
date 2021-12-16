@@ -80,7 +80,7 @@
 	<div class="lg:grid lg:grid-cols-12">
 		<div class="lg:col-span-7 lg:mx-2 my-4">
 			<h1 class="text-3xl font-medium mb-2">Send Kitcoin</h1>
-			<div class="bg-base-200 shadow-md rounded px-8 py-8">
+			<div class="bg-base-100 shadow-md rounded px-8 py-8">
 				<CreateTransaction
 					{balance}
 					on:balance={e => (balance = e.detail)}
@@ -91,7 +91,7 @@
 			<h1 class="text-3xl font-medium mb-2">Available Kitcoin</h1>
 			<div class="lg:col-span-2 sm:max-w-sm lg:max-w-none">
 				<div
-					class="flex bg-base-200 shadow-md rounded py-10 min-h-40 border-t-8 border-blue-eths"
+					class="flex bg-base-100 shadow-md rounded py-10 min-h-40 border-t-8 border-blue-eths"
 				>
 					<h1
 						class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full h-full"
@@ -113,7 +113,7 @@
 			</div>
 		</div>
 		<div class="lg:col-span-12 lg:mx-2 my-4">
-			<div class="bg-base-200 shadow-md rounded px-8 py-8">
+			<div class="bg-base-100 shadow-md rounded px-8 py-8">
 				<select
 					bind:value={selectedClass}
 					on:change={classroomSelect}

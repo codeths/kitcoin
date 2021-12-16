@@ -7,6 +7,9 @@
 	let toastContainer;
 	import {storeInfo, getStores, getItems} from '../../utils/store.js';
 	import {getBalance} from '../../utils/api.js';
+	import StudentSearch from '../../components/StudentSearch.svelte';
+	import Form from '../../components/Form.svelte';
+	import DropdownSearch from '../../components/DropdownSearch.svelte';
 
 	let info = $storeInfo;
 
@@ -16,7 +19,7 @@
 
 	let storeID, store;
 	$: {
-		if (storeID !== $params.store) {
+		if ($params.store && storeID !== $params.store) {
 			storeID = $params.store;
 			store = (info || []).find(s => s._id === storeID);
 			if (storeID) {
@@ -79,7 +82,6 @@
 
 			return;
 		} catch (e) {
-			console.log(e);
 			loading = false;
 			error = true;
 		}
@@ -90,36 +92,14 @@
 		balance = await getBalance().catch(e => null);
 	})();
 
-	let values = {
-		name: null,
-		description: null,
-		price: null,
-		quantity: null,
+	// Manage items
+	let manageFormData = {
+		isValid: false,
+		values: {},
+		errors: {},
 	};
-
-	let errors = {
-		name: null,
-		description: null,
-		price: null,
-		quantity: null,
-	};
-
-	let valid = {
-		name: null,
-		description: null,
-		price: null,
-		quantity: null,
-	};
-
-	let inputs = {};
-
-	let hasError = true;
-
-	$: {
-		hasError = Object.values(valid).some(v => !v);
-	}
-
-	let formValidators = {
+	let manageForm = manageFormData;
+	let manageValidators = {
 		name: e => {
 			let v = e.value;
 			if (!v) return e && e.type == 'blur' ? 'Name is required' : '';
@@ -159,37 +139,19 @@
 		},
 	};
 
-	let submitStatus = null;
-	let loadTimeout;
-
-	function validate(which, event) {
-		clearTimeout(loadTimeout);
-		submitStatus = null;
-		let res = formValidators[which](event);
-
-		values[which] = event.value;
-		errors[which] = res;
-		valid[which] = res == null;
-	}
-
 	let editItem, editToggle;
 
-	function itemModal(item) {
+	function manageFormModal(item) {
 		editItem = item;
+		manageForm.reset();
 		if (item) {
-			values.name = item.name;
-			values.description = item.description;
-			values.price = item.price;
-			values.quantity = item.quantity;
-		} else {
-			Object.keys(values).forEach(k => (values[k] = null));
+			manageForm.values.name = item.name;
+			manageForm.values.description = item.description;
+			manageForm.values.price = item.price;
+			manageForm.values.quantity = item.quantity;
 		}
 		imageUploadValue = '';
 		deleteImage = false;
-
-		Object.keys(values).forEach(k =>
-			validate(k, {type: 'focus', value: values[k]}),
-		);
 	}
 
 	let resetTimeout;
@@ -213,9 +175,11 @@
 			}
 		}
 	}
+
+	let submitStatus;
 	async function manageItems(e) {
 		e.preventDefault();
-		if (hasError) return false;
+		if (!manageFormData.isValid) return false;
 		submitStatus = 'LOADING';
 		let res = await fetch(
 			editItem
@@ -227,10 +191,11 @@
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
-					name: values.name,
-					description: values.description || null,
-					price: parseFloat(values.price),
-					quantity: parseFloat(values.quantity) || null,
+					name: manageFormData.values.name,
+					description: manageFormData.values.description || null,
+					price: parseFloat(manageFormData.values.price),
+					quantity:
+						parseFloat(manageFormData.values.quantity) || null,
 				}),
 			},
 		).catch(() => null);
@@ -261,23 +226,14 @@
 				? 'SUCCESS'
 				: 'ERROR';
 		if (submitStatus == 'SUCCESS') {
-			Object.keys(values).forEach(x => {
-				values[x] = null;
-				errors[x] = null;
-				valid[x] = !formValidators[x]({
-					value: '',
-					type: 'blur',
-				});
-			});
 			editToggle = false;
-			setTimeout(
-				() =>
-					toastContainer.toast(
-						editItem ? 'Item updated' : 'Item created',
-						'success',
-					),
-				300,
-			);
+			setTimeout(() => {
+				submitStatus = null;
+				toastContainer.toast(
+					editItem ? 'Item updated' : 'Item created',
+					'success',
+				);
+			}, 300);
 
 			load(undefined, false);
 		} else {
@@ -301,14 +257,6 @@
 
 		editToggle = false;
 		submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
-		Object.keys(values).forEach(x => {
-			values[x] = null;
-			errors[x] = null;
-			valid[x] = !formValidators[x]({
-				value: '',
-				type: 'blur',
-			});
-		});
 		if (submitStatus == 'SUCCESS') {
 			setTimeout(
 				() =>
@@ -329,13 +277,90 @@
 		load(undefined, false);
 	}
 
+	// Transaction
+	let transactionToggle;
+
+	let transactionFormData = {
+		isValid: false,
+		values: {},
+		errors: {},
+	};
+	let transactionForm = transactionFormData;
+	let transactionValidate = {
+		student: e => {
+			let v = e.value;
+			if (!v)
+				return e && e.type == 'blur'
+					? e.query
+						? 'Student must be selected from dropdown'
+						: 'Student is required'
+					: '';
+			return null;
+		},
+		item: e => {
+			let v = e.value;
+			if (!v)
+				return e && e.type == 'blur'
+					? e.query
+						? 'Student must be selected from dropdown'
+						: 'Student is required'
+					: '';
+			return null;
+		},
+	};
+
+	let itemResults = null;
+
+	function itemSearch(text) {
+		itemResults = (items || [])
+			.filter(x => x.name.toLowerCase().includes(text.toLowerCase()))
+			.slice(0, 15)
+			.map(x => ({
+				value: x._id,
+				text: x.name,
+			}));
+	}
+
+	async function createTransaction() {
+		submitStatus = 'LOADING';
+
+		let res = await fetch(`/api/store/${storeID}/sell`, {
+			method: 'POST',
+			body: JSON.stringify({
+				user: transactionFormData.values.student,
+				item: transactionFormData.values.item,
+			}),
+		}).catch(() => null);
+
+		transactionToggle = false;
+		submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
+		if (submitStatus == 'SUCCESS') {
+			setTimeout(
+				() => toastContainer.toast(`Sold ${editItem.name}.`, 'success'),
+				300,
+			);
+		} else {
+			setTimeout(
+				() => toastContainer.toast('Error selling item.', 'error'),
+				300,
+			);
+			return;
+		}
+
+		load(undefined, false);
+	}
+
+	// Misc
+
 	window.addEventListener('keydown', e => {
 		if (
 			e.key == 'Escape' &&
-			editToggle &&
+			(editToggle || transactionToggle) &&
 			confirm('Are you sure you want to close this?')
-		)
+		) {
 			editToggle = false;
+			transactionToggle = false;
+		}
 	});
 </script>
 
@@ -368,11 +393,18 @@
 	{:then store}
 		<h2 class="text-4xl font-bold mb-6">{store.name}</h2>
 		{#if store.canManage}
-			<label
-				for="editmodal"
-				class="btn btn-primary self-end mb-4 modal-button"
-				on:click={() => itemModal()}>New Item</label
-			>
+			<div class="self-end mb-4">
+				<label
+					for="transactionmodal"
+					class="btn btn-primary self-end px-12 mx-1 modal-button"
+					on:click={() => transactionForm.reset()}>Sell Item</label
+				>
+				<label
+					for="editmodal"
+					class="btn btn-secondary self-end px-12 mx-1 modal-button"
+					on:click={() => manageFormModal()}>New Item</label
+				>
+			</div>
 		{/if}
 		{#if error || !items || items.length == 0}
 			<h2 class="text-center">
@@ -400,7 +432,7 @@
 								<label
 									for="editmodal"
 									class="inline-flex btn btn-circle btn-ghost text-3xl modal-button"
-									on:click={() => itemModal(item)}
+									on:click={() => manageFormModal(item)}
 									><span class="icon-edit" /></label
 								>
 							{/if}
@@ -516,39 +548,43 @@
 			{/if}
 		</div>
 		{#key editItem}
-			<form on:submit={manageItems}>
+			<Form
+				on:submit={manageItems}
+				on:update={() =>
+					Object.keys(manageFormData).forEach(
+						key => (manageFormData[key] = manageForm[key]),
+					)}
+				bind:this={manageForm}
+				validators={manageValidators}
+			>
 				<Input
+					name="name"
 					label="Name"
-					bind:this={inputs.name}
-					bind:value={values.name}
-					bind:error={errors.name}
-					bind:valid={valid.name}
-					on:validate={e => validate('name', e.detail)}
+					bind:value={manageFormData.values.name}
+					bind:error={manageFormData.errors.name}
+					on:validate={manageForm.validate}
 				/>
 				<Input
+					name="description"
 					label="Description (optional)"
 					type="textarea"
-					bind:this={inputs.description}
-					bind:value={values.description}
-					bind:error={errors.description}
-					bind:valid={valid.description}
-					on:validate={e => validate('description', e.detail)}
+					bind:value={manageFormData.values.description}
+					bind:error={manageFormData.errors.description}
+					on:validate={manageForm.validate}
 				/>
 				<Input
+					name="price"
 					label="Price"
-					bind:this={inputs.price}
-					bind:value={values.price}
-					bind:error={errors.price}
-					bind:valid={valid.price}
-					on:validate={e => validate('price', e.detail)}
+					bind:value={manageFormData.values.price}
+					bind:error={manageFormData.errors.price}
+					on:validate={manageForm.validate}
 				/>
 				<Input
+					name="quantity"
 					label="Quantity (optional)"
-					bind:this={inputs.quantity}
-					bind:value={values.quantity}
-					bind:error={errors.quantity}
-					bind:valid={valid.quantity}
-					on:validate={e => validate('quantity', e.detail)}
+					bind:value={manageFormData.values.quantity}
+					bind:error={manageFormData.errors.quantity}
+					on:validate={manageForm.validate}
 				/>
 				<label class="label" for="">
 					Image (optional) - PNG, JPEG, or WEBP, max 5MB
@@ -613,14 +649,10 @@
 					</label>
 					<button
 						on:click={manageItems}
-						disabled={submitStatus || hasError}
+						disabled={submitStatus || !manageFormData.isValid}
 						class="btn {submitStatus == 'ERROR'
 							? 'btn-error'
-							: 'btn-primary'} px-12 !pointer-events-auto disabled:cursor-not-allowed disabled:border-0"
-						class:!bg-base-300={hasError && !submitStatus}
-						class:hover:!bg-base-300={hasError && !submitStatus}
-						class:btn-active={submitStatus}
-						class:!text-primary-content={submitStatus}
+							: 'btn-primary'} px-12 disabled:border-0"
 					>
 						{#if submitStatus == 'LOADING'}
 							<div class="px-2">
@@ -633,8 +665,73 @@
 						{/if}
 					</button>
 				</div>
-			</form>
+			</Form>
 		{/key}
+	</div>
+</div>
+
+<input
+	type="checkbox"
+	id="transactionmodal"
+	class="modal-toggle"
+	bind:checked={transactionToggle}
+/>
+<div class="modal">
+	<div class="modal-box">
+		<Form
+			on:submit={createTransaction}
+			on:update={() =>
+				Object.keys(transactionFormData).forEach(
+					key => (transactionFormData[key] = transactionForm[key]),
+				)}
+			bind:this={transactionForm}
+			validators={transactionValidate}
+		>
+			<StudentSearch
+				name="student"
+				bind:value={transactionFormData.values.student}
+				bind:error={transactionFormData.errors.student}
+				on:validate={transactionForm.validate}
+			/>
+			<DropdownSearch
+				name="item"
+				label="Item"
+				bind:results={itemResults}
+				bind:value={transactionFormData.values.item}
+				bind:error={transactionFormData.errors.item}
+				on:validate={transactionForm.validate}
+				on:search={e => itemSearch(e.detail)}
+			/>
+			<div class="divider" />
+			<div class="flex items-center space-x-2 justify-end">
+				<label
+					for="transactionmodal"
+					class="btn px-12"
+					on:click={e =>
+						!confirm('Are you sure you want to close this?') &&
+						e.preventDefault()}
+				>
+					Close
+				</label>
+				<button
+					on:click={createTransaction}
+					disabled={submitStatus || !transactionFormData.isValid}
+					class="btn {submitStatus == 'ERROR'
+						? 'btn-error'
+						: 'btn-primary'} px-12 disabled:border-0"
+				>
+					{#if submitStatus == 'LOADING'}
+						<div class="px-2">
+							<Loading height="2rem" />
+						</div>
+					{:else if submitStatus == 'ERROR'}
+						Error
+					{:else}
+						Sell
+					{/if}
+				</button>
+			</div>
+		</Form>
 	</div>
 </div>
 
