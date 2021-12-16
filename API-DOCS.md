@@ -318,6 +318,31 @@ Body:
 
 User object
 
+## GET `/search`
+
+Search for users
+
+### Request
+
+Body:
+
+`q` (query): Search query
+`roles` (query): [Optional] User must have at least one these roles. Separate multiple roles with a comma.
+`count` (query): [Optional] Number of results to return. Defaults to 10
+`me` (query): [Optional] Include the authenticated user in the results. Defaults to false
+
+### Response
+
+```ts
+{
+	name: string;
+	email: string;
+	id: string;
+	confidence: number;
+}
+[];
+```
+
 ## GET `/me`
 
 Get info for authenticated user
