@@ -16,6 +16,8 @@
 		errors: {},
 	};
 	let form = formData;
+	let numStudents = 1;
+	$: numStudents = (formData.values.student || '').split(' ').length;
 
 	let formValidators = {
 		student: e => {
@@ -36,7 +38,7 @@
 			if (Math.round(num * 100) / 100 !== num)
 				return 'Amount cannot have more than 2 decimal places';
 			if (num <= 0) return 'Amount must be greater than 0';
-			if (balance !== -1 && balance < num)
+			if (balance !== -1 && balance < num * numStudents)
 				return 'You do not have enough money';
 
 			return null;
@@ -74,7 +76,7 @@
 			() => {
 				submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
 				if (res.ok) {
-					balance -= parseFloat(formData.values.amount);
+					balance -= parseFloat(formData.values.amount) * numStudents;
 					dispatch('balance', balance);
 					if (form.reset) form.reset();
 				}
