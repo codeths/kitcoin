@@ -65,6 +65,7 @@
 		let json = await res.json().catch(e => {
 			throw 'Could not fetch store';
 		});
+		store = json;
 		return json;
 	}
 
@@ -425,14 +426,14 @@
 </script>
 
 <!-- Content -->
-<div class="flex flex-row flex-wrap justify-between items-center my-6">
+<div class="flex flex-row flex-wrap justify-between items-center mt-6">
 	<a
 		href={$url('.')}
 		class="btn btn-primary inline-flex flex-col self-center my-4 w-auto mx-6"
 	>
 		Back to store list
 	</a>
-	{#if balance !== null}
+	{#if balance !== null && (!store || !store.canManage)}
 		<div
 			class="inline-flex flex-col self-center p-4 bg-base-200 rounded-lg mx-6 my-4"
 		>
@@ -504,7 +505,8 @@
 						</div>
 						<p
 							class="text-2xl font-semibold {balance !== null &&
-							balance < item.price
+							balance < item.price &&
+							!store.canManage
 								? 'text-red-500'
 								: ''}"
 						>
