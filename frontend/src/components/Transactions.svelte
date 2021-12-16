@@ -83,11 +83,11 @@
 								  }`}{item.reason ? `: ${item.reason}` : ''}
 						</td>
 						<td
-							class="px-2 pb-4 md:py-4 block md:table-cell text-right text-3xl md:text-left md:text-base-100 {item.amount <
+							class="px-2 pb-4 md:py-4 block md:table-cell text-right text-3xl md:text-left md:text-base {item.amount <
 							0
 								? 'text-orange-eths'
-								: 'text-base-100'}"
-							>{item.amount < 0 ? '-' : ''}<span
+								: 'text-base-content'}"
+							>{#if item.amount < 0}&minus;&nbsp;{/if}<span
 								class="icon-currency mr-1"
 							/>{Math.abs(item.amount).toLocaleString([], {
 								minimumFractionDigits: 2,
