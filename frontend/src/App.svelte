@@ -1,31 +1,41 @@
 <script>
-	import {Router, beforeUrlChange} from '@roxi/routify';
+	import {Router, beforeUrlChange, url} from '@roxi/routify';
 	import {routes} from '../.routify/routes';
-	import {setContext} from 'svelte';
+	import {onMount, setContext} from 'svelte';
 	import {getUserInfo} from './utils/api';
 	import {userInfo} from './utils/store';
+
+	const routeConfig = {
+		'/staff': 'STAFF',
+		'/student': 'STUDENT',
+	};
 
 	let info = undefined;
 	const userInfoPromise = getUserInfo().catch(e => {
 		info = null;
-		console.error('Failed to get user info: ', e);
 	});
 	setContext('userInfo', userInfoPromise);
 	userInfoPromise
 		.then(i => {
 			info = i || null;
 			userInfo.set(info);
+			handleAuthCheck();
 		})
 		.catch(e => {
 			info = null;
+			handleAuthCheck();
 		});
 
 	$beforeUrlChange((e, r) => {
 		let path = r.path.replace(/\/(?:index)?$/, '');
+		return handleAuthCheck(path);
+	});
+
+	function handleAuthCheck(path = window.location.pathname) {
 		let requirement = routeConfig[path];
 		if (
 			requirement &&
-			(info === null ||
+			(!info ||
 				(typeof requirement == 'string' &&
 					!info.roles.includes(requirement)))
 		) {
@@ -35,7 +45,7 @@
 			return false;
 		}
 		return true;
-	});
+	}
 
 	let favicon = 'favicon';
 
@@ -51,11 +61,6 @@
 			.matchMedia('(prefers-color-scheme: dark)')
 			.addEventListener('change', handleMediaQuery);
 	}
-
-	const routeConfig = {
-		'/staff': 'STAFF',
-		'/student': 'STUDENT',
-	};
 
 	window.addEventListener(
 		'dragover',
