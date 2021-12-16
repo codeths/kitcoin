@@ -280,6 +280,33 @@
 	}
 
 	// Transaction
+	let studentBalance = null;
+
+	async function loadStudentBalance(e) {
+		let studentID = transactionFormData.values.student;
+		if (studentID) {
+			let res = await fetch(`/api/balance/${studentID}`).catch(
+				() => null,
+			);
+			let json;
+			if (res.ok) json = await res.json();
+			studentBalance = json.balance ?? null;
+		} else {
+			studentBalance = null;
+		}
+
+		if (transactionForm.validate)
+			transactionForm.validate({
+				detail: {
+					target: {
+						name: 'item',
+					},
+					value: transactionFormData.values.item,
+					type: '',
+				},
+			});
+	}
+
 	let transactionToggle;
 
 	let transactionFormData = {
@@ -304,9 +331,13 @@
 			if (!v)
 				return e && e.type == 'blur'
 					? e.query
-						? 'Student must be selected from dropdown'
-						: 'Student is required'
+						? 'Item must be selected from dropdown'
+						: 'Item is required'
 					: '';
+			let selectedItem = items.find(i => i._id == v);
+			if (!selectedItem) return 'Item not found';
+			if (studentBalance !== null && selectedItem.price > studentBalance)
+				return 'Insufficient balance';
 			return null;
 		},
 	};
@@ -314,12 +345,32 @@
 	let itemResults = null;
 
 	function itemSearch(text) {
+		text = text.toLowerCase();
 		itemResults = (items || [])
 			.filter(x => x.name.toLowerCase().includes(text.toLowerCase()))
+			.sort((a, b) => {
+				if (
+					a.name.toLowerCase().startsWith(text) &&
+					!b.name.toLowerCase().startsWith(text)
+				)
+					return -1;
+				return a.name.localeCompare(b.name);
+			})
 			.slice(0, 15)
 			.map(x => ({
 				value: x._id,
 				text: x.name,
+				html: `${x.name} - <span class="${
+					studentBalance !== null && x.price > studentBalance
+						? 'text-error'
+						: ''
+				}"><span class="icon-currency mr-1"></span>${x.price.toLocaleString(
+					[],
+					{
+						minimumFractionDigits: 2,
+						maximumFractionDigits: 2,
+					},
+				)}</span>`,
 			}));
 	}
 
@@ -709,6 +760,7 @@
 					bind:value={transactionFormData.values.student}
 					bind:error={transactionFormData.errors.student}
 					on:validate={transactionForm.validate}
+					on:change={loadStudentBalance}
 					autofocus
 				/>
 				<DropdownSearch
