@@ -52,13 +52,9 @@ function handleLogin(
 	let state = `${crypto.randomBytes(8).toString('hex')}-${encodeURIComponent(
 		redirect || '/',
 	)}`;
-	res.clearCookie('state', {
-		domain: req.hostname,
-	});
-	res.cookie('state', state, {
-		domain: req.hostname,
-	});
-	res.redirect(
+	res.clearCookie('state');
+	res.cookie('state', state);
+	res.status(307).redirect(
 		getAuthURL({
 			state,
 			redirect: getRedirectUrl(req),
