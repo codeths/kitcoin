@@ -11,7 +11,14 @@ import {
 	Validators,
 	cacheMiddleware,
 } from '../../../helpers/request';
-import {IStoreDoc, IUserDoc, Store, StoreItem} from '../../../helpers/schema';
+import {
+	IStoreDoc,
+	IUserDoc,
+	Store,
+	StoreItem,
+	Transaction,
+	User,
+} from '../../../helpers/schema';
 import {IStoreItemDoc, requestHasUser} from '../../../types';
 const router = express.Router();
 
@@ -183,6 +190,81 @@ router.get(
 				description,
 				canManage: permissions.manage,
 			});
+		} catch (e) {
+			try {
+				res.status(500).send('Something went wrong.');
+			} catch (e) {}
+		}
+	},
+);
+
+router.post(
+	'/store/:id/sell',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['STAFF'],
+			validators: {
+				params: {
+					id: Validators.objectID,
+				},
+				body: {
+					user: Validators.objectID,
+					item: Validators.objectID,
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			const {id} = req.params;
+			const data = req.body;
+
+			const store = await Store.findById(id)
+				.then(store => {
+					if (!store) {
+						res.status(404).send('Store not found');
+						return null;
+					}
+					return store;
+				})
+				.catch(() => {
+					res.status(400).send('Invalid ID');
+					return null;
+				});
+
+			if (!store) return;
+
+			const permissions = await getStorePerms(store, req.user);
+			if (!permissions.manage) return res.status(403).send('Forbidden');
+
+			const item = await StoreItem.findById(req.body.item);
+			if (!item) return res.status(400).send('Item not found');
+
+			const user = await User.findById(req.body.user);
+			if (!user) return res.status(400).send('User not found');
+			if (user.balance < item.price)
+				return res.status(400).send('User does not have enough money');
+
+			await new Transaction({
+				amount: item.price * -1,
+				from: {
+					text: `Store purchase in ${store.name}`,
+				},
+				to: {
+					user: user._id,
+				},
+				reason: `${item.name}`,
+			}).save();
+
+			user.balance -= item.price;
+			await user.save();
+
+			if (typeof item.quantity === 'number') item.quantity--;
+			await item.save();
+
+			return res.status(200).send();
 		} catch (e) {
 			try {
 				res.status(500).send('Something went wrong.');
