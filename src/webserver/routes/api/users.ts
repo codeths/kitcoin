@@ -7,8 +7,9 @@ import {
 	UserRoleTypes,
 } from '../../../helpers/schema';
 import {booleanFromData, request, Validators} from '../../../helpers/request';
-import {requestHasUser} from '../../../types';
+import {IUserDoc, requestHasUser} from '../../../types';
 import {getAccessToken} from '../../../helpers/oauth';
+import {FilterQuery} from 'mongoose';
 const router = express.Router();
 
 router.patch(
@@ -84,7 +85,9 @@ router.get(
 					roles: Validators.optional(
 						Validators.and(Validators.string, {
 							run: data =>
-								isValidRoles((data as string).split(',')),
+								isValidRoles(
+									((data || '') as string).split(','),
+								),
 							errorMessage: 'Invalid roles list',
 						}),
 					),
@@ -122,10 +125,13 @@ router.get(
 
 			let countNum = count ? parseInt(count) : 10;
 
-			const results = await User.fuzzySearch(q, {
+			let options: FilterQuery<IUserDoc> = {
 				roles: {$bitsAnySet: roleBitfield},
-				_id: booleanFromData(me) ? {$ne: req.user.id} : undefined,
-			});
+			};
+
+			if (!booleanFromData(me)) options._id = {$ne: req.user.id};
+
+			const results = await User.fuzzySearch(q, options);
 
 			const byID =
 				q.match(/^\d{5,6}$/) && (await User.findOne().byStudentId(q));
