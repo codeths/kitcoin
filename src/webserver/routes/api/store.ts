@@ -253,7 +253,7 @@ router.post(
 					text: `Store purchase in ${store.name}`,
 				},
 				to: {
-					user: user._id,
+					id: user._id,
 				},
 				reason: `${item.name}`,
 			}).save();
