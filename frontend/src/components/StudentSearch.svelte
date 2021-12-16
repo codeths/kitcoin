@@ -7,6 +7,7 @@
 	export let value = '';
 	export let error = '';
 	export let query = '';
+	export let me = null;
 
 	let results = null;
 
@@ -15,7 +16,7 @@
 			results = null;
 		} else {
 			results = (
-				await searchUsers(text, 15, ['STUDENT']).catch(e => [])
+				await searchUsers(text, 15, ['STUDENT'], me).catch(e => [])
 			).map(x => ({text: x.name, value: x.id}));
 		}
 	}
