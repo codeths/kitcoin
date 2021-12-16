@@ -87,12 +87,15 @@
 							0
 								? 'text-orange-eths'
 								: 'text-base-content'}"
-							>{#if item.amount < 0}&minus;&nbsp;{/if}<span
-								class="icon-currency mr-1"
-							/>{Math.abs(item.amount).toLocaleString([], {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2,
-							})}</td
+							><span>
+								{#if item.amount < 0}<span>&minus;&nbsp;</span
+									>{:else}<span>&ensp;&nbsp;</span>{/if}<span
+									class="icon-currency mx-1"
+								/>{Math.abs(item.amount).toLocaleString([], {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2,
+								})}</span
+							></td
 						>
 					</tr>
 				{/each}
