@@ -70,9 +70,18 @@ function copy(path) {
 
 async function frontend() {
 	return new Promise(res => {
-		let child = spawn('npm', ['run', 'build', '--prefix', 'frontend'], {
-			stdio: 'inherit',
-		});
+		let child = spawn(
+			'npm',
+			[
+				'run',
+				process.env.NODE_ENV == 'production' ? 'build' : 'dev',
+				'--prefix',
+				'frontend',
+			],
+			{
+				stdio: 'inherit',
+			},
+		);
 		child.on('exit', code => res(code === 0));
 	});
 }
