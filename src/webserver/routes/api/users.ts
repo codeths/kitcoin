@@ -6,7 +6,7 @@ import {
 	UserRoles,
 	UserRoleTypes,
 } from '../../../helpers/schema';
-import {request, Validators} from '../../../helpers/request';
+import {booleanFromData, request, Validators} from '../../../helpers/request';
 import {requestHasUser} from '../../../types';
 import {getAccessToken} from '../../../helpers/oauth';
 const router = express.Router();
@@ -83,11 +83,19 @@ router.get(
 					q: Validators.string,
 					roles: Validators.optional(
 						Validators.and(Validators.string, {
-							run: isValidRole,
+							run: data =>
+								isValidRoles((data as string).split(',')),
 							errorMessage: 'Invalid roles list',
 						}),
 					),
-					count: Validators.optional(Validators.anyNumber),
+					count: Validators.optional(
+						Validators.and(
+							Validators.anyNumber,
+							Validators.integer,
+							Validators.gt(0),
+						),
+					),
+					me: Validators.optional(Validators.anyBoolean),
 				},
 			},
 		}),
@@ -95,10 +103,11 @@ router.get(
 		try {
 			if (!requestHasUser(req)) return;
 
-			const {q, roles, count} = req.query as {
+			const {q, roles, count, me} = req.query as {
 				q: string;
 				roles?: string;
 				count?: string;
+				me?: string;
 			};
 
 			if (q.length < 3) return res.status(200).send([]);
@@ -115,6 +124,7 @@ router.get(
 
 			const results = await User.fuzzySearch(q, {
 				roles: {$bitsAnySet: roleBitfield},
+				_id: booleanFromData(me) ? {$ne: req.user.id} : undefined,
 			});
 
 			const byID =
