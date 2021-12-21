@@ -208,23 +208,31 @@ transactionSchema.methods.getUserText = async function (
 };
 
 transactionSchema.methods.toAPIResponse = async function (
-	user?: string,
+	user?: IUserDoc,
 ): Promise<ITransactionAPIResponse> {
 	let json: Omit<ITransaction, 'date'> = this.toJSON();
 
 	let res: ITransactionAPIResponse = {
 		...json,
 		date: this.date.toISOString(),
+		canManage:
+			(user &&
+				(user.hasRole('ADMIN') ||
+					(user.hasRole('STAFF') &&
+						user.id === this.from.id &&
+						this.date.getTime() >
+							Date.now() - 1000 * 60 * 60 * 24))) ||
+			false,
 	};
 
 	if (res.from.id && !res.from.text) {
 		res.from.text = (await this.getUserText('FROM')) || null;
-		if (user) res.from.me = user === res.from.id;
+		if (user) res.from.me = user.id === res.from.id;
 	}
 
 	if (res.to.id && !res.to.text) {
 		res.to.text = (await this.getUserText('TO')) || null;
-		if (user) res.to.me = user === res.to.id;
+		if (user) res.to.me = user.id === res.to.id;
 	}
 
 	return res;

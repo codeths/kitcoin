@@ -159,7 +159,7 @@ export interface ITransactionMethods {
 	 * Turn this transaction into a JSON object for API output
 	 * @param user Current user's ID
 	 */
-	toAPIResponse(user?: string): Promise<ITransactionAPIResponse>;
+	toAPIResponse(user?: IUserDoc): Promise<ITransactionAPIResponse>;
 }
 
 export type ITransactionAPIResponse = Omit<ITransaction, 'date'> & {
@@ -179,6 +179,10 @@ export type ITransactionAPIResponse = Omit<ITransaction, 'date'> & {
 		 */
 		me?: boolean;
 	};
+	/**
+	 * Can be managed by current user
+	 */
+	canManage: boolean;
 };
 
 export type ITransactionDoc = ITransaction &

@@ -110,7 +110,7 @@ router.get(
 				),
 				docCount,
 				transactions: await Promise.all(
-					transactions.map(t => t.toAPIResponse(req.user.id)),
+					transactions.map(t => t.toAPIResponse(req.user)),
 				),
 			});
 		} catch (e) {
@@ -178,7 +178,7 @@ router.post(
 					}).save();
 					dbUser!.balance += amount as number;
 					await dbUser!.save();
-					return t.toAPIResponse(req.user.id);
+					return t.toAPIResponse(req.user);
 				}),
 			);
 			req.user.balance -= amount * transactions.length;
