@@ -75,18 +75,17 @@
 		loadTimeout = setTimeout(
 			() => {
 				submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
-				if (res.ok) {
+				if (res && res.ok) {
 					balance -= parseFloat(formData.values.amount) * numStudents;
 					dispatch('balance', balance);
 					if (form.reset) form.reset();
-				}
-				if (modal && res && res.ok) {
 					dispatch('close', res && res.ok);
-				} else {
-					clearTimeout(resetTimeout);
-					resetTimeout = setTimeout(() => {
-						submitStatus = null;
-					}, 3000);
+					if (!modal) {
+						clearTimeout(resetTimeout);
+						resetTimeout = setTimeout(() => {
+							submitStatus = null;
+						}, 3000);
+					}
 				}
 			},
 			wait > 0 ? wait : 0,
