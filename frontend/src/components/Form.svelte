@@ -38,8 +38,6 @@
 	}
 
 	function submit(e) {
-		console.log(e);
-		console.log(isValid);
 		e.preventDefault();
 		if (!isValid) return;
 		dispatch('submit', values);
