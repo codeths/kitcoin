@@ -17,7 +17,7 @@ type PromptType = 'none' | 'consent' | 'select_account';
 
 import {google, Auth} from 'googleapis';
 import express from 'express';
-import {client_id, client_secret} from '../config/keys.json';
+import {client_id, client_secret, oauthDomain} from '../config/keys.json';
 import {User, IUserDoc} from './schema';
 
 /**
@@ -87,6 +87,7 @@ function getAuthURL({
 		prompt,
 		include_granted_scopes: true,
 		login_hint: user,
+		hd: oauthDomain || undefined,
 	});
 }
 
@@ -136,7 +137,8 @@ export async function oauthCallback(
 		)?.value;
 		const googleID = person.data.resourceName.split('/')[1];
 		if (!name || !email) return reject({error: 'Could not get user'});
-
+		if (oauthDomain && !email.endsWith(`@${oauthDomain}`))
+			return reject({error: 'Invalid email domain'});
 		let user = await User.findOne().byId(googleID);
 		if (user) {
 			if (
