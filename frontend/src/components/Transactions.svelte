@@ -4,6 +4,8 @@
 	*/
 	import {getTransactions} from '../utils/api.js';
 	import Loading from './Loading.svelte';
+	import ToastContainer from './ToastContainer.svelte';
+	let toastContainer;
 
 	export let user = undefined;
 	let page = 1;
@@ -21,7 +23,7 @@
 		any: false,
 	};
 
-	async function load(p = page, which) {
+	export async function load(p = page, which) {
 		if (which) loading[which] = true;
 		await getTransactions(user, p)
 			.then(res => {
@@ -34,6 +36,18 @@
 			});
 
 		if (which) loading[which] = false;
+	}
+
+	async function deleteTransaction(id) {
+		let res = await fetch(`/api/transactions/${id}`, {
+			method: 'DELETE',
+		}).catch(e => {});
+		if (res && res.ok) {
+			toastContainer.toast('Transaction deleted!', 'success');
+		} else {
+			toastContainer.toast('Error deleting transaction', 'error');
+		}
+		load();
 	}
 
 	function negativeTransaction(transaction) {
@@ -63,31 +77,52 @@
 					<th class="px-2 pb-2">Date</th>
 					<th class="px-2 pb-2">Description</th>
 					<th class="px-2 pb-2">Amount</th>
+					<th class="px-2 pb-2" />
 				</tr>
 			</thead>
 			<tbody class="w-full divide-y divide-gray-300">
 				{#each transactions.transactions as item}
 					<tr>
-						<td
-							class="px-2 pt-4 md:py-4 block mr-8 md:table-cell md:mr-0 overflow-ellipsis"
+						<div
+							class="flex flex-row align-middle justify-between md:contents"
 						>
-							{new Date(item.date).toLocaleDateString()}
-							{new Date(item.date).toLocaleTimeString([], {
-								hour: 'numeric',
-								minute: '2-digit',
-							})}
-						</td>
-						<td
-							class="px-2 md:py-4 block md:table-cell break-words overflow-ellipsis"
-						>
-							{item.to.me
-								? `${item.from.id ? 'From ' : ''}${
-										item.from.text || 'Unknown'
-								  }`
-								: `${item.to.id ? 'To ' : ''}${
-										item.to.text || 'Unknown'
-								  }`}{item.reason ? `: ${item.reason}` : ''}
-						</td>
+							<div class="flex-col align-middle md:contents">
+								<td
+									class="px-2 pt-4 md:py-4 block mr-8 md:table-cell md:mr-0 overflow-ellipsis"
+								>
+									{new Date(item.date).toLocaleDateString()}
+									{new Date(item.date).toLocaleTimeString(
+										[],
+										{
+											hour: 'numeric',
+											minute: '2-digit',
+										},
+									)}
+								</td>
+								<td
+									class="px-2 md:py-4 block md:table-cell break-words overflow-ellipsis"
+								>
+									{item.to.me
+										? `${item.from.id ? 'From ' : ''}${
+												item.from.text || 'Unknown'
+										  }`
+										: `${item.to.id ? 'To ' : ''}${
+												item.to.text || 'Unknown'
+										  }`}{item.reason
+										? `: ${item.reason}`
+										: ''}
+								</td>
+							</div>
+							{#if item.canManage}
+								<div class="flex-col self-center md:hidden">
+									<button
+										class="btn btn-ghost md:w-full"
+										on:click={deleteTransaction(item._id)}
+									>
+										<span class="icon-delete text-2xl" />
+									</button>
+								</div>{/if}
+						</div>
 						<td
 							class="px-2 pb-4 md:py-4 block md:table-cell text-right text-3xl md:text-left md:text-base {negativeTransaction(
 								item,
@@ -105,6 +140,15 @@
 								})}</span
 							></td
 						>
+						{#if item.canManage}
+							<td class="px-2 py-4 hidden md:table-cell">
+								<button
+									class="btn btn-ghost md:w-full md:justify-self-end p-0"
+									on:click={deleteTransaction(item._id)}
+								>
+									<span class="icon-delete text-xl" />
+								</button>
+							</td>{/if}
 					</tr>
 				{/each}
 			</tbody>
@@ -135,7 +179,11 @@
 	{:else}
 		<div class="pt-4">
 			<div class="text-center mb-2">
-				Showing page {transactions.page} of {transactions.pageCount}
+				{#if loading.any}
+					Loading...
+				{:else}
+					Showing page {transactions.page} of {transactions.pageCount}
+				{/if}
 			</div>
 			<div class="flex justify-center align-center">
 				<button
@@ -168,3 +216,5 @@
 		</div>
 	{/if}
 </div>
+
+<ToastContainer bind:this={toastContainer} />
