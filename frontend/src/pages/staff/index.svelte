@@ -74,6 +74,8 @@
 			allSelected = students.every(s => multiSelectStudents.has(s.id));
 		}
 	}
+
+	let transactions;
 </script>
 
 <!-- Content -->
@@ -85,6 +87,7 @@
 				<CreateTransaction
 					{balance}
 					on:balance={e => (balance = e.detail)}
+					on:close={() => transactions.load()}
 				/>
 			</div>
 		</div>
@@ -235,7 +238,7 @@
 		<div class="lg:col-span-12 my-4 lg:mx-2">
 			<h1 class="text-4xl font-medium mb-2">Transaction History</h1>
 			<div>
-				<Transactions />
+				<Transactions bind:this={transactions} />
 			</div>
 		</div>
 	</div>
@@ -264,6 +267,7 @@
 				on:close={e => {
 					showModal = false;
 					if (e && e.detail == true) {
+						transactions.load();
 						multiSelect = false;
 						setTimeout(
 							() =>
