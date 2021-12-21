@@ -4,37 +4,47 @@ const promisify = require('util').promisify;
 const exec = promisify(require('child_process').exec);
 const spawn = require('child_process').spawn;
 const readline = require('readline');
+const fs = require('fs');
 let args = process.argv.slice(2);
+let env = process.env.NODE_ENV || 'development';
+
+function getEnv() {
+	if (args.includes('--production')) env = 'production';
+	else if (args.includes('--dev')) env = 'development';
+}
 
 gulp.task('default', async () => {
-	await delDist();
-	await typescript();
-	await icons();
-	await task(copy());
+	getEnv();
+	await full();
 	return;
 });
 
 gulp.task('copy', async () => {
+	getEnv();
 	await task(copy());
 	return;
 });
 
 gulp.task('clear', async () => {
+	getEnv();
 	await delDist();
 	return;
 });
 
 gulp.task('typescript', async () => {
+	getEnv();
 	await typescript();
 	return;
 });
 
 gulp.task('frontend', async () => {
+	getEnv();
 	await frontend();
 	return;
 });
 
 gulp.task('icons', async () => {
+	getEnv();
 	await icons();
 	return;
 });
@@ -74,7 +84,7 @@ async function frontend() {
 			'npm',
 			[
 				'run',
-				process.env.NODE_ENV == 'production' ? 'build' : 'dev',
+				env == 'production' ? 'build' : 'dev',
 				'--prefix',
 				'frontend',
 			],
@@ -95,7 +105,17 @@ async function icons() {
 	});
 }
 
+async function full() {
+	let res =
+		(await delDist()) &&
+		(await typescript()) &&
+		(await icons()) &&
+		(await task(copy()));
+	return res;
+}
+
 gulp.task('dev', async () => {
+	getEnv();
 	dev();
 });
 
@@ -152,11 +172,7 @@ function dev() {
 			node();
 		} else if (['build', 'gulp'].includes(line)) {
 			console.log('Rebuilding');
-			await delDist();
-			let res =
-				(await typescript()) &&
-				(await frontend()) &&
-				(await task(copy()));
+			let res = await full();
 			if (res) {
 				console.log(`Done`);
 				node();
@@ -216,9 +232,11 @@ function node() {
 	} else {
 		console.log('Node started');
 	}
-	nodeProcess = spawn('node', ['.'], {
-		stdio: 'inherit',
-	});
+	if (fs.existsSync('dist/index.js')) {
+		nodeProcess = spawn('node', ['.'], {
+			stdio: 'inherit',
+		});
+	}
 }
 
 process.on('exit', function () {
