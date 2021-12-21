@@ -90,7 +90,7 @@ export type IUserQuery = Query<IUserDoc, IUserDoc> & IUserQueries;
 
 export interface IUserQueries {
 	byId(googleID: string): IUserQuery;
-	byStudentId(studentID: string): IUserQuery;
+	bySchoolId(schoolID: string): IUserQuery;
 	byEmail(email: string): IUserQuery;
 	byToken(token: string): IUserQuery;
 }

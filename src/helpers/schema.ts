@@ -69,6 +69,7 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>({
 
 userSchema.index({email: 1});
 userSchema.index({googleID: 1}, {unique: true});
+userSchema.index({bySchoolId: 1}, {unique: true});
 
 userSchema.query.byEmail = function (email: string): IUserQueries {
 	return this.where({email});
@@ -78,8 +79,8 @@ userSchema.query.byId = function (googleID: string): IUserQueries {
 	return this.where({googleID});
 };
 
-userSchema.query.byStudentId = function (studentID: string): IUserQueries {
-	return this.where({studentID});
+userSchema.query.bySchoolId = function (schoolID: string): IUserQueries {
+	return this.where({schoolID});
 };
 
 userSchema.query.byToken = function (token: string): IUserQueries {

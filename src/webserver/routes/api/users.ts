@@ -134,7 +134,7 @@ router.get(
 			const results = await User.fuzzySearch(q, options);
 
 			const byID =
-				q.match(/^\d{5,6}$/) && (await User.findOne().byStudentId(q));
+				q.match(/^\d{5,6}$/) && (await User.findOne().bySchoolId(q));
 
 			let list = results
 				.map(x => x.toJSON())
