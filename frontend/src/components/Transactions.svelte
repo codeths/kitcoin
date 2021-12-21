@@ -36,6 +36,12 @@
 		if (which) loading[which] = false;
 	}
 
+	function negativeTransaction(transaction) {
+		return transaction.from.me
+			? transaction.amount > 0
+			: transaction.amount < 0;
+	}
+
 	$: {
 		if (transactions.page !== page) load(page);
 	}
@@ -83,12 +89,14 @@
 								  }`}{item.reason ? `: ${item.reason}` : ''}
 						</td>
 						<td
-							class="px-2 pb-4 md:py-4 block md:table-cell text-right text-3xl md:text-left md:text-base {item.amount <
-							0
+							class="px-2 pb-4 md:py-4 block md:table-cell text-right text-3xl md:text-left md:text-base {negativeTransaction(
+								item,
+							)
 								? 'text-orange-eths'
 								: 'text-base-content'}"
 							><span>
-								{#if item.amount < 0}<span>&minus;&nbsp;</span
+								{#if negativeTransaction(item)}<span
+										>&minus;&nbsp;</span
 									>{:else}<span>&ensp;&nbsp;</span>{/if}<span
 									class="icon-currency mx-1"
 								/>{Math.abs(item.amount).toLocaleString([], {
