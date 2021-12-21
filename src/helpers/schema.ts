@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import {mongo as mongoURL} from '../config/keys.json';
+import {mongo as mongoURL, weeklyBalance} from '../config/keys.json';
 import {
 	IUserQueries,
 	UserRoles,
@@ -40,7 +40,11 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>({
 	},
 	balance: {
 		type: Number,
+		get: getBalance,
 		default: 0,
+	},
+	balanceExpires: {
+		type: Date,
 	},
 	tokens: {
 		refresh: {
@@ -109,6 +113,23 @@ userSchema.methods.hasAnyRole = function (roles: UserRoleTypes[]): boolean {
 userSchema.methods.hasAllRoles = function (roles: UserRoleTypes[]): boolean {
 	return roles.every(role => this.hasRole(role));
 };
+
+function getBalance(this: IUserDoc, balance: number) {
+	if (!this.hasRole('STAFF')) return balance;
+	if (
+		!this.balanceExpires ||
+		this.balanceExpires.getDate() < new Date().getDate()
+	) {
+		this.balanceExpires = new Date(
+			new Date().getFullYear(),
+			new Date().getMonth(),
+			new Date().getDate() + 7 - new Date().getDay(),
+		); // end of week
+		this.balance = weeklyBalance;
+		return weeklyBalance;
+	}
+	return balance;
+}
 
 userSchema.plugin(fuzzySearch, {
 	fields: [

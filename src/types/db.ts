@@ -52,6 +52,10 @@ export interface IUser {
 	 */
 	balance: number;
 	/**
+	 * Staff - when their balance resets
+	 */
+	balanceExpires?: Date;
+	/**
 	 * The user's roles (bitfield)
 	 */
 	roles: number;

@@ -3,5 +3,6 @@
 	"port": "port to listen on",
 	"client_id": "Google client ID",
 	"client_secret": "Google client secret",
-	"sessionSecret": "Session secret for mongo"
+	"sessionSecret": "Session secret for mongo",
+	"weeklyBalance": "Staff's weekly balance (number)"
 }
