@@ -207,6 +207,17 @@ transactionSchema.methods.getUserText = async function (
 	);
 };
 
+transactionSchema.methods.canManage = function (user?: IUserDoc): boolean {
+	return (
+		(user &&
+			(user.hasRole('ADMIN') ||
+				(user.hasRole('STAFF') &&
+					user.id === this.from.id &&
+					this.date.getTime() > Date.now() - 1000 * 60 * 60 * 24))) ||
+		false
+	);
+};
+
 transactionSchema.methods.toAPIResponse = async function (
 	user?: IUserDoc,
 ): Promise<ITransactionAPIResponse> {
@@ -215,14 +226,7 @@ transactionSchema.methods.toAPIResponse = async function (
 	let res: ITransactionAPIResponse = {
 		...json,
 		date: this.date.toISOString(),
-		canManage:
-			(user &&
-				(user.hasRole('ADMIN') ||
-					(user.hasRole('STAFF') &&
-						user.id === this.from.id &&
-						this.date.getTime() >
-							Date.now() - 1000 * 60 * 60 * 24))) ||
-			false,
+		canManage: this.canManage(user),
 	};
 
 	if (res.from.id && !res.from.text) {

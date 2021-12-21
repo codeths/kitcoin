@@ -156,6 +156,11 @@ export interface ITransactionMethods {
 	 */
 	getUserText(which: 'FROM' | 'TO'): Promise<string | null>;
 	/**
+	 * Get whether or not a user can manage this transaction
+	 * @param user User to check
+	 */
+	canManage(user?: IUserDoc): boolean;
+	/**
 	 * Turn this transaction into a JSON object for API output
 	 * @param user Current user's ID
 	 */

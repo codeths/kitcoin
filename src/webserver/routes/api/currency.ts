@@ -215,23 +215,10 @@ router.delete(
 			const transaction = await Transaction.findById(id);
 			if (!transaction)
 				return res.status(404).send('Transaction does not exist.');
-			if (!req.user.hasRole('ADMIN')) {
-				if (transaction.from.id != req.user.id)
-					return res
-						.status(403)
-						.send(
-							'You are not allowed to delete this transaction.',
-						);
-				if (
-					transaction.date.getTime() <
-					Date.now() - 1000 * 60 * 60 * 24
-				)
-					return res
-						.status(403)
-						.send(
-							'You cannot delete transactions older than 24 hours.',
-						);
-			}
+			if (!transaction.canManage(req.user))
+				return res
+					.status(403)
+					.send('You are not allowed to delete this transaction.');
 
 			await transaction.delete();
 			let fromUser = await User.findById(transaction.from.id);
