@@ -3,26 +3,38 @@
 	let toasts = new Map();
 	let id = 0;
 
-	// let toastArray = [];
+	let toastArray = [];
 
-	$: toastArray = [...toasts]
-		.map(x => ({id: x[0], ...x[1]}))
-		.filter(x => x.timeout > Date.now());
+	$: toastArray = Array.from(toasts).map(x => ({id: x[0], ...x[1]}));
 
 	export function toast(body, style, duration = 5000) {
-		toasts.set(id, {style, body, timeout: Date.now() + duration});
+		toasts.set(id, {style, body});
+		let thisId = id;
 		toasts = toasts;
+		console.log(`created ${thisId}`);
+		setTimeout(() => {
+			console.log(`removing ${thisId}`);
+			els[thisId].close();
+		}, duration);
 		id++;
 	}
 
-	function removeToast(id) {
-		toasts.delete(id);
-		toasts = toasts;
-	}
+	let els = [];
 </script>
 
 <div class="flex flex-col justify-center fixed right-0 top-0 m-4 z-[9999]">
-	{#each toastArray as {style, body, timeout, id}}
-		<Toast {style} {body} {timeout} on:close={() => removeToast(id)} />
+	{#each toastArray as {style, body, id}}
+		<Toast
+			{style}
+			{body}
+			bind:this={els[id]}
+			on:close={e => {
+				toasts.set(id, {...toasts.get(id), closed: true});
+				if (Array.from(toasts.values()).every(x => x.closed)) {
+					toasts.clear();
+					toastArray = [];
+				}
+			}}
+		/>
 	{/each}
 </div>

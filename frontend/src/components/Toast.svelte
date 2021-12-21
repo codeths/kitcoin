@@ -10,11 +10,16 @@
 
 	if (timeout) {
 		setTimeout(() => {
-			if (toast) toast.style.transform = 'translateX(calc(100% + 1rem))';
-			setTimeout(() => {
-				dispatch('close');
-			}, 300);
+			close();
 		}, timeout - Date.now());
+	}
+
+	export function close() {
+		if (toast) toast.style.transform = 'translateX(calc(100% + 1rem))';
+		setTimeout(() => {
+			toast.style.display = 'none';
+			dispatch('close');
+		}, 300);
 	}
 </script>
 
