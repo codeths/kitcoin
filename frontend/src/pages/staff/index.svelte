@@ -4,6 +4,7 @@
 	import Loading from '../../components/Loading.svelte';
 	import CreateTransaction from '../../components/CreateTransaction.svelte';
 	import ToastContainer from '../../components/ToastContainer.svelte';
+	import Transactions from '../../components/Transactions.svelte';
 	let toastContainer;
 	import {getBalance, getClasses, getClassStudents} from '../../utils/api.js';
 
@@ -229,6 +230,12 @@
 						</div>
 					{/if}
 				{/if}
+			</div>
+		</div>
+		<div class="lg:col-span-12 my-4 lg:mx-2">
+			<h1 class="text-4xl font-medium mb-2">Transaction History</h1>
+			<div>
+				<Transactions />
 			</div>
 		</div>
 	</div>
