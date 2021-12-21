@@ -27,7 +27,7 @@ Array of classes
 [];
 ```
 
-### GET `/students/:class`
+## GET `/students/:class`
 
 Get a list of students in a class. Requires staff role.
 
@@ -83,7 +83,7 @@ Returns all transactions for a user. Requires staff role for retrieving other us
 
 Array of transactions
 
-### POST `/transactions`
+## POST `/transactions`
 
 Create a transaction. Requires staff role.
 
@@ -110,9 +110,23 @@ Body:
 }
 ```
 
+## DELETE `/transactions/:id`
+
+Delete a transaction.
+Staff can delete their own transactions within the last 24 hours.
+Admins can delete any transaction.
+
+### Request
+
+None
+
+### Response
+
+None
+
 # Store
 
-## Get `/stores`
+## GET `/stores`
 
 Get a list of stores that you have access to.
 

@@ -193,4 +193,72 @@ router.post(
 	},
 );
 
+// Delete transaction
+router.delete(
+	'/transactions/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['STAFF', 'ADMIN'],
+			validators: {
+				params: {
+					id: Validators.objectID,
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			let {id} = req.params;
+
+			const transaction = await Transaction.findById(id);
+			if (!transaction)
+				return res.status(404).send('Transaction does not exist.');
+			if (!req.user.hasRole('ADMIN')) {
+				if (transaction.from.id != req.user.id)
+					return res
+						.status(403)
+						.send(
+							'You are not allowed to delete this transaction.',
+						);
+				if (
+					transaction.date.getTime() <
+					Date.now() - 1000 * 60 * 60 * 24
+				)
+					return res
+						.status(403)
+						.send(
+							'You cannot delete transactions older than 24 hours.',
+						);
+			}
+
+			await transaction.delete();
+			let fromUser = await User.findById(transaction.from.id);
+			if (
+				fromUser &&
+				fromUser.hasRole('STAFF') &&
+				(!fromUser.balanceExpires ||
+					fromUser.balanceExpires.getTime() -
+						1000 * 60 * 60 * 24 * 7 <
+						transaction.date.getTime())
+			) {
+				fromUser.balance += transaction.amount;
+				await fromUser.save();
+			}
+			let toUser =
+				transaction.to.id && (await User.findById(transaction.to.id));
+			if (toUser) {
+				toUser.balance -= transaction.amount;
+				await toUser.save();
+			}
+			res.status(200).send('Transaction deleted.');
+		} catch (e) {
+			try {
+				res.status(500).send('An error occured.');
+			} catch (e) {}
+		}
+	},
+);
+
 export default router;
