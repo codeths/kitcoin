@@ -14,11 +14,13 @@ env:
 jobs:
     push:
         runs-on: ubuntu-latest
-
+        permissions:
+            contents: read
+            pull-requests: write
         steps:
             - uses: actions/checkout@v2
               with:
-                submodules: recursive
+                  submodules: recursive
             - name: Build image
               run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg GITHUB_SHA --build-arg GITHUB_REPOSITORY
             - name: Log into registry
