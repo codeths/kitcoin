@@ -1,9 +1,9 @@
 {
-	"mongo": "mongodb auth url",
-	"port": "port to listen on",
-	"client_id": "Google client ID",
-	"client_secret": "Google client secret",
-	"oauthDomain": "Google OAuth domain, or null to disable",
-	"sessionSecret": "Session secret for mongo",
-	"weeklyBalance": "Staff's weekly balance (number)"
+	"mongo": "mongodb://user:pass@127.0.0.1:27017/db",
+	"port": 8000,
+	"client_id": "xxxxxx-xxxxxxxxxx.apps.googleusercontent.com",
+	"client_secret": "xxxxxxxxxxxxxxxxxxxx",
+	"oauthDomain": null,
+	"sessionSecret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"weeklyBalance": 100
 }
