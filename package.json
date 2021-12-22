@@ -5,6 +5,8 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "gulp",
+		"build:dev": "gulp --dev",
+		"build:production": "gulp --production",
 		"dev": "gulp dev",
 		"tsc": "tsc",
 		"watch": "gulp dev --watch",
