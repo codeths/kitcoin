@@ -4,7 +4,7 @@
 
 ## Docker
 
-Docker Copmose example:
+Docker Compose example:
 
 ```yml
 version: '3.7'
@@ -21,14 +21,14 @@ services:
             - './keys.json:/app/dist/config/keys.json'
 ```
 
-Create a config file in that direcory.
+Create a [config file](#config) called keys.json in that direcory.
 
 ## Non-Docker
 
 ### Install
 
 1. Clone the repo: `git clone --recurse-submodules git@github.com:chromezoneeths/kitcoin.git`
-2. Copy `src/config/keys.example.json` to `src/config/keys.json` and fill in the values as described.
+2. Copy `src/config/keys.example.json` to `src/config/keys.json` and set it up. See the [config section](#config) for details.
 3. Run `npm install`.
 4. Run `npm run build`.
 
