@@ -238,7 +238,10 @@
 		<div class="lg:col-span-12 my-4 lg:mx-2">
 			<h1 class="text-4xl font-medium mb-2">Transaction History</h1>
 			<div>
-				<Transactions bind:this={transactions} />
+				<Transactions
+					bind:this={transactions}
+					on:balance={e => (balance = e.detail)}
+				/>
 			</div>
 		</div>
 	</div>

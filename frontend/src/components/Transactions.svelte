@@ -2,10 +2,12 @@
 	/*
 	  Transaction object
 	*/
-	import {getTransactions} from '../utils/api.js';
+	import {getBalance, getTransactions} from '../utils/api.js';
 	import Loading from './Loading.svelte';
 	import ToastContainer from './ToastContainer.svelte';
 	let toastContainer;
+	import {createEventDispatcher, onMount} from 'svelte';
+	const dispatch = createEventDispatcher();
 
 	export let user = undefined;
 	let page = 1;
@@ -44,6 +46,7 @@
 		}).catch(e => {});
 		if (res && res.ok) {
 			toastContainer.toast('Transaction deleted!', 'success');
+			getBalance().then(bal => dispatch('balance', bal));
 		} else {
 			toastContainer.toast('Error deleting transaction', 'error');
 		}
