@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "A frontend for Kitcoin made with Svelte",
   "scripts": {
-    "dev": "routify -b && npx vite build --mode dev",
+    "dev": "routify & vite --port 8080",
+    "build:dev": "routify -b && vite build --mode dev",
     "build": "routify -b && vite build",
     "format": "prettier --write .",
     "icons": "fantasticon && npm run build"
