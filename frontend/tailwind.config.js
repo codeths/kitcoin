@@ -31,8 +31,8 @@ module.exports = {
 	theme: {
 		extend: {
 			colors: {
-				'blue-eths': '#0d2240',
-				'orange-eths': '#e24301',
+				'blue-eths': '#1a2741',
+				'orange-eths': '#c34614',
 			},
 		},
 	},
