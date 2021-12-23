@@ -1,9 +1,5 @@
 <script>
 	import {onMount, onDestroy} from 'svelte';
-	/*
-    Item: {img: '/path/to/image.png', price: 20, name: 'Super Cool Item'}
-    This will change in the future, with things like a link being added.
-  */
 	export let items = []; // An array of items. (See above)
 	let scrollElement;
 	let buttonStates = {
@@ -27,6 +23,9 @@
 		if (trueOffset == 0) buttonStates.left = true;
 		if (trueOffset == maxOffset) buttonStates.right = true;
 	};
+	/**
+	 * @todo Improve scroll handling
+	 */
 	const handleClick = btn => {
 		switch (btn) {
 			case 'left':

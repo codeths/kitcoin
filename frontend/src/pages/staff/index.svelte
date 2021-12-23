@@ -80,8 +80,8 @@
 
 <!-- Content -->
 <div class="mx-8 my-4">
-	<div class="lg:grid lg:grid-cols-12">
-		<div class="lg:col-span-7 lg:mx-2 my-4">
+	<div class="grid grid-cols-12">
+		<div class="mx-2 my-4 col-span-12 lg:col-span-7">
 			<h1 class="text-3xl font-medium mb-2">Send Kitcoin</h1>
 			<div class="bg-base-100 shadow-md rounded px-8 py-8">
 				<CreateTransaction
@@ -91,12 +91,10 @@
 				/>
 			</div>
 		</div>
-		<div class="lg:col-span-5 lg:mx-2 my-4">
+		<div class="mx-2 my-4 col-span-12 md:col-span-5">
 			<h1 class="text-3xl font-medium mb-2">Available Kitcoin</h1>
 			<div class="lg:col-span-2 sm:max-w-sm lg:max-w-none">
-				<div
-					class="flex bg-base-100 shadow-md rounded py-10 min-h-40 border-t-8 border-blue-eths"
-				>
+				<div class="flex bg-base-100 shadow-md rounded py-10 min-h-40">
 					<h1
 						class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full h-full"
 					>
@@ -116,12 +114,12 @@
 				</div>
 			</div>
 		</div>
-		<div class="lg:col-span-12 lg:mx-2 my-4">
+		<div class="mx-2 my-4 col-span-12">
 			<div class="bg-base-100 shadow-md rounded px-8 py-8">
 				<select
 					bind:value={selectedClass}
 					on:change={classroomSelect}
-					class="select select-bordered w-full mb-4"
+					class="select select-bordered w-full"
 				>
 					<option disabled value="" selected>
 						{selectMsg}
@@ -135,13 +133,13 @@
 				{#if selectedClass}
 					{#if !students}
 						<span
-							class="text-center text-1xl sm:text-3xl xl:text-4xl font-medium inline-block w-full"
+							class="text-center text-1xl sm:text-3xl xl:text-4xl font-medium inline-block w-full mt-4"
 						>
 							Loading students...
 						</span>
 					{:else if typeof students == 'string'}
 						<span
-							class="text-center text-1xl sm:text-3xl xl:text-4xl font-medium inline-block w-full"
+							class="text-center text-1xl sm:text-3xl xl:text-4xl font-medium inline-block w-full mt-4"
 						>
 							{students}
 						</span>
@@ -153,7 +151,7 @@
 							id="multiselect"
 						/>
 						<div
-							class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+							class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-4"
 						>
 							<label
 								for="multiselect"
@@ -235,7 +233,7 @@
 				{/if}
 			</div>
 		</div>
-		<div class="lg:col-span-12 my-4 lg:mx-2">
+		<div class="mx-2 my-4 col-span-12">
 			<h1 class="text-4xl font-medium mb-2">Transaction History</h1>
 			<div>
 				<Transactions

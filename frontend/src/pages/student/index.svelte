@@ -8,22 +8,6 @@
 
 	metatags.title = 'Student Home - Kitcoin';
 
-	const newItems = [
-		{img: 'shop_images/beans.png', price: 15, name: 'Beans'},
-		{img: 'shop_images/blahaj.webp', price: 17.99, name: 'Blahaj'},
-		{
-			img: 'shop_images/supreme_brick.png',
-			price: 300,
-			name: 'Supreme Brick',
-		},
-		{
-			img: 'shop_images/pro_display_stand.jpeg',
-			price: 999,
-			name: 'Pro Stand',
-		},
-		{img: 'shop_images/banana.png', price: 20000, name: 'Banana'},
-	];
-
 	let ctx = getContext('userInfo');
 	let userInfo;
 	(async () => {
@@ -35,8 +19,10 @@
 
 <!-- Content-->
 <div class="mx-8 my-4">
-	<div class="lg:grid lg:grid-cols-12">
-		<div class="lg:col-span-4 sm:max-w-sm lg:max-w-none my-4 lg:mx-2">
+	<div class="grid grid-cols-12">
+		<div
+			class="mx-2 my-4 col-span-12 md:col-span-8 lg:col-span-6"
+		>
 			<h1 class="text-3xl font-medium mb-2">Balance</h1>
 			<div
 				class="flex bg-base-100 shadow-md rounded py-10 min-h-40 border-t-8 border-blue-eths"
@@ -59,13 +45,7 @@
 				</h1>
 			</div>
 		</div>
-		<div class="lg:col-span-8 my-4 lg:mx-2">
-			<h1 class="text-3xl font-medium mb-2">What's new</h1>
-			<div class="bg-base-100 shadow-md rounded">
-				<ItemDisplay items={newItems} />
-			</div>
-		</div>
-		<div class="lg:col-span-12 my-4 lg:mx-2">
+		<div class="mx-2 my-4 col-span-12">
 			<h1 class="text-4xl font-medium mb-2">Transaction History</h1>
 			<div>
 				<Transactions />

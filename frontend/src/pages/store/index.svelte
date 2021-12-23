@@ -19,31 +19,6 @@
 		)
 			authMsg = 'CLASSROOM';
 	})();
-
-	const newItems = [
-		{img: '/shop_images/beans.png', price: 15, name: 'Beans'},
-		{img: '/shop_images/blahaj.webp', price: 17.99, name: 'Blahaj'},
-		{
-			img: '/shop_images/supreme_brick.png',
-			price: 300,
-			name: 'Supreme Brick',
-		},
-		{
-			img: '/shop_images/pro_display_stand.jpeg',
-			price: 999,
-			name: 'Pro Stand',
-		},
-		{img: '/shop_images/banana.png', price: 20000, name: 'Banana'},
-	];
-	const categories = [
-		//These are for the highlighted store (wildkit store)
-		//TODO: Use an image instead of a color for the background?
-		//Be sure to add any colors used to Tailwind's safelist (Ex: 'from-{color}-300' and 'to-{color}-200')
-		['Blahaj', 'blue'],
-		['Food', 'yellow'],
-		['Apple', 'green'],
-		['Supreme', 'red'],
-	];
 </script>
 
 <!-- Content -->
@@ -124,37 +99,4 @@
 	{:catch}
 		<h2>Error loading stores</h2>
 	{/await}
-
-	{#if newItems.length != 0}
-		<div class="mt-12">
-			<h2 class="text-4xl font-bold mb-6">New Arrivals</h2>
-			<div class="bg-base-200 rounded-md filter drop-shadow-md">
-				<ItemDisplay items={newItems} />
-			</div>
-		</div>
-	{/if}
-
-	{#if categories.length != 0}
-		<!-- Placeholder for now, not a big priority. These would be for the main store -->
-		<div class="mt-12">
-			<h2 class="text-4xl font-bold mb-6">Categories</h2>
-			<div
-				class="lg:grid lg:grid-cols-3 xl:grid-cols-4 gap-10 space-y-10 lg:space-y-0"
-			>
-				{#each categories as [category, color]}
-					<div
-						class="relative h-72 lg:h-80 xl:h-96 bg-gradient-to-t from-{color ||
-							'gray'}-300 to-{color ||
-							'gray'}-200 rounded-xl max-w-screen-md lg:max-w-none mx-auto lg:mx-0 filter drop-shadow-md"
-					>
-						<p
-							class="text-3xl font-semibold absolute bottom-0 mx-8 lg:mx-12 mb-12 text-gray-800"
-						>
-							{category}
-						</p>
-					</div>
-				{/each}
-			</div>
-		</div>
-	{/if}
 </div>
