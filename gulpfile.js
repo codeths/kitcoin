@@ -84,7 +84,7 @@ async function frontend() {
 			'npm',
 			[
 				'run',
-				env == 'production' ? 'build:production' : 'build:dev',
+				env == 'production' ? 'build' : 'build:dev',
 				'--prefix',
 				'frontend',
 			],
