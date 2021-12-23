@@ -16,10 +16,6 @@
 	export let query = '';
 	export let results = null;
 
-	$: {
-		if (!value) query = '';
-	}
-
 	function key(e) {
 		// On arrow down
 		if (e.keyCode === 40) {
@@ -73,11 +69,14 @@
 	}
 
 	let loading = false;
-	async function getResults(text, resetValue = false) {
+	async function getResults(text, resetValue = false, resetTo = '') {
 		if (!text) text = '';
 		text = text.trim();
 		if (resetValue && value) {
+			if (!resetTo) resetTo = '';
 			value = '';
+			query = resetTo;
+			text = resetTo;
 			dispatch('change', value);
 		}
 		try {
@@ -96,7 +95,7 @@
 		bind:value={query}
 		bind:error
 		on:input={e => {
-			getResults(e.target.value, true);
+			getResults(e.target.value, true, e.data);
 		}}
 		on:focus={e => {
 			focusindex = -1;
