@@ -39,5 +39,16 @@ module.exports = {
 	plugins: [require('daisyui')],
 	daisyui: {
 		logs: false,
+		themes:
+		{
+			'light': {
+				'primary': '#D2DAEE',
+				'primary-focus': '#C34614',
+				'base-100': '#ffffff',
+				'base-200': '#ffffff',
+				'base-300': '#d1d5db',
+				'base-content': '#1f2937',
+			}
+		}
 	},
 };
