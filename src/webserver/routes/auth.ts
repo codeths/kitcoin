@@ -134,11 +134,11 @@ router.get('/cbk', async (req, res) => {
 
 	if (!reqState || typeof reqState !== 'string')
 		return res
-			.status(400)
+			.setHeader('Cache-Control', 'no-cache')
 			.redirect(`/auth/login?redirect=${encodeURIComponent(redirect)}`);
 	if (reqState !== cookieState)
 		return res
-			.status(403)
+			.setHeader('Cache-Control', 'no-cache')
 			.redirect(`/auth/login?redirect=${encodeURIComponent(redirect)}`);
 
 	const session = crypto.randomBytes(48).toString('base64');
@@ -152,7 +152,7 @@ router.get('/cbk', async (req, res) => {
 	req.session.token = session;
 	res.clearCookie('state');
 
-	return res.redirect(redirect);
+	return res.setHeader('Cache-Control', 'no-cache').redirect(redirect);
 });
 
 router.use((req, res) => res.status(404).send());
