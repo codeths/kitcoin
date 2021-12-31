@@ -13,7 +13,12 @@ import {handleLogin} from './routes/auth';
 
 declare module 'express-session' {
 	interface SessionData {
-		token: string;
+		token?: string;
+		csrf?: {
+			state: string;
+			redirect?: string;
+			expires: number;
+		};
 	}
 }
 

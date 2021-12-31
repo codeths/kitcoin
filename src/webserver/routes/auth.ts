@@ -49,11 +49,12 @@ function handleLogin(
 	)
 		redirect = undefined;
 
-	let state = `${crypto.randomBytes(8).toString('hex')}-${encodeURIComponent(
-		redirect || '/',
-	)}`;
-	res.clearCookie('state');
-	res.cookie('state', state);
+	let state = crypto.randomBytes(8).toString('hex');
+	req.session.csrf = {
+		state,
+		redirect,
+		expires: Date.now() + 1000 * 60 * 60,
+	};
 	res.redirect(
 		307,
 		getAuthURL({
@@ -114,45 +115,31 @@ router.get('/cbk', async (req, res) => {
 	if (!code || typeof code !== 'string')
 		return res.status(400).send('Missing code');
 
-	const cookieState = req.cookies.state;
-	const reqState = req.query.state;
-	let [, redirect] = (
-		(typeof cookieState == 'string' && cookieState) ||
-		(typeof reqState == 'string' && reqState) ||
-		''
-	).split('-');
-	if (redirect) redirect = decodeURIComponent(redirect);
-	if (
-		!redirect ||
-		!ALLOWED_REDIRECTS.some(r =>
-			r instanceof RegExp
-				? new RegExp(`^${r.source}$`).test(redirect as string)
-				: r === redirect,
-		)
-	)
-		redirect = '/';
+	csrf: {
+		const sessionData = req.session.csrf;
+		if (!sessionData || sessionData.expires < Date.now()) break csrf;
+		const cookieState = sessionData.state;
+		const redirect = sessionData.redirect;
+		const reqState = req.query.state;
+		if (!reqState || typeof reqState !== 'string') break csrf;
+		if (cookieState !== reqState) break csrf;
 
-	if (!reqState || typeof reqState !== 'string')
-		return res
-			.setHeader('Cache-Control', 'no-cache')
-			.redirect(`/auth/login?redirect=${encodeURIComponent(redirect)}`);
-	if (reqState !== cookieState)
-		return res
-			.setHeader('Cache-Control', 'no-cache')
-			.redirect(`/auth/login?redirect=${encodeURIComponent(redirect)}`);
-
-	const session = crypto.randomBytes(48).toString('base64');
-	const user = await oauthCallback(code, session, getRedirectUrl(req)).catch(
-		err => {
+		const token = crypto.randomBytes(48).toString('base64');
+		req.session.token = token;
+		delete req.session.csrf;
+		const user = await oauthCallback(
+			code,
+			token,
+			getRedirectUrl(req),
+		).catch(err => {
 			res.status(401).send(err);
-		},
-	);
+		});
 
-	if (!user) return;
-	req.session.token = session;
-	res.clearCookie('state');
-
-	return res.setHeader('Cache-Control', 'no-cache').redirect(redirect);
+		return res
+			.setHeader('Cache-Control', 'no-cache')
+			.redirect(redirect || '/');
+	}
+	return res.setHeader('Cache-Control', 'no-cache').redirect(`/auth/login`);
 });
 
 router.use((req, res) => res.status(404).send());
