@@ -9,9 +9,9 @@
 		<div class="max-w-md">
 			<h1 class="mb-5 text-5xl font-bold">Kitcoin</h1>
 			<p class="mb-5">
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce
-				luctus diam eget ligula posuere blandit. Proin placerat nisl
-				dolor, vitae tempus elit euismod at.
+				Kitcoin is a digital currency that ETHS students can earn from
+				teachers or staff and spend in school stores. Sign in to view
+				your balance and private stores.
 			</p>
 			<a class="btn btn-primary" href="/signin" target="_self">Sign In</a>
 		</div>
