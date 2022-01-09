@@ -71,9 +71,9 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>({
 	roles: {type: Number, default: UserRoles.STUDENT},
 });
 
-userSchema.index({email: 1});
+userSchema.index({email: 1}, {unique: true, sparse: true});
 userSchema.index({googleID: 1}, {unique: true});
-userSchema.index({bySchoolId: 1}, {unique: true});
+userSchema.index({schoolID: 1}, {unique: true, sparse: true});
 
 userSchema.query.byEmail = function (email: string): IUserQueries {
 	return this.where({email});
