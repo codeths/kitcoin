@@ -133,7 +133,9 @@ router.get('/cbk', async (req, res) => {
 			getRedirectUrl(req),
 		).catch(err => {
 			res.status(401).send(err);
+			return null;
 		});
+		if (!user) return;
 
 		return res
 			.setHeader('Cache-Control', 'no-cache')
