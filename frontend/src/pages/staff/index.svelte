@@ -91,27 +91,25 @@
 				/>
 			</div>
 		</div>
-		<div class="mx-2 my-4 col-span-12 md:col-span-5">
+		<div class="mx-2 my-4 col-span-12 lg:col-span-5">
 			<h1 class="text-3xl font-medium mb-2">Available Kitcoin</h1>
-			<div class="lg:col-span-2 sm:max-w-sm lg:max-w-none">
-				<div class="flex bg-base-100 shadow-md rounded py-10 min-h-40">
-					<h1
-						class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full h-full"
-					>
-						{#if typeof balance == 'number'}
-							<span
-								class="icon-currency mr-3"
-							/>{balance.toLocaleString([], {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2,
-							})}
-						{:else if balance}
-							{balance}
-						{:else}
-							<Loading height="2rem" />
-						{/if}
-					</h1>
-				</div>
+			<div class="flex bg-base-100 shadow-md rounded py-10 min-h-40">
+				<h1
+					class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full h-full"
+				>
+					{#if typeof balance == 'number'}
+						<span
+							class="icon-currency mr-3"
+						/>{balance.toLocaleString([], {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2,
+						})}
+					{:else if balance}
+						{balance}
+					{:else}
+						<Loading height="2rem" />
+					{/if}
+				</h1>
 			</div>
 		</div>
 		<div class="mx-2 my-4 col-span-12">
