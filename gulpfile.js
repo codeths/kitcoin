@@ -120,6 +120,7 @@ function uploads() {
 			fs.mkdirSync(`./uploads/${x}`);
 		}
 	});
+	return true;
 }
 
 async function full() {
