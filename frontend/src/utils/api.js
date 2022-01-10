@@ -70,6 +70,7 @@ async function getClassStudents(id) {
 	if (res && res.ok) {
 		try {
 			const json = await res.json();
+			if (json.length == 0) return 'No Students';
 			return json;
 		} catch (e) {
 			throw 'An error occured.';
