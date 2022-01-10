@@ -107,8 +107,8 @@ class ClassroomClient {
 				.courses.students.list({courseId: courseID, pageSize: 1000})
 				.catch(e => null);
 
-			if (!students || !students.data || !students.data.students)
-				return null;
+			if (!students) return null;
+			if (!students.data || !students.data.students) return [];
 
 			return students.data.students.filter(notEmpty);
 		} catch (e) {
