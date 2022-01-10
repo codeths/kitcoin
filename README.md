@@ -19,6 +19,7 @@ services:
         container_name: kitcoin
         volumes:
             - './keys.json:/app/dist/config/keys.json'
+            - './uploads/storeitems:/app/uploads/storeitems'
 ```
 
 Create a [config file](#config) called keys.json in that direcory.
