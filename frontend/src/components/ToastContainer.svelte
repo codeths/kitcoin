@@ -11,9 +11,7 @@
 		toasts.set(id, {style, body});
 		let thisId = id;
 		toasts = toasts;
-		console.log(`created ${thisId}`);
 		setTimeout(() => {
-			console.log(`removing ${thisId}`);
 			els[thisId].close();
 		}, duration);
 		id++;
