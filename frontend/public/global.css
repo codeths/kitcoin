@@ -86,13 +86,13 @@ span[class^='icon-']::before {
 
 	.btn-disabled,
 	.btn[disabled] {
-		pointer-events: auto;
-		cursor: not-allowed;
-	}
-
-	.btn-disabled:hover,
-	.btn[disabled]:hover {
-		--tw-bg-opacity: 0.2;
-		background-color: hsla(var(--n) / var(--tw-bg-opacity, 1));
+		pointer-events: auto !important;
+		cursor: not-allowed !important;
+		-webkit-animation: none !important;
+		animation: none !important;
+		transform: none !important;
+		border: none !important;
+		--tw-bg-opacity: 0.2 !important;
+		background-color: hsla(var(--n) / var(--tw-bg-opacity, 1)) !important;
 	}
 }
