@@ -1,5 +1,5 @@
 FROM node:16-alpine
-RUN apk add g++ make python3
+RUN apk update && apk add g++ make python3
 WORKDIR /app
 RUN mkdir frontend
 
