@@ -46,7 +46,7 @@
 		bind:checked={drawerOpen}
 	/>
 	<div class="drawer-content flex flex-col">
-		<div class="navbar w-full bg-blue-eths text-white p-3 shadow-xl h-16">
+		<div class="navbar w-full bg-neutral text-white p-3 shadow-xl h-16">
 			<div class="navbar-start">
 				<a href={homePath} class="mx-2">
 					<h2 class="text-4xl">

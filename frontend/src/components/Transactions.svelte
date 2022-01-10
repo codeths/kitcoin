@@ -130,7 +130,7 @@
 							class="px-2 pb-4 md:py-4 block md:table-cell text-right text-3xl md:text-left md:text-base {negativeTransaction(
 								item,
 							)
-								? 'text-orange-eths'
+								? 'text-error'
 								: 'text-base-content'}"
 							><span>
 								{#if negativeTransaction(item)}<span

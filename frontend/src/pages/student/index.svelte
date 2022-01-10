@@ -25,7 +25,7 @@
 		>
 			<h1 class="text-3xl font-medium mb-2">Balance</h1>
 			<div
-				class="flex bg-base-100 shadow-md rounded py-10 min-h-40 border-t-8 border-blue-eths"
+				class="flex bg-base-100 shadow-md rounded py-10 min-h-40 border-t-8 border-primary"
 			>
 				<h1
 					class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full h-full"
