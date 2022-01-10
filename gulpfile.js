@@ -49,6 +49,12 @@ gulp.task('icons', async () => {
 	return;
 });
 
+gulp.task('uploads', async () => {
+	getEnv();
+	uploads();
+	return;
+});
+
 function task(t) {
 	return new Promise((resolve, reject) =>
 		t
@@ -105,8 +111,20 @@ async function icons() {
 	});
 }
 
+function uploads() {
+	if (!fs.existsSync('./uploads')) {
+		fs.mkdirSync('./uploads');
+	}
+	['storeitems'].forEach(x => {
+		if (!fs.existsSync(`./uploads/${x}`)) {
+			fs.mkdirSync(`./uploads/${x}`);
+		}
+	});
+}
+
 async function full() {
 	let res =
+		uploads() &&
 		(await delDist()) &&
 		(await typescript()) &&
 		(await icons()) &&
