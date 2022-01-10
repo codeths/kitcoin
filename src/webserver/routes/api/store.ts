@@ -5,12 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import {ClassroomClient} from '../../../helpers/classroom';
-import {
-	numberFromData,
-	request,
-	Validators,
-	cacheMiddleware,
-} from '../../../helpers/request';
+import {numberFromData, request, Validators} from '../../../helpers/request';
 import {
 	IStoreDoc,
 	IUserDoc,
@@ -381,7 +376,6 @@ router.get(
 
 router.get(
 	'/store/:storeID/item/:id/image',
-	cacheMiddleware,
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: false,
@@ -437,6 +431,7 @@ router.get(
 
 		if (image) {
 			res.setHeader('Content-Type', 'image/webp');
+			res.setHeader('Cache-Control', 'no-cache, max-age=604800');
 			res.status(200).send(image);
 		} else {
 			res.status(404).send('No image');
