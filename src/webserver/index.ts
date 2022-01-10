@@ -30,7 +30,7 @@ declare module 'express-serve-static-core' {
 
 const app = express();
 
-let numClusters = cpus().length;
+let numClusters = parseInt(process.env.CLUSTERS || '0') || cpus().length;
 
 if (numClusters > 1 && cluster.isPrimary) {
 	for (let i = 0; i < numClusters; i++) {
