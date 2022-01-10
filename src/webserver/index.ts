@@ -139,9 +139,11 @@ app.get(
 	},
 );
 
-app.use((req, res) => {
-	res.setHeader('Cache-Control', 'public');
-}, express.static(`${__dirname}/../../frontend/build`));
+app.use(
+	express.static(`${__dirname}/../../frontend/build`, {
+		setHeaders: res => res.setHeader('Cache-Control', 'public'),
+	}),
+);
 
 app.get(
 	'*',
