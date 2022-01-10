@@ -1,6 +1,6 @@
 <script>
 	import {params, url, metatags} from '@roxi/routify';
-	import {getContext} from 'svelte';
+	import {getContext, onMount} from 'svelte';
 	import Loading from '../../components/Loading.svelte';
 	import Input from '../../components/Input.svelte';
 	import ToastContainer from '../../components/ToastContainer.svelte';
@@ -153,13 +153,12 @@
 			manageForm.values.price = item.price;
 			manageForm.values.quantity = item.quantity;
 		}
-		imageUploadValue = '';
+		imageUpload = [];
 		deleteImage = false;
 	}
 
-	let resetTimeout;
 	let imageUpload;
-	let imageUploadValue;
+	let resetTimeout;
 	let deleteImage;
 	let imageUploadDrag = false;
 
@@ -167,14 +166,14 @@
 		if (imageUpload && imageUpload[0]) {
 			if (imageUpload[0].size > 5 * 1024 * 1024) {
 				alert('Image must be less than 5MB');
-				imageUploadValue = '';
+				imageUpload = [];
 			} else if (
 				!['image/png', 'image/jpeg', 'image/webp'].includes(
 					imageUpload[0].type,
 				)
 			) {
 				alert('Image must be a PNG, JPEG, or WEBP');
-				imageUploadValue = '';
+				imageUpload = [];
 			}
 		}
 	}
@@ -206,11 +205,7 @@
 		let json = res && res.ok ? await res.json() : null;
 
 		let imageRes;
-		if (
-			((imageUpload && imageUpload[0] && imageUploadValue) ||
-				deleteImage) &&
-			json
-		) {
+		if (((imageUpload && imageUpload[0]) || deleteImage) && json) {
 			imageRes = await fetch(
 				`/api/store/${storeID}/item/${json._id}/image`,
 				{
@@ -423,6 +418,8 @@
 			transactionToggle = false;
 		}
 	});
+
+	let defaultFileList;
 </script>
 
 <!-- Content -->
@@ -657,31 +654,37 @@
 					Image (optional) - PNG, JPEG, or WEBP, max 5MB
 				</label>
 				<div class="flex w-full">
-					<label
-						for="fileinput"
-						class="btn btn-primary relative flex-grow"
-						>{imageUploadDrag
-							? 'Drop file to upload'
-							: imageUpload && imageUpload[0] && imageUploadValue
-							? imageUpload[0].name
-							: 'Select a file or drag one here'}
-						<input
-							type="file"
-							id="fileinput"
-							class="absolute top-0 right-0 bottom-0 left-0 opacity-0 w-full h-full filedrop cursor-pointer"
-							bind:files={imageUpload}
-							bind:value={imageUploadValue}
-							on:dragenter={() => (imageUploadDrag = true)}
-							on:dragleave={() => (imageUploadDrag = false)}
-							on:drop={() => (imageUploadDrag = false)}
-							accept="image/png image/jpeg image/webp"
-						/></label
-					>
-					{#if imageUpload && imageUpload[0] && imageUploadValue}
+					{#key imageUpload}
+						<label
+							for="fileinput"
+							class="btn {deleteImage
+								? 'btn-disabled'
+								: 'btn-primary'} relative flex-grow"
+							disabled={deleteImage || null}
+							>{deleteImage
+								? 'Deleting existing image'
+								: imageUploadDrag
+								? 'Drop file to upload'
+								: imageUpload && imageUpload[0]
+								? imageUpload[0].name
+								: 'Select a file or drag one here'}
+							<input
+								type="file"
+								id="fileinput"
+								class="absolute top-0 right-0 bottom-0 left-0 opacity-0 w-full h-full filedrop cursor-pointer disabled:cursor-not-allowed"
+								disabled={deleteImage || null}
+								bind:files={imageUpload}
+								on:dragenter={() => (imageUploadDrag = true)}
+								on:dragleave={() => (imageUploadDrag = false)}
+								on:drop={() => (imageUploadDrag = false)}
+								accept="image/png image/jpeg image/webp"
+							/></label
+						>{/key}
+					{#if imageUpload && imageUpload[0] && !deleteImage}
 						<button
 							type="button"
 							class="btn btn-ghost text-3xl ml-2"
-							on:click={() => (imageUploadValue = '')}
+							on:click={() => (imageUpload = [])}
 						>
 							<span class="icon-close" />
 						</button>
@@ -693,10 +696,7 @@
 						<input
 							type="checkbox"
 							class="checkbox checkbox-primary"
-							bind:value={deleteImage}
-							on:change={() => {
-								if (deleteImage) imageUploadValue = '';
-							}}
+							bind:checked={deleteImage}
 						/>
 						<span class="label-text mx-2"
 							>Delete existing image</span
