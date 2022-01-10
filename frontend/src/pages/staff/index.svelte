@@ -168,9 +168,9 @@
 								<label
 									for="studentmodal"
 									type="checkbox"
-									class="btn btn-secondary mx-4 my-2"
-									disabled={multiSelectStudents.size == 0 ||
-										null}
+									class="btn {multiSelectStudents.size == 0
+										? 'btn-disabled'
+										: 'btn-secondary'} mx-4 my-2"
 									on:click={() =>
 										(modalStudent = multiSelectStudents)}
 									>Manage {multiSelectStudents.size} student{multiSelectStudents.size ==
@@ -249,6 +249,7 @@
 	type="checkbox"
 	id="studentmodal"
 	class="modal-toggle"
+	disabled={(multiSelect && multiSelectStudents.size == 0) || null}
 	bind:checked={showModal}
 />
 <label class="modal" for="studentmodal">
