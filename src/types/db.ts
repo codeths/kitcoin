@@ -7,6 +7,7 @@ import {
 	SaveOptions,
 } from 'mongoose';
 import {MongooseFuzzyModel} from 'mongoose-fuzzy-searching';
+import express from 'express';
 
 export interface IUser {
 	/**
@@ -318,3 +319,51 @@ export interface IStoreItemQueries {
 
 export interface IStoreItemModel
 	extends Model<IStoreItemDoc, IStoreItemQueries> {}
+
+export interface IError {
+	/**
+	 * User ID (Mongo ID)
+	 */
+	user?: string;
+	/**
+	 * When the error occured
+	 */
+	date: Date;
+	error: {
+		name?: string;
+		message: string;
+		stack?: string[];
+	};
+	/**
+	 * Request
+	 */
+	request?: {
+		method: string;
+		url: string;
+		body?: any;
+	};
+}
+
+export interface IErrorStaticMethods {
+	/**
+	 * Generate error
+	 */
+	generate(
+		/**
+		 * Data to parse
+		 */
+		data: {
+			error: Error;
+			request?: express.Request;
+		},
+		/**
+		 * Additional raw IError data
+		 */
+		additionalData?: Partial<IError>,
+	): Promise<IErrorDoc>;
+}
+
+export type IErrorDoc = IError & Document<IError>;
+
+export type IErrorModel = Model<ITransactionDoc, ITransactionQueries> &
+	IErrorStaticMethods;

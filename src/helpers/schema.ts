@@ -20,9 +20,15 @@ import {
 	IStoreItemsQuery,
 	IStoreItemDoc,
 	IStoreItemModel,
+	IErrorDoc,
+	IErrorModel,
+	IError,
 } from '../types';
 
 import fuzzySearch from 'mongoose-fuzzy-searching';
+import {customAlphabet} from 'nanoid';
+const nanoid = customAlphabet('ABCDEF0123456789', 6);
+import express from 'express';
 
 mongoose.connect(mongoURL);
 
@@ -285,6 +291,56 @@ storeItemSchema.methods.getStore =
 
 storeItemSchema.index({storeID: 1});
 
+const errorSchema = new mongoose.Schema<IErrorDoc, IErrorModel>({
+	_id: {
+		kind: String,
+		default: nanoid,
+	},
+	date: {
+		kind: Date,
+		default: () => new Date(),
+	},
+	user: String,
+	error: {
+		name: String,
+		message: String,
+		stack: [String],
+	},
+	request: {
+		method: String,
+		url: String,
+		body: String,
+	},
+});
+
+errorSchema.statics.generate = async function (
+	data: {
+		error?: Error;
+		request?: express.Request;
+	},
+	additionalData: Partial<IError> = {},
+) {
+	let output = additionalData;
+	if (data.error) {
+		output.error = {
+			name: data.error.name,
+			message: data.error.message,
+			stack: (data.error.stack || '').split('\n'),
+		};
+	}
+	if (data.request) {
+		output.request = {
+			method: data.request.method,
+			url: `${data.request.protocol}://${data.request.get('host')}${
+				data.request.originalUrl
+			}`,
+			body: data.request.body,
+		};
+	}
+
+	return new DBError(output).save();
+};
+
 const User = mongoose.model<IUserDoc, IUserModel>('User', userSchema);
 const Transaction = mongoose.model<ITransactionDoc, ITransactionModel>(
 	'Transaction',
@@ -296,5 +352,7 @@ const StoreItem = mongoose.model<IStoreItemDoc, IStoreItemModel>(
 	storeItemSchema,
 );
 
-export {User, Transaction, Store, StoreItem};
+const DBError = mongoose.model<IErrorDoc, IErrorModel>('Error', errorSchema);
+
+export {User, Transaction, Store, StoreItem, DBError};
 export * from '../types';
