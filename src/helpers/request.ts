@@ -8,7 +8,7 @@ import {
 	RequestValidateKeyOptions,
 	RequestValidateKeyOptionsResolvable,
 } from '../types';
-import {User} from './schema';
+import {DBError, User} from './schema';
 import {isValidObjectId} from 'mongoose';
 
 export async function request(
@@ -34,7 +34,20 @@ export async function request(
 		const badRequest = validate(req, appliedOptions.validators);
 		if (badRequest) return res.status(400).send(badRequest);
 	} catch (e) {
-		return res.status(500).send('Failed to validate request.');
+		try {
+			const error = await DBError.generate(
+				{
+					request: req,
+					error: e instanceof Error ? e : undefined,
+				},
+				{
+					user: req.user?.id,
+				},
+			);
+			return res
+				.status(500)
+				.send(`Something went wrong. Error ID: ${error.id}`);
+		} catch (e) {}
 	}
 
 	next();

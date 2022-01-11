@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+	DBError,
 	isValidRole,
 	isValidRoles,
 	User,
@@ -44,7 +45,18 @@ router.patch(
 			res.status(200).send(dbUser);
 		} catch (e) {
 			try {
-				res.status(500).send('An error occured.');
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
 			} catch (e) {}
 		}
 	},
@@ -163,7 +175,18 @@ router.get(
 			res.status(200).send(filtered.slice(0, countNum));
 		} catch (e) {
 			try {
-				res.status(500).send('An error occured.');
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
 			} catch (e) {}
 		}
 	},

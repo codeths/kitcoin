@@ -353,7 +353,7 @@ export interface IErrorStaticMethods {
 		 * Data to parse
 		 */
 		data: {
-			error: Error;
+			error?: Error;
 			request?: express.Request;
 		},
 		/**

@@ -7,6 +7,7 @@ import crypto from 'crypto';
 import {ClassroomClient} from '../../../helpers/classroom';
 import {numberFromData, request, Validators} from '../../../helpers/request';
 import {
+	DBError,
 	IStoreDoc,
 	IUserDoc,
 	Store,
@@ -187,7 +188,16 @@ router.get(
 			});
 		} catch (e) {
 			try {
-				res.status(500).send('Something went wrong.');
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(`Something went wrong. Error ID: ${error.id}`);
 			} catch (e) {}
 		}
 	},
@@ -262,7 +272,16 @@ router.post(
 			return res.status(200).send();
 		} catch (e) {
 			try {
-				res.status(500).send('Something went wrong.');
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(`Something went wrong. Error ID: ${error.id}`);
 			} catch (e) {}
 		}
 	},
@@ -529,7 +548,16 @@ router.patch(
 			});
 		} catch (e) {
 			try {
-				res.status(500).send('Something went wrong.');
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(`Something went wrong. Error ID: ${error.id}`);
 			} catch (e) {}
 		}
 	},
@@ -618,7 +646,16 @@ router.patch(
 			});
 		} catch (e) {
 			try {
-				res.status(500).send('Something went wrong.');
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(`Something went wrong. Error ID: ${error.id}`);
 			} catch (e) {}
 		}
 	},
@@ -692,7 +729,16 @@ router.delete(
 			res.status(200).send();
 		} catch (e) {
 			try {
-				res.status(500).send('Something went wrong.');
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(`Something went wrong. Error ID: ${error.id}`);
 			} catch (e) {}
 		}
 	},
@@ -768,7 +814,16 @@ router.delete(
 			});
 		} catch (e) {
 			try {
-				res.status(500).send('Something went wrong.');
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(`Something went wrong. Error ID: ${error.id}`);
 			} catch (e) {}
 		}
 	},
@@ -836,7 +891,16 @@ router.post(
 			});
 		} catch (e) {
 			try {
-				res.status(500).send('Something went wrong.');
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(`Something went wrong. Error ID: ${error.id}`);
 			} catch (e) {}
 		}
 	},
