@@ -16,8 +16,6 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
-              with:
-                  submodules: recursive
             - name: Build image
               run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg GITHUB_SHA --build-arg GITHUB_REPOSITORY
             - name: Log into registry

@@ -28,7 +28,7 @@ Create a [config file](#config) called keys.json in that direcory.
 
 ### Install
 
-1. Clone the repo: `git clone --recurse-submodules git@github.com:chromezoneeths/kitcoin.git`
+1. Clone the repo: `git clone git@github.com:chromezoneeths/kitcoin.git`
 2. Copy `src/config/keys.example.json` to `src/config/keys.json` and set it up. See the [config section](#config) for details.
 3. Run `npm install`.
 4. Run `npm run build`.

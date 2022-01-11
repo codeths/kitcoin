@@ -69,7 +69,7 @@ function delDist() {
 
 async function typescript() {
 	return new Promise(res => {
-		let child = spawn('tsc', [], {
+		let child = spawn('npm', ['run', 'tsc'], {
 			stdio: 'inherit',
 		});
 		child.on('exit', code => res(code === 0));
@@ -90,9 +90,7 @@ async function frontend() {
 			'npm',
 			[
 				'run',
-				env == 'production' ? 'build' : 'build:dev',
-				'--prefix',
-				'frontend',
+				env == 'production' ? 'frontend:build' : 'frontend:build:dev',
 			],
 			{
 				stdio: 'inherit',
@@ -104,7 +102,7 @@ async function frontend() {
 
 async function icons() {
 	return new Promise(res => {
-		let child = spawn('npm', ['run', 'icons', '--prefix', 'frontend'], {
+		let child = spawn('npm', ['run', 'frontend:icons'], {
 			stdio: 'inherit',
 		});
 		child.on('exit', code => res(code === 0));

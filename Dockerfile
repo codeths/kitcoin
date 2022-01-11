@@ -1,10 +1,9 @@
 FROM node:16-alpine
 RUN apk update && apk add g++ make python3
 WORKDIR /app
-RUN mkdir frontend
 
 COPY package*.json ./
-COPY frontend/package*.json ./frontend/
+COPY ./frontend/
 RUN npm install
 COPY src ./src/
 COPY tsconfig.json src/config/keys.example.json gulpfile.js ./

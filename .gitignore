@@ -3,3 +3,7 @@ dist
 uploads
 .DS_Store
 keys.json
+frontend/build
+frontend/.routify
+frontend/public/assets/icons.css
+frontend/public/assets/icons.ttf

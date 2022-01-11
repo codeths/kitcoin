@@ -12,9 +12,7 @@
 			"program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
 			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
 			"console": "integratedTerminal",
-			"args": [
-				"dev", "--watch"
-			]
+			"args": ["dev", "--watch"]
 		},
 		{
 			"name": "Dev Debug",
@@ -24,9 +22,7 @@
 			"program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
 			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
 			"console": "integratedTerminal",
-			"args": [
-				"dev"
-			]
+			"args": ["dev"]
 		},
 		{
 			"name": "Node",
