@@ -3,7 +3,6 @@ RUN apk update && apk add g++ make python3
 WORKDIR /app
 
 COPY package*.json ./
-COPY ./frontend/
 RUN npm install
 COPY src ./src/
 COPY tsconfig.json src/config/keys.example.json gulpfile.js ./
