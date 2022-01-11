@@ -1,3 +1,0 @@
-[submodule "src/frontend"]
-	path = frontend
-	url = git@github.com:chromezoneeths/kitcoin-frontend.git
