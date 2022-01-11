@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans');
+@import url('assets/icons.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	--cap-height: 0.715;
+}
+
+body {
+	font-family: 'Open Sans', sans-serif;
+	min-height: 100vh;
+}
+
+span[class^='icon-']::before {
+	font-size: calc(1em * var(--cap-height));
+}
+
+@layer utilities {
+	.flex-break {
+		flex-basis: 100%;
+		height: 0;
+	}
+
+	.flex-no-break {
+		flex-basis: none;
+		display: none;
+	}
+
+	.break-words {
+		word-break: break-word;
+	}
+
+	.baseline::after {
+		content: '';
+		height: 100%;
+		display: inline-block;
+	}
+
+	.nav-links-parent {
+		pointer-events: none;
+	}
+
+	.nav-links-parent:hover .nav-link:not(:hover):not(:focus)::after,
+	.nav-links-parent:focus-within .nav-link:not(:hover):not(:focus)::after {
+		width: 0% !important;
+	}
+
+	.nav-link {
+		pointer-events: auto;
+		position: relative;
+		box-shadow: none !important;
+	}
+
+	.nav-link.active:after {
+		width: 100%;
+	}
+
+	.nav-link:after {
+		text-align: center;
+		margin: 0;
+		position: absolute;
+		bottom: 0;
+		width: 0%;
+		content: '.';
+		color: transparent;
+		background: #ffffff;
+		height: 1px;
+		transition: width 0.5s;
+	}
+
+	.nav-link:hover:after,
+	.nav-link:focus:after {
+		width: 100%;
+	}
+
+	.outline-webkit {
+		outline: -webkit-focus-ring-color auto 1px !important;
+	}
+
+	.modal-toggle {
+		position: fixed;
+	}
+
+	.btn-disabled,
+	.btn[disabled] {
+		pointer-events: auto !important;
+		cursor: not-allowed !important;
+		-webkit-animation: none !important;
+		animation: none !important;
+		transform: none !important;
+		border: none !important;
+		--tw-bg-opacity: 0.2 !important;
+		background-color: hsla(var(--n) / var(--tw-bg-opacity, 1)) !important;
+	}
+}
