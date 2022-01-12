@@ -164,7 +164,7 @@
 				on:click={() => dispatch('close')}
 				class="btn px-12"
 			>
-				Close
+				Cancel
 			</button>
 		{/if}
 		<button
