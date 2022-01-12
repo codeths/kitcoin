@@ -548,8 +548,10 @@ router.patch(
 				body: {
 					name: Validators.optional(Validators.string),
 					description: Validators.optional(Validators.string),
-					price: Validators.optional(Validators.number),
-					quantity: Validators.optional(Validators.number),
+					price: Validators.optional(Validators.currency),
+					quantity: Validators.optional(
+						Validators.and(Validators.integer, Validators.gte(0)),
+					),
 				},
 			},
 		}),
@@ -633,12 +635,6 @@ router.delete(
 				params: {
 					storeID: Validators.objectID,
 					id: Validators.objectID,
-				},
-				body: {
-					name: Validators.optional(Validators.string),
-					description: Validators.optional(Validators.string),
-					price: Validators.optional(Validators.number),
-					quantity: Validators.optional(Validators.number),
 				},
 			},
 		}),
@@ -786,8 +782,10 @@ router.post(
 				body: {
 					name: Validators.string,
 					description: Validators.optional(Validators.string),
-					price: Validators.number,
-					quantity: Validators.optional(Validators.number),
+					price: Validators.currency,
+					quantity: Validators.optional(
+						Validators.and(Validators.integer, Validators.gte(0)),
+					),
 				},
 			},
 		}),
