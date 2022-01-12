@@ -42,6 +42,7 @@
 	let currentPage = 1;
 	let totalPages = 1;
 	const ITEMS_PER_PAGE = 12;
+	const LOW_STOCK = 5; //Low stock if there are this many items or less
 
 	async function getStore() {
 		userInfo = (await ctx) || null;
@@ -514,6 +515,26 @@
 								maximumFractionDigits: 2,
 							})}
 						</p>
+						{#if item.quantity != null}
+							<p class="text-2xl font-bold">
+								{#if item.quantity == 0}
+									<!-- This is not possible now but it's here if we need it -->
+									<span class="text-red-400"
+										>OUT OF STOCK</span
+									>
+								{:else if item.quantity <= LOW_STOCK}
+									<span class="text-yellow-400"
+										>LOW STOCK</span
+									>
+								{:else}
+									<span class="text-green-400">IN STOCK</span>
+								{/if}
+								<span class="text-gray-400">&nbsp;-&nbsp;</span>
+								<span class="italic"
+									>{item.quantity.toLocaleString()}</span
+								>
+							</p>
+						{/if}
 						{#if item.description}
 							<p class="text-xl mt-2 whitespace-pre-wrap">
 								{item.description}
