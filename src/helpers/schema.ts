@@ -350,8 +350,10 @@ errorSchema.statics.generate = async function (
 			url: `${data.request.protocol}://${data.request.get('host')}${
 				data.request.originalUrl
 			}`,
-			body: data.request.body,
 		};
+		if (typeof data.request.body == 'object')
+			output.request.body = JSON.stringify(data.request.body);
+		if (typeof data.request.body == 'string') data.request.body;
 	}
 
 	return new DBError(output).save();
