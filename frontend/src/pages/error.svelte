@@ -23,8 +23,8 @@
 
 					for (let key in error) {
 						let value = error[key];
-						if (value)
-							key[value] = value.replace(/\{CODE\}/g, errorCode);
+						if (value && typeof value == 'string')
+							error[key] = value.replace(/\{CODE\}/g, errorCode);
 					}
 
 					return;
