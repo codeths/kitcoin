@@ -8,6 +8,7 @@ import {
 	getRedirectUrl,
 } from '../../helpers/oauth';
 import {request} from '../../helpers/request';
+import {DBError} from '../../helpers/schema';
 const router = express.Router();
 
 const ALLOWED_REDIRECTS: (string | RegExp)[] = [
@@ -112,8 +113,30 @@ router.get(
 
 router.get('/cbk', async (req, res) => {
 	const code = req.query.code;
-	if (!code || typeof code !== 'string')
-		return res.status(400).send('Missing code');
+	if (!code || typeof code !== 'string') {
+		let queryError = req.query.error;
+		let errorText: string | null = 'Failed to sign in';
+		let errorDescription: string | null = null;
+		if (queryError == 'access_denied') {
+			errorText = 'Sign In Cancelled';
+			errorDescription =
+				'If this was unintentional, please sign in again.';
+		}
+		let error = await DBError.generate(
+			{},
+			{
+				details: {
+					title: errorText,
+					description: errorDescription,
+					button: {
+						text: 'Sign In Again',
+						url: '/login',
+					},
+				},
+			},
+		);
+		return res.redirect(`/error#${error ? error._id : ''}`);
+	}
 
 	csrf: {
 		const sessionData = req.session.csrf;
@@ -132,8 +155,10 @@ router.get('/cbk', async (req, res) => {
 			token,
 			getRedirectUrl(req),
 		).catch(err => {
-			res.status(401).send(err);
-			return null;
+			res.redirect(
+				`/error#${err && err instanceof DBError ? err._id : ''}`,
+			);
+			return;
 		});
 		if (!user) return;
 

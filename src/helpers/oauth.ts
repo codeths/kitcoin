@@ -18,7 +18,7 @@ type PromptType = 'none' | 'consent' | 'select_account';
 import {google, Auth} from 'googleapis';
 import express from 'express';
 import {client_id, client_secret, oauthDomain} from '../config/keys.json';
-import {User, IUserDoc} from './schema';
+import {User, IUserDoc, DBError} from './schema';
 
 /**
  * Generate OAuth2 client and optionally set the credentials
@@ -103,14 +103,41 @@ export async function oauthCallback(
 ) {
 	return new Promise<IUserDoc>(async (resolve, reject) => {
 		const auth = getOAuth2Client(undefined, redirect);
-		const tokens = await auth
-			.getToken(code)
-			.catch(() => reject({error: 'Invalid code'}));
+		const tokens = await auth.getToken(code).catch(async () => {
+			let error = await DBError.generate(
+				{},
+				{
+					details: {
+						title: 'Failed to sign in',
+						button: {
+							text: 'Sign In Again',
+							url: '/login',
+						},
+					},
+				},
+			);
+			reject(error);
+			return;
+		});
 		if (!tokens) return;
 		const {refresh_token, access_token, expiry_date, scope} = tokens.tokens;
 
-		if (!refresh_token || !access_token || !expiry_date)
-			return reject({error: 'No tokens'});
+		if (!refresh_token || !access_token || !expiry_date) {
+			let error = await DBError.generate(
+				{},
+				{
+					details: {
+						title: 'Failed to sign in',
+						button: {
+							text: 'Sign In Again',
+							url: '/login',
+						},
+					},
+				},
+			);
+			return reject(error);
+		}
+
 		auth.setCredentials({
 			access_token,
 		});
@@ -120,15 +147,43 @@ export async function oauthCallback(
 				resourceName: 'people/me',
 				personFields: ['names', 'emailAddresses'].join(','),
 			})
-			.catch(() => reject({error: 'Could not get user'}));
+			.catch(async () => {
+				let error = await DBError.generate(
+					{},
+					{
+						details: {
+							title: 'Failed to sign in',
+							button: {
+								text: 'Sign In Again',
+								url: '/login',
+							},
+						},
+					},
+				);
+				reject(error);
+				return;
+			});
 		if (!person) return;
 		if (
 			!person.data ||
 			!person.data.names ||
 			!person.data.emailAddresses ||
 			!person.data.resourceName
-		)
-			return reject({error: 'Could not get user'});
+		) {
+			let error = await DBError.generate(
+				{},
+				{
+					details: {
+						title: 'Failed to sign in',
+						button: {
+							text: 'Sign In Again',
+							url: '/login',
+						},
+					},
+				},
+			);
+			return reject(error);
+		}
 		const name = person.data.names.find(
 			name => name.metadata?.primary,
 		)?.displayName;
@@ -136,9 +191,37 @@ export async function oauthCallback(
 			email => email.metadata?.primary,
 		)?.value;
 		const googleID = person.data.resourceName.split('/')[1];
-		if (!name || !email) return reject({error: 'Could not get user'});
-		if (oauthDomain && !email.endsWith(`@${oauthDomain}`))
-			return reject({error: 'Invalid email domain'});
+		if (!name || !email) {
+			let error = await DBError.generate(
+				{},
+				{
+					details: {
+						title: 'Failed to sign in',
+						button: {
+							text: 'Sign In Again',
+							url: '/login',
+						},
+					},
+				},
+			);
+			return reject(error);
+		}
+		if (oauthDomain && !email.endsWith(`@${oauthDomain}`)) {
+			let error = await DBError.generate(
+				{},
+				{
+					details: {
+						title: 'Invalid email domain',
+						description: `Please sign in with your ${oauthDomain} email.`,
+						button: {
+							text: 'Sign In Again',
+							url: '/login',
+						},
+					},
+				},
+			);
+			return reject(error);
+		}
 		let user = await User.findOne().byId(googleID);
 		if (user) {
 			if (
