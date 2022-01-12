@@ -256,7 +256,8 @@ router.post(
 			user.balance -= item.price;
 			await user.save();
 
-			if (typeof item.quantity === 'number') item.quantity--;
+			if (typeof item.quantity === 'number' && item.quantity > 0)
+				item.quantity--;
 			await item.save();
 
 			return res.status(200).send();
