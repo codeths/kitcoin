@@ -328,7 +328,7 @@ errorSchema.statics.generate = async function (
 		request?: express.Request;
 	},
 	additionalData: Partial<IError> = {},
-) {
+): Promise<IErrorDoc> {
 	let output = additionalData;
 	if (data.error) {
 		output.error = {
@@ -336,15 +336,14 @@ errorSchema.statics.generate = async function (
 			message: data.error.message,
 			stack: (data.error.stack || '').split('\n'),
 		};
-		if (!output.details) {
-			output.details = {
-				code: 500,
-				title: 'Something went wrong',
-				description:
-					'If this error persists, please contact us. Error ID: {CODE}',
-			};
-		}
 	}
+	if (!output.details) output.details = {};
+	if (!output.details.code && data.error) output.details.code = 500;
+	if (!output.details.title) output.details.title = 'Something went wrong';
+	if (!output.details.description)
+		output.details.description = `If this error persists, please contact us.${
+			output.error ? ' Error ID: {CODE}' : ''
+		}`;
 	if (data.request) {
 		output.request = {
 			method: data.request.method,
