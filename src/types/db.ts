@@ -340,7 +340,7 @@ export interface IError {
 	request?: {
 		method: string;
 		url: string;
-		body?: any | null;
+		body?: string | null;
 	} | null;
 	/**
 	 * Details to show to user on webpage
