@@ -56,11 +56,8 @@
 	<div class="inline-flex">
 		<a
 			class="btn btn-primary px-12 mx-2"
-			href={error.button ? error.button.url : '#'}
-			on:click={() => {
-				if (!error.button?.url) window.history.back();
-			}}
-			target="_self">{error.button?.text || 'Back'}</a
+			href={error.button?.url || '/'}
+			target="_self">{error.button?.text || 'Home'}</a
 		>
 		<a
 			class="btn btn-secondary px-12 mx-2"
