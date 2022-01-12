@@ -600,7 +600,7 @@
 	<div class="modal-box">
 		<div class="flex flex-row justify-between items-center mb-4">
 			<h2 class="inline-flex text-2xl text-medium">
-				{editItem ? `Edit ${editItem.name}` : 'Create item'}
+				{editItem ? `Done ${editItem.name}` : 'Create item'}
 			</h2>
 			{#if editItem}
 				<button
@@ -712,7 +712,7 @@
 							!confirm('Are you sure you want to close this?') &&
 							e.preventDefault()}
 					>
-						Close
+						Cancel
 					</label>
 					<button
 						type="submit"
@@ -729,7 +729,7 @@
 						{:else if submitStatus == 'ERROR'}
 							Error
 						{:else}
-							{editItem ? 'Edit' : 'Create'}
+							{editItem ? 'Done' : 'Create'}
 						{/if}
 					</button>
 				</div>
@@ -783,7 +783,7 @@
 							!confirm('Are you sure you want to close this?') &&
 							e.preventDefault()}
 					>
-						Close
+						Cancel
 					</label>
 					<button
 						type="submit"

@@ -100,8 +100,7 @@ export interface IUserQueries {
 	byToken(token: string): IUserQuery;
 }
 
-export interface IUserModel
-	extends MongooseFuzzyModel<IUserDoc, IUserQueries> {}
+export type IUserModel = MongooseFuzzyModel<IUserDoc, IUserQueries>;
 
 /**
  * @typedef TransactionUser
@@ -216,8 +215,7 @@ export interface ITransactionQueries {
 	): ITransactionsQuery;
 }
 
-export interface ITransactionModel
-	extends Model<ITransactionDoc, ITransactionQueries> {}
+export type ITransactionModel = Model<ITransactionDoc, ITransactionQueries>;
 
 export enum UserRoles {
 	NONE = 0,
@@ -275,7 +273,7 @@ export interface IStoreQueries {
 	byClassCode(classCode: string): IStoreQuery;
 }
 
-export interface IStoreModel extends Model<IStoreDoc, IStoreQueries> {}
+export type IStoreModel = Model<IStoreDoc, IStoreQueries>;
 
 export interface IStoreItem {
 	/**
