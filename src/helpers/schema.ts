@@ -293,11 +293,11 @@ storeItemSchema.index({storeID: 1});
 
 const errorSchema = new mongoose.Schema<IErrorDoc, IErrorModel>({
 	_id: {
-		kind: String,
-		default: nanoid,
+		type: String,
+		default: () => nanoid(),
 	},
 	date: {
-		kind: Date,
+		type: Date,
 		default: () => new Date(),
 	},
 	user: String,
