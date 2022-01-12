@@ -132,9 +132,9 @@
 				return e.type !== 'focus'
 					? 'Quantity must be a while number'
 					: '';
-			if (num <= 0)
+			if (num < 0)
 				return e.type !== 'focus'
-					? 'Quantity must be greater than 0'
+					? 'Quantity cannot be less than 0'
 					: '';
 
 			return null;
