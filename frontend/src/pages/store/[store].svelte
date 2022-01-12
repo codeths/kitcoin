@@ -518,7 +518,6 @@
 						{#if item.quantity != null}
 							<p class="text-2xl font-bold">
 								{#if item.quantity == 0}
-									<!-- This is not possible now but it is here if we need it -->
 									<span class="text-red-400"
 										>OUT OF STOCK</span
 									>
