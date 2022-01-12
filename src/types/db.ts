@@ -329,19 +329,34 @@ export interface IError {
 	 * When the error occured
 	 */
 	date: Date;
-	error: {
-		name?: string;
+	error?: {
+		name?: string | null;
 		message: string;
-		stack?: string[];
-	};
+		stack?: string[] | null;
+	} | null;
 	/**
 	 * Request
 	 */
 	request?: {
 		method: string;
 		url: string;
-		body?: any;
-	};
+		body?: any | null;
+	} | null;
+	/**
+	 * Details to show to user on webpage
+	 */
+	details?: {
+		/**
+		 * HTTP error code
+		 */
+		code?: number | null;
+		title?: string | null;
+		description?: string | null;
+		button?: {
+			text: string;
+			url: string;
+		} | null;
+	} | null;
 }
 
 export interface IErrorStaticMethods {

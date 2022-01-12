@@ -311,6 +311,15 @@ const errorSchema = new mongoose.Schema<IErrorDoc, IErrorModel>({
 		url: String,
 		body: String,
 	},
+	details: {
+		code: Number,
+		title: String,
+		description: String,
+		button: {
+			text: String,
+			url: String,
+		},
+	},
 });
 
 errorSchema.statics.generate = async function (
@@ -327,6 +336,14 @@ errorSchema.statics.generate = async function (
 			message: data.error.message,
 			stack: (data.error.stack || '').split('\n'),
 		};
+		if (!output.details) {
+			output.details = {
+				code: 500,
+				title: 'Something went wrong',
+				description:
+					'If this error persists, please contact us. Error ID: {CODE}',
+			};
+		}
 	}
 	if (data.request) {
 		output.request = {
