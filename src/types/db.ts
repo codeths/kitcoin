@@ -380,5 +380,4 @@ export interface IErrorStaticMethods {
 
 export type IErrorDoc = IError & Document<IError>;
 
-export type IErrorModel = Model<ITransactionDoc, ITransactionQueries> &
-	IErrorStaticMethods;
+export type IErrorModel = Model<IErrorDoc> & IErrorStaticMethods;
