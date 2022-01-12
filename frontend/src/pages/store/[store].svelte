@@ -536,7 +536,7 @@
 							</p>
 						{/if}
 						{#if item.description}
-							<p class="text-xl mt-2 whitespace-pre-wrap">
+							<p class="text-xl mt-2 whitespace-pre-wrap italic">
 								{item.description}
 							</p>
 						{/if}
