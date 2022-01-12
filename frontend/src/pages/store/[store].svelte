@@ -42,7 +42,7 @@
 	let currentPage = 1;
 	let totalPages = 1;
 	const ITEMS_PER_PAGE = 12;
-	const LOW_STOCK = 5; //Low stock if there are this many items or less
+	const LOW_STOCK = 3; //Low stock if there are this many items or less
 
 	async function getStore() {
 		userInfo = (await ctx) || null;
