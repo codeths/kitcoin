@@ -518,7 +518,7 @@
 						{#if item.quantity != null}
 							<p class="text-2xl font-bold">
 								{#if item.quantity == 0}
-									<span class="text-red-400"
+									<span class="text-red-500"
 										>Out of stock</span
 									>
 								{:else if item.quantity <= LOW_STOCK}
