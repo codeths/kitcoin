@@ -318,6 +318,19 @@ export interface IStoreItemQueries {
 export interface IStoreItemModel
 	extends Model<IStoreItemDoc, IStoreItemQueries> {}
 
+export interface IErrorDetail {
+	/**
+	 * HTTP error code
+	 */
+	code?: number | null;
+	title?: string | null;
+	description?: string | null;
+	button?: {
+		text: string;
+		url: string;
+	} | null;
+}
+
 export interface IError {
 	/**
 	 * User ID (Mongo ID)
@@ -343,18 +356,7 @@ export interface IError {
 	/**
 	 * Details to show to user on webpage
 	 */
-	details?: {
-		/**
-		 * HTTP error code
-		 */
-		code?: number | null;
-		title?: string | null;
-		description?: string | null;
-		button?: {
-			text: string;
-			url: string;
-		} | null;
-	} | null;
+	details?: IErrorDetail | null;
 }
 
 export interface IErrorStaticMethods {
