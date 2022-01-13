@@ -190,8 +190,9 @@
 					name: manageFormData.values.name,
 					description: manageFormData.values.description || null,
 					price: parseFloat(manageFormData.values.price),
-					quantity:
-						parseFloat(manageFormData.values.quantity) || null,
+					quantity: !isNaN(parseFloat(manageFormData.values.quantity))
+						? parseFloat(manageFormData.values.quantity)
+						: null,
 				}),
 			},
 		).catch(() => null);
