@@ -23,12 +23,14 @@ import {
 	IErrorDoc,
 	IErrorModel,
 	IError,
+	IErrorDetail,
 } from '../types';
 
 import fuzzySearch from 'mongoose-fuzzy-searching';
 import {customAlphabet} from 'nanoid';
 const nanoid = customAlphabet('ABCDEF0123456789', 6);
 import express from 'express';
+import {ErrorDetail} from '../struct';
 
 mongoose.connect(mongoURL);
 
@@ -326,6 +328,7 @@ errorSchema.statics.generate = async function (
 	data: {
 		error?: Error;
 		request?: express.Request;
+		details?: IErrorDetail | ErrorDetail;
 	},
 	additionalData: Partial<IError> = {},
 ): Promise<IErrorDoc> {
@@ -337,13 +340,17 @@ errorSchema.statics.generate = async function (
 			stack: (data.error.stack || '').split('\n'),
 		};
 	}
-	if (!output.details) output.details = {};
-	if (!output.details.code && data.error) output.details.code = 500;
-	if (!output.details.title) output.details.title = 'Something went wrong';
-	if (!output.details.description)
-		output.details.description = `If this error persists, please contact us.${
-			output.error ? ' Error ID: {CODE}' : ''
-		}`;
+	if (data.details)
+		output.details =
+			data.details instanceof ErrorDetail
+				? data.details.toJSON()
+				: data.details;
+
+	if (!output.details)
+		output.details = output.error
+			? ErrorDetail.ERROR_WITH_ID
+			: ErrorDetail.ERROR;
+
 	if (data.request) {
 		output.request = {
 			method: data.request.method,
