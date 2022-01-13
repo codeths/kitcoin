@@ -130,7 +130,7 @@ router.get('/cbk', async (req, res) => {
 			details,
 		});
 
-		return res.redirect(`/error#${error ? error._id : ''}`);
+		return res.redirect(`/error?${error ? error._id : ''}`);
 	}
 
 	csrf: {
@@ -151,7 +151,7 @@ router.get('/cbk', async (req, res) => {
 			getRedirectUrl(req),
 		).catch(err => {
 			res.redirect(
-				`/error#${err && err instanceof DBError ? err._id : ''}`,
+				`/error?${err && err instanceof DBError ? err._id : ''}`,
 			);
 			return;
 		});

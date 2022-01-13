@@ -11,8 +11,8 @@
 	};
 
 	(async () => {
-		if (window.location.hash) {
-			let errorCode = window.location.hash.slice(1);
+		if (window.location.search) {
+			let errorCode = window.location.search.slice(1);
 
 			let res = await fetch(`/api/error/${errorCode}`);
 			if (res && res.ok) {
