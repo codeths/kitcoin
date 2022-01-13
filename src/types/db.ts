@@ -8,6 +8,7 @@ import {
 } from 'mongoose';
 import {MongooseFuzzyModel} from 'mongoose-fuzzy-searching';
 import express from 'express';
+import {ErrorDetail} from '../struct';
 
 export interface IUser {
 	/**
@@ -370,6 +371,7 @@ export interface IErrorStaticMethods {
 		data: {
 			error?: Error;
 			request?: express.Request;
+			details?: IErrorDetail | ErrorDetail;
 		},
 		/**
 		 * Additional raw IError data
