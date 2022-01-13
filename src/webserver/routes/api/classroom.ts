@@ -1,5 +1,5 @@
 import express from 'express';
-import {IUserDoc, User} from '../../../helpers/schema';
+import {DBError, IUserDoc, User} from '../../../helpers/schema';
 import {request, Validators} from '../../../helpers/request';
 import Google, {google} from 'googleapis';
 import {getAccessToken} from '../../../helpers/oauth';
@@ -60,7 +60,16 @@ router.get(
 			);
 		} catch (e) {
 			try {
-				res.status(500).send('An error occured.');
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(`An error occured. Error ID: ${error.id}`);
 			} catch (e) {}
 		}
 	},
@@ -108,7 +117,16 @@ router.get(
 			);
 		} catch (e) {
 			try {
-				res.status(500).send('An error occured.');
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(`An error occured. Error ID: ${error.id}`);
 			} catch (e) {}
 		}
 	},

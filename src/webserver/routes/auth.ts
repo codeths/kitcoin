@@ -8,6 +8,8 @@ import {
 	getRedirectUrl,
 } from '../../helpers/oauth';
 import {request} from '../../helpers/request';
+import {DBError} from '../../helpers/schema';
+import {ErrorDetail} from '../../struct';
 const router = express.Router();
 
 const ALLOWED_REDIRECTS: (string | RegExp)[] = [
@@ -112,8 +114,24 @@ router.get(
 
 router.get('/cbk', async (req, res) => {
 	const code = req.query.code;
-	if (!code || typeof code !== 'string')
-		return res.status(400).send('Missing code');
+	if (!code || typeof code !== 'string') {
+		let details = ErrorDetail.OAUTH_SIGN_IN_FAILED;
+
+		let queryError = req.query.error;
+
+		if (queryError == 'access_denied') {
+			details.edit({
+				title: 'Sign In Cancelled',
+				description: 'If this was unintentional, please sign in again.',
+			});
+		}
+
+		let error = await DBError.generate({
+			details,
+		});
+
+		return res.redirect(`/error?${error ? error._id : ''}`);
+	}
 
 	csrf: {
 		const sessionData = req.session.csrf;
@@ -132,8 +150,10 @@ router.get('/cbk', async (req, res) => {
 			token,
 			getRedirectUrl(req),
 		).catch(err => {
-			res.status(401).send(err);
-			return null;
+			res.redirect(
+				`/error?${err && err instanceof DBError ? err._id : ''}`,
+			);
+			return;
 		});
 		if (!user) return;
 

@@ -3,6 +3,7 @@
 		"outDir": "dist",
 		"baseUrl": "dist",
 		"lib": ["esnext"],
+		"target": "es5",
 		"strict": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,

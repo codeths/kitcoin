@@ -1,5 +1,5 @@
 import express from 'express';
-import {Transaction, User} from '../../../helpers/schema';
+import {DBError, Transaction, User} from '../../../helpers/schema';
 import {
 	numberFromData,
 	request,
@@ -40,7 +40,18 @@ router.get(
 			res.status(200).send({balance});
 		} catch (e) {
 			try {
-				res.status(500).send('An error occured.');
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
 			} catch (e) {}
 		}
 	},
@@ -115,7 +126,18 @@ router.get(
 			});
 		} catch (e) {
 			try {
-				res.status(500).send('An error occured.');
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
 			} catch (e) {}
 		}
 	},
@@ -187,7 +209,18 @@ router.post(
 			res.status(200).send(returnArray ? transactions : transactions[0]);
 		} catch (e) {
 			try {
-				res.status(500).send('An error occured.');
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
 			} catch (e) {}
 		}
 	},
@@ -242,7 +275,18 @@ router.delete(
 			res.status(200).send('Transaction deleted.');
 		} catch (e) {
 			try {
-				res.status(500).send('An error occured.');
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
 			} catch (e) {}
 		}
 	},
