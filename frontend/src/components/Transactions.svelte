@@ -3,11 +3,10 @@
 	  Transaction object
 	*/
 	import {getBalance, getTransactions} from '../utils/api.js';
-	import Loading from './Loading.svelte';
-	import ToastContainer from './ToastContainer.svelte';
-	let toastContainer;
-	import {createEventDispatcher, onMount} from 'svelte';
+	import {createEventDispatcher} from 'svelte';
 	const dispatch = createEventDispatcher();
+	import {Loading, ToastContainer} from '.';
+	let toastContainer;
 
 	export let user = undefined;
 	let page = 1;

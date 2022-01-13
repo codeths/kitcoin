@@ -547,9 +547,9 @@ router.patch(
 					id: Validators.objectID,
 				},
 				body: {
-					name: Validators.optional(Validators.string),
+					name: Validators.string,
 					description: Validators.optional(Validators.string),
-					price: Validators.optional(Validators.currency),
+					price: Validators.currency,
 					quantity: Validators.optional(
 						Validators.and(Validators.integer, Validators.gte(0)),
 					),
@@ -561,18 +561,7 @@ router.patch(
 			if (!requestHasUser(req)) return;
 
 			const {storeID, id} = req.params;
-			let data = req.body;
-
-			Object.keys(data).forEach(key => {
-				if (
-					!['name', 'description', 'price', 'quantity'].includes(
-						key,
-					) ||
-					data[key] == null ||
-					data[key] == undefined
-				)
-					delete data[key];
-			});
+			let {name, description, price, quantity} = req.body;
 
 			const store = await Store.findById(storeID)
 				.then(store => {
@@ -607,7 +596,7 @@ router.patch(
 
 			if (!item) return;
 
-			Object.assign(item, data);
+			Object.assign(item, {name, description, price, quantity});
 
 			await item.save();
 

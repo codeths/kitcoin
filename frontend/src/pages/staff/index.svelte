@@ -1,10 +1,12 @@
 <script>
-	import {metatags, beforeUrlChange} from '@roxi/routify';
+	import {metatags} from '@roxi/routify';
 	import {getContext} from 'svelte';
-	import Loading from '../../components/Loading.svelte';
-	import CreateTransaction from '../../components/CreateTransaction.svelte';
-	import ToastContainer from '../../components/ToastContainer.svelte';
-	import Transactions from '../../components/Transactions.svelte';
+	import {
+		Loading,
+		CreateTransaction,
+		ToastContainer,
+		Transactions,
+	} from '../../components';
 	let toastContainer;
 	import {getBalance, getClasses, getClassStudents} from '../../utils/api.js';
 

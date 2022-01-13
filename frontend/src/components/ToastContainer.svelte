@@ -1,5 +1,6 @@
 <script>
-	import Toast from './Toast.svelte';
+	import {Toast} from '.';
+
 	let toasts = new Map();
 	let id = 0;
 
@@ -21,7 +22,7 @@
 </script>
 
 <div class="flex flex-col justify-center fixed right-0 top-0 m-4 z-[9999]">
-	{#each toastArray as {style, body, id}}
+	{#each toastArray as { style, body, id }}
 		<Toast
 			{style}
 			{body}
