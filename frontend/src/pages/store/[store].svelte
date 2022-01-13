@@ -1,6 +1,6 @@
 <script>
 	import {params, url, metatags} from '@roxi/routify';
-	import {getContext, onMount} from 'svelte';
+	import {getContext} from 'svelte';
 	import Loading from '../../components/Loading.svelte';
 	import Input from '../../components/Input.svelte';
 	import ToastContainer from '../../components/ToastContainer.svelte';
@@ -39,9 +39,6 @@
 	let loading = false;
 	let error;
 	let items = null;
-	let currentPage = 1;
-	let totalPages = 1;
-	const ITEMS_PER_PAGE = 12;
 	const LOW_STOCK = 3; //Low stock if there are this many items or less
 
 	async function getStore() {
@@ -70,18 +67,12 @@
 		return json;
 	}
 
-	async function load(page, useCache = true) {
+	async function load(useCache = true) {
 		try {
 			loading = true;
-			let newItems = await getItems(storeID, useCache);
-			totalPages = Math.ceil(newItems.length / ITEMS_PER_PAGE);
+			items = await getItems(storeID, useCache);
 			loading = false;
 			error = false;
-			if (page) currentPage = page;
-			items = newItems.slice(
-				(currentPage - 1) * ITEMS_PER_PAGE,
-				currentPage * ITEMS_PER_PAGE,
-			);
 
 			return;
 		} catch (e) {
@@ -234,7 +225,7 @@
 				);
 			}, 300);
 
-			load(undefined, false);
+			load(false);
 		} else {
 			clearTimeout(resetTimeout);
 			resetTimeout = setTimeout(() => {
@@ -273,7 +264,7 @@
 			return;
 		}
 
-		load(undefined, false);
+		load(false);
 	}
 
 	// Transaction
@@ -404,7 +395,7 @@
 			if (text) toastContainer.toast(text, 'error');
 		}
 
-		load(undefined, false);
+		load(false);
 	}
 
 	// Misc
@@ -419,8 +410,6 @@
 			transactionToggle = false;
 		}
 	});
-
-	let defaultFileList;
 </script>
 
 <!-- Content -->
@@ -552,29 +541,6 @@
 				{/each}
 			</div>
 		{/if}
-
-		<div class="flex flex-wrap justify-center align-center pt-4">
-			{#if items}
-				<h2 class="text-center mb-2">
-					Showing page {currentPage} of {totalPages}
-				</h2>
-				<div class="flex-break" />
-				<button
-					on:click={() => load(currentPage - 1)}
-					class="btn btn-primary w-40 mx-2"
-					disabled={loading || currentPage <= 1}
-				>
-					Previous
-				</button>
-				<button
-					on:click={() => load(currentPage + 1)}
-					class="btn btn-primary w-40 mx-2"
-					disabled={loading || currentPage >= totalPages}
-				>
-					Next
-				</button>
-			{/if}
-		</div>
 	{:catch error}
 		<h2>{error}</h2>
 		{#if authMsg}
