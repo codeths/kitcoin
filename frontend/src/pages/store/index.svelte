@@ -1,8 +1,7 @@
 <script>
 	import {getContext} from 'svelte';
 	import {url, metatags} from '@roxi/routify';
-	import Loading from '../../components/Loading.svelte';
-	import ItemDisplay from '../../components/ItemDisplay.svelte';
+	import {Loading} from '../../components';
 	import {getStores} from '../../utils/store.js';
 
 	metatags.title = 'Stores - Kitcoin';

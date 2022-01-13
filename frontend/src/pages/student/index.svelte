@@ -1,9 +1,7 @@
 <script>
 	import {metatags} from '@roxi/routify';
 	import {getContext} from 'svelte';
-	import ItemDisplay from '../../components/ItemDisplay.svelte';
-	import Transactions from '../../components/Transactions.svelte';
-	import Loading from '../../components/Loading.svelte';
+	import {Transactions, Loading} from '../../components';
 	import {getBalance} from '../../utils/api.js';
 
 	metatags.title = 'Student Home - Kitcoin';
@@ -20,9 +18,7 @@
 <!-- Content-->
 <div class="mx-8 my-4">
 	<div class="grid grid-cols-12">
-		<div
-			class="mx-2 my-4 col-span-12 md:col-span-8 lg:col-span-6"
-		>
+		<div class="mx-2 my-4 col-span-12 md:col-span-8 lg:col-span-6">
 			<h1 class="text-3xl font-medium mb-2">Balance</h1>
 			<div
 				class="flex bg-base-100 shadow-md rounded py-10 min-h-40 border-t-8 border-primary"

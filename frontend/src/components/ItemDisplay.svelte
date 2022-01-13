@@ -1,5 +1,6 @@
 <script>
 	import {onMount, onDestroy} from 'svelte';
+
 	export let items = []; // An array of items. (See above)
 	let scrollElement;
 	let buttonStates = {

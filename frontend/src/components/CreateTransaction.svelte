@@ -1,11 +1,7 @@
 <script>
-	import {createEventDispatcher, onMount} from 'svelte';
+	import {createEventDispatcher} from 'svelte';
 	const dispatch = createEventDispatcher();
-
-	import StudentSearch from './StudentSearch.svelte';
-	import Loading from './Loading.svelte';
-	import Input from './Input.svelte';
-	import Form from './Form.svelte';
+	import {StudentSearch, Loading, Input, Form} from '.';
 
 	export let modal = false;
 	export let balance = -1;

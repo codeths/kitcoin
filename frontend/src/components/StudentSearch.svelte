@@ -2,7 +2,7 @@
 
 <script>
 	import {searchUsers} from '../utils/api';
-	import DropdownSearch from './DropdownSearch.svelte';
+	import {DropdownSearch} from '.';
 
 	export let value = '';
 	export let error = '';

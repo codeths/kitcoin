@@ -1,7 +1,7 @@
 <script>
-	import {Router, beforeUrlChange, url} from '@roxi/routify';
+	import {Router, beforeUrlChange} from '@roxi/routify';
 	import {routes} from '../.routify/routes';
-	import {onMount, setContext} from 'svelte';
+	import {setContext} from 'svelte';
 	import {getUserInfo} from './utils/api';
 	import {userInfo} from './utils/store';
 

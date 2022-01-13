@@ -2,9 +2,8 @@
 
 <script>
 	import {createEventDispatcher} from 'svelte';
-	import Input from './Input.svelte';
-	import Loading from './Loading.svelte';
 	const dispatch = createEventDispatcher();
+	import {Input, Loading} from '.';
 
 	let input,
 		parent,

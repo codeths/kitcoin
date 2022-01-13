@@ -1,15 +1,17 @@
 <script>
 	import {params, url, metatags} from '@roxi/routify';
 	import {getContext} from 'svelte';
-	import Loading from '../../components/Loading.svelte';
-	import Input from '../../components/Input.svelte';
-	import ToastContainer from '../../components/ToastContainer.svelte';
+	import {
+		Loading,
+		Input,
+		ToastContainer,
+		StudentSearch,
+		Form,
+		DropdownSearch,
+	} from '../../components';
 	let toastContainer;
 	import {storeInfo, getStores, getItems} from '../../utils/store.js';
 	import {getBalance} from '../../utils/api.js';
-	import StudentSearch from '../../components/StudentSearch.svelte';
-	import Form from '../../components/Form.svelte';
-	import DropdownSearch from '../../components/DropdownSearch.svelte';
 
 	let info = $storeInfo;
 
