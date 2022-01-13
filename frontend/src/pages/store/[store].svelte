@@ -519,19 +519,24 @@
 							<p class="text-2xl font-bold">
 								{#if item.quantity == 0}
 									<span class="text-red-400"
-										>OUT OF STOCK</span
+										>Out of stock</span
 									>
 								{:else if item.quantity <= LOW_STOCK}
 									<span class="text-yellow-400"
-										>LOW STOCK</span
+										>Only <span class="italic"
+											>{item.quantity.toLocaleString()}</span
+										> left!</span
 									>
 								{:else}
-									<span class="text-green-400">IN STOCK</span>
+									<span class="text-green-400"
+										>In stock
+									</span>
+									-
+									<span class="italic"
+										>{item.quantity.toLocaleString()}</span
+									>
+									left
 								{/if}
-								<span class="text-gray-400">&nbsp;-&nbsp;</span>
-								<span class="italic"
-									>{item.quantity.toLocaleString()}</span
-								>
 							</p>
 						{/if}
 						{#if item.description}
