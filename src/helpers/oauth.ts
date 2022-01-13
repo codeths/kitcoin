@@ -19,6 +19,7 @@ import {google, Auth} from 'googleapis';
 import express from 'express';
 import {client_id, client_secret, oauthDomain} from '../config/keys.json';
 import {User, IUserDoc, DBError} from './schema';
+import {ErrorDetail} from '../struct';
 
 /**
  * Generate OAuth2 client and optionally set the credentials
@@ -104,18 +105,9 @@ export async function oauthCallback(
 	return new Promise<IUserDoc>(async (resolve, reject) => {
 		const auth = getOAuth2Client(undefined, redirect);
 		const tokens = await auth.getToken(code).catch(async () => {
-			let error = await DBError.generate(
-				{},
-				{
-					details: {
-						title: 'Failed to sign in',
-						button: {
-							text: 'Sign In Again',
-							url: '/login',
-						},
-					},
-				},
-			);
+			let error = await DBError.generate({
+				details: ErrorDetail.OAUTH_SIGN_IN_FAILED,
+			});
 			reject(error);
 			return;
 		});
@@ -123,18 +115,9 @@ export async function oauthCallback(
 		const {refresh_token, access_token, expiry_date, scope} = tokens.tokens;
 
 		if (!refresh_token || !access_token || !expiry_date) {
-			let error = await DBError.generate(
-				{},
-				{
-					details: {
-						title: 'Failed to sign in',
-						button: {
-							text: 'Sign In Again',
-							url: '/login',
-						},
-					},
-				},
-			);
+			let error = await DBError.generate({
+				details: ErrorDetail.OAUTH_SIGN_IN_FAILED,
+			});
 			return reject(error);
 		}
 
@@ -148,18 +131,9 @@ export async function oauthCallback(
 				personFields: ['names', 'emailAddresses'].join(','),
 			})
 			.catch(async () => {
-				let error = await DBError.generate(
-					{},
-					{
-						details: {
-							title: 'Failed to sign in',
-							button: {
-								text: 'Sign In Again',
-								url: '/login',
-							},
-						},
-					},
-				);
+				let error = await DBError.generate({
+					details: ErrorDetail.OAUTH_SIGN_IN_FAILED,
+				});
 				reject(error);
 				return;
 			});
@@ -170,18 +144,9 @@ export async function oauthCallback(
 			!person.data.emailAddresses ||
 			!person.data.resourceName
 		) {
-			let error = await DBError.generate(
-				{},
-				{
-					details: {
-						title: 'Failed to sign in',
-						button: {
-							text: 'Sign In Again',
-							url: '/login',
-						},
-					},
-				},
-			);
+			let error = await DBError.generate({
+				details: ErrorDetail.OAUTH_SIGN_IN_FAILED,
+			});
 			return reject(error);
 		}
 		const name = person.data.names.find(
@@ -192,34 +157,18 @@ export async function oauthCallback(
 		)?.value;
 		const googleID = person.data.resourceName.split('/')[1];
 		if (!name || !email) {
-			let error = await DBError.generate(
-				{},
-				{
-					details: {
-						title: 'Failed to sign in',
-						button: {
-							text: 'Sign In Again',
-							url: '/login',
-						},
-					},
-				},
-			);
+			let error = await DBError.generate({
+				details: ErrorDetail.OAUTH_SIGN_IN_FAILED,
+			});
 			return reject(error);
 		}
 		if (oauthDomain && !email.endsWith(`@${oauthDomain}`)) {
-			let error = await DBError.generate(
-				{},
-				{
-					details: {
-						title: 'Invalid email domain',
-						description: `Please sign in with your ${oauthDomain} email.`,
-						button: {
-							text: 'Sign In Again',
-							url: '/login',
-						},
-					},
-				},
-			);
+			let error = await DBError.generate({
+				details: ErrorDetail.OAUTH_SIGN_IN_FAILED.clone({
+					title: 'Invalid email domain',
+					description: `Please sign in with your ${oauthDomain} email.`,
+				}),
+			});
 			return reject(error);
 		}
 		let user = await User.findOne().byId(googleID);

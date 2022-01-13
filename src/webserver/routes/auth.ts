@@ -9,6 +9,7 @@ import {
 } from '../../helpers/oauth';
 import {request} from '../../helpers/request';
 import {DBError} from '../../helpers/schema';
+import {ErrorDetail} from '../../struct';
 const router = express.Router();
 
 const ALLOWED_REDIRECTS: (string | RegExp)[] = [
@@ -114,27 +115,21 @@ router.get(
 router.get('/cbk', async (req, res) => {
 	const code = req.query.code;
 	if (!code || typeof code !== 'string') {
+		let details = ErrorDetail.OAUTH_SIGN_IN_FAILED;
+
 		let queryError = req.query.error;
-		let errorText: string | null = 'Failed to sign in';
-		let errorDescription: string | null = null;
+
 		if (queryError == 'access_denied') {
-			errorText = 'Sign In Cancelled';
-			errorDescription =
-				'If this was unintentional, please sign in again.';
+			details.edit({
+				title: 'Sign In Cancelled',
+				description: 'If this was unintentional, please sign in again.',
+			});
 		}
-		let error = await DBError.generate(
-			{},
-			{
-				details: {
-					title: errorText,
-					description: errorDescription,
-					button: {
-						text: 'Sign In Again',
-						url: '/login',
-					},
-				},
-			},
-		);
+
+		let error = await DBError.generate({
+			details,
+		});
+
 		return res.redirect(`/error#${error ? error._id : ''}`);
 	}
 
