@@ -586,7 +586,7 @@
 	<div class="modal-box">
 		<div class="flex flex-row justify-between items-center mb-4">
 			<h2 class="inline-flex text-2xl text-medium">
-				{editItem ? `Done ${editItem.name}` : 'Create item'}
+				{editItem ? `Edit ${editItem.name}` : 'Create item'}
 			</h2>
 			{#if editItem}
 				<button
