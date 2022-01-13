@@ -5,8 +5,8 @@
 
 	let error = {
 		code: null,
-		title: 'Something went wrong',
-		description: 'If the issue persists, please contact us.',
+		title: null,
+		description: null,
 		button: null,
 	};
 
@@ -19,7 +19,7 @@
 				try {
 					let json = await res.json();
 
-					if (json) error = json;
+					error = json;
 
 					for (let key in error) {
 						let value = error[key];
@@ -31,6 +31,11 @@
 				} catch (e) {}
 			}
 		}
+
+		error = {
+			title: 'Something went wrong',
+			description: 'If the issue persists, please contact us.',
+		};
 	})();
 </script>
 
