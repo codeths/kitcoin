@@ -163,3 +163,29 @@
 <div class="grid flex-grow">
 	<slot decorator={_transition} />
 </div>
+<footer class="p-10 footer bg-base-200 text-base-content">
+	<div>
+		<h2 class="text-4xl">
+			<span class="icon-logo mr-1" />Kitcoin
+		</h2>
+		<p>
+			Copyright &copy; 2022 codETHS. <a
+				href="https://github.com/chromezoneeths/kitcoin/blob/main/LICENSE"
+				class="link">Licensed under AGPLv3</a
+			>
+		</p>
+	</div>
+	<div>
+		<span class="footer-title">Links</span>
+		<a
+			class="link link-hover"
+			href="https://github.com/chromezoneeths/kitcoin"
+			target="_blank">Source Code</a
+		>
+		<a
+			class="link link-hover"
+			href="mailto:emailtbd@eths202.org"
+			target="_blank">Contact Us</a
+		>
+	</div>
+</footer>
