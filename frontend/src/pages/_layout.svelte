@@ -169,10 +169,14 @@
 			<span class="icon-logo mr-1" />Kitcoin
 		</h2>
 		<p>
-			Copyright &copy; 2022 codETHS. <a
+			Copyright &copy; 2022 codETHS.
+			<a
 				href="https://github.com/chromezoneeths/kitcoin/blob/main/LICENSE"
-				class="link">Licensed under AGPLv3</a
+				class="link"
+				target="_blank"
 			>
+				Licensed under AGPLv3
+			</a>
 		</p>
 	</div>
 	<div>
