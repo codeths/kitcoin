@@ -693,7 +693,7 @@
 				<div class="flex items-center space-x-2 justify-end">
 					<label
 						for="editmodal"
-						class="btn px-12"
+						class="btn btn-outline px-12"
 						on:click={e =>
 							!confirm('Are you sure you want to close this?') &&
 							e.preventDefault()}
