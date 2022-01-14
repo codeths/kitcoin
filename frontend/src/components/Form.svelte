@@ -11,6 +11,8 @@
 
 	export let isValid = false;
 
+	let el;
+
 	$: {
 		isValid = Object.values(valid).every(v => v);
 		dispatch('update');
@@ -31,6 +33,7 @@
 	}
 
 	export function reset() {
+		el.reset();
 		Object.keys(values).forEach(v => {
 			validate({detail: {target: {name: v}, value: ''}});
 		});
@@ -44,6 +47,6 @@
 	}
 </script>
 
-<form on:submit={submit}>
+<form on:submit={submit} bind:this={el}>
 	<slot />
 </form>

@@ -11,7 +11,7 @@
 		values: {},
 		errors: {},
 	};
-	let form = formData;
+	let form;
 	let numStudents = 1;
 	$: numStudents = (formData.values.student || '').split(' ').length;
 
