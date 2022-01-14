@@ -166,7 +166,7 @@
 			</div>
 			<div class="flex justify-center align-center">
 				<button
-					class="btn btn-primary w-40"
+					class="btn btn-primary w-36"
 					on:click={() => load(page, 'retry')}
 					disabled={loading.any}
 				>
@@ -189,7 +189,7 @@
 			</div>
 			<div class="flex justify-center align-center">
 				<button
-					class="btn btn-primary w-40 mx-2"
+					class="btn btn-primary w-36 mx-2"
 					class:bg-base-100={transactions.page <= 1}
 					on:click={() => load(page - 1, 'previous')}
 					disabled={loading.any || transactions.page <= 1}
@@ -201,7 +201,7 @@
 					{/if}
 				</button>
 				<button
-					class="btn btn-primary w-40 mx-2"
+					class="btn btn-primary w-36 mx-2"
 					class:bg-base-100={transactions.page >=
 						transactions.pageCount}
 					on:click={() => load(page + 1, 'next')}
