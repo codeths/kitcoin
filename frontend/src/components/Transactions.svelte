@@ -119,7 +119,9 @@
 								<div class="flex-col self-center md:hidden">
 									<button
 										class="btn btn-ghost md:w-full"
-										on:click={deleteTransaction(item._id)}
+										on:click={confirm(
+											'Are you sure you want to delete this transaction?',
+										) && deleteTransaction(item._id)}
 									>
 										<span class="icon-delete text-2xl" />
 									</button>
@@ -146,7 +148,9 @@
 							<td class="px-2 py-4 hidden md:table-cell">
 								<button
 									class="btn btn-ghost md:w-full md:justify-self-end p-0"
-									on:click={deleteTransaction(item._id)}
+									on:click={confirm(
+										'Are you sure you want to delete this transaction?',
+									) && deleteTransaction(item._id)}
 								>
 									<span class="icon-delete text-xl" />
 								</button>
