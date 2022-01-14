@@ -160,4 +160,6 @@
 		</div>
 	</div>
 </div>
-<slot decorator={_transition} />
+<div class="grid flex-grow">
+	<slot decorator={_transition} />
+</div>

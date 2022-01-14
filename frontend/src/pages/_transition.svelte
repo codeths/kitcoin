@@ -2,6 +2,9 @@
 	import {fade} from 'svelte/transition';
 </script>
 
-<div transition:fade class="absolute w-screen min-h-screen-nonav bg-base-300">
+<div
+	transition:fade
+	class="w-screen min-h-full bg-base-300 row-start-1 col-start-1"
+>
 	<slot />
 </div>
