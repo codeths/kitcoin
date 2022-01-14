@@ -95,4 +95,20 @@ span[class^='icon-']::before {
 		--tw-bg-opacity: 0.2 !important;
 		background-color: hsla(var(--n) / var(--tw-bg-opacity, 1)) !important;
 	}
+
+	.drawer-toggle:not(:checked) ~ .drawer-side {
+		pointer-events: none;
+	}
+
+	.h-screen-nonav {
+		height: calc(100vh - 4rem);
+	}
+
+	.min-h-screen-nonav {
+		height: calc(100vh - 4rem);
+	}
+
+	.max-h-screen-nonav {
+		height: calc(100vh - 4rem);
+	}
 }
