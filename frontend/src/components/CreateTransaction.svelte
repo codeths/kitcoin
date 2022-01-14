@@ -158,7 +158,7 @@
 			<button
 				type="button"
 				on:click={() => dispatch('close')}
-				class="btn px-12"
+				class="btn btn-outline px-12"
 			>
 				Cancel
 			</button>
