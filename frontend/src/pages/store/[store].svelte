@@ -749,7 +749,7 @@
 					bind:error={transactionFormData.errors.student}
 					on:validate={transactionForm.validate}
 					on:change={loadStudentBalance}
-					autofocus
+					focus
 				/>
 				<DropdownSearch
 					name="item"
