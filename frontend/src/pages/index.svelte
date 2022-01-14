@@ -4,7 +4,7 @@
 	metatags.title = 'Kitcoin';
 </script>
 
-<div class="hero absolute min-h-full">
+<div class="hero h-full">
 	<div class="text-center hero-content">
 		<div class="max-w-md">
 			<h1 class="mb-5 text-5xl font-bold">Kitcoin</h1>

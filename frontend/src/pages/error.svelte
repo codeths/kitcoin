@@ -41,7 +41,7 @@
 
 <!-- Content -->
 <div
-	class="p-8 flex flex-col flex-1 justify-center items-center absolute w-screen min-h-full"
+	class="p-8 flex flex-col flex-1 justify-center items-center w-screen min-h-full"
 >
 	{#if error.code}
 		<h1 class="text-8xl text-center">{error.code}</h1>

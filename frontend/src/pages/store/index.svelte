@@ -67,7 +67,7 @@
 							{#if store.canManage}
 								<div
 									data-tip="You can manage this store"
-									class="tooltip"
+									class="tooltip tooltip-left"
 								>
 									<span
 										class="inline-flex icon-crown text-2xl h-full text-primary group-hover:text-primary-content"
