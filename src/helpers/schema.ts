@@ -126,7 +126,7 @@ function getBalance(this: IUserDoc, balance: number) {
 	if (!this.hasRole('STAFF')) return balance;
 	if (
 		!this.balanceExpires ||
-		this.balanceExpires.getDate() < new Date().getDate()
+		this.balanceExpires.getTime() < new Date().getTime()
 	) {
 		this.balanceExpires = new Date(
 			new Date().getFullYear(),
