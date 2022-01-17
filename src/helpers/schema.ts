@@ -170,6 +170,11 @@ const transactionSchema = new mongoose.Schema<
 		id: String,
 		text: String,
 	},
+	store: {
+		id: String,
+		item: String,
+		manager: String,
+	},
 	date: {
 		type: Date,
 		default: () => new Date(),

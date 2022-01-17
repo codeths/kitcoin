@@ -145,6 +145,23 @@ export interface ITransaction {
 		text: string | null;
 	};
 	/**
+	 * Store details (if applicable)
+	 */
+	store?: {
+		/**
+		 * The store's id
+		 */
+		id: string;
+		/**
+		 * The item's id
+		 */
+		item: string;
+		/**
+		 * The store manager's id (who created the transaction)
+		 */
+		manager: string;
+	};
+	/**
 	 * The date of the transaction
 	 */
 	date: Date;
