@@ -29,7 +29,8 @@
 		amount: e => {
 			let v = e.value;
 			if (!v) return e.type == 'blur' ? 'Amount is required' : '';
-			let num = parseFloat(v);
+			if (!/^\d*(?:\.\d+)?$/.test(v.trim())) return 'Amount must be a number';
+			let num = parseFloat(v.trim());
 			if (isNaN(num)) return 'Amount must be an number';
 			if (Math.round(num * 100) / 100 !== num)
 				return 'Amount cannot have more than 2 decimal places';
