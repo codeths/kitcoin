@@ -197,7 +197,9 @@ router.get(
 						user: req.user?.id,
 					},
 				);
-				res.status(500).send(`Something went wrong. Error ID: ${error.id}`);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
 			} catch (e) {}
 		}
 	},
@@ -260,6 +262,11 @@ router.post(
 				to: {
 					id: user._id,
 				},
+				store: {
+					id: store.id,
+					item: item.id,
+					manager: req.user.id,
+				},
 				reason: `${item.name}`,
 			}).save();
 
@@ -282,7 +289,9 @@ router.post(
 						user: req.user?.id,
 					},
 				);
-				res.status(500).send(`Something went wrong. Error ID: ${error.id}`);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
 			} catch (e) {}
 		}
 	},
@@ -558,7 +567,9 @@ router.patch(
 						user: req.user?.id,
 					},
 				);
-				res.status(500).send(`Something went wrong. Error ID: ${error.id}`);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
 			} catch (e) {}
 		}
 	},
@@ -647,7 +658,9 @@ router.patch(
 						user: req.user?.id,
 					},
 				);
-				res.status(500).send(`Something went wrong. Error ID: ${error.id}`);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
 			} catch (e) {}
 		}
 	},
@@ -724,7 +737,9 @@ router.delete(
 						user: req.user?.id,
 					},
 				);
-				res.status(500).send(`Something went wrong. Error ID: ${error.id}`);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
 			} catch (e) {}
 		}
 	},
@@ -809,7 +824,9 @@ router.delete(
 						user: req.user?.id,
 					},
 				);
-				res.status(500).send(`Something went wrong. Error ID: ${error.id}`);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
 			} catch (e) {}
 		}
 	},
@@ -888,7 +905,9 @@ router.post(
 						user: req.user?.id,
 					},
 				);
-				res.status(500).send(`Something went wrong. Error ID: ${error.id}`);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
 			} catch (e) {}
 		}
 	},
