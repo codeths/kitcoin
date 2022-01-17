@@ -49,6 +49,7 @@
 			on:blur={handle}
 			on:change
 			on:input
+			on:keydown
 			on:focus
 			on:blur
 			bind:value
@@ -67,6 +68,7 @@
 			on:blur={handle}
 			on:change
 			on:input
+			on:keydown
 			on:focus
 			on:blur
 			bind:value

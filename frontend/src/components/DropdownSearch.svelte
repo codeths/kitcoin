@@ -93,6 +93,7 @@
 		bind:this={input}
 		bind:value={query}
 		bind:error
+		on:keydown
 		on:input={e => {
 			getResults(e.target.value, true, e.data);
 		}}
