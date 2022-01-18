@@ -61,7 +61,7 @@
 		>
 		<a
 			class="btn btn-secondary px-12 mx-2"
-			href="mailto:emailtbd@eths202.org"
+			href="mailto:kitcoin@eths202.org"
 			target="_blank">Contact Us</a
 		>
 	</div>

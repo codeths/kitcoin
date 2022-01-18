@@ -188,7 +188,7 @@
 		>
 		<a
 			class="link link-hover"
-			href="mailto:emailtbd@eths202.org"
+			href="mailto:kitcoin@eths202.org"
 			target="_blank">Contact Us</a
 		>
 	</div>
