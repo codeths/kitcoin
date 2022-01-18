@@ -19,14 +19,21 @@
 		info = newInfo;
 	});
 
-	let storeID, store;
+	let storeID, store, storeError;
 	$: {
 		if ($params.store && storeID !== $params.store) {
 			storeID = $params.store;
-			store = (info || []).find(s => s._id === storeID);
 			if (storeID) {
+				getStore()
+					.then(x => {
+						store = x;
+						if (store.canManage) getStudents();
+					})
+					.catch(e => {
+						store = null;
+						storeError = e;
+					});
 				load();
-				if (!info) getStores();
 			}
 		}
 		metatags.title = `Store${
@@ -43,8 +50,20 @@
 	let items = null;
 	const LOW_STOCK = 3; //Low stock if there are this many items or less
 
+	let students = null;
+
+	async function getStudents() {
+		let res = await fetch(`/api/store/${storeID}/students`).catch(e => {});
+		if (!res || !res.ok) throw 'Could not fetch store';
+		let json = await res.json().catch(e => {
+			throw 'Could not fetch store';
+		});
+		students = json;
+	}
+
 	async function getStore() {
 		userInfo = (await ctx) || null;
+		if (store) return store;
 		let cachedInfo = info && info.find(x => x._id === storeID);
 		if (cachedInfo) return cachedInfo;
 		let res = await fetch(`/api/store/${storeID}`).catch(e => {});
@@ -439,9 +458,9 @@
 	{/if}
 </div>
 <div class="p-6 flex flex-col">
-	{#await getStore()}
+	{#if store === undefined}
 		<Loading height="2rem" />
-	{:then store}
+	{:else if store}
 		<h2 class="text-4xl font-bold mb-6">{store.name}</h2>
 		{#if store.canManage}
 			<div class="self-end mb-4">
@@ -544,8 +563,8 @@
 				{/each}
 			</div>
 		{/if}
-	{:catch error}
-		<h2>{error}</h2>
+	{:else}
+		<h2>{storeError || 'Something went wrong'}</h2>
 		{#if authMsg}
 			<div class="alert alert-warning my-4">
 				<div class="flex-1">
@@ -573,7 +592,7 @@
 				</div>
 			</div>
 		{/if}
-	{/await}
+	{/if}
 </div>
 
 <input
@@ -745,6 +764,7 @@
 			>
 				<StudentSearch
 					name="student"
+					{students}
 					bind:value={transactionFormData.values.student}
 					bind:error={transactionFormData.errors.student}
 					on:validate={transactionForm.validate}
