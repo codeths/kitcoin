@@ -464,21 +464,21 @@
 		<h2 class="text-4xl font-bold mb-6">{store.name}</h2>
 		{#if store.canManage}
 			<div class="self-end mb-4">
-				<label
-					for="transactionmodal"
-					class="btn btn-primary self-end px-12 mx-1 modal-button"
-					on:click={() => {
-						submitStatus = null;
-						transactionForm.reset();
-					}}>Sell Item</label
-				>
 				{#if userInfo.roles.includes('STAFF')}
 					<label
-						for="editmodal"
-						class="btn btn-secondary self-end px-12 mx-1 modal-button"
-						on:click={() => manageFormModal()}>New Item</label
+						for="transactionmodal"
+						class="btn btn-primary self-end px-12 mx-1 modal-button"
+						on:click={() => {
+							submitStatus = null;
+							transactionForm.reset();
+						}}>Sell Item</label
 					>
 				{/if}
+				<label
+					for="editmodal"
+					class="btn btn-secondary self-end px-12 mx-1 modal-button"
+					on:click={() => manageFormModal()}>New Item</label
+				>
 			</div>
 		{/if}
 		{#if error || !items || items.length == 0}
