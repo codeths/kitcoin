@@ -19,7 +19,7 @@
 		info = newInfo;
 	});
 
-	let storeID, store;
+	let storeID, store, storeError;
 	$: {
 		if ($params.store && storeID !== $params.store) {
 			storeID = $params.store;
@@ -31,6 +31,7 @@
 					})
 					.catch(e => {
 						store = null;
+						storeError = e;
 					});
 				load();
 			}
@@ -563,7 +564,7 @@
 			</div>
 		{/if}
 	{:else}
-		<h2>{error}</h2>
+		<h2>{storeError || 'Something went wrong'}</h2>
 		{#if authMsg}
 			<div class="alert alert-warning my-4">
 				<div class="flex-1">
