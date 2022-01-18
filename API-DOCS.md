@@ -176,7 +176,7 @@ Get a list of people who can access a store
 
 ### Response
 
-An array of student Ids
+Null or an array of student ids
 
 ## GET `/store/:id/items`
 
