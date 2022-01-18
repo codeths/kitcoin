@@ -166,6 +166,18 @@ Get a store's info by its ID
 }
 ```
 
+## GET `/store/:id/students`
+
+Get a list of people who can access a store
+
+### Request
+
+`:id` (path): Store ID
+
+### Response
+
+An array of student Ids
+
 ## GET `/store/:id/items`
 
 Get a list of a store's items

@@ -205,6 +205,82 @@ router.get(
 	},
 );
 
+router.get(
+	'/store/:id/students',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['STAFF'],
+			validators: {
+				params: {
+					id: Validators.objectID,
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			const {id} = req.params;
+
+			const store = await Store.findById(id)
+				.then(store => {
+					if (!store) {
+						res.status(404).send('Store not found');
+						return null;
+					}
+					return store;
+				})
+				.catch(() => {
+					res.status(400).send('Invalid ID');
+					return null;
+				});
+
+			if (!store) return;
+
+			const permissions = await getStorePerms(store, req.user);
+			if (!permissions.manage) return res.status(403).send('Forbidden');
+
+			if (store.public) return res.status(200).send(null);
+
+			let studentIds: string[] = store.users;
+
+			if (store.classIDs.length > 0) {
+				let classroomClient = await new ClassroomClient().createClient(
+					req.user,
+				);
+
+				await Promise.all(
+					store.classIDs.map(async classID => {
+						let students = await classroomClient.getStudentsWithIds(
+							classID,
+						);
+
+						if (students)
+							students.forEach(x => studentIds.push(x.mongoId));
+					}),
+				);
+			}
+			return res.status(200).send(studentIds);
+		} catch (e) {
+			try {
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
 router.post(
 	'/store/:id/sell',
 	async (req, res, next) =>
