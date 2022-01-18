@@ -8,6 +8,7 @@
 	export let error = '';
 	export let query = '';
 	export let me = null;
+	export let students = null;
 
 	let results = null;
 	let autoSubmit = false;
@@ -21,6 +22,9 @@
 			results = (
 				await searchUsers(text, 15, ['STUDENT'], me).catch(e => [])
 			).map(x => ({text: x.name, value: x.id, confidence: x.confidence}));
+
+			if (students)
+				results = results.filter(x => students.includes(x.value));
 
 			if (autoSubmit) {
 				let confidentResult = results.find(x => x.confidence == 100);
