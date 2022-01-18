@@ -55,7 +55,7 @@ export class ErrorDetail {
 		code: 500,
 		title: 'Something went wrong',
 		description:
-			'If this problem persists, please contact us. Error ID: {CODE}',
+			'If this problem persists, please contact us and share this error ID: {CODE}',
 	});
 
 	static readonly OAUTH_SIGN_IN_FAILED = new ErrorDetail({
