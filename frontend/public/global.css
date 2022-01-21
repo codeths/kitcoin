@@ -111,4 +111,8 @@ span[class^='icon-']::before {
 	.max-h-screen-nonav {
 		height: calc(100vh - 4rem);
 	}
+
+	.drawer-side .menu a {
+		@apply rounded-lg my-1;
+	}
 }
