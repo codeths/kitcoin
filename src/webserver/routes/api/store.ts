@@ -583,16 +583,7 @@ router.get(
 
 		let items = await StoreItem.find().byStoreID(id);
 
-		res.status(200).send(
-			items.map(i => ({
-				_id: i._id,
-				name: i.name,
-				description: i.description,
-				quantity: i.quantity,
-				price: i.price,
-				imageHash: i.imageHash,
-			})),
-		);
+		res.status(200).json(items);
 	},
 );
 
