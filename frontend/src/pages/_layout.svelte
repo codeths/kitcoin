@@ -46,14 +46,16 @@
 />
 <div class="drawer-side fixed z-50 w-screen h-full">
 	<label for="nav-drawer" class="drawer-overlay" />
-	<div class="p-4 overflow-y-auto menu w-80 bg-base-100">
-		<label
-			for="nav-drawer"
-			class="btn btn-ghost btn-square p-1 self-end font-medium"
-		>
-			<span class="icon-close text-4xl" /></label
-		>
-		<li>
+	<div class="px-4 overflow-y-auto menu w-80 bg-base-100">
+		<div class="flex h-16 justify-end">
+			<label
+				for="nav-drawer"
+				class="btn btn-ghost btn-square p-1 font-medium self-center"
+			>
+				<span class="icon-close text-4xl" /></label
+			>
+		</div>
+		<ul class="menu !pl-0">
 			{#each links as [text, link, navigate]}
 				<li>
 					<a
@@ -87,9 +89,13 @@
 					>
 				</li>
 			{:else}
-				<a class="px-3 py-1" href="/signin" target="_self">Sign In</a>
+				<li>
+					<a class="px-3 py-1" href="/signin" target="_self"
+						>Sign In</a
+					>
+				</li>
 			{/if}
-		</li>
+		</ul>
 	</div>
 </div>
 <div class="navbar w-full bg-neutral text-white p-3 shadow-xl h-16">
