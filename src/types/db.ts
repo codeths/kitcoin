@@ -267,6 +267,10 @@ export interface IStore {
 	 */
 	public: boolean;
 	/**
+	 * Mongo ID of the person who owns this store
+	 */
+	owner: string;
+	/**
 	 * Mongo IDs of users who can manage this store
 	 */
 	managers: string[];

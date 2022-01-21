@@ -264,6 +264,7 @@ const storeSchema = new mongoose.Schema<IStoreDoc, IStoreModel>({
 		default: false,
 		required: true,
 	},
+	owner: String,
 	managers: [String],
 	users: [String],
 });
