@@ -15,7 +15,7 @@ import {
 	Transaction,
 	User,
 } from '../../../helpers/schema';
-import {IStoreItemDoc, requestHasUser} from '../../../types';
+import {IStore, IStoreItemDoc, requestHasUser} from '../../../types';
 const router = express.Router();
 
 async function getStorePerms(
@@ -37,7 +37,7 @@ async function getStorePerms(
 
 	if (user.hasRole('ADMIN')) {
 		manage = true;
-	} else if (store.managers.includes(user.id)) {
+	} else if (store.managers.includes(user.id) || store.owner == user.id) {
 		manage = true;
 	} else if (store.classIDs && classroomClient) {
 		const teaching = await classroomClient
@@ -146,6 +146,91 @@ router.get(
 	},
 );
 
+router.post(
+	'/stores',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: false,
+			roles: ['STAFF'],
+			validators: {
+				body: {
+					name: Validators.string,
+					description: Validators.optional(Validators.string),
+					classIDs: Validators.array(Validators.regex(/^\d+$/)),
+					public: Validators.boolean,
+					managers: Validators.array(Validators.objectID),
+					users: Validators.array(Validators.objectID),
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			let body = req.body;
+			body.owner = req.user.id;
+			if (body.public && !req.user.hasRole('ADMIN'))
+				return res
+					.status(403)
+					.send('You must be an admin to create a public store.');
+
+			let invalidUsers = await Promise.all(
+				[body.managers, body.users].flat().map(async id => {
+					let user = await User.findById(id);
+					return user ? null : id;
+				}),
+			);
+
+			if (invalidUsers.length > 0)
+				return res
+					.status(400)
+					.send(`Invalid user IDs: ${invalidUsers.join(', ')}`);
+
+			if (body.classIDs.length > 0) {
+				let classroomClient = await new ClassroomClient().createClient(
+					req.user,
+				);
+
+				let teaching = await classroomClient
+					.getClassesForRole('TEACHER')
+					.then(x => (x || []).map(x => x.id));
+
+				let invalidClasses = body.classIDs.filter(
+					(id: string) => !teaching.includes(id),
+				);
+
+				if (invalidClasses.length > 0)
+					return res
+						.status(400)
+						.send(
+							`Invalid class IDs: ${invalidClasses.join(', ')}`,
+						);
+			}
+
+			let store = await Store.create(body);
+
+			if (!store) return res.status(500).send('Failed to create store.');
+
+			res.status(201).json(store);
+		} catch (e) {
+			try {
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
 router.get(
 	'/store/:id',
 	async (req, res, next) =>
@@ -186,6 +271,145 @@ router.get(
 				description,
 				canManage: permissions.manage,
 			});
+		} catch (e) {
+			try {
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
+router.patch(
+	'/store/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: false,
+			roles: ['STAFF'],
+			validators: {
+				params: {
+					id: Validators.objectID,
+				},
+				body: {
+					name: Validators.string,
+					description: Validators.optional(Validators.string),
+					classIDs: Validators.array(Validators.regex(/^\d+$/)),
+					public: Validators.boolean,
+					managers: Validators.array(Validators.objectID),
+					users: Validators.array(Validators.objectID),
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			let store = await Store.findById(req.params.id);
+			if (!store) return res.status(404).send('Store not found');
+
+			let permissions = await getStorePerms(store, req.user);
+			if (!permissions.manage) return res.status(403).send('Forbidden');
+
+			let body = req.body;
+			body.owner = req.user.id;
+			if (body.public && !req.user.hasRole('ADMIN'))
+				return res
+					.status(403)
+					.send('You must be an admin to create a public store.');
+
+			let invalidUsers = await Promise.all(
+				[body.managers, body.users].flat().map(async id => {
+					let user = await User.findById(id);
+					return user ? null : id;
+				}),
+			);
+
+			if (invalidUsers.length > 0)
+				return res
+					.status(400)
+					.send(`Invalid user IDs: ${invalidUsers.join(', ')}`);
+
+			if (body.classIDs.length > 0) {
+				let classroomClient = await new ClassroomClient().createClient(
+					req.user,
+				);
+
+				let teaching = await classroomClient
+					.getClassesForRole('TEACHER')
+					.then(x => (x || []).map(x => x.id));
+
+				let invalidClasses = body.classIDs.filter(
+					(id: string) => !teaching.includes(id),
+				);
+
+				if (invalidClasses.length > 0)
+					return res
+						.status(400)
+						.send(
+							`Invalid class IDs: ${invalidClasses.join(', ')}`,
+						);
+			}
+
+			store = Object.assign(store, body) as typeof store;
+			await store.save();
+
+			res.status(200).json(store);
+		} catch (e) {
+			try {
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
+router.delete(
+	'/store/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: false,
+			roles: ['STAFF'],
+			validators: {
+				params: {
+					id: Validators.objectID,
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			let store = await Store.findById(req.params.id);
+			if (!store) return res.status(404).send('Store not found');
+
+			if (store.owner !== req.user.id && !req.user.hasRole('ADMIN'))
+				return res
+					.status(403)
+					.send('Only the owner or an admin can delete a store.');
+
+			store.delete();
+
+			res.status(200).send();
 		} catch (e) {
 			try {
 				const error = await DBError.generate(
