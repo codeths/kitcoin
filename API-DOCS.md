@@ -148,6 +148,33 @@ None
 [];
 ```
 
+## POST `/stores`
+
+Create a store. Requires staff permissions.
+
+## Request
+
+`name` (body): The name of the store  
+`description` (body): [Optional] The description of the store  
+`classIDs` (body): [Optional] An array of Google Classroom IDs  
+`public` (body): Whether the store is public or not. Public stores require admin permissions.  
+`managers` (body): An array of user IDs who can manage this store  
+`users` (body): An array of user IDs who can access this store
+
+### Response
+
+```ts
+{
+	name: string;
+	description: string | null;
+	classIDs: string[];
+	public: boolean;
+	owner: string;
+	managers: string[];
+	users: string[];
+}
+```
+
 ## GET `/store/:id`
 
 Get a store's info by its ID
@@ -165,6 +192,46 @@ Get a store's info by its ID
 	canManage: boolean;
 }
 ```
+
+## PATCH `/store/:id`
+
+Update a store. Requires permission to manage this store.
+
+## Request
+
+`:id` (path): Store ID  
+`name` (body): The name of the store  
+`description` (body): [Optional] The description of the store  
+`classIDs` (body): [Optional] An array of Google Classroom IDs  
+`public` (body): Whether the store is public or not. Public stores require admin permissions.  
+`managers` (body): An array of user IDs who can manage this store  
+`users` (body): An array of user IDs who can access this store
+
+### Response
+
+```ts
+{
+	name: string;
+	description: string | null;
+	classIDs: string[];
+	public: boolean;
+	owner: string;
+	managers: string[];
+	users: string[];
+}
+```
+
+## DELETE `/store/:id`
+
+Delete a store. Only the store owner or an admin can do this.
+
+## Request
+
+`:id` (path): Store ID
+
+### Response
+
+None
 
 ## GET `/store/:id/students`
 
@@ -355,7 +422,7 @@ Body:
 `q` (query): Search query  
 `roles` (query): [Optional] User must have at least one these roles. Separate multiple roles with a comma.  
 `count` (query): [Optional] Number of results to return. Defaults to 10  
-`me` (query): [Optional] Include the authenticated user in the results. Defaults to false  
+`me` (query): [Optional] Include the authenticated user in the results. Defaults to false
 
 ### Response
 
