@@ -20,11 +20,11 @@ Array of classes
 
 ```ts
 {
-	id: string;
-	name: string | null;
-	section: string | null;
+	id: string,
+	name: string | null,
+	section: string | null
 }
-[];
+[],
 ```
 
 ## GET `/students/:class`
@@ -41,11 +41,11 @@ Array of students
 
 ```ts
 {
-	googleId: string;
-	id: string;
-	name: string | null;
+	googleId: string,
+	id: string,
+	name: string | null
 }
-[];
+[],
 ```
 
 # Currency
@@ -93,9 +93,9 @@ Body:
 
 ```ts
 {
-	amount: number;
-	reason: string | null;
-	user: string | string[];
+	amount: number,
+	reason: string | null,
+	user: string | string[]
 }
 ```
 
@@ -103,10 +103,10 @@ Body:
 
 ```ts
 {
-	page: number;
-	pageCount: number;
-	docCount: number;
-	transactions: ITransactionAPIResponse[];
+	page: number,
+	pageCount: number,
+	docCount: number,
+	transactions: ITransactionAPIResponse[]
 }
 ```
 
@@ -138,14 +138,14 @@ None
 
 ```ts
 {
-	_id: string;
-	name: string;
-	description: string;
-	canManage: boolean;
-	public: boolean;
-	classNames: string[];
+	_id: string,
+	name: string,
+	description: string,
+	canManage: boolean,
+	public: boolean,
+	classNames: string[]
 }
-[];
+[],
 ```
 
 ## POST `/stores`
@@ -165,13 +165,13 @@ Create a store. Requires staff permissions.
 
 ```ts
 {
-	name: string;
-	description: string | null;
-	classIDs: string[];
-	public: boolean;
-	owner: string;
-	managers: string[];
-	users: string[];
+	name: string,
+	description: string | null,
+	classIDs: string[],
+	public: boolean,
+	owner: string,
+	managers: string[],
+	users: string[]
 }
 ```
 
@@ -187,9 +187,9 @@ Get a store's info by its ID
 
 ```ts
 {
-	name: string;
-	description: string;
-	canManage: boolean;
+	name: string,
+	description: string,
+	canManage: boolean
 }
 ```
 
@@ -211,13 +211,13 @@ Update a store. Requires permission to manage this store.
 
 ```ts
 {
-	name: string;
-	description: string | null;
-	classIDs: string[];
-	public: boolean;
-	owner: string;
-	managers: string[];
-	users: string[];
+	name: string,
+	description: string | null,
+	classIDs: string[],
+	public: boolean,
+	owner: string,
+	managers: string[],
+	users: string[]
 }
 ```
 
@@ -257,14 +257,14 @@ Get a list of a store's items
 
 ```ts
 {
-	_id: string;
-	name: string;
-	description: string;
-	quantity: number | null;
-	price: number;
-	imageHash: string | null;
+	_id: string,
+	name: string,
+	description: string,
+	quantity: number | null,
+	price: number,
+	imageHash: string | null
 }
-[];
+[],
 ```
 
 ## GET `/store/:storeID/item/:id`
@@ -280,12 +280,12 @@ Get a store's item by its ID
 
 ```ts
 {
-	_id: string;
-	name: string;
-	description: string;
-	quantity: number | null;
-	price: number;
-	imageHash: string | null;
+	_id: string,
+	name: string,
+	description: string,
+	quantity: number | null,
+	price: number,
+	imageHash: string | null
 }
 ```
 
@@ -319,12 +319,12 @@ Update a store's item
 
 ```ts
 {
-	_id: string;
-	name: string;
-	description: string;
-	quantity: number | null;
-	price: number;
-	imageHash: string | null;
+	_id: string,
+	name: string,
+	description: string,
+	quantity: number | null,
+	price: number,
+	imageHash: string | null
 }
 ```
 
@@ -381,12 +381,12 @@ Create a store item
 
 ```ts
 {
-	_id: string;
-	name: string;
-	description: string;
-	quantity: number | null;
-	price: number;
-	imageHash: null;
+	_id: string,
+	name: string,
+	description: string,
+	quantity: number | null,
+	price: number,
+	imageHash: null
 }
 ```
 
@@ -428,12 +428,12 @@ Body:
 
 ```ts
 {
-	name: string;
-	email: string;
-	id: string;
-	confidence: number;
+	name: string,
+	email: string,
+	id: string,
+	confidence: number
 }
-[];
+[],
 ```
 
 ## GET `/me`
@@ -448,9 +448,9 @@ None
 
 ```ts
 {
-	name: string;
-	email: string;
-	id: string;
+	name: string,
+	email: string,
+	id: string,
 	roles: ("NONE" | "STUDENT" | "STAFF" | "ADMIN" | "ALL")[]
 	scopes: string[]
 	authorized: boolean; // Valid OAuth Credentials
