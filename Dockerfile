@@ -1,5 +1,5 @@
 FROM node:16-alpine
-RUN apk update && apk add g++ make python3
+RUN apk update && apk add g++ make python3 vips
 WORKDIR /app
 
 COPY package*.json ./
