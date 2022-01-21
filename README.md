@@ -63,3 +63,12 @@ If you would like to watch for file changes and automatically execute the approp
 | oauthDomain   | string \| null | Google OAuth domain, or null to disable | mydomain.com                           |
 | sessionSecret | string         | Session secret for Mongo                |                                        |
 | weeklyBalance | number         | Staff's weekly balance                  | 100                                    |
+
+## Google Cloud Project Setup (For OAuth)
+
+1. Create a [Google Cloud Project](https://console.cloud.google.com/projectcreate)
+2. Go to APIs & Services > Library. Enable the Google Classroom API and Google People API.
+3. Go to APIs & Services > OAuth consent screen. Setup as desired. In the scopes section, add the following: `classroom.courses.readonly` and `classroom.rosters.readonly`.
+4. Go to APIs & Services > Credentials. Click "Create credentials" and select "OAuth client ID".
+5. Select "Web application" for the type. Add your domain to the authorized origins. For redirect URIs, add your domain with the path `/auth/cbk`.
+6. Create the Client ID. Copy the client ID and client secret to the config file as shown above.
