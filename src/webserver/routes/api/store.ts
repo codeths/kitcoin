@@ -40,7 +40,7 @@ async function getStorePerms(
 	} else if (store.managers.includes(user.id) || store.owner == user.id) {
 		manage = true;
 	} else if (store.classIDs && classroomClient) {
-		const teaching = await classroomClient
+		let teaching = await classroomClient
 			.getClassesForRole('TEACHER')
 			.then(x => (x || []).map(x => x.id));
 
@@ -58,7 +58,7 @@ async function getStorePerms(
 	} else if (store.users.includes(user.id)) {
 		view = true;
 	} else if (store.classIDs && classroomClient) {
-		const classes = await classroomClient
+		let classes = await classroomClient
 			.getClassesForRole('STUDENT')
 			.then(x => (x || []).map(x => x.id));
 
@@ -119,7 +119,7 @@ router.get(
 			});
 		}
 
-		const stores = await Store.find({
+		let stores = await Store.find({
 			$or: query,
 		});
 
@@ -214,7 +214,7 @@ router.post(
 			res.status(201).json(store);
 		} catch (e) {
 			try {
-				const error = await DBError.generate(
+				let error = await DBError.generate(
 					{
 						request: req,
 						error: e instanceof Error ? e : undefined,
@@ -244,36 +244,24 @@ router.get(
 		}),
 	async (req, res) => {
 		try {
-			const {id} = req.params;
+			let {id} = req.params;
 
-			const store = await Store.findById(id)
-				.then(store => {
-					if (!store) {
-						res.status(404).send('Store not found');
-						return null;
-					}
-					return store;
-				})
-				.catch(() => {
-					res.status(400).send('Invalid ID');
-					return null;
-				});
+			let store = await Store.findById(id);
+			if (!store) return res.status(404).send('Store not found');
 
-			if (!store) return;
-
-			const permissions = await getStorePerms(store, req.user);
+			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.view) return res.status(403).send('Forbidden');
 
-			const {name, description} = store;
+			let {name, description} = store;
 
-			return res.status(200).send({
+			return res.status(200).json({
 				name,
 				description,
 				canManage: permissions.manage,
 			});
 		} catch (e) {
 			try {
-				const error = await DBError.generate(
+				let error = await DBError.generate(
 					{
 						request: req,
 						error: e instanceof Error ? e : undefined,
@@ -366,7 +354,7 @@ router.patch(
 			res.status(200).json(store);
 		} catch (e) {
 			try {
-				const error = await DBError.generate(
+				let error = await DBError.generate(
 					{
 						request: req,
 						error: e instanceof Error ? e : undefined,
@@ -412,7 +400,7 @@ router.delete(
 			res.status(200).send();
 		} catch (e) {
 			try {
-				const error = await DBError.generate(
+				let error = await DBError.generate(
 					{
 						request: req,
 						error: e instanceof Error ? e : undefined,
@@ -445,24 +433,12 @@ router.get(
 		try {
 			if (!requestHasUser(req)) return;
 
-			const {id} = req.params;
+			let {id} = req.params;
 
-			const store = await Store.findById(id)
-				.then(store => {
-					if (!store) {
-						res.status(404).send('Store not found');
-						return null;
-					}
-					return store;
-				})
-				.catch(() => {
-					res.status(400).send('Invalid ID');
-					return null;
-				});
+			let store = await Store.findById(id);
+			if (!store) return res.status(404).send('Store not found');
 
-			if (!store) return;
-
-			const permissions = await getStorePerms(store, req.user);
+			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			if (store.public) return res.status(200).send(null);
@@ -488,7 +464,7 @@ router.get(
 			return res.status(200).send(studentIds);
 		} catch (e) {
 			try {
-				const error = await DBError.generate(
+				let error = await DBError.generate(
 					{
 						request: req,
 						error: e instanceof Error ? e : undefined,
@@ -525,31 +501,19 @@ router.post(
 		try {
 			if (!requestHasUser(req)) return;
 
-			const {id} = req.params;
-			const data = req.body;
+			let {id} = req.params;
+			let data = req.body;
 
-			const store = await Store.findById(id)
-				.then(store => {
-					if (!store) {
-						res.status(404).send('Store not found');
-						return null;
-					}
-					return store;
-				})
-				.catch(() => {
-					res.status(400).send('Invalid ID');
-					return null;
-				});
+			let store = await Store.findById(id);
+			if (!store) return res.status(404).send('Store not found');
 
-			if (!store) return;
-
-			const permissions = await getStorePerms(store, req.user);
+			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
-			const item = await StoreItem.findById(req.body.item);
+			let item = await StoreItem.findById(req.body.item);
 			if (!item) return res.status(400).send('Item not found');
 
-			const user = await User.findById(req.body.user);
+			let user = await User.findById(req.body.user);
 			if (!user) return res.status(400).send('User not found');
 			if (user.balance < item.price)
 				return res.status(400).send('User does not have enough money');
@@ -580,7 +544,7 @@ router.post(
 			return res.status(200).send();
 		} catch (e) {
 			try {
-				const error = await DBError.generate(
+				let error = await DBError.generate(
 					{
 						request: req,
 						error: e instanceof Error ? e : undefined,
@@ -609,27 +573,15 @@ router.get(
 			},
 		}),
 	async (req, res) => {
-		const {id} = req.params;
+		let {id} = req.params;
 
-		const store = await Store.findById(id)
-			.then(store => {
-				if (!store) {
-					res.status(404).send('Store not found');
-					return null;
-				}
-				return store;
-			})
-			.catch(() => {
-				res.status(400).send('Invalid ID');
-				return null;
-			});
+		let store = await Store.findById(id);
+		if (!store) return res.status(404).send('Store not found');
 
-		if (!store) return;
-
-		const permissions = await getStorePerms(store, req.user);
+		let permissions = await getStorePerms(store, req.user);
 		if (!permissions.view) return res.status(403).send('Forbidden');
 
-		const items = await StoreItem.find().byStoreID(id);
+		let items = await StoreItem.find().byStoreID(id);
 
 		res.status(200).send(
 			items.map(i => ({
@@ -657,49 +609,20 @@ router.get(
 			},
 		}),
 	async (req, res) => {
-		const {storeID, id} = req.params;
+		let {storeID, id} = req.params;
 
-		const store = await Store.findById(storeID)
-			.then(store => {
-				if (!store) {
-					res.status(404).send('Store not found');
-					return null;
-				}
-				return store;
-			})
-			.catch(() => {
-				res.status(400).send('Invalid ID');
-				return null;
-			});
+		let store = await Store.findById(storeID);
+		if (!store) return res.status(404).send('Store not found');
 
-		if (!store) return;
-
-		const permissions = await getStorePerms(store, req.user);
+		let permissions = await getStorePerms(store, req.user);
 		if (!permissions.view) return res.status(403).send('Forbidden');
 
-		const item = await StoreItem.findById(id)
-			.then(item => {
-				if (!item || item.storeID != storeID) {
-					res.status(404).send('Item not found');
-					return null;
-				}
-				return item;
-			})
-			.catch(() => {
-				res.status(400).send('Invalid ID');
-				return null;
-			});
+		let item = await StoreItem.findById(id);
+		if (!item) return res.status(404).send('Item not found');
 
 		if (!item) return;
 
-		res.status(200).send({
-			_id: item._id,
-			name: item.name,
-			description: item.description,
-			quantity: item.quantity,
-			price: item.price,
-			imageHash: item.imageHash,
-		});
+		res.status(200).json(item);
 	},
 );
 
@@ -716,38 +639,16 @@ router.get(
 			},
 		}),
 	async (req, res) => {
-		const {storeID, id} = req.params;
+		let {storeID, id} = req.params;
 
-		const store = await Store.findById(storeID)
-			.then(store => {
-				if (!store) {
-					res.status(404).send('Store not found');
-					return null;
-				}
-				return store;
-			})
-			.catch(() => {
-				res.status(400).send('Invalid ID');
-				return null;
-			});
+		let store = await Store.findById(storeID);
+		if (!store) return res.status(404).send('Store not found');
 
-		if (!store) return;
-
-		const permissions = await getStorePerms(store, req.user);
+		let permissions = await getStorePerms(store, req.user);
 		if (!permissions.view) return res.status(403).send('Forbidden');
 
-		const item = await StoreItem.findById(id)
-			.then(item => {
-				if (!item || item.storeID != storeID) {
-					res.status(404).send('Item not found');
-					return null;
-				}
-				return item;
-			})
-			.catch(() => {
-				res.status(400).send('Invalid ID');
-				return null;
-			});
+		let item = await StoreItem.findById(id);
+		if (!item) return res.status(404).send('Item not found');
 
 		if (!item) return;
 
@@ -788,43 +689,19 @@ router.patch(
 		try {
 			if (!requestHasUser(req)) return;
 
-			const {storeID, id} = req.params;
+			let {storeID, id} = req.params;
 			let image = req.body;
 			if (!image || !(image instanceof Buffer))
 				return res.status(400).send('Invalid image');
 
-			const store = await Store.findById(storeID)
-				.then(store => {
-					if (!store) {
-						res.status(404).send('Store not found');
-						return null;
-					}
-					return store;
-				})
-				.catch(() => {
-					res.status(400).send('Invalid ID');
-					return null;
-				});
+			let store = await Store.findById(storeID);
+			if (!store) return res.status(404).send('Store not found');
 
-			if (!store) return;
-
-			const permissions = await getStorePerms(store, req.user);
+			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
-			const item = await StoreItem.findById(id)
-				.then(item => {
-					if (!item || item.storeID != storeID) {
-						res.status(404).send('Item not found');
-						return null;
-					}
-					return item;
-				})
-				.catch(() => {
-					res.status(400).send('Invalid ID');
-					return null;
-				});
-
-			if (!item) return;
+			let item = await StoreItem.findById(id);
+			if (!item) return res.status(404).send('Item not found');
 
 			image = await sharp(image)
 				.resize({width: 512, height: 512, fit: 'inside'})
@@ -837,9 +714,9 @@ router.patch(
 
 			if (!image) return;
 
-			const hashSum = crypto.createHash('sha256');
+			let hashSum = crypto.createHash('sha256');
 			hashSum.update(image);
-			const hash = hashSum.digest('hex');
+			let hash = hashSum.digest('hex');
 
 			fs.writeFileSync(
 				path.resolve('uploads', 'storeitems', `${item._id}.webp`),
@@ -848,17 +725,10 @@ router.patch(
 
 			item.imageHash = hash;
 			await item.save();
-			return res.status(200).send({
-				_id: item._id,
-				name: item.name,
-				description: item.description,
-				quantity: item.quantity,
-				price: item.price,
-				imageHash: item.imageHash,
-			});
+			return res.status(200).json(item);
 		} catch (e) {
 			try {
-				const error = await DBError.generate(
+				let error = await DBError.generate(
 					{
 						request: req,
 						error: e instanceof Error ? e : undefined,
@@ -899,57 +769,26 @@ router.patch(
 		try {
 			if (!requestHasUser(req)) return;
 
-			const {storeID, id} = req.params;
+			let {storeID, id} = req.params;
 			let {name, description, price, quantity} = req.body;
 
-			const store = await Store.findById(storeID)
-				.then(store => {
-					if (!store) {
-						res.status(404).send('Store not found');
-						return null;
-					}
-					return store;
-				})
-				.catch(() => {
-					res.status(400).send('Invalid ID');
-					return null;
-				});
+			let store = await Store.findById(storeID);
+			if (!store) return res.status(404).send('Store not found');
 
-			if (!store) return;
-
-			const permissions = await getStorePerms(store, req.user);
+			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
-			const item = await StoreItem.findById(id)
-				.then(item => {
-					if (!item || item.storeID != storeID) {
-						res.status(404).send('Item not found');
-						return null;
-					}
-					return item;
-				})
-				.catch(() => {
-					res.status(400).send('Invalid ID');
-					return null;
-				});
-
-			if (!item) return;
+			let item = await StoreItem.findById(id);
+			if (!item) return res.status(404).send('Item not found');
 
 			Object.assign(item, {name, description, price, quantity});
 
 			await item.save();
 
-			res.status(200).send({
-				_id: item._id,
-				name: item.name,
-				description: item.description,
-				quantity: item.quantity,
-				price: item.price,
-				imageHash: item.imageHash,
-			});
+			res.status(200).json(item);
 		} catch (e) {
 			try {
-				const error = await DBError.generate(
+				let error = await DBError.generate(
 					{
 						request: req,
 						error: e instanceof Error ? e : undefined,
@@ -982,40 +821,16 @@ router.delete(
 		try {
 			if (!requestHasUser(req)) return;
 
-			const {storeID, id} = req.params;
+			let {storeID, id} = req.params;
 
-			const store = await Store.findById(storeID)
-				.then(store => {
-					if (!store) {
-						res.status(404).send('Store not found');
-						return null;
-					}
-					return store;
-				})
-				.catch(() => {
-					res.status(400).send('Invalid ID');
-					return null;
-				});
+			let store = await Store.findById(storeID);
+			if (!store) return res.status(404).send('Store not found');
 
-			if (!store) return;
-
-			const permissions = await getStorePerms(store, req.user);
+			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
-			const item = await StoreItem.findById(id)
-				.then(item => {
-					if (!item || item.storeID != storeID) {
-						res.status(404).send('Item not found');
-						return null;
-					}
-					return item;
-				})
-				.catch(() => {
-					res.status(400).send('Invalid ID');
-					return null;
-				});
-
-			if (!item) return;
+			let item = await StoreItem.findById(id);
+			if (!item) return res.status(404).send('Item not found');
 
 			await item.delete();
 
@@ -1028,7 +843,7 @@ router.delete(
 			res.status(200).send();
 		} catch (e) {
 			try {
-				const error = await DBError.generate(
+				let error = await DBError.generate(
 					{
 						request: req,
 						error: e instanceof Error ? e : undefined,
@@ -1061,40 +876,16 @@ router.delete(
 		try {
 			if (!requestHasUser(req)) return;
 
-			const {storeID, id} = req.params;
+			let {storeID, id} = req.params;
 
-			const store = await Store.findById(storeID)
-				.then(store => {
-					if (!store) {
-						res.status(404).send('Store not found');
-						return null;
-					}
-					return store;
-				})
-				.catch(() => {
-					res.status(400).send('Invalid ID');
-					return null;
-				});
+			let store = await Store.findById(storeID);
+			if (!store) return res.status(404).send('Store not found');
 
-			if (!store) return;
-
-			const permissions = await getStorePerms(store, req.user);
+			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
-			const item = await StoreItem.findById(id)
-				.then(item => {
-					if (!item || item.storeID != storeID) {
-						res.status(404).send('Item not found');
-						return null;
-					}
-					return item;
-				})
-				.catch(() => {
-					res.status(400).send('Invalid ID');
-					return null;
-				});
-
-			if (!item) return;
+			let item = await StoreItem.findById(id);
+			if (!item) return res.status(404).send('Item not found');
 
 			try {
 				fs.rmSync(
@@ -1105,17 +896,10 @@ router.delete(
 			item.imageHash = null;
 			await item.save();
 
-			return res.status(200).send({
-				_id: item._id,
-				name: item.name,
-				description: item.description,
-				quantity: item.quantity,
-				price: item.price,
-				imageHash: item.imageHash,
-			});
+			return res.status(200).json(item);
 		} catch (e) {
 			try {
-				const error = await DBError.generate(
+				let error = await DBError.generate(
 					{
 						request: req,
 						error: e instanceof Error ? e : undefined,
@@ -1155,28 +939,16 @@ router.post(
 		try {
 			if (!requestHasUser(req)) return;
 
-			const {storeID} = req.params;
-			const {name, quantity, description, price} = req.body;
+			let {storeID} = req.params;
+			let {name, quantity, description, price} = req.body;
 
-			const store = await Store.findById(storeID)
-				.then(store => {
-					if (!store) {
-						res.status(404).send('Store not found');
-						return null;
-					}
-					return store;
-				})
-				.catch(() => {
-					res.status(400).send('Invalid ID');
-					return null;
-				});
+			let store = await Store.findById(storeID);
+			if (!store) return res.status(404).send('Store not found');
 
-			if (!store) return;
-
-			const permissions = await getStorePerms(store, req.user);
+			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
-			const item = await new StoreItem({
+			let item = await new StoreItem({
 				storeID,
 				name,
 				quantity,
@@ -1186,17 +958,10 @@ router.post(
 
 			if (!item) return res.status(500).send('Failed to create item');
 
-			return res.status(200).send({
-				_id: item._id,
-				name: item.name,
-				description: item.description,
-				quantity: item.quantity,
-				price: item.price,
-				imageHash: item.imageHash,
-			});
+			return res.status(200).send(item);
 		} catch (e) {
 			try {
-				const error = await DBError.generate(
+				let error = await DBError.generate(
 					{
 						request: req,
 						error: e instanceof Error ? e : undefined,
