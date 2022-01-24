@@ -177,7 +177,7 @@
 		<p>
 			Copyright &copy; 2022 codETHS.
 			<a
-				href="https://github.com/chromezoneeths/kitcoin/blob/main/LICENSE"
+				href="https://github.com/codeths/kitcoin/blob/main/LICENSE"
 				class="link"
 				target="_blank"
 			>
@@ -189,7 +189,7 @@
 		<span class="footer-title">Links</span>
 		<a
 			class="link link-hover"
-			href="https://github.com/chromezoneeths/kitcoin"
+			href="https://github.com/codeths/kitcoin"
 			target="_blank">Source Code</a
 		>
 		<a

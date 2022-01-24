@@ -11,7 +11,7 @@ version: '3.7'
 
 services:
     web:
-        image: docker.pkg.github.com/chromezoneeths/kitcoin/kitcoin:latest
+        image: docker.pkg.github.com/codeths/kitcoin/kitcoin:latest
         restart: unless-stopped
         init: true
         ports:
@@ -28,7 +28,7 @@ Create a [config file](#config) called keys.json in that direcory.
 
 ### Install
 
-1. Clone the repo: `git clone git@github.com:chromezoneeths/kitcoin.git`
+1. Clone the repo: `git clone git@github.com:codeths/kitcoin.git`
 2. Copy `src/config/keys.example.json` to `src/config/keys.json` and set it up. See the [config section](#config) for details.
 3. Run `npm install`.
 4. Run `npm run build`.
