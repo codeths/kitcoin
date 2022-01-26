@@ -139,6 +139,8 @@
 										: ''}"
 									href={link}
 									disabled={$isActive(formatLink(link))}
+									on:click={e =>
+										$isActive(link) || e.target.blur()}
 									>{text}</a
 								>
 							</li>
