@@ -74,8 +74,7 @@
 								class="px-3 py-1 {$isActive(formatLink(link))
 									? '!cursor-not-allowed bg-base-300 hover:active:bg-base-300'
 									: ''}"
-								href={link}
-								disabled={$isActive(formatLink(link))}>{text}</a
+								href={link}>{text}</a
 							>
 						</li>
 					{/each}
@@ -138,7 +137,6 @@
 										? '!cursor-not-allowed bg-base-300 hover:active:bg-base-300'
 										: ''}"
 									href={link}
-									disabled={$isActive(formatLink(link))}
 									on:click={e =>
 										$isActive(link) || e.target.blur()}
 									>{text}</a
