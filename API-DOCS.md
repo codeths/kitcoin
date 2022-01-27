@@ -136,14 +136,19 @@ None
 
 ### Response
 
+`classIDs`, `managers`, and `users` will only be returned if you can manage this store.
+
 ```ts
 {
 	_id: string,
 	name: string,
-	description: string,
+	description?: string,
 	canManage: boolean,
 	public: boolean,
 	classNames: string[]
+	classIDs?: string[],
+	managers?: string[],
+	users?: string[],
 }
 [],
 ```
@@ -185,11 +190,18 @@ Get a store's info by its ID
 
 ### Response
 
+`classIDs`, `managers`, and `users` will only be returned if you can manage this store.
+
 ```ts
 {
+	_id: string,
 	name: string,
-	description: string,
-	canManage: boolean
+	description?: string,
+	canManage: boolean,
+	public: boolean,
+	classIDs?: string[],
+	managers?: string[],
+	users?: string[],
 }
 ```
 

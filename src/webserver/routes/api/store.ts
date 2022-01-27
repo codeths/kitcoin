@@ -124,24 +124,42 @@ router.get(
 		});
 
 		res.status(200).json(
-			stores.map(x => ({
-				canManage: req.user
-					? req.user.hasRole('ADMIN') ||
-					  (x.classIDs &&
-							classes
-								.filter(x => x.role === 'TEACHER')
-								.some(c => x.classIDs.includes(c.id))) ||
-					  x.managers.includes(req.user.id)
-					: false,
-				_id: x._id,
-				name: x.name,
-				description: x.description,
-				public: x.public,
-				classNames:
-					classes
-						.filter(c => x.classIDs.includes(c.id))
-						.map(x => x.name) || null,
-			})),
+			stores.map(x => {
+				let data: {
+					_id: string;
+					name: string;
+					description?: string;
+					canManage: boolean;
+					public: boolean;
+					classNames: string[];
+					classIDs?: string[];
+					managers?: string[];
+					users?: string[];
+				} = {
+					canManage: req.user
+						? req.user.hasRole('ADMIN') ||
+						  (x.classIDs &&
+								classes
+									.filter(x => x.role === 'TEACHER')
+									.some(c => x.classIDs.includes(c.id))) ||
+						  x.managers.includes(req.user.id)
+						: false,
+					_id: x.id,
+					name: x.name,
+					description: x.description,
+					public: x.public,
+					classNames:
+						classes
+							.filter(c => x.classIDs.includes(c.id) && x.name)
+							.map(x => x.name!) || [],
+				};
+				if (data.canManage) {
+					data.classIDs = x.classIDs;
+					data.managers = x.managers;
+					data.users = x.users;
+				}
+				return data;
+			}),
 		);
 	},
 );
@@ -252,13 +270,29 @@ router.get(
 			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.view) return res.status(403).send('Forbidden');
 
-			let {name, description} = store;
-
-			return res.status(200).json({
-				name,
-				description,
+			let data: {
+				_id: string;
+				name: string;
+				description?: string;
+				canManage: boolean;
+				public: boolean;
+				classIDs?: string[];
+				managers?: string[];
+				users?: string[];
+			} = {
 				canManage: permissions.manage,
-			});
+				_id: store.id,
+				name: store.name,
+				description: store.description,
+				public: store.public,
+			};
+			if (data.canManage) {
+				data.classIDs = store.classIDs;
+				data.managers = store.managers;
+				data.users = store.users;
+			}
+
+			return res.status(200).json(data);
 		} catch (e) {
 			try {
 				let error = await DBError.generate(
