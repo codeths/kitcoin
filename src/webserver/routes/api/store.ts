@@ -487,7 +487,7 @@ router.get(
 			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
-			if (store.public) return res.status(200).send(null);
+			if (store.public) return res.status(200).send([]);
 
 			let studentIds: string[] = store.users;
 
