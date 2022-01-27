@@ -142,13 +142,13 @@ None
 {
 	_id: string,
 	name: string,
-	description?: string,
+	description: string | null,
 	canManage: boolean,
 	public: boolean,
 	classNames: string[]
-	classIDs?: string[],
-	managers?: string[],
-	users?: string[],
+	classIDs: string[] | null,
+	managers: string[] | null,
+	users: string[] | null,
 }
 [],
 ```
@@ -196,12 +196,12 @@ Get a store's info by its ID
 {
 	_id: string,
 	name: string,
-	description?: string,
+	description: string | null,
 	canManage: boolean,
 	public: boolean,
-	classIDs?: string[],
-	managers?: string[],
-	users?: string[],
+	classIDs: string[] | null,
+	managers: string[] | null,
+	users: string[] | null,
 }
 ```
 
