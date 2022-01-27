@@ -214,7 +214,7 @@
 										setModalStore(store);
 									}}
 									><span
-										class="inline-flex icon-edit text-2xl"
+										class="inline-flex icon-edit text-2xl text-base-content group-hover:text-primary-content transition duration-300"
 									/></button
 								>
 							{/if}
