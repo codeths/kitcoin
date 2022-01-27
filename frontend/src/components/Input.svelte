@@ -56,10 +56,10 @@
 			bind:this={input}
 			{...$$restProps}
 		/>
-	{:else if type == 'checkbox'}
-		<!-- @todo: make switch -->
+	{:else if type == 'checkbox' || type == 'switch'}
 		<input
-			class="checkbox"
+			class:checkbox={type == 'checkbox'}
+			class:toggle={type == 'switch'}
 			type="checkbox"
 			{disabled}
 			on:change={handle}
