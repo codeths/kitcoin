@@ -215,7 +215,7 @@ Update a store. Requires permission to manage this store.
 `name` (body): The name of the store  
 `description` (body): [Optional] The description of the store  
 `classIDs` (body): [Optional] An array of Google Classroom IDs  
-`public` (body): Whether the store is public or not. Public stores require admin permissions.  
+`public` (body): Whether the store is public or not. Changing this setting requires admin permissions.  
 `managers` (body): An array of user IDs who can manage this store  
 `users` (body): An array of user IDs who can access this store
 

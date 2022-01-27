@@ -344,10 +344,10 @@ router.patch(
 
 			let body = req.body;
 			body.owner = req.user.id;
-			if (body.public && !req.user.hasRole('ADMIN'))
+			if (body.public !== store.public && !req.user.hasRole('ADMIN'))
 				return res
 					.status(403)
-					.send('You must be an admin to create a public store.');
+					.send('You must be an admin to change the public setting.');
 
 			let invalidUsers = await Promise.all(
 				[body.managers, body.users].flat().map(async id => {
