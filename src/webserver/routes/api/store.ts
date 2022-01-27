@@ -117,6 +117,9 @@ router.get(
 			query.push({
 				users: req.user.id,
 			});
+			query.push({
+				owner: req.user.id,
+			});
 		}
 
 		let stores = await Store.find({
@@ -143,6 +146,7 @@ router.get(
 								classes
 									.filter(x => x.role === 'TEACHER')
 									.some(c => x.classIDs.includes(c.id))) ||
+						  x.owner == req.user.id ||
 						  x.managers.includes(req.user.id)
 						: false,
 					_id: x.id,
