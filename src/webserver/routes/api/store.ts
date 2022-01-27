@@ -128,13 +128,13 @@ router.get(
 				let data: {
 					_id: string;
 					name: string;
-					description?: string;
+					description: string | null;
 					canManage: boolean;
 					public: boolean;
 					classNames: string[];
-					classIDs?: string[];
-					managers?: string[];
-					users?: string[];
+					classIDs: string[] | null;
+					managers: string[] | null;
+					users: string[] | null;
 				} = {
 					canManage: req.user
 						? req.user.hasRole('ADMIN') ||
@@ -146,12 +146,15 @@ router.get(
 						: false,
 					_id: x.id,
 					name: x.name,
-					description: x.description,
+					description: x.description || null,
 					public: x.public,
 					classNames:
 						classes
 							.filter(c => x.classIDs.includes(c.id) && x.name)
 							.map(x => x.name!) || [],
+					classIDs: null,
+					managers: null,
+					users: null,
 				};
 				if (data.canManage) {
 					data.classIDs = x.classIDs;
@@ -273,18 +276,21 @@ router.get(
 			let data: {
 				_id: string;
 				name: string;
-				description?: string;
+				description: string | null;
 				canManage: boolean;
 				public: boolean;
-				classIDs?: string[];
-				managers?: string[];
-				users?: string[];
+				classIDs: string[] | null;
+				managers: string[] | null;
+				users: string[] | null;
 			} = {
 				canManage: permissions.manage,
 				_id: store.id,
 				name: store.name,
-				description: store.description,
+				description: store.description || null,
 				public: store.public,
+				classIDs: null,
+				managers: null,
+				users: null,
 			};
 			if (data.canManage) {
 				data.classIDs = store.classIDs;
