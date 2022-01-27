@@ -56,6 +56,18 @@
 			bind:this={input}
 			{...$$restProps}
 		/>
+	{:else if type == 'checkbox'}
+		<!-- @todo: make switch -->
+		<input
+			class="checkbox"
+			type="checkbox"
+			{disabled}
+			on:change={handle}
+			on:change
+			bind:checked={value}
+			bind:this={input}
+			{...$$restProps}
+		/>
 	{:else}
 		<input
 			class="input input-bordered	w-full"
