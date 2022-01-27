@@ -136,7 +136,7 @@ None
 
 ### Response
 
-`classIDs`, `managers`, and `users` will only be returned if you can manage this store.
+`classIDs`, `managers`, `users`, and `owner` will only be returned if you can manage this store.
 
 ```ts
 {
@@ -149,6 +149,7 @@ None
 	classIDs: string[] | null,
 	managers: string[] | null,
 	users: string[] | null,
+	owner: string | null
 }
 [],
 ```
@@ -190,7 +191,7 @@ Get a store's info by its ID
 
 ### Response
 
-`classIDs`, `managers`, and `users` will only be returned if you can manage this store.
+`classIDs`, `managers`, `users`, and `owner` will only be returned if you can manage this store.
 
 ```ts
 {
@@ -202,6 +203,7 @@ Get a store's info by its ID
 	classIDs: string[] | null,
 	managers: string[] | null,
 	users: string[] | null,
+	owner: string | null
 }
 ```
 

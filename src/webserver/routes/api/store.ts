@@ -135,6 +135,7 @@ router.get(
 					classIDs: string[] | null;
 					managers: string[] | null;
 					users: string[] | null;
+					owner: string | null;
 				} = {
 					canManage: req.user
 						? req.user.hasRole('ADMIN') ||
@@ -155,11 +156,13 @@ router.get(
 					classIDs: null,
 					managers: null,
 					users: null,
+					owner: null,
 				};
 				if (data.canManage) {
 					data.classIDs = x.classIDs;
 					data.managers = x.managers;
 					data.users = x.users;
+					data.owner = x.owner;
 				}
 				return data;
 			}),
@@ -282,6 +285,7 @@ router.get(
 				classIDs: string[] | null;
 				managers: string[] | null;
 				users: string[] | null;
+				owner: string | null;
 			} = {
 				canManage: permissions.manage,
 				_id: store.id,
@@ -291,11 +295,13 @@ router.get(
 				classIDs: null,
 				managers: null,
 				users: null,
+				owner: null,
 			};
 			if (data.canManage) {
 				data.classIDs = store.classIDs;
 				data.managers = store.managers;
 				data.users = store.users;
+				data.owner = store.owner;
 			}
 
 			return res.status(200).json(data);
