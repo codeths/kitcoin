@@ -17,12 +17,12 @@
 		dispatch('validate', {
 			type: e.type,
 			target: e.target,
-			value: e.target.value,
+			value: input.type == 'checkbox' ? e.target.checked : e.target.value,
 		});
 	}
 
 	onMount(() => {
-		if (input && type !== 'textarea') {
+		if (input && type == 'input') {
 			input.type = type;
 		}
 		if (focus) setTimeout(() => input.focus(), 0);

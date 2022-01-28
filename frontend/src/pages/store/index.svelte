@@ -368,16 +368,13 @@
 					<Input
 						name="public"
 						label="Public"
-						type="checkbox"
+						type="switch"
 						bind:value={manageFormData.values.public}
 						bind:error={manageFormData.errors.public}
 						on:validate={manageForm.validate}
 					/>
 				{/if}
 
-				<!--
-					@todo classIDs, managers, users options
-				-->
 				<div class="divider" />
 				<div class="flex items-center space-x-2 justify-end">
 					<label
