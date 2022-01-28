@@ -137,7 +137,10 @@
 					classIDs: (manageFormData.values.classes || []).map(
 						x => x.value,
 					),
-					public: manageFormData.values.public ?? modalStore.public,
+					public:
+						manageFormData.values.public ?? modalStore
+							? modalStore.public
+							: false,
 					managers: (manageFormData.values.managers || []).map(
 						x => x.value,
 					),
