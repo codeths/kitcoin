@@ -172,7 +172,7 @@
 		<div class="relative" slot="after-input">
 			<div class="absolute w-full mt-2">
 				<div
-					class="divide-y max-h-60 w-full overflow-scroll absolute border border-base-300 bg-base-100 rounded-lg {results ||
+					class="divide-y max-h-60 w-full overflow-scroll absolute border border-base-300 bg-base-100 rounded-lg {computedResults ||
 					loading
 						? ''
 						: 'invisible'}"
