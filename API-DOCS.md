@@ -169,16 +169,26 @@ Create a store. Requires staff permissions.
 
 ### Response
 
+`classIDs`, `managers`, `users`, and `owner` will only be returned if you can manage this store.
+
 ```ts
 {
 	name: string,
 	description: string | null,
-	classIDs: string[],
 	public: boolean,
-	owner: string,
-	managers: string[],
-	users: string[]
-}
+	canManage: boolean,
+	classNames: string[],
+	classIDs: string[] | undefined,
+	owner: string | undefined,
+	users: {
+		name: string;
+		id: string;
+	}[] | undefined,
+	managers: {
+		name: string;
+		id: string;
+	}[] | undefined,
+}[]
 ```
 
 ## GET `/store/:id`
@@ -195,15 +205,20 @@ Get a store's info by its ID
 
 ```ts
 {
-	_id: string,
 	name: string,
 	description: string | null,
-	canManage: boolean,
 	public: boolean,
-	classIDs: string[] | null,
-	managers: string[] | null,
-	users: string[] | null,
-	owner: string | null
+	canManage: boolean,
+	classIDs: string[] | undefined,
+	owner: string | undefined,
+	users: {
+		name: string;
+		id: string;
+	}[] | undefined,
+	managers: {
+		name: string;
+		id: string;
+	}[] | undefined,
 }
 ```
 
@@ -227,11 +242,19 @@ Update a store. Requires permission to manage this store.
 {
 	name: string,
 	description: string | null,
-	classIDs: string[],
 	public: boolean,
-	owner: string,
-	managers: string[],
-	users: string[]
+	canManage: boolean,
+	classNames: string[],
+	classIDs: string[] | undefined,
+	owner: string | undefined,
+	users: {
+		name: string;
+		id: string;
+	}[] | undefined,
+	managers: {
+		name: string;
+		id: string;
+	}[] | undefined,
 }
 ```
 

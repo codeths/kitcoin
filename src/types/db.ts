@@ -9,6 +9,7 @@ import {
 import {MongooseFuzzyModel} from 'mongoose-fuzzy-searching';
 import express from 'express';
 import {ErrorDetail} from '../struct';
+import {Modify} from '.';
 
 export interface IUser {
 	/**
@@ -185,28 +186,47 @@ export interface ITransactionMethods {
 	toAPIResponse(user?: IUserDoc): Promise<ITransactionAPIResponse>;
 }
 
-export type ITransactionAPIResponse = Omit<ITransaction, 'date'> & {
-	/**
-	 * The date of the transaction (ISO format)
-	 */
-	date: string;
-	from: {
+export type ITransactionAPIResponse = Modify<
+	ITransaction,
+	{
 		/**
-		 * Is from current user
+		 * The date of the transaction (ISO format)
 		 */
-		me?: boolean;
-	};
-	to: {
+		date: string;
+		from: {
+			/**
+			 * The user's id
+			 */
+			id: string | null;
+			/**
+			 * Text to display (for non-user transactions)
+			 */
+			text: string | null;
+			/**
+			 * Is from current user
+			 */
+			me?: boolean;
+		};
+		to: {
+			/**
+			 * The user's id
+			 */
+			id: string | null;
+			/**
+			 * Text to display (for non-user transactions)
+			 */
+			text: string | null;
+			/**
+			 * Is to current user
+			 */
+			me?: boolean;
+		};
 		/**
-		 * Is to current user
+		 * Can be managed by current user
 		 */
-		me?: boolean;
-	};
-	/**
-	 * Can be managed by current user
-	 */
-	canManage: boolean;
-};
+		canManage: boolean;
+	}
+>;
 
 export type ITransactionDoc = ITransaction &
 	ITransactionMethods &
@@ -280,12 +300,31 @@ export interface IStore {
 	users: string[];
 }
 
+export type IStoreAPIResponse = Modify<
+	IStore,
+	{
+		canManage: boolean;
+		classIDs?: string[];
+		classNames?: string[];
+		owner?: string;
+		users?: {
+			name: string;
+			id: string;
+		}[];
+		managers?: {
+			name: string;
+			id: string;
+		}[];
+	}
+>;
+
 export type IStoreDoc = IStore & IStoreMethods & Document<IStore>;
 
 export type IStoreQuery = Query<IStoreDoc, IStoreDoc> & IStoreQueries;
 
 export interface IStoreMethods {
 	getItems(): Promise<IStoreItemDoc[]>;
+	toAPIResponse(canManage: boolean): Promise<IStoreAPIResponse>;
 }
 
 export interface IStoreQueries {
@@ -318,7 +357,9 @@ export interface IStoreItem {
 	imageHash: string | null;
 }
 
-export type IStoreItemDoc = IStoreItem & IStoreItemMethods & Document<IUser>;
+export type IStoreItemDoc = IStoreItem &
+	IStoreItemMethods &
+	Document<IStoreItem>;
 
 export type IStoreItemQuery = Query<IStoreItemDoc, IStoreItemDoc> &
 	IStoreItemQueries;

@@ -15,7 +15,12 @@ import {
 	Transaction,
 	User,
 } from '../../../helpers/schema';
-import {IStore, IStoreItemDoc, requestHasUser} from '../../../types';
+import {
+	IStore,
+	IStoreAPIResponse,
+	IStoreItemDoc,
+	requestHasUser,
+} from '../../../types';
 const router = express.Router();
 
 async function getStorePerms(
@@ -126,51 +131,27 @@ router.get(
 			$or: query,
 		});
 
-		res.status(200).json(
-			stores.map(x => {
-				let data: {
-					_id: string;
-					name: string;
-					description: string | null;
-					canManage: boolean;
-					public: boolean;
-					classNames: string[];
-					classIDs: string[] | null;
-					managers: string[] | null;
-					users: string[] | null;
-					owner: string | null;
-				} = {
-					canManage: req.user
-						? req.user.hasRole('ADMIN') ||
-						  (x.classIDs &&
-								classes
-									.filter(x => x.role === 'TEACHER')
-									.some(c => x.classIDs.includes(c.id))) ||
-						  x.owner == req.user.id ||
-						  x.managers.includes(req.user.id)
-						: false,
-					_id: x.id,
-					name: x.name,
-					description: x.description || null,
-					public: x.public,
-					classNames:
-						classes
-							.filter(c => x.classIDs.includes(c.id) && x.name)
-							.map(x => x.name!) || [],
-					classIDs: null,
-					managers: null,
-					users: null,
-					owner: null,
-				};
-				if (data.canManage) {
-					data.classIDs = x.classIDs;
-					data.managers = x.managers;
-					data.users = x.users;
-					data.owner = x.owner;
-				}
-				return data;
+		let data = await Promise.all(
+			stores.map(async x => {
+				let canManage = req.user
+					? req.user.hasRole('ADMIN') ||
+					  (x.classIDs &&
+							classes
+								.filter(x => x.role === 'TEACHER')
+								.some(c => x.classIDs.includes(c.id))) ||
+					  x.owner == req.user.id ||
+					  x.managers.includes(req.user.id)
+					: false;
+				let res = await x.toAPIResponse(canManage);
+				res.classNames =
+					classes
+						.filter(c => x.classIDs.includes(c.id) && c.name)
+						.map(x => x.name!) || [];
+				return res;
 			}),
 		);
+
+		res.status(200).json(data);
 	},
 );
 
@@ -241,7 +222,7 @@ router.post(
 
 			if (!store) return res.status(500).send('Failed to create store.');
 
-			res.status(201).json(store);
+			res.status(201).json(await store.toAPIResponse(true));
 		} catch (e) {
 			try {
 				let error = await DBError.generate(
@@ -282,35 +263,9 @@ router.get(
 			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.view) return res.status(403).send('Forbidden');
 
-			let data: {
-				_id: string;
-				name: string;
-				description: string | null;
-				canManage: boolean;
-				public: boolean;
-				classIDs: string[] | null;
-				managers: string[] | null;
-				users: string[] | null;
-				owner: string | null;
-			} = {
-				canManage: permissions.manage,
-				_id: store.id,
-				name: store.name,
-				description: store.description || null,
-				public: store.public,
-				classIDs: null,
-				managers: null,
-				users: null,
-				owner: null,
-			};
-			if (data.canManage) {
-				data.classIDs = store.classIDs;
-				data.managers = store.managers;
-				data.users = store.users;
-				data.owner = store.owner;
-			}
-
-			return res.status(200).json(data);
+			return res
+				.status(200)
+				.json(await store.toAPIResponse(permissions.manage));
 		} catch (e) {
 			try {
 				let error = await DBError.generate(
@@ -405,7 +360,7 @@ router.patch(
 			store = Object.assign(store, body) as typeof store;
 			await store.save();
 
-			res.status(200).json(store);
+			res.status(200).json(await store.toAPIResponse(true));
 		} catch (e) {
 			try {
 				let error = await DBError.generate(
