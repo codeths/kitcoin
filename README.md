@@ -11,7 +11,7 @@ version: '3.7'
 
 services:
     web:
-        image: docker.pkg.github.com/codeths/kitcoin/kitcoin:latest
+        image: ghcr.io/codeths/kitcoin/kitcoin:latest
         restart: unless-stopped
         init: true
         ports:
