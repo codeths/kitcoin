@@ -9,7 +9,6 @@
 		parent,
 		resultEls = [],
 		focusindex = -1;
-	let inputFocused = false;
 
 	let ignoreQuery = false;
 
@@ -18,17 +17,22 @@
 	export let error = '';
 	export let query = '';
 	export let results = null;
+	let computedResults = null;
 
 	$: {
 		if (
 			multiselect &&
-			inputFocused &&
 			(!results || results.length == 0) &&
 			!query.trim() &&
 			value.length > 0
-		)
-			results = value.sort((a, b) => a.text.localeCompare(b.text));
-		if (multiselect && !inputFocused && !query.trim()) multiSelectText();
+		) {
+			ignoreQuery = true;
+			computedResults = value.sort((a, b) =>
+				a.text.localeCompare(b.text),
+			);
+		} else computedResults = results;
+		if (multiselect && (!results || results.length == 0) && !query.trim())
+			multiSelectText();
 	}
 
 	function multiSelectText() {
@@ -143,24 +147,25 @@
 		bind:value={query}
 		bind:error
 		on:keydown
+		on:focus
 		on:input={e => {
 			getResults(e.target.value, true, e.data);
 		}}
 		on:focus={e => {
 			focusindex = -1;
+			if (!ignoreQuery && query.trim()) getResults(query);
+			else getResults('');
 			if (ignoreQuery) {
-				ignoreQuery = false;
 				query = '';
+				e.target.value = '';
+				ignoreQuery = false;
 			}
-			inputFocused = true;
-			if (query.trim()) getResults(query);
 		}}
 		on:validate={e => {
 			if (e.detail.type !== 'blur') {
 				validate(e.detail.type, value, e.detail.value);
 			}
 		}}
-		on:blur={() => (inputFocused = false)}
 		on:blur={blur}
 		{...$$restProps}
 	>
@@ -173,8 +178,8 @@
 						: 'invisible'}"
 					tabindex="-1"
 				>
-					{#if results && results[0]}
-						{#each results as result, index}
+					{#if computedResults && computedResults[0]}
+						{#each computedResults as result, index}
 							{#if multiselect}
 								<button
 									class="px-4 py-2 w-full text-left focus:outline-none focus:bg-base-200 hover:bg-base-200 flex"
