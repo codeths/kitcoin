@@ -12,6 +12,8 @@
 	export let input = null;
 	export let disabled = false;
 	export let focus = false;
+	let additionalClasses = '';
+	export {additionalClasses as class};
 
 	function handle(e) {
 		dispatch('validate', {
@@ -39,7 +41,7 @@
 	</label>
 	{#if type == 'textarea'}
 		<textarea
-			class="textarea textarea-bordered w-full"
+			class="textarea textarea-bordered w-full {additionalClasses}"
 			class:textarea-success={error === null}
 			class:textarea-error={error}
 			{disabled}
@@ -60,6 +62,7 @@
 		<input
 			class:checkbox={type == 'checkbox'}
 			class:toggle={type == 'switch'}
+			class={additionalClasses}
 			type="checkbox"
 			{disabled}
 			on:change={handle}
@@ -70,7 +73,7 @@
 		/>
 	{:else}
 		<input
-			class="input input-bordered	w-full"
+			class="input input-bordered	w-full {additionalClasses}"
 			class:input-success={error === null}
 			class:input-error={error}
 			{disabled}

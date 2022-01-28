@@ -10,14 +10,16 @@
 		resultEls = [],
 		focusindex = -1;
 
-	let ignoreQuery = false;
-
 	export let multiselect = false;
 	export let value = multiselect ? [] : null;
 	export let error = '';
 	export let query = '';
+	export let label = '';
+	let computedPlaceholder = label;
 	export let results = null;
 	let computedResults = null;
+
+	let hide = true;
 
 	$: {
 		if (
@@ -26,23 +28,20 @@
 			!query.trim() &&
 			value.length > 0
 		) {
-			ignoreQuery = true;
 			computedResults = value.sort((a, b) =>
 				a.text.localeCompare(b.text),
 			);
-		} else computedResults = results;
-		if (multiselect && (!results || results.length == 0) && !query.trim())
 			multiSelectText();
+		} else computedResults = results;
 	}
 
 	function multiSelectText() {
 		if (value.length > 0) {
-			query = `${value.length} item${
+			computedPlaceholder = `${value.length} item${
 				value.length == 1 ? '' : 's'
 			} selected`;
-			ignoreQuery = true;
 		} else {
-			ignoreQuery = false;
+			computedPlaceholder = placeholder;
 		}
 	}
 
@@ -80,10 +79,7 @@
 					!resultEls.includes(e.relatedTarget))) &&
 			(!e.target || !resultEls.includes(e.target))
 		) {
-			if (multiselect) {
-				multiSelectText();
-			}
-			results = null;
+			hide = true;
 			validate('blur', value, query);
 		}
 	}
@@ -97,8 +93,8 @@
 			} else {
 				value = [...value, data];
 			}
+			multiSelectText();
 			query = '';
-			ignoreQuery = true;
 		} else {
 			value = data;
 			query = data.text;
@@ -143,6 +139,11 @@
 
 <div class="group w-auto" bind:this={parent} on:keydown={key}>
 	<Input
+		class="active:placeholder:text-inherit {multiselect &&
+		value &&
+		value.length > 0
+			? 'placeholder-color-default'
+			: ''}"
 		bind:this={input}
 		bind:value={query}
 		bind:error
@@ -153,13 +154,9 @@
 		}}
 		on:focus={e => {
 			focusindex = -1;
-			if (!ignoreQuery && query.trim()) getResults(query);
+			hide = false;
+			if (query.trim()) getResults(query);
 			else getResults('');
-			if (ignoreQuery) {
-				query = '';
-				e.target.value = '';
-				ignoreQuery = false;
-			}
 		}}
 		on:validate={e => {
 			if (e.detail.type !== 'blur') {
@@ -167,13 +164,15 @@
 			}
 		}}
 		on:blur={blur}
+		placeholder={computedPlaceholder}
 		{...$$restProps}
 	>
 		<div class="relative" slot="after-input">
 			<div class="absolute w-full mt-2">
 				<div
-					class="divide-y max-h-60 w-full overflow-scroll absolute border border-base-300 bg-base-100 rounded-lg {computedResults ||
-					loading
+					class="divide-y max-h-60 w-full overflow-scroll absolute border border-base-300 bg-base-100 rounded-lg {(computedResults ||
+						loading) &&
+					!hide
 						? ''
 						: 'invisible'}"
 					tabindex="-1"
