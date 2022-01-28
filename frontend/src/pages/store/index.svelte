@@ -27,10 +27,18 @@
 			authMsg = 'CLASSROOM';
 	})();
 
-	/**
-	 * @todo move getStore implementation to this function. remove await block. load after managing.
-	 */
-	async function load() {}
+	let stores = undefined;
+	async function load(useCache) {
+		await getStores(useCache)
+			.then(x => {
+				stores = x;
+			})
+			.catch(e => {
+				stores = null;
+			});
+		return;
+	}
+	load();
 
 	// Manage items
 	let manageFormData = {
@@ -119,9 +127,10 @@
 			},
 		).catch(() => null);
 
-		submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
-		if (submitStatus == 'SUCCESS') {
+		if (res && res.ok) {
+			await load(false);
 			modalOpen = false;
+			submitStatus = 'SUCCESS';
 			setTimeout(() => {
 				submitStatus = null;
 				toastContainer.toast(
@@ -131,6 +140,7 @@
 			}, 300);
 		} else {
 			clearTimeout(resetTimeout);
+			submitStatus = 'ERROR';
 			resetTimeout = setTimeout(() => {
 				submitStatus = null;
 			}, 3000);
@@ -148,9 +158,10 @@
 			method: 'DELETE',
 		}).catch(() => null);
 
-		modalOpen = false;
-		submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
-		if (submitStatus == 'SUCCESS') {
+		if (res && res.ok) {
+			await load(false);
+			modalOpen = false;
+			submitStatus = 'SUCCESS';
 			setTimeout(
 				() =>
 					toastContainer.toast(
@@ -160,6 +171,7 @@
 				300,
 			);
 		} else {
+			submitStatus = 'ERROR';
 			setTimeout(
 				() => toastContainer.toast('Error deleting store.', 'error'),
 				300,
@@ -208,9 +220,9 @@
 			>
 		</div>
 	{/if}
-	{#await getStores()}
+	{#if stores === undefined}
 		<Loading height="2rem" />
-	{:then stores}
+	{:else if stores}
 		{#if stores.length > 0}
 			<div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 				{#each stores as store}
@@ -255,9 +267,9 @@
 		{:else}
 			<h2>No stores available</h2>
 		{/if}
-	{:catch}
+	{:else}
 		<h2>Error loading stores</h2>
-	{/await}
+	{/if}
 </div>
 
 <input
