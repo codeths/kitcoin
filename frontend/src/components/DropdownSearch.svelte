@@ -28,6 +28,7 @@
 			value.length > 0
 		)
 			results = value.sort((a, b) => a.text.localeCompare(b.text));
+		if (multiselect && !inputFocused && !query.trim()) multiSelectText();
 	}
 
 	function multiSelectText() {
