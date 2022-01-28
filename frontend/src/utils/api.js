@@ -1,3 +1,6 @@
+import {classAnyInfo, classStudentInfo, classTeacherInfo} from './store';
+import {get} from 'svelte/store';
+
 async function getBalance(user = 'me') {
 	const res = await fetch(`/api/balance/${user}`).catch(e => null);
 	if (res && res.ok) {
@@ -50,12 +53,19 @@ async function searchUsers(search, count, roles, me) {
 }
 
 async function getClasses(role = 'any') {
+	let store = null;
+	if (role == 'any') store = classAnyInfo;
+	else if (role == 'teacher') store = classTeacherInfo;
+	else if (role == 'student') store = classStudentInfo;
+
+	if (get(store)) return get(store);
 	const res = await fetch(`/api/classes?role=${role.toLowerCase()}`).catch(
 		e => null,
 	);
 	if (res && res.ok) {
 		try {
 			const json = await res.json();
+			if (store) store.set(json);
 			return json;
 		} catch (e) {
 			throw 'An error occured.';

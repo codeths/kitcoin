@@ -7,9 +7,11 @@
 		Form,
 		Input,
 		StudentSearch,
+		ClassroomSearch,
 	} from '../../components';
 	let toastContainer;
-	import {getStores} from '../../utils/store.js';
+	import {getStores} from '../../utils/store';
+	import {getClasses} from '../../utils/api';
 
 	metatags.title = 'Stores - Kitcoin';
 
@@ -65,6 +67,10 @@
 			let v = e.value;
 			return null;
 		},
+		classes: e => {
+			let v = e.value?.value;
+			return null;
+		},
 		managers: e => {
 			let v = e.value?.value;
 			return null;
@@ -80,14 +86,27 @@
 	let submitStatus = null;
 	let resetTimeout;
 
-	function setModalStore(store) {
+	async function setModalStore(store) {
 		submitStatus = null;
+		let classes = store ? await getClasses('teacher') : null;
 		modalStore = store;
 		manageForm.reset();
 		if (store) {
 			manageForm.values.name = modalStore.name;
 			manageForm.values.description = modalStore.description;
-			manageForm.values.classIDs = modalStore.classIDs;
+			manageForm.values.classes = modalStore.classIDs.map(x => {
+				let classData = classes.find(c => c.id == x);
+
+				return classData
+					? {
+							text: classData.name,
+							value: classData.id,
+					  }
+					: {
+							text: `Unknown Class (${c.id})`,
+							value: c.id,
+					  };
+			});
 			manageForm.values.public = modalStore.public;
 			manageForm.values.managers = modalStore.managers.map(x => ({
 				text: x.name,
@@ -115,8 +134,10 @@
 				body: JSON.stringify({
 					name: manageFormData.values.name,
 					description: manageFormData.values.description || null,
-					classIDs: manageFormData.values.classIDs || [],
-					public: manageFormData.values.public ?? false,
+					classIDs: (manageFormData.values.classes || []).map(
+						x => x.value,
+					),
+					public: manageFormData.values.public ?? modalStore.public,
 					managers: (manageFormData.values.managers || []).map(
 						x => x.value,
 					),
@@ -317,6 +338,15 @@
 					bind:value={manageFormData.values.description}
 					bind:error={manageFormData.errors.description}
 					on:validate={manageForm.validate}
+				/>
+				<ClassroomSearch
+					name="classes"
+					label="Classes who can access this store"
+					bind:value={manageFormData.values.classes}
+					bind:error={manageFormData.errors.classes}
+					on:validate={manageForm.validate}
+					role="teacher"
+					multiselect
 				/>
 				<StudentSearch
 					name="users"
