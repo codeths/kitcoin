@@ -232,7 +232,7 @@
 			</div>
 		</div>
 	{/if}
-	{#if userInfo && (userInfo.roles.includes('STAFF') || userInfo.roles.includes('STAFF'))}
+	{#if userInfo && (userInfo.roles.includes('STAFF') || userInfo.roles.includes('ADMIN'))}
 		<div class="self-end mb-4">
 			<button
 				for="editmodal"
