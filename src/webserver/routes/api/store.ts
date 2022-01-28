@@ -202,12 +202,14 @@ router.post(
 					.status(403)
 					.send('You must be an admin to create a public store.');
 
-			let invalidUsers = await Promise.all(
-				[body.managers, body.users].flat().map(async id => {
-					let user = await User.findById(id);
-					return user ? null : id;
-				}),
-			);
+			let invalidUsers = (
+				await Promise.all(
+					[body.managers, body.users].flat().map(async id => {
+						let user = await User.findById(id);
+						return user ? null : id;
+					}),
+				)
+			).filter(x => x);
 
 			if (invalidUsers.length > 0)
 				return res
@@ -365,12 +367,14 @@ router.patch(
 					.status(403)
 					.send('You must be an admin to change the public setting.');
 
-			let invalidUsers = await Promise.all(
-				[body.managers, body.users].flat().map(async id => {
-					let user = await User.findById(id);
-					return user ? null : id;
-				}),
-			);
+			let invalidUsers = (
+				await Promise.all(
+					[body.managers, body.users].flat().map(async id => {
+						let user = await User.findById(id);
+						return user ? null : id;
+					}),
+				)
+			).filter(x => x);
 
 			if (invalidUsers.length > 0)
 				return res
