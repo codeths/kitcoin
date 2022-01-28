@@ -4,8 +4,8 @@ export const storeInfo = writable(null);
 export const userInfo = writable(null);
 export const storeItemList = writable({});
 
-export async function getStores() {
-	if (get(storeInfo)) return get(storeInfo);
+export async function getStores(useCache = true) {
+	if (useCache && get(storeInfo)) return get(storeInfo);
 	let res = await fetch('/api/stores');
 	if (!res || !res.ok) throw new Error('Failed to fetch stores');
 	let json = await res.json();
