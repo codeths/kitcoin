@@ -13,11 +13,11 @@
 	};
 	let form;
 	let numStudents = 1;
-	$: numStudents = (formData.values.student || '').split(' ').length;
+	$: numStudents = (formData.values.student?.value || '').split(' ').length;
 
 	let formValidators = {
 		student: e => {
-			let v = e.value;
+			let v = e.value?.value;
 			if (!v)
 				return e && e.type == 'blur'
 					? e.query
@@ -29,7 +29,8 @@
 		amount: e => {
 			let v = e.value;
 			if (!v) return e.type == 'blur' ? 'Amount is required' : '';
-			if (!/^\d*(?:\.\d+)?$/.test(v.trim())) return 'Amount must be a number';
+			if (!/^\d*(?:\.\d+)?$/.test(v.trim()))
+				return 'Amount must be a number';
 			let num = parseFloat(v.trim());
 			if (isNaN(num)) return 'Amount must be an number';
 			if (Math.round(num * 100) / 100 !== num)
@@ -58,7 +59,7 @@
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				user: formData.values.student.split(' '),
+				user: (formData.values.student?.value || '').split(' '),
 				amount: parseFloat(formData.values.amount),
 				reason: formData.values.reason || null,
 			}),
@@ -109,10 +110,13 @@
 			array = false;
 		}
 		if (array) {
-			formData.values.student = Array.from(student.keys()).join(' ');
+			formData.values.student = {
+				text: `${student.size} students`,
+				value: Array.from(student.keys()).join(' '),
+			};
 			query = `${student.size} students`;
 		} else {
-			formData.values.student = student.id;
+			formData.values.student = {text: student.name, value: student.id};
 			query = student.name;
 		}
 		formData.errors.student = null;

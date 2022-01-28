@@ -14,7 +14,7 @@
 	let ignoreQuery = false;
 
 	export let multiselect = false;
-	export let value = multiselect ? [] : '';
+	export let value = multiselect ? [] : null;
 	export let error = '';
 	export let query = '';
 	export let results = null;
@@ -86,7 +86,8 @@
 	function setValue(e, data) {
 		e.preventDefault();
 		if (multiselect) {
-			if (value.includes(data)) {
+			if (!value) value = [];
+			if (value.some(v => v.value == data.value)) {
 				value = value.filter(v => v.value !== data.value);
 			} else {
 				value = [...value, data];
@@ -94,7 +95,7 @@
 			query = '';
 			ignoreQuery = true;
 		} else {
-			value = data.value;
+			value = data;
 			query = data.text;
 			document.body.focus();
 		}
@@ -120,7 +121,7 @@
 		text = text.trim();
 		if (resetValue && !multiselect && value) {
 			if (!resetTo) resetTo = '';
-			value = '';
+			value = null;
 			query = resetTo;
 			text = resetTo;
 			dispatch('change', value);
@@ -175,7 +176,7 @@
 						{#each results as result, index}
 							{#if multiselect}
 								<button
-									class="px-4 py-2 w-full text-left focus:outline-none focus:bg-base-200 hover:bg-base-200"
+									class="px-4 py-2 w-full text-left focus:outline-none focus:bg-base-200 hover:bg-base-200 flex"
 									on:blur={blur}
 									on:click={e => {
 										setValue(e, result);
@@ -185,7 +186,7 @@
 								>
 									<input
 										type="checkbox"
-										class="checkbox"
+										class="checkbox mr-2"
 										checked={value &&
 											value.some(
 												x => x.value == result.value,

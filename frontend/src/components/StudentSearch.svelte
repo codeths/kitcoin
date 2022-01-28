@@ -4,11 +4,12 @@
 	import {searchUsers} from '../utils/api';
 	import {DropdownSearch} from '.';
 
-	export let value = '';
+	export let value;
 	export let error = '';
-	export let query = '';
+	export let query;
 	export let me = null;
 	export let students = null;
+	export let multiselect = false;
 
 	let results = null;
 	let autoSubmit = false;
@@ -29,7 +30,7 @@
 			if (autoSubmit) {
 				let confidentResult = results.find(x => x.confidence == 100);
 				if (confidentResult) {
-					value = confidentResult.value;
+					value = confidentResult;
 					query = confidentResult.text;
 					results = null;
 				}
@@ -52,5 +53,6 @@
 		}
 	}}
 	on:search={e => getStudents(e.detail)}
+	{multiselect}
 	{...$$restProps}
 />
