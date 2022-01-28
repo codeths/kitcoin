@@ -1,7 +1,13 @@
 <script>
 	import {getContext} from 'svelte';
 	import {url, metatags} from '@roxi/routify';
-	import {Loading, ToastContainer, Form, Input} from '../../components';
+	import {
+		Loading,
+		ToastContainer,
+		Form,
+		Input,
+		StudentSearch,
+	} from '../../components';
 	let toastContainer;
 	import {getStores} from '../../utils/store.js';
 
@@ -52,11 +58,11 @@
 			return null;
 		},
 		managers: e => {
-			let v = e.value;
+			let v = e.value?.value;
 			return null;
 		},
 		users: e => {
-			let v = e.value;
+			let v = e.value?.value;
 			return null;
 		},
 	};
@@ -75,8 +81,14 @@
 			manageForm.values.description = modalStore.description;
 			manageForm.values.classIDs = modalStore.classIDs;
 			manageForm.values.public = modalStore.public;
-			manageForm.values.managers = modalStore.managers;
-			manageForm.values.users = modalStore.users;
+			manageForm.values.managers = modalStore.managers.map(x => ({
+				text: x.name,
+				value: x.id,
+			}));
+			manageForm.values.users = modalStore.users.map(x => ({
+				text: x.name,
+				value: x.id,
+			}));
 		}
 		modalOpen = true;
 	}
@@ -86,7 +98,7 @@
 		if (!manageFormData.isValid) return false;
 		submitStatus = 'LOADING';
 		let res = await fetch(
-			modalStore ? `/api/store/${modalStore.id}` : `/api/stores`,
+			modalStore ? `/api/store/${modalStore._id}` : `/api/stores`,
 			{
 				method: modalStore ? 'PATCH' : 'POST',
 				headers: {
@@ -97,8 +109,12 @@
 					description: manageFormData.values.description || null,
 					classIDs: manageFormData.values.classIDs || [],
 					public: manageFormData.values.public ?? false,
-					managers: manageFormData.values.managers || [],
-					users: manageFormData.values.users || [],
+					managers: (manageFormData.values.managers || []).map(
+						x => x.value,
+					),
+					users: (manageFormData.values.users || []).map(
+						x => x.value,
+					),
 				}),
 			},
 		).catch(() => null);
@@ -289,6 +305,22 @@
 					bind:value={manageFormData.values.description}
 					bind:error={manageFormData.errors.description}
 					on:validate={manageForm.validate}
+				/>
+				<StudentSearch
+					name="users"
+					label="Additional users who can access this store"
+					bind:value={manageFormData.values.users}
+					bind:error={manageFormData.errors.users}
+					on:validate={manageForm.validate}
+					multiselect
+				/>
+				<StudentSearch
+					name="managers"
+					label="Additional users who can managers this store"
+					bind:value={manageFormData.values.managers}
+					bind:error={manageFormData.errors.managers}
+					on:validate={manageForm.validate}
+					multiselect
 				/>
 				{#if userInfo && userInfo.roles.includes('ADMIN')}
 					<Input
