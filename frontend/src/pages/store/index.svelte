@@ -358,7 +358,7 @@
 				/>
 				<StudentSearch
 					name="managers"
-					label="Additional users who can managers this store"
+					label="Additional users who can manage this store"
 					bind:value={manageFormData.values.managers}
 					bind:error={manageFormData.errors.managers}
 					on:validate={manageForm.validate}
