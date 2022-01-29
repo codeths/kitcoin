@@ -347,7 +347,7 @@
 				/>
 				<ClassroomSearch
 					name="classes"
-					label="Classes who can access this store"
+					label="Classes who can access this store (optional)"
 					bind:value={manageFormData.values.classes}
 					bind:error={manageFormData.errors.classes}
 					on:validate={manageForm.validate}
@@ -357,7 +357,7 @@
 				/>
 				<StudentSearch
 					name="users"
-					label="Additional users who can access this store"
+					label="Additional users who can access this store (optional)"
 					bind:value={manageFormData.values.users}
 					bind:error={manageFormData.errors.users}
 					on:validate={manageForm.validate}
@@ -365,7 +365,7 @@
 				/>
 				<StudentSearch
 					name="managers"
-					label="Additional users who can manage this store"
+					label="Additional users who can manage this store (optional)"
 					bind:value={manageFormData.values.managers}
 					bind:error={manageFormData.errors.managers}
 					on:validate={manageForm.validate}
