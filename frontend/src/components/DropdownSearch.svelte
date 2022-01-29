@@ -36,12 +36,14 @@
 	}
 
 	function multiSelectText() {
-		if (value.length > 0) {
+		if (value.length == 0) {
+			computedPlaceholder = label;
+		} else if (value.length < 3) {
+			computedPlaceholder = value.map(x => x.text).join(', ');
+		} else {
 			computedPlaceholder = `${value.length} item${
 				value.length == 1 ? '' : 's'
 			} selected`;
-		} else {
-			computedPlaceholder = label;
 		}
 	}
 
