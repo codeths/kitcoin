@@ -91,8 +91,9 @@
 	async function setModalStore(store) {
 		submitStatus = null;
 		let classes = store ? await getClasses('teacher') : null;
-		modalStore = store;
+		extraClasses = [];
 		manageForm.reset();
+		modalStore = store;
 		if (store) {
 			manageForm.values.name = modalStore.name;
 			manageForm.values.description = modalStore.description;
@@ -345,16 +346,18 @@
 					bind:error={manageFormData.errors.description}
 					on:validate={manageForm.validate}
 				/>
-				<ClassroomSearch
-					name="classes"
-					label="Classes who can access this store (optional)"
-					bind:value={manageFormData.values.classes}
-					bind:error={manageFormData.errors.classes}
-					on:validate={manageForm.validate}
-					role="teacher"
-					{extraClasses}
-					multiselect
-				/>
+				{#key extraClasses}
+					<ClassroomSearch
+						name="classes"
+						label="Classes who can access this store (optional)"
+						bind:value={manageFormData.values.classes}
+						bind:error={manageFormData.errors.classes}
+						on:validate={manageForm.validate}
+						role="teacher"
+						{extraClasses}
+						multiselect
+					/>
+				{/key}
 				<StudentSearch
 					name="users"
 					label="Additional users who can access this store (optional)"
