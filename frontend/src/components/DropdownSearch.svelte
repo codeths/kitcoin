@@ -164,6 +164,7 @@
 		on:blur={blur}
 		{label}
 		placeholder={computedPlaceholder}
+		autocomplete="off"
 		{...$$restProps}
 	>
 		<div class="relative" slot="after-input">
