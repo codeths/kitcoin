@@ -115,8 +115,4 @@ span[class^='icon-']::before {
 	.drawer-side .menu a {
 		@apply rounded-lg my-1;
 	}
-
-	.placeholder-color-default:not(:active)::placeholder {
-		@apply text-base-content;
-	}
 }

@@ -41,7 +41,7 @@
 				value.length == 1 ? '' : 's'
 			} selected`;
 		} else {
-			computedPlaceholder = placeholder;
+			computedPlaceholder = label;
 		}
 	}
 
@@ -139,11 +139,9 @@
 
 <div class="group w-auto" bind:this={parent} on:keydown={key}>
 	<Input
-		class="active:placeholder:text-inherit {multiselect &&
-		value &&
-		value.length > 0
-			? 'placeholder-color-default'
-			: ''}"
+		class={multiselect && value && value.length > 0 && hide
+			? 'placeholder:text-base-content'
+			: ''}
 		bind:this={input}
 		bind:value={query}
 		bind:error
@@ -164,6 +162,7 @@
 			}
 		}}
 		on:blur={blur}
+		{label}
 		placeholder={computedPlaceholder}
 		{...$$restProps}
 	>
