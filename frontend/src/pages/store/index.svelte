@@ -86,6 +86,8 @@
 	let submitStatus = null;
 	let resetTimeout;
 
+	let extraClasses = [];
+
 	async function setModalStore(store) {
 		submitStatus = null;
 		let classes = store ? await getClasses('teacher') : null;
@@ -94,7 +96,7 @@
 		if (store) {
 			manageForm.values.name = modalStore.name;
 			manageForm.values.description = modalStore.description;
-			manageForm.values.classes = modalStore.classIDs.map(x => {
+			extraClasses = modalStore.classIDs.map(x => {
 				let classData = classes.find(c => c.id == x);
 
 				return classData
@@ -107,6 +109,7 @@
 							value: x,
 					  };
 			});
+			manageForm.values.classes = extraClasses;
 			manageForm.values.public = modalStore.public;
 			manageForm.values.managers = modalStore.managers.map(x => ({
 				text: x.name,
@@ -349,6 +352,7 @@
 					bind:error={manageFormData.errors.classes}
 					on:validate={manageForm.validate}
 					role="teacher"
+					{extraClasses}
 					multiselect
 				/>
 				<StudentSearch

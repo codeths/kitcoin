@@ -4,7 +4,8 @@
 	import {getClasses} from '../utils/api';
 	import {DropdownSearch} from '.';
 
-	export let value;
+	export let value = [];
+	export let extraClasses = [];
 	export let error = '';
 	export let query;
 	export let role = 'any';
@@ -17,6 +18,10 @@
 		if (!classes) {
 			classes = await getClasses(role);
 			classes.sort((a, b) => a.name.localeCompare(b.name));
+			extraClasses.forEach(classData => {
+				if (!classes.some(x => x.id == classData.value))
+					classes.push({name: classData.text, id: classData.value});
+			});
 		}
 
 		results = classes

@@ -346,7 +346,8 @@ router.patch(
 					.then(x => (x || []).map(x => x.id));
 
 				let invalidClasses = body.classIDs.filter(
-					(id: string) => !teaching.includes(id),
+					(id: string) =>
+						!teaching.includes(id) && !store!.classIDs.includes(id),
 				);
 
 				if (invalidClasses.length > 0)
