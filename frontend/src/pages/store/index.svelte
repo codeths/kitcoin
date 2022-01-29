@@ -1,27 +1,215 @@
 <script>
 	import {getContext} from 'svelte';
 	import {url, metatags} from '@roxi/routify';
-	import {Loading} from '../../components';
-	import {getStores} from '../../utils/store.js';
+	import {
+		Loading,
+		ToastContainer,
+		Form,
+		Input,
+		StudentSearch,
+		ClassroomSearch,
+	} from '../../components';
+	let toastContainer;
+	import {getStores} from '../../utils/store';
+	import {getClasses} from '../../utils/api';
 
 	metatags.title = 'Stores - Kitcoin';
 
 	let ctx = getContext('userInfo');
 	let authMsg = null;
+	let userInfo;
 	(async () => {
-		let info = (await ctx) || null;
-		if (!info) return (authMsg = 'NO_USER');
+		userInfo = (await ctx) || null;
+		if (!userInfo) return (authMsg = 'NO_USER');
 		if (
-			!info.scopes.includes(
+			!userInfo.scopes.includes(
 				'https://www.googleapis.com/auth/classroom.courses.readonly',
 			)
 		)
 			authMsg = 'CLASSROOM';
 	})();
+
+	let stores = undefined;
+	async function load(useCache) {
+		await getStores(useCache)
+			.then(x => {
+				stores = x;
+			})
+			.catch(e => {
+				stores = null;
+			});
+		return;
+	}
+	load();
+
+	// Manage items
+	let manageFormData = {
+		isValid: false,
+		values: {},
+		errors: {},
+	};
+	let manageForm;
+	let manageValidators = {
+		name: e => {
+			let v = e.value;
+			if (!v) return e && e.type == 'blur' ? 'Name is required' : '';
+			return null;
+		},
+		description: e => {
+			let v = e.value;
+			return null;
+		},
+		classIDs: e => {
+			let v = e.value;
+			return null;
+		},
+		public: e => {
+			let v = e.value;
+			return null;
+		},
+		classes: e => {
+			let v = e.value?.value;
+			return null;
+		},
+		managers: e => {
+			let v = e.value?.value;
+			return null;
+		},
+		users: e => {
+			let v = e.value?.value;
+			return null;
+		},
+	};
+
+	let modalStore = null;
+	let modalOpen = false;
+	let submitStatus = null;
+	let resetTimeout;
+
+	let extraClasses = [];
+
+	async function setModalStore(store) {
+		submitStatus = null;
+		let classes = store ? await getClasses('teacher') : null;
+		modalStore = store;
+		manageForm.reset();
+		if (store) {
+			manageForm.values.name = modalStore.name;
+			manageForm.values.description = modalStore.description;
+			extraClasses = modalStore.classIDs.map(x => {
+				let classData = classes.find(c => c.id == x);
+
+				return classData
+					? {
+							text: classData.name,
+							value: classData.id,
+					  }
+					: {
+							text: `Unknown Class (${x})`,
+							value: x,
+					  };
+			});
+			manageForm.values.classes = extraClasses;
+			manageForm.values.public = modalStore.public;
+			manageForm.values.managers = modalStore.managers.map(x => ({
+				text: x.name,
+				value: x.id,
+			}));
+			manageForm.values.users = modalStore.users.map(x => ({
+				text: x.name,
+				value: x.id,
+			}));
+		}
+		modalOpen = true;
+	}
+
+	async function doManageStore(e) {
+		e.preventDefault();
+		if (!manageFormData.isValid) return false;
+		submitStatus = 'LOADING';
+		let res = await fetch(
+			modalStore ? `/api/store/${modalStore._id}` : `/api/stores`,
+			{
+				method: modalStore ? 'PATCH' : 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					name: manageFormData.values.name,
+					description: manageFormData.values.description || null,
+					classIDs: (manageFormData.values.classes || []).map(
+						x => x.value,
+					),
+					public:
+						manageFormData.values.public ?? modalStore
+							? modalStore.public
+							: false,
+					managers: (manageFormData.values.managers || []).map(
+						x => x.value,
+					),
+					users: (manageFormData.values.users || []).map(
+						x => x.value,
+					),
+				}),
+			},
+		).catch(() => null);
+
+		if (res && res.ok) {
+			await load(false);
+			modalOpen = false;
+			submitStatus = 'SUCCESS';
+			setTimeout(() => {
+				submitStatus = null;
+				toastContainer.toast(
+					modalStore ? 'Store updated' : 'Store created',
+					'success',
+				);
+			}, 300);
+		} else {
+			clearTimeout(resetTimeout);
+			submitStatus = 'ERROR';
+			resetTimeout = setTimeout(() => {
+				submitStatus = null;
+			}, 3000);
+		}
+
+		return false;
+	}
+
+	async function deleteStore() {
+		if (!confirm(`Are you sure you want to delete ${modalStore.name}?`))
+			return;
+		submitStatus = 'LOADING';
+
+		let res = await fetch(`/api/store/${modalStore._id}`, {
+			method: 'DELETE',
+		}).catch(() => null);
+
+		if (res && res.ok) {
+			await load(false);
+			modalOpen = false;
+			submitStatus = 'SUCCESS';
+			setTimeout(
+				() =>
+					toastContainer.toast(
+						`${modalStore.name} deleted.`,
+						'success',
+					),
+				300,
+			);
+		} else {
+			submitStatus = 'ERROR';
+			setTimeout(
+				() => toastContainer.toast('Error deleting store.', 'error'),
+				300,
+			);
+			return;
+		}
+	}
 </script>
 
 <!-- Content -->
-<div class="p-12 mt-6">
+<div class="p-12 mt-6 flex flex-col">
 	<h2 class="text-4xl font-bold mb-6">Your Stores</h2>
 	{#if authMsg}
 		<div class="alert alert-error my-4">
@@ -50,9 +238,18 @@
 			</div>
 		</div>
 	{/if}
-	{#await getStores()}
+	{#if userInfo && (userInfo.roles.includes('STAFF') || userInfo.roles.includes('ADMIN'))}
+		<div class="self-end mb-4">
+			<button
+				for="editmodal"
+				class="btn btn-secondary self-end px-12 mx-1 modal-button"
+				on:click={() => setModalStore()}>New Store</button
+			>
+		</div>
+	{/if}
+	{#if stores === undefined}
 		<Loading height="2rem" />
-	{:then stores}
+	{:else if stores}
 		{#if stores.length > 0}
 			<div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 				{#each stores as store}
@@ -65,14 +262,16 @@
 								{store.name}
 							</p>
 							{#if store.canManage}
-								<div
-									data-tip="You can manage this store"
-									class="tooltip tooltip-left"
+								<button
+									class="inline-flex btn btn-circle btn-ghost text-3xl modal-button"
+									on:click={e => {
+										e.preventDefault();
+										setModalStore(store);
+									}}
+									><span
+										class="inline-flex icon-edit text-2xl text-base-content group-hover:text-primary-content transition duration-300"
+									/></button
 								>
-									<span
-										class="inline-flex icon-crown text-2xl h-full text-primary group-hover:text-primary-content"
-									/>
-								</div>
 							{/if}
 						</div>
 						{#if store.description}
@@ -95,7 +294,127 @@
 		{:else}
 			<h2>No stores available</h2>
 		{/if}
-	{:catch}
+	{:else}
 		<h2>Error loading stores</h2>
-	{/await}
+	{/if}
 </div>
+
+<input
+	type="checkbox"
+	id="editmodal"
+	class="modal-toggle"
+	bind:checked={modalOpen}
+/>
+<div class="modal">
+	<div class="modal-box">
+		<div class="flex flex-row justify-between items-center mb-4">
+			<h2 class="inline-flex text-2xl text-medium">
+				{modalStore ? `Edit ${modalStore.name}` : 'Create store'}
+			</h2>
+			{#if modalStore && modalStore.owner === userInfo.id}
+				<button
+					class="inline-flex btn btn-circle btn-ghost text-3xl modal-button"
+					on:click={deleteStore}
+				>
+					<span class="icon-delete" />
+				</button>
+			{/if}
+		</div>
+		{#key modalStore}
+			<Form
+				on:submit={doManageStore}
+				on:update={() =>
+					Object.keys(manageFormData).forEach(
+						key => (manageFormData[key] = manageForm[key]),
+					)}
+				bind:this={manageForm}
+				validators={manageValidators}
+			>
+				<Input
+					name="name"
+					label="Name"
+					bind:value={manageFormData.values.name}
+					bind:error={manageFormData.errors.name}
+					on:validate={manageForm.validate}
+				/>
+				<Input
+					name="description"
+					label="Description (optional)"
+					type="textarea"
+					bind:value={manageFormData.values.description}
+					bind:error={manageFormData.errors.description}
+					on:validate={manageForm.validate}
+				/>
+				<ClassroomSearch
+					name="classes"
+					label="Classes who can access this store"
+					bind:value={manageFormData.values.classes}
+					bind:error={manageFormData.errors.classes}
+					on:validate={manageForm.validate}
+					role="teacher"
+					{extraClasses}
+					multiselect
+				/>
+				<StudentSearch
+					name="users"
+					label="Additional users who can access this store"
+					bind:value={manageFormData.values.users}
+					bind:error={manageFormData.errors.users}
+					on:validate={manageForm.validate}
+					multiselect
+				/>
+				<StudentSearch
+					name="managers"
+					label="Additional users who can manage this store"
+					bind:value={manageFormData.values.managers}
+					bind:error={manageFormData.errors.managers}
+					on:validate={manageForm.validate}
+					multiselect
+				/>
+				{#if userInfo && userInfo.roles.includes('ADMIN')}
+					<Input
+						name="public"
+						label="Public"
+						type="switch"
+						bind:value={manageFormData.values.public}
+						bind:error={manageFormData.errors.public}
+						on:validate={manageForm.validate}
+					/>
+				{/if}
+
+				<div class="divider" />
+				<div class="flex items-center space-x-2 justify-end">
+					<label
+						for="editmodal"
+						class="btn btn-outline px-12"
+						on:click={e =>
+							!confirm('Are you sure you want to close this?') &&
+							e.preventDefault()}
+					>
+						Cancel
+					</label>
+					<button
+						type="submit"
+						disabled={submitStatus == 'LOADING' ||
+							!manageFormData.isValid}
+						class="btn {submitStatus == 'ERROR'
+							? 'btn-error'
+							: 'btn-primary'} px-12 disabled:border-0"
+					>
+						{#if submitStatus == 'LOADING'}
+							<div class="px-2">
+								<Loading height="2rem" />
+							</div>
+						{:else if submitStatus == 'ERROR'}
+							Error
+						{:else}
+							{modalStore ? 'Done' : 'Create'}
+						{/if}
+					</button>
+				</div>
+			</Form>
+		{/key}
+	</div>
+</div>
+
+<ToastContainer bind:this={toastContainer} />

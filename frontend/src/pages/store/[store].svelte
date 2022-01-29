@@ -293,7 +293,7 @@
 	let studentBalance = null;
 
 	async function loadStudentBalance(e) {
-		let studentID = transactionFormData.values.student;
+		let studentID = transactionFormData.values.student?.value;
 		if (studentID) {
 			let res = await fetch(`/api/balance/${studentID}`).catch(
 				() => null,
@@ -311,7 +311,7 @@
 					target: {
 						name: 'item',
 					},
-					value: transactionFormData.values.item,
+					value: transactionFormData.values.item?.value,
 					type: '',
 				},
 			});
@@ -327,7 +327,7 @@
 	let transactionForm = transactionFormData;
 	let transactionValidate = {
 		student: e => {
-			let v = e.value;
+			let v = e.value?.value;
 			if (!v)
 				return e && e.type == 'blur'
 					? e.query
@@ -337,7 +337,7 @@
 			return null;
 		},
 		item: e => {
-			let v = e.value;
+			let v = e.value?.value;
 			if (!v)
 				return e && e.type == 'blur'
 					? e.query
@@ -393,8 +393,8 @@
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				user: transactionFormData.values.student,
-				item: transactionFormData.values.item,
+				user: transactionFormData.values.student.value,
+				item: transactionFormData.values.item.value,
 			}),
 		}).catch(() => null);
 
@@ -406,10 +406,7 @@
 		if (submitStatus == 'SUCCESS') {
 			transactionToggle = false;
 			toastContainer.toast(
-				`Sold ${
-					items.find(x => x._id == transactionFormData.values.item)
-						.name
-				}.`,
+				`Sold ${transactionFormData.values.item.text}.`,
 				'success',
 			);
 		} else {

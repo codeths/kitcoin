@@ -24,6 +24,7 @@ import {
 	IErrorModel,
 	IError,
 	IErrorDetail,
+	IStoreAPIResponse,
 } from '../types';
 
 import fuzzySearch from 'mongoose-fuzzy-searching';
@@ -264,6 +265,7 @@ const storeSchema = new mongoose.Schema<IStoreDoc, IStoreModel>({
 		default: false,
 		required: true,
 	},
+	owner: String,
 	managers: [String],
 	users: [String],
 });
@@ -274,6 +276,40 @@ storeSchema.query.byClassCode = function (classCode: string): IStoreQueries {
 
 storeSchema.methods.getItems = async function (): Promise<IStoreItemDoc[]> {
 	return await StoreItem.where({storeID: this.id});
+};
+
+storeSchema.methods.toAPIResponse = async function (
+	canManage: boolean,
+): Promise<IStoreAPIResponse> {
+	let data = this.toJSON();
+
+	if (!canManage) {
+		let res: IStoreAPIResponse = {
+			...data,
+			users: undefined,
+			managers: undefined,
+			classIDs: undefined,
+			owner: undefined,
+			canManage,
+		};
+		return res;
+	}
+
+	let userData = await Promise.all(
+		[this.users, this.managers, this.owner].flat().map(async id => {
+			let user = await User.findById(id);
+			return user ? {name: user.name || '', id} : {name: '', id};
+		}),
+	);
+
+	let res: IStoreAPIResponse = {
+		...data,
+		users: data.users.map(id => userData.find(x => x.id == id)!),
+		managers: data.managers.map(id => userData.find(x => x.id == id)!),
+		canManage,
+	};
+
+	return res;
 };
 
 storeSchema.index({classIDs: 1});

@@ -20,11 +20,11 @@ Array of classes
 
 ```ts
 {
-	id: string;
-	name: string | null;
-	section: string | null;
+	id: string,
+	name: string | null,
+	section: string | null
 }
-[];
+[],
 ```
 
 ## GET `/students/:class`
@@ -41,11 +41,11 @@ Array of students
 
 ```ts
 {
-	googleId: string;
-	id: string;
-	name: string | null;
+	googleId: string,
+	id: string,
+	name: string | null
 }
-[];
+[],
 ```
 
 # Currency
@@ -93,9 +93,9 @@ Body:
 
 ```ts
 {
-	amount: number;
-	reason: string | null;
-	user: string | string[];
+	amount: number,
+	reason: string | null,
+	user: string | string[]
 }
 ```
 
@@ -103,10 +103,10 @@ Body:
 
 ```ts
 {
-	page: number;
-	pageCount: number;
-	docCount: number;
-	transactions: ITransactionAPIResponse[];
+	page: number,
+	pageCount: number,
+	docCount: number,
+	transactions: ITransactionAPIResponse[]
 }
 ```
 
@@ -136,16 +136,59 @@ None
 
 ### Response
 
+`classIDs`, `managers`, `users`, and `owner` will only be returned if you can manage this store.
+
 ```ts
 {
-	_id: string;
-	name: string;
-	description: string;
-	canManage: boolean;
-	public: boolean;
-	classNames: string[];
+	_id: string,
+	name: string,
+	description: string | null,
+	canManage: boolean,
+	public: boolean,
+	classNames: string[]
+	classIDs: string[] | null,
+	managers: string[] | null,
+	users: string[] | null,
+	owner: string | null
 }
-[];
+[],
+```
+
+## POST `/stores`
+
+Create a store. Requires staff permissions.
+
+## Request
+
+`name` (body): The name of the store  
+`description` (body): [Optional] The description of the store  
+`classIDs` (body): [Optional] An array of Google Classroom IDs  
+`public` (body): Whether the store is public or not. Public stores require admin permissions.  
+`managers` (body): An array of user IDs who can manage this store  
+`users` (body): An array of user IDs who can access this store
+
+### Response
+
+`classIDs`, `managers`, `users`, and `owner` will only be returned if you can manage this store.
+
+```ts
+{
+	name: string,
+	description: string | null,
+	public: boolean,
+	canManage: boolean,
+	classNames: string[],
+	classIDs: string[] | undefined,
+	owner: string | undefined,
+	users: {
+		name: string;
+		id: string;
+	}[] | undefined,
+	managers: {
+		name: string;
+		id: string;
+	}[] | undefined,
+}[]
 ```
 
 ## GET `/store/:id`
@@ -158,13 +201,74 @@ Get a store's info by its ID
 
 ### Response
 
+`classIDs`, `managers`, `users`, and `owner` will only be returned if you can manage this store.
+
 ```ts
 {
-	name: string;
-	description: string;
-	canManage: boolean;
+	name: string,
+	description: string | null,
+	public: boolean,
+	canManage: boolean,
+	classIDs: string[] | undefined,
+	owner: string | undefined,
+	users: {
+		name: string;
+		id: string;
+	}[] | undefined,
+	managers: {
+		name: string;
+		id: string;
+	}[] | undefined,
 }
 ```
+
+## PATCH `/store/:id`
+
+Update a store. Requires permission to manage this store.
+
+## Request
+
+`:id` (path): Store ID  
+`name` (body): The name of the store  
+`description` (body): [Optional] The description of the store  
+`classIDs` (body): [Optional] An array of Google Classroom IDs  
+`public` (body): Whether the store is public or not. Changing this setting requires admin permissions.  
+`managers` (body): An array of user IDs who can manage this store  
+`users` (body): An array of user IDs who can access this store
+
+### Response
+
+```ts
+{
+	name: string,
+	description: string | null,
+	public: boolean,
+	canManage: boolean,
+	classNames: string[],
+	classIDs: string[] | undefined,
+	owner: string | undefined,
+	users: {
+		name: string;
+		id: string;
+	}[] | undefined,
+	managers: {
+		name: string;
+		id: string;
+	}[] | undefined,
+}
+```
+
+## DELETE `/store/:id`
+
+Delete a store. Only the store owner or an admin can do this.
+
+## Request
+
+`:id` (path): Store ID
+
+### Response
+
+None
 
 ## GET `/store/:id/students`
 
@@ -190,14 +294,14 @@ Get a list of a store's items
 
 ```ts
 {
-	_id: string;
-	name: string;
-	description: string;
-	quantity: number | null;
-	price: number;
-	imageHash: string | null;
+	_id: string,
+	name: string,
+	description: string,
+	quantity: number | null,
+	price: number,
+	imageHash: string | null
 }
-[];
+[],
 ```
 
 ## GET `/store/:storeID/item/:id`
@@ -213,12 +317,12 @@ Get a store's item by its ID
 
 ```ts
 {
-	_id: string;
-	name: string;
-	description: string;
-	quantity: number | null;
-	price: number;
-	imageHash: string | null;
+	_id: string,
+	name: string,
+	description: string,
+	quantity: number | null,
+	price: number,
+	imageHash: string | null
 }
 ```
 
@@ -252,12 +356,12 @@ Update a store's item
 
 ```ts
 {
-	_id: string;
-	name: string;
-	description: string;
-	quantity: number | null;
-	price: number;
-	imageHash: string | null;
+	_id: string,
+	name: string,
+	description: string,
+	quantity: number | null,
+	price: number,
+	imageHash: string | null
 }
 ```
 
@@ -314,12 +418,12 @@ Create a store item
 
 ```ts
 {
-	_id: string;
-	name: string;
-	description: string;
-	quantity: number | null;
-	price: number;
-	imageHash: null;
+	_id: string,
+	name: string,
+	description: string,
+	quantity: number | null,
+	price: number,
+	imageHash: null
 }
 ```
 
@@ -355,18 +459,18 @@ Body:
 `q` (query): Search query  
 `roles` (query): [Optional] User must have at least one these roles. Separate multiple roles with a comma.  
 `count` (query): [Optional] Number of results to return. Defaults to 10  
-`me` (query): [Optional] Include the authenticated user in the results. Defaults to false  
+`me` (query): [Optional] Include the authenticated user in the results. Defaults to false
 
 ### Response
 
 ```ts
 {
-	name: string;
-	email: string;
-	id: string;
-	confidence: number;
+	name: string,
+	email: string,
+	id: string,
+	confidence: number
 }
-[];
+[],
 ```
 
 ## GET `/me`
@@ -381,9 +485,9 @@ None
 
 ```ts
 {
-	name: string;
-	email: string;
-	id: string;
+	name: string,
+	email: string,
+	id: string,
 	roles: ("NONE" | "STUDENT" | "STAFF" | "ADMIN" | "ALL")[]
 	scopes: string[]
 	authorized: boolean; // Valid OAuth Credentials

@@ -12,17 +12,19 @@
 	export let input = null;
 	export let disabled = false;
 	export let focus = false;
+	let additionalClasses = '';
+	export {additionalClasses as class};
 
 	function handle(e) {
 		dispatch('validate', {
 			type: e.type,
 			target: e.target,
-			value: e.target.value,
+			value: input.type == 'checkbox' ? e.target.checked : e.target.value,
 		});
 	}
 
 	onMount(() => {
-		if (input && type !== 'textarea') {
+		if (input && type == 'input') {
 			input.type = type;
 		}
 		if (focus) setTimeout(() => input.focus(), 0);
@@ -39,7 +41,7 @@
 	</label>
 	{#if type == 'textarea'}
 		<textarea
-			class="textarea textarea-bordered w-full"
+			class="textarea textarea-bordered w-full {additionalClasses}"
 			class:textarea-success={error === null}
 			class:textarea-error={error}
 			{disabled}
@@ -56,9 +58,22 @@
 			bind:this={input}
 			{...$$restProps}
 		/>
+	{:else if type == 'checkbox' || type == 'switch'}
+		<input
+			class:checkbox={type == 'checkbox'}
+			class:toggle={type == 'switch'}
+			class={additionalClasses}
+			type="checkbox"
+			{disabled}
+			on:change={handle}
+			on:change
+			bind:checked={value}
+			bind:this={input}
+			{...$$restProps}
+		/>
 	{:else}
 		<input
-			class="input input-bordered	w-full"
+			class="input input-bordered	w-full {additionalClasses}"
 			class:input-success={error === null}
 			class:input-error={error}
 			{disabled}
