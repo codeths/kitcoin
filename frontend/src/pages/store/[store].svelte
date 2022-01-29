@@ -650,7 +650,7 @@
 				/>
 				<Input
 					name="quantity"
-					label="Quantity (optional)"
+					label="Amount available (optional)"
 					bind:value={manageFormData.values.quantity}
 					bind:error={manageFormData.errors.quantity}
 					on:validate={manageForm.validate}
