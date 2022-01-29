@@ -103,8 +103,8 @@
 							value: classData.id,
 					  }
 					: {
-							text: `Unknown Class (${c.id})`,
-							value: c.id,
+							text: `Unknown Class (${x.id})`,
+							value: x.id,
 					  };
 			});
 			manageForm.values.public = modalStore.public;
