@@ -14,6 +14,7 @@
 	import {getBalance} from '../../utils/api.js';
 
 	let info = $storeInfo;
+	let nextEl;
 
 	storeInfo.subscribe(newInfo => {
 		info = newInfo;
@@ -766,6 +767,7 @@
 					bind:error={transactionFormData.errors.student}
 					on:validate={transactionForm.validate}
 					on:change={loadStudentBalance}
+					next={nextEl?.input?.input}
 					focus
 				/>
 				<DropdownSearch
@@ -774,6 +776,7 @@
 					bind:results={itemResults}
 					bind:value={transactionFormData.values.item}
 					bind:error={transactionFormData.errors.item}
+					bind:this={nextEl}
 					on:validate={transactionForm.validate}
 					on:search={e => itemSearch(e.detail)}
 				/>

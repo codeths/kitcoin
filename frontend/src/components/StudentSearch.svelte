@@ -13,6 +13,7 @@
 
 	let results = null;
 	let autoSubmit = false;
+	let el;
 
 	async function getStudents(text) {
 		if (!text) {
@@ -33,6 +34,7 @@
 					value = confidentResult;
 					query = confidentResult.text;
 					results = null;
+					el.validate('change', value, query);
 				}
 			}
 		}
@@ -41,6 +43,7 @@
 
 <DropdownSearch
 	label="Student"
+	bind:this={el}
 	bind:results
 	bind:value
 	bind:query
