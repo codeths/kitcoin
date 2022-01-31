@@ -1,4 +1,5 @@
 import express from 'express';
+import compression from 'compression';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import mongostore from 'connect-mongodb-session';
@@ -53,6 +54,7 @@ app.set('trust proxy', 1);
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(compression());
 
 app.use(
 	session({
