@@ -34,7 +34,7 @@
 					value = confidentResult;
 					query = confidentResult.text;
 					results = null;
-					el.validate('change', value, query);
+					el.error = null;
 				}
 			}
 		}
