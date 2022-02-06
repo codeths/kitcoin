@@ -167,6 +167,9 @@
 		{label}
 		placeholder={computedPlaceholder}
 		autocomplete="off"
+		autocorrect="off"
+		autocapitalize="off"
+		spellcheck="false"
 		{...$$restProps}
 	>
 		<div class="relative" slot="after-input">
