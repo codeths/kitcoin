@@ -13,7 +13,7 @@
 	onMount(async () => {
 		userInfo = (await ctx) || null;
 		const roles = userInfo?.roles || [];
-		if (roles.includes('ADMIN')) homes.push(['Admin Home', '/admin']);
+		// if (roles.includes('ADMIN')) homes.push(['Admin Home', '/admin']); TEMPORARILY DISABLED
 		if (roles.includes('STAFF')) homes.push(['Staff Home', '/staff']);
 		if (roles.includes('STUDENT')) homes.push(['Student Home', '/student']);
 		links.push(['Home', (homes[0] || [, '/'])[1]]);
