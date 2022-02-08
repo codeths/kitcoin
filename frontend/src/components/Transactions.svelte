@@ -182,7 +182,7 @@
 				</button>
 			</div>
 		</div>
-	{:else}
+	{:else if loading.any || transactions.pageCount !== 0}
 		<div class="pt-4">
 			<div class="text-center mb-2">
 				{#if loading.any}
