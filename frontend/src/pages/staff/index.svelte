@@ -297,7 +297,7 @@
 				click these checkboxes:
 			</p>
 			<img
-				src="/assets/perms-image.png"
+				src="/assets/images/perms-image.png"
 				class="w-full mt-2 mb-4 border rounded-lg"
 				alt="How to enable the permissions"
 			/>
