@@ -80,4 +80,13 @@
 
 <svelte:head>
 	<link rel="icon" href="/{favicon}.ico" />
+	<link rel="icon" type="image/png" href="/{favicon}-32.png" sizes="32x32" />
+	<link
+		rel="icon"
+		type="image/png"
+		href="/{favicon}-196.png"
+		sizes="196x196"
+	/>
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<meta name="theme-color" content="#1a2741" />
 </svelte:head>
