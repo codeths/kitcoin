@@ -55,6 +55,9 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>({
 	balanceExpires: {
 		type: Date,
 	},
+	weeklyBalanceMultiplier: {
+		type: Number,
+	},
 	tokens: {
 		refresh: {
 			type: String,
@@ -134,8 +137,8 @@ function getBalance(this: IUserDoc, balance: number) {
 			new Date().getMonth(),
 			new Date().getDate() + 7 - new Date().getDay(),
 		); // end of week
-		this.balance = weeklyBalance;
-		return weeklyBalance;
+		this.balance = weeklyBalance * (this.weeklyBalanceMultiplier ?? 1);
+		return this.balance;
 	}
 	return balance;
 }
