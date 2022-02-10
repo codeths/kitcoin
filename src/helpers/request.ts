@@ -7,6 +7,7 @@ import {
 	RequestValidateParts,
 	RequestValidateKeyOptions,
 	RequestValidateKeyOptionsResolvable,
+	isValidRole,
 } from '../types';
 import {DBError, User} from './schema';
 import {isValidObjectId} from 'mongoose';
@@ -132,6 +133,11 @@ export function booleanFromData(data: unknown): boolean | null {
 	else if (Validators.boolean().run(data)) boolean = data;
 
 	return boolean;
+}
+
+export function dateFromData(data: unknown): Date | null {
+	if (!Validators.date().run(data)) return null;
+	return new Date(data);
 }
 
 export class Validators {
@@ -413,6 +419,22 @@ export class Validators {
 	});
 
 	/**
+	 * Split string by delimiter and validate each item
+	 * @param validator Validator to run on array values
+	 * @param delimiter Delimiter to split string by
+	 */
+	static arrayString = (
+		validator: RequestValidateKeyOptionsResolvable,
+		delimiter = ',',
+	) =>
+		Validators.and(Validators.string, {
+			run: (data: unknown): boolean | string =>
+				Validators.array(validator).run(
+					(data as string).split(delimiter),
+				),
+		});
+
+	/**
 	 * Validator must match value (if not array) or all values in array
 	 */
 	static arrayOrValue = (validator: RequestValidateKeyOptionsResolvable) => ({
@@ -445,5 +467,35 @@ export class Validators {
 		run: (data: unknown): boolean | string => {
 			return isValidObjectId(data) || '{KEY} must be a valid ObjectID';
 		},
+	});
+
+	/** Valid date (ISO or epoch timestamp in ms) */
+	static date = () => ({
+		run: (data: unknown): data is string | number => {
+			let isStr = Validators.string().run(data);
+			let isNum = Validators.anyNumber().run(data);
+			if (!isStr && !isNum) return false;
+			let str = stringFromData(data);
+			let num = numberFromData(data);
+
+			if (
+				isStr &&
+				/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/.test(str!) &&
+				!isNaN(new Date(str!).getTime())
+			)
+				// ISO
+				return true;
+			if (isNum && !isNaN(new Date(num!).getTime()))
+				// Epoch
+				return true;
+			return false;
+		},
+		errorMessage: '{KEY} must be a valid ISO date or epoch timestamp (ms)',
+	});
+
+	/** Valid role */
+	static role = () => ({
+		run: (data: unknown) => typeof data == 'string' && isValidRole(data),
+		errorMessage: 'Invalid role',
 	});
 }
