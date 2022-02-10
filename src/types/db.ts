@@ -15,7 +15,7 @@ export interface IUser {
 	/**
 	 * The user's email
 	 */
-	email: string | null;
+	email?: string;
 	/**
 	 * The user's Google ID
 	 */
@@ -23,11 +23,11 @@ export interface IUser {
 	/**
 	 * The user's school ID
 	 */
-	schoolID: string;
+	schoolID?: string;
 	/**
 	 * The user's name
 	 */
-	name: string | null;
+	name?: string;
 	tokens: {
 		/**
 		 * OAuth refresh token
