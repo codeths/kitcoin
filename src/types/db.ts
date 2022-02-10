@@ -59,6 +59,10 @@ export interface IUser {
 	 */
 	balanceExpires?: Date;
 	/**
+	 * Staff - multiplier for weekly balance
+	 */
+	weeklyBalanceMultiplier?: number;
+	/**
 	 * The user's roles (bitfield)
 	 */
 	roles: number;
