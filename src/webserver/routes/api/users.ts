@@ -105,23 +105,14 @@ router.post(
 				balance: body.balance,
 				balanceExpires: body.balanceExpires,
 				weeklyBalanceMultiplier: body.weeklyBalanceMultiplier,
-				roles: body.roles || [],
 			};
 
-			let user = await new User(data).save().catch(async e => {
-				const error = await DBError.generate(
-					{
-						request: req,
-						error: e instanceof Error ? e : undefined,
-					},
-					{
-						user: req.user?.id,
-					},
-				);
-				res.status(500).send(`An error occured. Error ID: ${error.id}`);
-			});
-			if (!user) return;
-			res.status(200).send(user);
+			let user = new User(data);
+			user.setRoles(body.roles);
+
+			await user.save();
+
+			res.status(200).send(user.toAPIResponse());
 		} catch (e) {
 			try {
 				const error = await DBError.generate(
@@ -147,7 +138,73 @@ router.get('/users/:id');
 /**
  * @todo
  */
-router.patch('/users/:id');
+router.patch(
+	'/users/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['ADMIN'],
+			validators: {
+				params: {
+					id: Validators.objectID,
+				},
+				body: {
+					email: Validators.optional(Validators.string),
+					googleID: Validators.string,
+					schoolID: Validators.optional(Validators.string),
+					name: Validators.optional(Validators.string),
+					balance: Validators.optional(Validators.currency),
+					balanceExpires: Validators.optional(Validators.date),
+					weeklyBalanceMultiplier: Validators.optional(
+						Validators.number,
+					),
+					roles: Validators.optional(
+						Validators.array(Validators.role),
+					),
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			let {body} = req;
+
+			let data = {
+				email: body.email,
+				googleID: body.googleID,
+				schoolID: body.schoolID,
+				name: body.name,
+				balance: body.balance,
+				balanceExpires: body.balanceExpires,
+				weeklyBalanceMultiplier: body.weeklyBalanceMultiplier,
+			};
+
+			let user = await User.findById(req.params.id).catch(e => {
+				res.status(400).send('User not found');
+			});
+			if (!user) return;
+
+			user = Object.assign(user, body) as typeof user;
+			if (body.roles) user.setRoles(body.roles);
+
+			await user.save();
+
+			res.status(200).send(user.toAPIResponse());
+		} catch (e) {
+			try {
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(`An error occured. Error ID: ${error.id}`);
+			} catch (e) {}
+		}
+	},
+);
 
 /**
  * @todo
@@ -164,15 +221,15 @@ router.get(
 	async (req, res) => {
 		if (!requestHasUser(req)) return;
 
+		let json = req.user.toAPIResponse();
+
 		let authorized = !!(await getAccessToken(req.user));
+		let scopes = req.user.tokens?.scopes;
 
 		res.status(200).send({
-			name: req.user.name,
-			email: req.user.email,
-			id: req.user.id,
-			roles: req.user.getRoles(),
-			scopes: req.user.tokens.scopes,
+			...json,
 			authorized,
+			scopes,
 		});
 	},
 );
