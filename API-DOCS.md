@@ -371,10 +371,10 @@ Update a user
 ### Request
 
 `:id` (path): The user to update
-`email` (body): [Optional] Email address
-`googleID` (body): Google ID
-`schoolID` (body): [Optional] School ID
 `name` (body): Name
+`googleID` (body): Google ID
+`email` (body): [Optional] Email address
+`schoolID` (body): [Optional] School ID
 `balance` (body): [Optional] Balance
 `balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)
 `weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier
@@ -403,9 +403,10 @@ Create a user
 ### Request
 
 `email` (body): [Optional] Email address
-`googleID` (body): Google ID
-`schoolID` (body): [Optional] School ID
 `name` (body): Name
+`googleID` (body): Google ID
+`email` (body): [Optional] Email address
+`schoolID` (body): [Optional] School ID
 `balance` (body): [Optional] Balance
 `balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)
 `weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier
