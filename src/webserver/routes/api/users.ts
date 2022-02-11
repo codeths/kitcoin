@@ -13,63 +13,6 @@ import {getAccessToken} from '../../../helpers/oauth';
 import {FilterQuery} from 'mongoose';
 const router = express.Router();
 
-interface user {
-	/**
-	 * The user's email
-	 */
-	email: string | null;
-	/**
-	 * The user's Google ID
-	 */
-	googleID: string;
-	/**
-	 * The user's school ID
-	 */
-	schoolID: string;
-	/**
-	 * The user's name
-	 */
-	name: string | null;
-	tokens: {
-		/**
-		 * OAuth refresh token
-		 */
-		refresh: string | null;
-		/**
-		 * OAuth access token
-		 */
-		access: string | null;
-		/**
-		 * OAuth access token expiration date
-		 */
-		expires: Date | null;
-		/**
-		 * Session token
-		 */
-		session: string | null;
-		/**
-		 * Authorized scopes
-		 */
-		scopes: string[];
-	};
-	/**
-	 * The user's balance
-	 */
-	balance: number;
-	/**
-	 * Staff - when their balance resets
-	 */
-	balanceExpires?: Date;
-	/**
-	 * Staff - multiplier for weekly balance
-	 */
-	weeklyBalanceMultiplier?: number;
-	/**
-	 * The user's roles (bitfield)
-	 */
-	roles: number;
-}
-
 router.post(
 	'/users',
 	async (req, res, next) =>
