@@ -55,7 +55,7 @@ router.post(
 
 			await user.save();
 
-			res.status(200).send(user.toAPIResponse());
+			res.status(200).send(await user.toAPIResponse());
 		} catch (e) {
 			try {
 				const error = await DBError.generate(
@@ -98,16 +98,9 @@ router.get(
 				userID == 'me' ? req.user : await User.findById(userID);
 			if (!user) return res.status(404).send('Invalid user');
 
-			let json = user.toAPIResponse();
-
-			let authorized = !!(await getAccessToken(user));
-			let scopes = req.user.tokens?.scopes;
-
-			res.status(200).send({
-				...json,
-				authorized,
-				scopes,
-			});
+			res.status(200).send(
+				await user.toAPIResponse(user.id == req.user.id),
+			);
 		} catch (e) {
 			try {
 				const error = await DBError.generate(
@@ -127,9 +120,6 @@ router.get(
 	},
 );
 
-/**
- * @todo
- */
 router.patch(
 	'/users/:id',
 	async (req, res, next) =>
@@ -175,12 +165,12 @@ router.patch(
 			});
 			if (!user) return;
 
-			user = Object.assign(user, body) as typeof user;
+			user = Object.assign(user, data) as typeof user;
 			if (body.roles) user.setRoles(body.roles);
 
 			await user.save();
 
-			res.status(200).send(user.toAPIResponse());
+			res.status(200).send(await user.toAPIResponse());
 		} catch (e) {
 			try {
 				const error = await DBError.generate(
@@ -198,10 +188,39 @@ router.patch(
 	},
 );
 
-/**
- * @todo
- */
-router.delete('/users/:id');
+router.delete(
+	'/users/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['ADMIN'],
+		}),
+	async (req, res) => {
+		try {
+			let user = await User.findById(req.params.id).catch(e => {
+				res.status(400).send('User not found');
+			});
+			if (!user) return;
+
+			await user.remove();
+
+			res.status(200).send();
+		} catch (e) {
+			try {
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(`An error occured. Error ID: ${error.id}`);
+			} catch (e) {}
+		}
+	},
+);
 
 // Search users
 router.get(
