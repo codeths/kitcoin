@@ -203,29 +203,6 @@ router.patch(
  */
 router.delete('/users/:id');
 
-// Get my info
-router.get(
-	'/me',
-	async (req, res, next) =>
-		request(req, res, next, {
-			authentication: true,
-		}),
-	async (req, res) => {
-		if (!requestHasUser(req)) return;
-
-		let json = req.user.toAPIResponse();
-
-		let authorized = !!(await getAccessToken(req.user));
-		let scopes = req.user.tokens?.scopes;
-
-		res.status(200).send({
-			...json,
-			authorized,
-			scopes,
-		});
-	},
-);
-
 // Search users
 router.get(
 	'/search',
