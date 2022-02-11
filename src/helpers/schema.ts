@@ -48,6 +48,7 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>({
 	},
 	name: {
 		type: String,
+		required: true,
 	},
 	balance: {
 		type: Number,

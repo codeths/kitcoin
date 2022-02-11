@@ -24,7 +24,7 @@ router.post(
 					email: Validators.optional(Validators.string),
 					googleID: Validators.string,
 					schoolID: Validators.optional(Validators.string),
-					name: Validators.optional(Validators.string),
+					name: Validators.string,
 					balance: Validators.optional(Validators.currency),
 					balanceExpires: Validators.optional(Validators.date),
 					weeklyBalanceMultiplier: Validators.optional(
@@ -134,7 +134,7 @@ router.patch(
 					email: Validators.optional(Validators.string),
 					googleID: Validators.string,
 					schoolID: Validators.optional(Validators.string),
-					name: Validators.optional(Validators.string),
+					name: Validators.string,
 					balance: Validators.optional(Validators.currency),
 					balanceExpires: Validators.optional(Validators.date),
 					weeklyBalanceMultiplier: Validators.optional(

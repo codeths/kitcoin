@@ -374,7 +374,7 @@ Update a user
 `email` (body): [Optional] Email address
 `googleID` (body): Google ID
 `schoolID` (body): [Optional] School ID
-`name` (body): [Optional] Name
+`name` (body): Name
 `balance` (body): [Optional] Balance
 `balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)
 `weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier
@@ -405,7 +405,7 @@ Create a user
 `email` (body): [Optional] Email address
 `googleID` (body): Google ID
 `schoolID` (body): [Optional] School ID
-`name` (body): [Optional] Name
+`name` (body): Name
 `balance` (body): [Optional] Balance
 `balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)
 `weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier

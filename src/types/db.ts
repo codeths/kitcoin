@@ -27,7 +27,7 @@ export interface IUser {
 	/**
 	 * The user's name
 	 */
-	name?: string;
+	name: string;
 	tokens: {
 		/**
 		 * OAuth refresh token
