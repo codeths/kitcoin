@@ -37,7 +37,7 @@ async function searchUsers(search, count, roles, me) {
 	if (count !== null && count !== undefined) params.append('count', count);
 	if (me !== null && me !== undefined) params.append('me', me);
 	if (roles) params.append('roles', roles.join(','));
-	const res = await fetch(`/api/search?${params.toString()}`).catch(
+	const res = await fetch(`/api/users/search?${params.toString()}`).catch(
 		e => null,
 	);
 	if (res && res.ok) {
@@ -91,7 +91,7 @@ async function getClassStudents(id) {
 }
 
 async function getUserInfo() {
-	const info = await fetch('/api/me').catch(e => null);
+	const info = await fetch('/api/users/me').catch(e => null);
 	if (info && info.ok) {
 		try {
 			let userInfo = await info.json();
