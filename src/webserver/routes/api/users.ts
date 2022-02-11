@@ -205,7 +205,7 @@ router.delete('/users/:id');
 
 // Search users
 router.get(
-	'/search',
+	'/users/search',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
