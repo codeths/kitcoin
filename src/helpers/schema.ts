@@ -136,6 +136,7 @@ userSchema.methods.toAPIResponse = async function (
 		getters: true,
 		versionKey: false,
 	});
+	delete noTokens.id;
 
 	let roles = this.getRoles();
 	let scopes = this.tokens?.scopes;
@@ -265,10 +266,11 @@ transactionSchema.methods.canManage = function (user?: IUserDoc): boolean {
 transactionSchema.methods.toAPIResponse = async function (
 	user?: IUserDoc,
 ): Promise<ITransactionAPIResponse> {
-	let json: Omit<ITransaction, 'date'> = this.toObject({
+	let json = this.toObject({
 		getters: true,
 		versionKey: false,
 	});
+	delete json.id;
 
 	let res: ITransactionAPIResponse = {
 		...json,
@@ -318,6 +320,7 @@ storeSchema.methods.toAPIResponse = async function (
 		getters: true,
 		versionKey: false,
 	});
+	delete data.id;
 
 	if (!canManage) {
 		let res: IStoreAPIResponse = {
