@@ -25,6 +25,7 @@ import {
 	IError,
 	IErrorDetail,
 	IStoreAPIResponse,
+	IUserAPIResponse,
 } from '../types';
 
 import fuzzySearch from 'mongoose-fuzzy-searching';
@@ -124,6 +125,22 @@ userSchema.methods.hasAnyRole = function (roles: UserRoleTypes[]): boolean {
 
 userSchema.methods.hasAllRoles = function (roles: UserRoleTypes[]): boolean {
 	return roles.every(role => this.hasRole(role));
+};
+
+userSchema.methods.toAPIResponse = function (): IUserAPIResponse {
+	let {tokens, ...noTokens} = this.toObject({
+		getters: true,
+		versionKey: false,
+	});
+
+	let roles = this.getRoles();
+
+	let data: IUserAPIResponse = {
+		...noTokens,
+		roles,
+	};
+
+	return data;
 };
 
 function getBalance(this: IUserDoc, balance: number) {
@@ -238,7 +255,10 @@ transactionSchema.methods.canManage = function (user?: IUserDoc): boolean {
 transactionSchema.methods.toAPIResponse = async function (
 	user?: IUserDoc,
 ): Promise<ITransactionAPIResponse> {
-	let json: Omit<ITransaction, 'date'> = this.toJSON();
+	let json: Omit<ITransaction, 'date'> = this.toObject({
+		getters: true,
+		versionKey: false,
+	});
 
 	let res: ITransactionAPIResponse = {
 		...json,
@@ -284,7 +304,10 @@ storeSchema.methods.getItems = async function (): Promise<IStoreItemDoc[]> {
 storeSchema.methods.toAPIResponse = async function (
 	canManage: boolean,
 ): Promise<IStoreAPIResponse> {
-	let data = this.toJSON();
+	let data = this.toObject({
+		getters: true,
+		versionKey: false,
+	});
 
 	if (!canManage) {
 		let res: IStoreAPIResponse = {

@@ -93,7 +93,19 @@ export interface IUserMethods {
 	 * @param role The roles to check for
 	 */
 	hasAllRoles(roles: UserRoleTypes[]): boolean;
+	/**
+	 * Turn this transaction into a JSON object for API output
+	 */
+	toAPIResponse(): IUserAPIResponse;
 }
+
+export type IUserAPIResponse = Modify<
+	IUser,
+	{
+		roles: UserRoleTypes[];
+	},
+	'tokens'
+>;
 
 export type IUserDoc = IUser & IUserMethods & Document<IUser>;
 
