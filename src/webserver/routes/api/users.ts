@@ -96,7 +96,7 @@ router.get(
 
 			const user =
 				userID == 'me' ? req.user : await User.findById(userID);
-			if (!user) return res.status(404).send('Invalid user');
+			if (!user) return res.status(404).send('User not found');
 
 			res.status(200).send(
 				await user.toAPIResponse(user.id == req.user.id),
