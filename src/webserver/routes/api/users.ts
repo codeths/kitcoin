@@ -135,7 +135,7 @@ router.patch(
 					googleID: Validators.string,
 					schoolID: Validators.optional(Validators.string),
 					name: Validators.string,
-					balance: Validators.optional(Validators.currency),
+					balance: Validators.currency,
 					balanceExpires: Validators.optional(Validators.date),
 					weeklyBalanceMultiplier: Validators.optional(
 						Validators.number,

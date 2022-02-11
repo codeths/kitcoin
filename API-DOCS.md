@@ -375,7 +375,7 @@ Update a user
 `googleID` (body): Google ID
 `email` (body): [Optional] Email address
 `schoolID` (body): [Optional] School ID
-`balance` (body): [Optional] Balance
+`balance` (body): Balance
 `balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)
 `weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier
 `roles` (body): [Optional] Roles to give to the user as an arry of strings
