@@ -73,10 +73,59 @@ router.post(
 	},
 );
 
-/**
- * @todo
- */
-router.get('/users/:id');
+router.get(
+	'/users/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: req.params?.id == 'me' ? undefined : ['ADMIN'],
+			validators: {
+				params: {
+					id: Validators.or(
+						Validators.objectID,
+						Validators.streq('me'),
+					),
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			let userID = req.params.id;
+
+			const user =
+				userID == 'me' ? req.user : await User.findById(userID);
+			if (!user) return res.status(404).send('Invalid user');
+
+			let json = user.toAPIResponse();
+
+			let authorized = !!(await getAccessToken(user));
+			let scopes = req.user.tokens?.scopes;
+
+			res.status(200).send({
+				...json,
+				authorized,
+				scopes,
+			});
+		} catch (e) {
+			try {
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
 
 /**
  * @todo
