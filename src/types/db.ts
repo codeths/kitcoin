@@ -95,14 +95,17 @@ export interface IUserMethods {
 	hasAllRoles(roles: UserRoleTypes[]): boolean;
 	/**
 	 * Turn this transaction into a JSON object for API output
+	 * @param checkAuthorized Check if user has authorized OAuth
 	 */
-	toAPIResponse(): IUserAPIResponse;
+	toAPIResponse(checkAuthorized?: boolean): Promise<IUserAPIResponse>;
 }
 
 export type IUserAPIResponse = Modify<
 	IUser,
 	{
 		roles: UserRoleTypes[];
+		authorized?: boolean;
+		scopes: string[];
 	},
 	'tokens'
 >;

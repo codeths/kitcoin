@@ -33,6 +33,7 @@ import {customAlphabet} from 'nanoid';
 const nanoid = customAlphabet('ABCDEF0123456789', 6);
 import express from 'express';
 import {ErrorDetail} from '../struct';
+import {getAccessToken} from './oauth';
 
 mongoose.connect(mongoURL);
 
@@ -127,17 +128,25 @@ userSchema.methods.hasAllRoles = function (roles: UserRoleTypes[]): boolean {
 	return roles.every(role => this.hasRole(role));
 };
 
-userSchema.methods.toAPIResponse = function (): IUserAPIResponse {
+userSchema.methods.toAPIResponse = async function (
+	checkAuthorized: boolean = false,
+): Promise<IUserAPIResponse> {
 	let {tokens, ...noTokens} = this.toObject({
 		getters: true,
 		versionKey: false,
 	});
 
 	let roles = this.getRoles();
+	let scopes = this.tokens?.scopes;
+	let authorized = checkAuthorized
+		? !!(await getAccessToken(this))
+		: undefined;
 
 	let data: IUserAPIResponse = {
 		...noTokens,
 		roles,
+		scopes,
+		authorized,
 	};
 
 	return data;
