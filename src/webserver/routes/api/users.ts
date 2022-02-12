@@ -160,10 +160,8 @@ router.patch(
 				weeklyBalanceMultiplier: body.weeklyBalanceMultiplier,
 			};
 
-			let user = await User.findById(req.params.id).catch(e => {
-				res.status(400).send('User not found');
-			});
-			if (!user) return;
+			let user = await User.findById(req.params.id);
+			if (!user) return res.status(404).send('User not found');
 
 			user = Object.assign(user, data) as typeof user;
 			if (body.roles) user.setRoles(body.roles);
@@ -197,10 +195,8 @@ router.delete(
 		}),
 	async (req, res) => {
 		try {
-			let user = await User.findById(req.params.id).catch(e => {
-				res.status(400).send('User not found');
-			});
-			if (!user) return;
+			let user = await User.findById(req.params.id);
+			if (!user) return res.status(404).send('User not found');
 
 			await user.remove();
 
