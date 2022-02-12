@@ -57,6 +57,7 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>({
 	},
 	balanceExpires: {
 		type: Date,
+		get: getBalanceExpires,
 	},
 	weeklyBalanceMultiplier: {
 		type: Number,
@@ -154,21 +155,36 @@ userSchema.methods.toAPIResponse = async function (
 	return data;
 };
 
+function endOfWeek(): Date {
+	return new Date(
+		new Date().getFullYear(),
+		new Date().getMonth(),
+		new Date().getDate() + 7 - new Date().getDay(),
+	);
+}
+
 function getBalance(this: IUserDoc, balance: number) {
 	if (!this.hasRole('STAFF')) return balance;
+	let rawBalanceExpires = this.get('balanceExpires', null, {
+		getters: false,
+	});
 	if (
-		!this.balanceExpires ||
-		this.balanceExpires.getTime() < new Date().getTime()
+		!rawBalanceExpires ||
+		rawBalanceExpires.getTime() < new Date().getTime()
 	) {
-		this.balanceExpires = new Date(
-			new Date().getFullYear(),
-			new Date().getMonth(),
-			new Date().getDate() + 7 - new Date().getDay(),
-		); // end of week
 		this.balance = weeklyBalance * (this.weeklyBalanceMultiplier ?? 1);
 		return this.balance;
 	}
 	return balance;
+}
+
+function getBalanceExpires(this: IUserDoc, balanceExpires: Date) {
+	if (!this.hasRole('STAFF')) return undefined;
+	if (!balanceExpires || balanceExpires.getTime() < new Date().getTime()) {
+		this.balanceExpires = endOfWeek();
+		return this.balanceExpires;
+	}
+	return balanceExpires;
 }
 
 userSchema.plugin(fuzzySearch, {
