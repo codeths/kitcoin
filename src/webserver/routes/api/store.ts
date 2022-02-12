@@ -405,7 +405,8 @@ router.delete(
 					.status(403)
 					.send('Only the owner or an admin can delete a store.');
 
-			store.delete();
+			await StoreItem.deleteMany({storeID: store.id});
+			await store.delete();
 
 			res.status(200).send();
 		} catch (e) {
