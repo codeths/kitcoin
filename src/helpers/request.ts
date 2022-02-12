@@ -447,19 +447,24 @@ export class Validators {
 
 	/**
 	 * Valid currency amount
+	 * @param canBeZero If true, zero is a valid amount
 	 */
-	static currency = () => ({
-		run: Validators.and(Validators.anyNumber, Validators.gt(0), {
-			run: (data: unknown): boolean | string => {
-				if (!Validators.anyNumber().run(data))
-					return '{KEY} must be a number';
-				return (
-					Math.round(numberFromData(data) * 100) / 100 ==
-					numberFromData(data)
-				);
+	static currency = (canBeZero: boolean = false) => ({
+		run: Validators.and(
+			Validators.anyNumber,
+			(canBeZero ? Validators.gte : Validators.gt)(0),
+			{
+				run: (data: unknown): boolean | string => {
+					if (!Validators.anyNumber().run(data))
+						return '{KEY} must be a number';
+					return (
+						Math.round(numberFromData(data) * 100) / 100 ==
+						numberFromData(data)
+					);
+				},
+				errorMessage: '{KEY} cannot have more than 2 decimal places',
 			},
-			errorMessage: '{KEY} cannot have more than 2 decimal places',
-		}).run,
+		).run,
 	});
 
 	/** Valid mongoBD object ID */
