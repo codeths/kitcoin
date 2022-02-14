@@ -417,7 +417,7 @@ router.delete(
 							),
 						);
 					} catch (e) {}
-					item.delete();
+					await item.delete();
 				}),
 			);
 			await store.delete();
