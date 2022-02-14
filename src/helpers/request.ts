@@ -501,6 +501,6 @@ export class Validators {
 	/** Valid role */
 	static role = () => ({
 		run: (data: unknown) => typeof data == 'string' && isValidRole(data),
-		errorMessage: 'Invalid role',
+		errorMessage: '{KEY} must be a valid role',
 	});
 }
