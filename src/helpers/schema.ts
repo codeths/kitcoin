@@ -25,6 +25,7 @@ import {
 	IError,
 	IErrorDetail,
 	IStoreAPIResponse,
+	IUserAPIResponse,
 } from '../types';
 
 import fuzzySearch from 'mongoose-fuzzy-searching';
@@ -32,6 +33,7 @@ import {customAlphabet} from 'nanoid';
 const nanoid = customAlphabet('ABCDEF0123456789', 6);
 import express from 'express';
 import {ErrorDetail} from '../struct';
+import {getAccessToken} from './oauth';
 
 mongoose.connect(mongoURL);
 
@@ -46,6 +48,7 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>({
 	},
 	name: {
 		type: String,
+		required: true,
 	},
 	balance: {
 		type: Number,
@@ -54,6 +57,7 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>({
 	},
 	balanceExpires: {
 		type: Date,
+		get: getBalanceExpires,
 	},
 	weeklyBalanceMultiplier: {
 		type: Number,
@@ -126,21 +130,61 @@ userSchema.methods.hasAllRoles = function (roles: UserRoleTypes[]): boolean {
 	return roles.every(role => this.hasRole(role));
 };
 
+userSchema.methods.toAPIResponse = async function (
+	checkAuthorized: boolean = false,
+): Promise<IUserAPIResponse> {
+	let {tokens, ...noTokens} = this.toObject({
+		getters: true,
+		versionKey: false,
+	});
+	delete noTokens.id;
+
+	let roles = this.getRoles();
+	let scopes = this.tokens?.scopes;
+	let authorized = checkAuthorized
+		? !!(await getAccessToken(this))
+		: undefined;
+
+	let data: IUserAPIResponse = {
+		...noTokens,
+		roles,
+		scopes,
+		authorized,
+	};
+
+	return data;
+};
+
+function endOfWeek(): Date {
+	return new Date(
+		new Date().getFullYear(),
+		new Date().getMonth(),
+		new Date().getDate() + 7 - new Date().getDay(),
+	);
+}
+
 function getBalance(this: IUserDoc, balance: number) {
 	if (!this.hasRole('STAFF')) return balance;
+	let rawBalanceExpires = this.get('balanceExpires', null, {
+		getters: false,
+	});
 	if (
-		!this.balanceExpires ||
-		this.balanceExpires.getTime() < new Date().getTime()
+		!rawBalanceExpires ||
+		rawBalanceExpires.getTime() < new Date().getTime()
 	) {
-		this.balanceExpires = new Date(
-			new Date().getFullYear(),
-			new Date().getMonth(),
-			new Date().getDate() + 7 - new Date().getDay(),
-		); // end of week
 		this.balance = weeklyBalance * (this.weeklyBalanceMultiplier ?? 1);
 		return this.balance;
 	}
 	return balance;
+}
+
+function getBalanceExpires(this: IUserDoc, balanceExpires: Date) {
+	if (!this.hasRole('STAFF')) return undefined;
+	if (!balanceExpires || balanceExpires.getTime() < new Date().getTime()) {
+		this.balanceExpires = endOfWeek();
+		return this.balanceExpires;
+	}
+	return balanceExpires;
 }
 
 userSchema.plugin(fuzzySearch, {
@@ -238,7 +282,11 @@ transactionSchema.methods.canManage = function (user?: IUserDoc): boolean {
 transactionSchema.methods.toAPIResponse = async function (
 	user?: IUserDoc,
 ): Promise<ITransactionAPIResponse> {
-	let json: Omit<ITransaction, 'date'> = this.toJSON();
+	let json = this.toObject({
+		getters: true,
+		versionKey: false,
+	});
+	delete json.id;
 
 	let res: ITransactionAPIResponse = {
 		...json,
@@ -284,7 +332,11 @@ storeSchema.methods.getItems = async function (): Promise<IStoreItemDoc[]> {
 storeSchema.methods.toAPIResponse = async function (
 	canManage: boolean,
 ): Promise<IStoreAPIResponse> {
-	let data = this.toJSON();
+	let data = this.toObject({
+		getters: true,
+		versionKey: false,
+	});
+	delete data.id;
 
 	if (!canManage) {
 		let res: IStoreAPIResponse = {

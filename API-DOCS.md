@@ -110,6 +110,8 @@ Body:
 }
 ```
 
+see [db schema](src/types/db.ts) for `ITransactionAPIResponse`
+
 ## DELETE `/transactions/:id`
 
 Delete a transaction.
@@ -138,21 +140,7 @@ None
 
 `classIDs`, `managers`, `users`, and `owner` will only be returned if you can manage this store.
 
-```ts
-{
-	_id: string,
-	name: string,
-	description: string | null,
-	canManage: boolean,
-	public: boolean,
-	classNames: string[]
-	classIDs: string[] | null,
-	managers: string[] | null,
-	users: string[] | null,
-	owner: string | null
-}
-[],
-```
+`IStoreAPIResponse[]` (see [db schema](src/types/db.ts))
 
 ## POST `/stores`
 
@@ -171,25 +159,7 @@ Create a store. Requires staff permissions.
 
 `classIDs`, `managers`, `users`, and `owner` will only be returned if you can manage this store.
 
-```ts
-{
-	name: string,
-	description: string | null,
-	public: boolean,
-	canManage: boolean,
-	classNames: string[],
-	classIDs: string[] | undefined,
-	owner: string | undefined,
-	users: {
-		name: string;
-		id: string;
-	}[] | undefined,
-	managers: {
-		name: string;
-		id: string;
-	}[] | undefined,
-}[]
-```
+`IStoreAPIResponse` (see [db schema](src/types/db.ts))
 
 ## GET `/store/:id`
 
@@ -203,24 +173,7 @@ Get a store's info by its ID
 
 `classIDs`, `managers`, `users`, and `owner` will only be returned if you can manage this store.
 
-```ts
-{
-	name: string,
-	description: string | null,
-	public: boolean,
-	canManage: boolean,
-	classIDs: string[] | undefined,
-	owner: string | undefined,
-	users: {
-		name: string;
-		id: string;
-	}[] | undefined,
-	managers: {
-		name: string;
-		id: string;
-	}[] | undefined,
-}
-```
+`IStoreAPIResponse` (see [db schema](src/types/db.ts))
 
 ## PATCH `/store/:id`
 
@@ -238,25 +191,7 @@ Update a store. Requires permission to manage this store.
 
 ### Response
 
-```ts
-{
-	name: string,
-	description: string | null,
-	public: boolean,
-	canManage: boolean,
-	classNames: string[],
-	classIDs: string[] | undefined,
-	owner: string | undefined,
-	users: {
-		name: string;
-		id: string;
-	}[] | undefined,
-	managers: {
-		name: string;
-		id: string;
-	}[] | undefined,
-}
-```
+`IStoreAPIResponse` (see [db schema](src/types/db.ts))
 
 ## DELETE `/store/:id`
 
@@ -292,17 +227,7 @@ Get a list of a store's items
 
 ### Response
 
-```ts
-{
-	_id: string,
-	name: string,
-	description: string,
-	quantity: number | null,
-	price: number,
-	imageHash: string | null
-}
-[],
-```
+`IStoreItem[]` (see [db schema](src/types/db.ts))
 
 ## GET `/store/:storeID/item/:id`
 
@@ -315,16 +240,7 @@ Get a store's item by its ID
 
 ### Response
 
-```ts
-{
-	_id: string,
-	name: string,
-	description: string,
-	quantity: number | null,
-	price: number,
-	imageHash: string | null
-}
-```
+`IStoreItem` (see [db schema](src/types/db.ts))
 
 ## GET `/store/:storeID/item/:id/image`
 
@@ -354,16 +270,7 @@ Update a store's item
 
 ### Response
 
-```ts
-{
-	_id: string,
-	name: string,
-	description: string,
-	quantity: number | null,
-	price: number,
-	imageHash: string | null
-}
-```
+`IStoreItem` (see [db schema](src/types/db.ts))
 
 ## PATCH `/store/:storeID/item/:id/image`
 
@@ -416,39 +323,11 @@ Create a store item
 
 ### Response
 
-```ts
-{
-	_id: string,
-	name: string,
-	description: string,
-	quantity: number | null,
-	price: number,
-	imageHash: null
-}
-```
+`IStoreItem` (see [db schema](src/types/db.ts))
 
 # Users
 
-## PATCH `/roles`
-
-Update a user's roles. Requires admin role.
-
-### Request
-
-Body:
-
-```ts
-{
-	user: string; // User ID
-	roles: ("NONE" | "STUDENT" | "STAFF" | "ADMIN" | "ALL")[]
-}
-```
-
-### Response
-
-User object
-
-## GET `/search`
+## GET `/users/search`
 
 Search for users
 
@@ -473,23 +352,66 @@ Body:
 [],
 ```
 
-## GET `/me`
+## GET `/users/:id`
 
-Get info for authenticated user
+Get info for authenticated user. Requires admin role for retrieving other users.
 
 ### Request
 
-None
+`:id` (path): The user to get, or `me` to get for the authenticated user
 
 ### Response
 
-```ts
-{
-	name: string,
-	email: string,
-	id: string,
-	roles: ("NONE" | "STUDENT" | "STAFF" | "ADMIN" | "ALL")[]
-	scopes: string[]
-	authorized: boolean; // Valid OAuth Credentials
-}
-```
+`IUserAPIResponse` (see [db schema](src/types/db.ts))
+
+## PATCH `/users/:id`
+
+Update a user
+
+### Request
+
+`:id` (path): The user to update
+`name` (body): Name
+`googleID` (body): Google ID
+`email` (body): [Optional] Email address
+`schoolID` (body): [Optional] School ID
+`balance` (body): Balance
+`balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)
+`weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier
+`roles` (body): [Optional] Roles to give to the user as an arry of strings
+
+### Response
+
+`IUserAPIResponse` (see [db schema](src/types/db.ts))
+
+## DELETE `/users/:id`
+
+Delete a user
+
+### Request
+
+`:id` (path): The user to update
+
+### Response
+
+Nothing
+
+## POST `/users`
+
+Create a user
+
+### Request
+
+`email` (body): [Optional] Email address
+`name` (body): Name
+`googleID` (body): Google ID
+`email` (body): [Optional] Email address
+`schoolID` (body): [Optional] School ID
+`balance` (body): [Optional] Balance
+`balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)
+`weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier
+`roles` (body): [Optional] Roles to give to the user as an arry of strings
+
+### Response
+
+`IUserAPIResponse` (see [db schema](src/types/db.ts))

@@ -15,7 +15,7 @@ export interface IUser {
 	/**
 	 * The user's email
 	 */
-	email: string | null;
+	email?: string;
 	/**
 	 * The user's Google ID
 	 */
@@ -23,11 +23,11 @@ export interface IUser {
 	/**
 	 * The user's school ID
 	 */
-	schoolID: string;
+	schoolID?: string;
 	/**
 	 * The user's name
 	 */
-	name: string | null;
+	name: string;
 	tokens: {
 		/**
 		 * OAuth refresh token
@@ -93,7 +93,22 @@ export interface IUserMethods {
 	 * @param role The roles to check for
 	 */
 	hasAllRoles(roles: UserRoleTypes[]): boolean;
+	/**
+	 * Turn this transaction into a JSON object for API output
+	 * @param checkAuthorized Check if user has authorized OAuth
+	 */
+	toAPIResponse(checkAuthorized?: boolean): Promise<IUserAPIResponse>;
 }
+
+export type IUserAPIResponse = Modify<
+	IUser,
+	{
+		roles: UserRoleTypes[];
+		authorized?: boolean;
+		scopes: string[];
+	},
+	'tokens'
+>;
 
 export type IUserDoc = IUser & IUserMethods & Document<IUser>;
 

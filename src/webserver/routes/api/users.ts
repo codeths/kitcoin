@@ -7,26 +7,89 @@ import {
 	UserRoles,
 	UserRoleTypes,
 } from '../../../helpers/schema';
-import {booleanFromData, request, Validators} from '../../../helpers/request';
+import {
+	booleanFromData,
+	dateFromData,
+	request,
+	Validators,
+} from '../../../helpers/request';
 import {IUserDoc, requestHasUser} from '../../../types';
 import {getAccessToken} from '../../../helpers/oauth';
 import {FilterQuery} from 'mongoose';
 const router = express.Router();
 
-router.patch(
-	'/roles',
+router.post(
+	'/users',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
 			roles: ['ADMIN'],
 			validators: {
 				body: {
-					user: Validators.objectID,
-					roles: {
-						run: (data: unknown) =>
-							typeof data == 'string' && isValidRoles(data),
-						errorMessage: 'Invalid roles list',
+					email: Validators.optional(Validators.string),
+					googleID: Validators.string,
+					schoolID: Validators.optional(Validators.string),
+					name: Validators.string,
+					balance: Validators.optional(Validators.currency(true)),
+					balanceExpires: Validators.optional(Validators.date),
+					weeklyBalanceMultiplier: Validators.optional(
+						Validators.number,
+					),
+					roles: Validators.optional(
+						Validators.array(Validators.role),
+					),
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			let {body} = req;
+
+			let data = {
+				email: body.email,
+				googleID: body.googleID,
+				schoolID: body.schoolID,
+				name: body.name,
+				balance: body.balance,
+				balanceExpires: dateFromData(body.balanceExpires),
+				weeklyBalanceMultiplier: body.weeklyBalanceMultiplier,
+			};
+
+			let user = new User(data);
+			user.setRoles(body.roles);
+
+			await user.save();
+
+			res.status(200).send(await user.toAPIResponse());
+		} catch (e) {
+			try {
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
 					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(`An error occured. Error ID: ${error.id}`);
+			} catch (e) {}
+		}
+	},
+);
+
+router.get(
+	'/users/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: req.params?.id == 'me' ? undefined : ['ADMIN'],
+			validators: {
+				params: {
+					id: Validators.or(
+						Validators.objectID,
+						Validators.streq('me'),
+					),
 				},
 			},
 		}),
@@ -34,15 +97,15 @@ router.patch(
 		try {
 			if (!requestHasUser(req)) return;
 
-			let {user, roles} = req.body;
+			let userID = req.params.id;
 
-			const dbUser = await User.findById(user);
-			if (!dbUser) return res.status(404).send('Invalid user');
+			const user =
+				userID == 'me' ? req.user : await User.findById(userID);
+			if (!user) return res.status(404).send('User not found');
 
-			dbUser.setRoles(roles);
-			await dbUser.save();
-
-			res.status(200).send(dbUser);
+			res.status(200).send(
+				await user.toAPIResponse(user.id == req.user.id),
+			);
 		} catch (e) {
 			try {
 				const error = await DBError.generate(
@@ -62,32 +125,107 @@ router.patch(
 	},
 );
 
-// Get my info
-router.get(
-	'/me',
+router.patch(
+	'/users/:id',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
+			roles: ['ADMIN'],
+			validators: {
+				params: {
+					id: Validators.objectID,
+				},
+				body: {
+					email: Validators.optional(Validators.string),
+					googleID: Validators.string,
+					schoolID: Validators.optional(Validators.string),
+					name: Validators.string,
+					balance: Validators.currency(true),
+					balanceExpires: Validators.optional(Validators.date),
+					weeklyBalanceMultiplier: Validators.optional(
+						Validators.number,
+					),
+					roles: Validators.optional(
+						Validators.array(Validators.role),
+					),
+				},
+			},
 		}),
 	async (req, res) => {
-		if (!requestHasUser(req)) return;
+		try {
+			let {body} = req;
 
-		let authorized = !!(await getAccessToken(req.user));
+			let data = {
+				email: body.email,
+				googleID: body.googleID,
+				schoolID: body.schoolID,
+				name: body.name,
+				balance: body.balance,
+				balanceExpires: dateFromData(body.balanceExpires),
+				weeklyBalanceMultiplier: body.weeklyBalanceMultiplier,
+			};
 
-		res.status(200).send({
-			name: req.user.name,
-			email: req.user.email,
-			id: req.user.id,
-			roles: req.user.getRoles(),
-			scopes: req.user.tokens.scopes,
-			authorized,
-		});
+			let user = await User.findById(req.params.id);
+			if (!user) return res.status(404).send('User not found');
+
+			user = Object.assign(user, data) as typeof user;
+			if (body.roles) user.setRoles(body.roles);
+
+			await user.save();
+
+			res.status(200).send(await user.toAPIResponse());
+		} catch (e) {
+			try {
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(`An error occured. Error ID: ${error.id}`);
+			} catch (e) {}
+		}
+	},
+);
+
+router.delete(
+	'/users/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['ADMIN'],
+		}),
+	async (req, res) => {
+		try {
+			let user = await User.findById(req.params.id);
+			if (!user) return res.status(404).send('User not found');
+
+			await user.remove();
+
+			res.status(200).send();
+		} catch (e) {
+			try {
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(`An error occured. Error ID: ${error.id}`);
+			} catch (e) {}
+		}
 	},
 );
 
 // Search users
 router.get(
-	'/search',
+	'/users/search',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
