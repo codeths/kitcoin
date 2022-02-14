@@ -7,7 +7,12 @@ import {
 	UserRoles,
 	UserRoleTypes,
 } from '../../../helpers/schema';
-import {booleanFromData, request, Validators} from '../../../helpers/request';
+import {
+	booleanFromData,
+	dateFromData,
+	request,
+	Validators,
+} from '../../../helpers/request';
 import {IUserDoc, requestHasUser} from '../../../types';
 import {getAccessToken} from '../../../helpers/oauth';
 import {FilterQuery} from 'mongoose';
@@ -46,7 +51,7 @@ router.post(
 				schoolID: body.schoolID,
 				name: body.name,
 				balance: body.balance,
-				balanceExpires: body.balanceExpires,
+				balanceExpires: dateFromData(body.balanceExpires),
 				weeklyBalanceMultiplier: body.weeklyBalanceMultiplier,
 			};
 
@@ -156,7 +161,7 @@ router.patch(
 				schoolID: body.schoolID,
 				name: body.name,
 				balance: body.balance,
-				balanceExpires: body.balanceExpires,
+				balanceExpires: dateFromData(body.balanceExpires),
 				weeklyBalanceMultiplier: body.weeklyBalanceMultiplier,
 			};
 
