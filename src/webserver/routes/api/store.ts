@@ -405,7 +405,22 @@ router.delete(
 					.status(403)
 					.send('Only the owner or an admin can delete a store.');
 
-			store.delete();
+			let items = await StoreItem.find({storeID: store.id});
+			await Promise.all(
+				items.map(async item => {
+					try {
+						fs.rmSync(
+							path.resolve(
+								'uploads',
+								'storeitems',
+								`${item._id}.webp`,
+							),
+						);
+					} catch (e) {}
+					await item.delete();
+				}),
+			);
+			await store.delete();
 
 			res.status(200).send();
 		} catch (e) {
