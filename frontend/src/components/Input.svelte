@@ -15,6 +15,7 @@
 	export let hidelabel = false;
 	let additionalClasses = '';
 	export {additionalClasses as class};
+	export let parentClass = '';
 
 	function handle(e) {
 		dispatch('validate', {
@@ -36,12 +37,12 @@
 	});
 </script>
 
-<div>
-	{#if !hidelabel}
-		<label class="label" for="">
-			<span class="label-text"> {label} </span>
-		</label>
-	{/if}
+{#if !hidelabel}
+	<label class="label" for="">
+		<span class="label-text"> {label} </span>
+	</label>
+{/if}
+<div class={parentClass}>
 	{#if type == 'textarea'}
 		<textarea
 			class="textarea textarea-bordered w-full {additionalClasses}"
@@ -71,6 +72,26 @@
 			on:change={handle}
 			on:change
 			bind:checked={value}
+			bind:this={input}
+			{...$$restProps}
+		/>
+	{:else if type == 'datetime-local'}
+		<input
+			class="input input-bordered	w-full {additionalClasses}"
+			class:input-success={error === null}
+			class:input-error={error}
+			type="datetime-local"
+			{disabled}
+			placeholder={label}
+			on:input={handle}
+			on:focus={handle}
+			on:blur={handle}
+			on:change
+			on:input
+			on:keydown
+			on:focus
+			on:blur
+			bind:value
 			bind:this={input}
 			{...$$restProps}
 		/>
