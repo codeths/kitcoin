@@ -15,6 +15,7 @@
 	export let error = '';
 	export let query = '';
 	export let label = '';
+	export let placeholderOverride = null;
 	let computedPlaceholder = label;
 	export let results = null;
 	let computedResults = null;
@@ -165,7 +166,7 @@
 		}}
 		on:blur={blur}
 		{label}
-		placeholder={computedPlaceholder}
+		placeholder={placeholderOverride ?? computedPlaceholder}
 		autocomplete="off"
 		autocorrect="off"
 		autocapitalize="off"
