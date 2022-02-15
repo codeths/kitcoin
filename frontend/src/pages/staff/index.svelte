@@ -113,6 +113,7 @@
 			</div>
 		</div>
 		<div class="mx-2 my-4 col-span-12">
+			<h1 class="text-3xl font-medium mb-2">Your Students</h1>
 			<div class="bg-base-100 shadow-md rounded px-8 py-8">
 				<ClassroomSearch
 					label="Choose a class"
