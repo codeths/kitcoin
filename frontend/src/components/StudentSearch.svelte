@@ -13,7 +13,7 @@
 
 	let results = null;
 	let autoSubmit = false;
-	let el;
+	export let el;
 
 	async function getStudents(text) {
 		if (!text) {

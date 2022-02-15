@@ -15,6 +15,7 @@
 	let loading = true;
 
 	let results = null;
+	export let el;
 
 	async function getResults(text) {
 		if (!classes) {
@@ -40,6 +41,7 @@
 
 <DropdownSearch
 	label="Classes"
+	bind:this={el}
 	bind:results
 	bind:value
 	bind:query
