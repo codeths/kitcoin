@@ -140,7 +140,7 @@
 	}
 </script>
 
-<div class="group w-auto" bind:this={parent} on:keydown={key}>
+<div class="group w-full" bind:this={parent} on:keydown={key}>
 	<Input
 		class={multiselect && value && value.length > 0 && hide
 			? 'placeholder:text-base-content'
