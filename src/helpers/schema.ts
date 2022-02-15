@@ -201,6 +201,14 @@ userSchema.plugin(fuzzySearch, {
 			prefixOnly: true,
 		},
 	],
+	middlewares: {
+		preSave: async function () {
+			for (let key in this) {
+				if (this[key as keyof typeof this] === null)
+					(this[key as keyof typeof this] as any) = undefined;
+			}
+		},
+	},
 });
 
 const transactionSchema = new mongoose.Schema<

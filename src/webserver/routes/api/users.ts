@@ -1,7 +1,6 @@
 import express from 'express';
 import {
 	DBError,
-	isValidRole,
 	isValidRoles,
 	User,
 	UserRoles,
@@ -14,7 +13,6 @@ import {
 	Validators,
 } from '../../../helpers/request';
 import {IUserDoc, requestHasUser} from '../../../types';
-import {getAccessToken} from '../../../helpers/oauth';
 import {FilterQuery} from 'mongoose';
 const router = express.Router();
 
@@ -104,6 +102,10 @@ router.get(
 				filtered = list.filter(x => x.confidence >= 10);
 			if (filtered.length == 0)
 				filtered = list.filter(x => x.confidence >= 5);
+			if (filtered.length == 0)
+				filtered = list.filter(x =>
+					x.name.toLowerCase().includes(q.toLowerCase()),
+				);
 
 			res.status(200).send(filtered.slice(0, countNum));
 		} catch (e) {
@@ -275,7 +277,7 @@ router.patch(
 			let user = await User.findById(req.params.id);
 			if (!user) return res.status(404).send('User not found');
 
-			user = Object.assign(user, data) as typeof user;
+			user = Object.assign(user, data);
 			if (body.roles) user.setRoles(body.roles);
 
 			await user.save();
