@@ -135,12 +135,12 @@ router.post(
 				body: {
 					email: Validators.optional(Validators.string),
 					googleID: Validators.string,
-					schoolID: Validators.optional(Validators.string),
+					schoolID: Validators.optional(Validators.schoolID),
 					name: Validators.string,
 					balance: Validators.optional(Validators.currency(true)),
 					balanceExpires: Validators.optional(Validators.date),
 					weeklyBalanceMultiplier: Validators.optional(
-						Validators.number,
+						Validators.gte(0),
 					),
 					roles: Validators.optional(
 						Validators.array(Validators.role),
@@ -245,12 +245,12 @@ router.patch(
 				body: {
 					email: Validators.optional(Validators.string),
 					googleID: Validators.string,
-					schoolID: Validators.optional(Validators.string),
+					schoolID: Validators.optional(Validators.schoolID),
 					name: Validators.string,
 					balance: Validators.currency(true),
 					balanceExpires: Validators.optional(Validators.date),
 					weeklyBalanceMultiplier: Validators.optional(
-						Validators.number,
+						Validators.gte(0),
 					),
 					roles: Validators.optional(
 						Validators.array(Validators.role),
