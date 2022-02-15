@@ -68,10 +68,8 @@
 
 			try {
 				let json = await res.json();
-				studentSearch.el.setValue(null, {
-					text: json.name,
-					value: json._id,
-				});
+				studentSearch.value = {text: json.name, value: json._id};
+				studentSearch.query = json.name;
 				setData(json);
 			} catch (e) {}
 		} else {
