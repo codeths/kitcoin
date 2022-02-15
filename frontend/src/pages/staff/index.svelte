@@ -6,13 +6,14 @@
 		CreateTransaction,
 		ToastContainer,
 		Transactions,
+		ClassroomSearch,
 	} from '../../components';
 	let toastContainer;
 	import {getBalance, getClasses, getClassStudents} from '../../utils/api.js';
 
 	metatags.title = 'Staff Home - Kitcoin';
 
-	let selectedClass = '';
+	let selectedClass = [];
 	let classList = [];
 	let selectMsg = 'Loading classes...';
 
@@ -33,15 +34,6 @@
 	})();
 
 	getBalance().then(b => (balance = b));
-
-	getClasses('teacher')
-		.then(classes => {
-			classList = classes.sort((a, b) => a.name.localeCompare(b.name));
-			selectMsg = 'Select a class';
-		})
-		.catch(err => {
-			selectMsg = err;
-		});
 	let modalStudent = null,
 		showModal = false;
 
@@ -63,13 +55,19 @@
 		multiSelectStudents = multiSelectStudents;
 	}
 
+	let classStudents = new Map();
 	let students = null;
 	async function classroomSelect() {
-		students = null;
-		multiSelect = false;
-		students = await getClassStudents(selectedClass).catch(e =>
-			e.toString(),
-		);
+		let classIds = selectedClass.map(x => x.value);
+		students = (
+			await Promise.all(
+				classIds.map(x => {
+					if (classStudents.has(x)) return classStudents.get(x);
+
+					return getClassStudents(x).catch(e => []);
+				}),
+			)
+		).flat();
 	}
 	$: {
 		if (students && typeof students !== 'string' && selectedClass) {
@@ -116,21 +114,15 @@
 		</div>
 		<div class="mx-2 my-4 col-span-12">
 			<div class="bg-base-100 shadow-md rounded px-8 py-8">
-				<select
+				<ClassroomSearch
+					label="Choose a class"
+					hidelabel="true"
 					bind:value={selectedClass}
 					on:change={classroomSelect}
-					class="select select-bordered w-full"
-				>
-					<option disabled value="" selected>
-						{selectMsg}
-					</option>
-					{#each classList as classroom}
-						<option value={classroom.id}>
-							{classroom.name}
-						</option>
-					{/each}
-				</select>
-				{#if selectedClass}
+					role="teacher"
+					multiselect
+				/>
+				{#if selectedClass && selectedClass.length > 0}
 					{#if !students}
 						<span
 							class="text-center text-1xl sm:text-3xl xl:text-4xl font-medium inline-block w-full mt-4"
