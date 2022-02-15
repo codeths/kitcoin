@@ -154,6 +154,18 @@
 	function setData(obj = {}) {
 		let values = Object.assign({}, defaultValues, obj);
 
+		if (values.balanceExpires) {
+			// convert ISO string to local time
+			let date = new Date(values.balanceExpires);
+			let offset = new Date().getTimezoneOffset();
+			let localISO = new Date(
+				date.getTime() - offset * 60 * 1000,
+			).toISOString();
+
+			// format for datetime-local
+			values.balanceExpires = localISO.slice(0, 19);
+		}
+
 		roleSelect.setRoles(values.roles);
 		values.roles = roleSelect.value;
 
