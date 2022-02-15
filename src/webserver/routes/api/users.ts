@@ -18,6 +18,113 @@ import {getAccessToken} from '../../../helpers/oauth';
 import {FilterQuery} from 'mongoose';
 const router = express.Router();
 
+// Search users
+router.get(
+	'/users/search',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			validators: {
+				query: {
+					q: Validators.string,
+					roles: Validators.optional(
+						Validators.and(Validators.string, {
+							run: data =>
+								isValidRoles(
+									((data || '') as string).split(','),
+								),
+							errorMessage: 'Invalid roles list',
+						}),
+					),
+					count: Validators.optional(
+						Validators.and(
+							Validators.anyNumber,
+							Validators.integer,
+							Validators.gt(0),
+						),
+					),
+					me: Validators.optional(Validators.anyBoolean),
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			const {q, roles, count, me} = req.query as {
+				q: string;
+				roles?: string;
+				count?: string;
+				me?: string;
+			};
+
+			if (q.length < 3) return res.status(200).send([]);
+
+			let roleArray = roles
+				? (roles.toUpperCase().split(',') as UserRoleTypes[])
+				: null;
+
+			let roleBitfield = roleArray
+				? roleArray.reduce((field, role) => field | UserRoles[role], 0)
+				: UserRoles.ALL;
+
+			let countNum = count ? parseInt(count) : 10;
+
+			let options: FilterQuery<IUserDoc> = {
+				roles: {$bitsAnySet: roleBitfield},
+			};
+
+			if (!booleanFromData(me)) options._id = {$ne: req.user.id};
+
+			const results = await User.fuzzySearch(q, options);
+
+			const byID =
+				q.match(/^\d{5,6}$/) && (await User.findOne().bySchoolId(q));
+
+			let list = results
+				.map(x => x.toJSON())
+				.sort((a, b) => b.confidenceScore - a.confidenceScore)
+				.map(user => ({
+					name: user.name,
+					email: user.email,
+					id: user._id,
+					confidence: user.confidenceScore,
+				}));
+
+			if (byID)
+				list.unshift({
+					name: byID.name,
+					email: byID.email,
+					id: byID._id,
+					confidence: 100,
+				});
+
+			let filtered = list.filter(x => x.confidence >= 25);
+			if (filtered.length == 0)
+				filtered = list.filter(x => x.confidence >= 10);
+			if (filtered.length == 0)
+				filtered = list.filter(x => x.confidence >= 5);
+
+			res.status(200).send(filtered.slice(0, countNum));
+		} catch (e) {
+			try {
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
 router.post(
 	'/users',
 	async (req, res, next) =>
@@ -218,113 +325,6 @@ router.delete(
 					},
 				);
 				res.status(500).send(`An error occured. Error ID: ${error.id}`);
-			} catch (e) {}
-		}
-	},
-);
-
-// Search users
-router.get(
-	'/users/search',
-	async (req, res, next) =>
-		request(req, res, next, {
-			authentication: true,
-			validators: {
-				query: {
-					q: Validators.string,
-					roles: Validators.optional(
-						Validators.and(Validators.string, {
-							run: data =>
-								isValidRoles(
-									((data || '') as string).split(','),
-								),
-							errorMessage: 'Invalid roles list',
-						}),
-					),
-					count: Validators.optional(
-						Validators.and(
-							Validators.anyNumber,
-							Validators.integer,
-							Validators.gt(0),
-						),
-					),
-					me: Validators.optional(Validators.anyBoolean),
-				},
-			},
-		}),
-	async (req, res) => {
-		try {
-			if (!requestHasUser(req)) return;
-
-			const {q, roles, count, me} = req.query as {
-				q: string;
-				roles?: string;
-				count?: string;
-				me?: string;
-			};
-
-			if (q.length < 3) return res.status(200).send([]);
-
-			let roleArray = roles
-				? (roles.toUpperCase().split(',') as UserRoleTypes[])
-				: null;
-
-			let roleBitfield = roleArray
-				? roleArray.reduce((field, role) => field | UserRoles[role], 0)
-				: UserRoles.ALL;
-
-			let countNum = count ? parseInt(count) : 10;
-
-			let options: FilterQuery<IUserDoc> = {
-				roles: {$bitsAnySet: roleBitfield},
-			};
-
-			if (!booleanFromData(me)) options._id = {$ne: req.user.id};
-
-			const results = await User.fuzzySearch(q, options);
-
-			const byID =
-				q.match(/^\d{5,6}$/) && (await User.findOne().bySchoolId(q));
-
-			let list = results
-				.map(x => x.toJSON())
-				.sort((a, b) => b.confidenceScore - a.confidenceScore)
-				.map(user => ({
-					name: user.name,
-					email: user.email,
-					id: user._id,
-					confidence: user.confidenceScore,
-				}));
-
-			if (byID)
-				list.unshift({
-					name: byID.name,
-					email: byID.email,
-					id: byID._id,
-					confidence: 100,
-				});
-
-			let filtered = list.filter(x => x.confidence >= 25);
-			if (filtered.length == 0)
-				filtered = list.filter(x => x.confidence >= 10);
-			if (filtered.length == 0)
-				filtered = list.filter(x => x.confidence >= 5);
-
-			res.status(200).send(filtered.slice(0, countNum));
-		} catch (e) {
-			try {
-				const error = await DBError.generate(
-					{
-						request: req,
-						error: e instanceof Error ? e : undefined,
-					},
-					{
-						user: req.user?.id,
-					},
-				);
-				res.status(500).send(
-					`Something went wrong. Error ID: ${error.id}`,
-				);
 			} catch (e) {}
 		}
 	},
