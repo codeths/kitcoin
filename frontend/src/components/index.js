@@ -5,6 +5,7 @@ import Form from './Form.svelte';
 import Input from './Input.svelte';
 import ItemDisplay from './ItemDisplay.svelte';
 import Loading from './Loading.svelte';
+import RoleSelect from './RoleSelect.svelte';
 import StudentSearch from './StudentSearch.svelte';
 import Toast from './Toast.svelte';
 import ToastContainer from './ToastContainer.svelte';
@@ -18,6 +19,7 @@ export {
 	Input,
 	ItemDisplay,
 	Loading,
+	RoleSelect,
 	StudentSearch,
 	Toast,
 	ToastContainer,
