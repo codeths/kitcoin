@@ -381,7 +381,7 @@
 								{:else if submitStatus == 'ERROR'}
 									Error
 								{:else}
-									{selectedStudent ? 'Done' : 'Create'}
+									{selectedStudent ? 'Edit' : 'Create'}
 								{/if}
 							</button>
 							{#if selectedStudent}
