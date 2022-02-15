@@ -402,7 +402,6 @@ Create a user
 
 ### Request
 
-`email` (body): [Optional] Email address
 `name` (body): Name
 `googleID` (body): Google ID
 `email` (body): [Optional] Email address

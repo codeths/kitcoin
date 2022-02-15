@@ -15,15 +15,100 @@
 	let studentSearch;
 	let roleSelect;
 	let submitStatus = null;
+	let resetTimeout;
 
 	let formRefreshControl = {};
 
 	metatags.title = 'Admin Home - Kitcoin';
 
-	/**
-	 * @todo
-	 */
-	async function manageUser() {}
+	async function manageUser(e) {
+		e.preventDefault();
+		if (!manageFormData.isValid) return false;
+		submitStatus = 'LOADING';
+		let res = await fetch(
+			selectedStudent
+				? `/api/users/${selectedStudent.value}`
+				: `/api/users`,
+			{
+				method: selectedStudent ? 'PATCH' : 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					name: manageFormData.values.name,
+					googleID: manageFormData.values.googleID,
+					email: manageFormData.values.email || null,
+					schoolID: manageFormData.values.schoolID || null,
+					balance: parseFloat(manageFormData.values.balance),
+					balanceExpires: manageFormData.values.balanceExpires
+						? new Date(
+								manageFormData.values.balanceExpires,
+						  ).toISOString()
+						: null,
+					weeklyBalanceMultiplier: manageFormData.values
+						.weeklyBalanceMultiplier
+						? parseFloat(
+								manageFormData.values.weeklyBalanceMultiplier,
+						  )
+						: null,
+					roles: manageFormData.values.roles.map(x => x.value),
+				}),
+			},
+		).catch(() => null);
+
+		if (res && res.ok) {
+			submitStatus = 'SUCCESS';
+			toastContainer.toast(
+				selectedStudent ? 'User updated' : 'User created',
+				'success',
+			);
+			setTimeout(() => {
+				submitStatus = null;
+			}, 3000);
+
+			try {
+				let json = await res.json();
+				studentSearch.el.setValue(null, {
+					text: json.name,
+					value: json._id,
+				});
+				setData(json);
+			} catch (e) {}
+		} else {
+			clearTimeout(resetTimeout);
+			submitStatus = 'ERROR';
+			toastContainer.toast(
+				`Failed to ${selectedStudent ? 'update' : 'create'} user`,
+				'error',
+			);
+			resetTimeout = setTimeout(() => {
+				submitStatus = null;
+			}, 3000);
+		}
+
+		return false;
+	}
+
+	async function deleteUser() {
+		if (
+			!confirm(`Are you sure you want to delete ${selectedStudent.text}?`)
+		)
+			return;
+		submitStatus = 'LOADING';
+
+		let res = await fetch(`/api/users/${selectedStudent.value}`, {
+			method: 'DELETE',
+		}).catch(() => null);
+
+		submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
+		if (submitStatus == 'SUCCESS') {
+			toastContainer.toast(`${selectedStudent.text} deleted`, 'success');
+			studentSearch.el.setValue(null, null);
+			setData();
+		} else {
+			toastContainer.toast('Error deleting item.', 'error');
+		}
+	}
 
 	async function setUser() {
 		if (!selectedStudent) {
@@ -38,17 +123,14 @@
 			try {
 				let data = await res.json();
 				setData(data);
-				toastContainer.toast(
-					`Loaded ${selectedStudent.text}.`,
-					'success',
-				);
+				toastContainer.toast(`Loaded user`, 'success');
 				return;
 			} catch (e) {}
 		}
 
-		selectedStudent = null;
+		studentSearch.el.setValue(null, null);
 		setData();
-		toastContainer.toast(`Could not get user.`, 'error');
+		toastContainer.toast(`Could not get user`, 'error');
 	}
 
 	let defaultValues = {
@@ -114,14 +196,13 @@
 		},
 		balance: e => {
 			let v = e.value;
-			if (v) {
-				if (!/^\d*(?:\.\d+)?$/.test(v.trim()))
-					return 'Amount must be a number';
-				let num = parseFloat(v.trim());
-				if (isNaN(num)) return 'Amount must be an number';
-				if (Math.round(num * 100) / 100 !== num)
-					return 'Amount cannot have more than 2 decimal places';
-			}
+			if (!v) return e && e.type == 'blur' ? 'Balance is required' : '';
+			if (!/^\d*(?:\.\d+)?$/.test(v.trim()))
+				return 'Amount must be a number';
+			let num = parseFloat(v.trim());
+			if (isNaN(num)) return 'Amount must be an number';
+			if (Math.round(num * 100) / 100 !== num)
+				return 'Amount cannot have more than 2 decimal places';
 			return null;
 		},
 		balanceExpires: e => {
@@ -197,7 +278,7 @@
 						<Input
 							disabled
 							label="ID"
-							value={manageFormData.values._id || 'New User'}
+							value={selectedStudent?.value || 'New User'}
 						/>
 						<Input
 							name="name"
@@ -260,24 +341,35 @@
 							bind:error={manageFormData.errors.roles}
 							on:validate={manageForm.validate}
 						/>
-						<button
-							type="submit"
-							disabled={submitStatus == 'LOADING' ||
-								!manageFormData.isValid}
-							class="btn {submitStatus == 'ERROR'
-								? 'btn-error'
-								: 'btn-primary'} px-12 disabled:border-0 my-4"
-						>
-							{#if submitStatus == 'LOADING'}
-								<div class="px-2">
-									<Loading height="2rem" />
-								</div>
-							{:else if submitStatus == 'ERROR'}
-								Error
-							{:else}
-								{selectedStudent ? 'Done' : 'Create'}
+						<div class="flex items-center">
+							<button
+								type="submit"
+								disabled={submitStatus == 'LOADING' ||
+									!manageFormData.isValid}
+								class="btn {submitStatus == 'ERROR'
+									? 'btn-error'
+									: 'btn-primary'} px-12 disabled:border-0 my-4"
+							>
+								{#if submitStatus == 'LOADING'}
+									<div class="px-2">
+										<Loading height="2rem" />
+									</div>
+								{:else if submitStatus == 'ERROR'}
+									Error
+								{:else}
+									{selectedStudent ? 'Done' : 'Create'}
+								{/if}
+							</button>
+							{#if selectedStudent}
+								<button
+									type="button"
+									class="btn btn-ghost text-3xl ml-2"
+									on:click={deleteUser}
+								>
+									<span class="icon-delete" />
+								</button>
 							{/if}
-						</button>
+						</div>
 					</Form>
 				{/key}
 			</div>
