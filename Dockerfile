@@ -3,7 +3,7 @@ RUN apk update && apk add g++ make python3 vips vips-dev
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 COPY src ./src/
 COPY tsconfig.json src/config/keys.example.json gulpfile.js ./
 RUN cp src/config/keys.example.json src/config/keys.json
