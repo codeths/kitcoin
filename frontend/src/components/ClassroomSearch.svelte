@@ -12,11 +12,14 @@
 	export let multiselect = false;
 	export let classes = null;
 
+	let loading = true;
+
 	let results = null;
 
 	async function getResults(text) {
 		if (!classes) {
 			classes = await getClasses(role);
+			loading = false;
 			classes.sort((a, b) => a.name.localeCompare(b.name));
 			extraClasses.forEach(classData => {
 				if (!classes.some(x => x.id == classData.value))
@@ -32,11 +35,11 @@
 			}));
 	}
 
-	getClasses(role); // pre-fetch
+	getClasses(role).then(() => (loading = false)); // pre-fetch
 </script>
 
 <DropdownSearch
-	label="Student"
+	label="Classes"
 	bind:results
 	bind:value
 	bind:query
@@ -45,5 +48,7 @@
 	on:change
 	on:search={e => getResults(e.detail)}
 	{multiselect}
+	disabled={loading}
+	placeholderOverride={loading ? 'Loading...' : null}
 	{...$$restProps}
 />

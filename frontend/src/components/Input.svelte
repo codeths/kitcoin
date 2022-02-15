@@ -12,6 +12,7 @@
 	export let input = null;
 	export let disabled = false;
 	export let focus = false;
+	export let hidelabel = false;
 	let additionalClasses = '';
 	export {additionalClasses as class};
 
@@ -36,9 +37,11 @@
 </script>
 
 <div>
-	<label class="label" for="">
-		<span class="label-text"> {label} </span>
-	</label>
+	{#if !hidelabel}
+		<label class="label" for="">
+			<span class="label-text"> {label} </span>
+		</label>
+	{/if}
 	{#if type == 'textarea'}
 		<textarea
 			class="textarea textarea-bordered w-full {additionalClasses}"
