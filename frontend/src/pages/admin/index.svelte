@@ -315,14 +315,28 @@
 							bind:error={manageFormData.errors.balance}
 							on:validate={manageForm.validate}
 						/>
-						<!-- @todo - make date component -->
 						<Input
 							name="balanceExpires"
 							label="Balance Expires (optional)"
+							type="datetime-local"
 							bind:value={manageFormData.values.balanceExpires}
 							bind:error={manageFormData.errors.balanceExpires}
 							on:validate={manageForm.validate}
-						/>
+							parentClass="flex items-middle"
+						>
+							<button
+								slot="after-input"
+								type="button"
+								class="btn btn-ghost text-3xl ml-2"
+								class:hidden={!manageFormData.values
+									.balanceExpires}
+								on:click={() => {
+									manageFormData.values.balanceExpires = '';
+								}}
+							>
+								<span class="icon-close" />
+							</button>
+						</Input>
 						<Input
 							name="weeklyBalanceMultiplier"
 							label="Weekly Balance Multiplier (optional)"
