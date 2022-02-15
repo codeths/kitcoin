@@ -16,6 +16,8 @@
 	let roleSelect;
 	let submitStatus = null;
 
+	let formRefreshControl = {};
+
 	metatags.title = 'Admin Home - Kitcoin';
 
 	/**
@@ -50,7 +52,13 @@
 	}
 
 	let defaultValues = {
-		balance: '0' /** @todo fix balance not setting */,
+		name: '',
+		googleID: '',
+		email: '',
+		schoolID: '',
+		balance: '0',
+		balanceExpires: '',
+		weeklyBalanceMultiplier: '',
 		roles: ['STUDENT'],
 	};
 
@@ -62,12 +70,14 @@
 	};
 
 	function setData(obj = {}) {
-		let values = Object.assign(defaultValues, obj);
+		let values = Object.assign({}, defaultValues, obj);
 
 		roleSelect.setRoles(values.roles);
 		values.roles = roleSelect.value;
 
 		manageFormData.values = values;
+
+		formRefreshControl = {};
 	}
 
 	let manageForm;
@@ -158,6 +168,7 @@
 						bind:this={studentSearch}
 						on:change={setUser}
 						hidelabel="true"
+						me="true"
 					/>
 					{#if selectedStudent}
 						<button
@@ -173,100 +184,102 @@
 					{/if}
 				</div>
 				<div class="divider" />
-				<Form
-					on:submit={manageUser}
-					on:update={() =>
-						Object.keys(manageFormData).forEach(
-							key => (manageFormData[key] = manageForm[key]),
-						)}
-					bind:this={manageForm}
-					validators={manageValidators}
-				>
-					<Input
-						disabled
-						label="ID"
-						value={manageFormData.values._id || 'New User'}
-					/>
-					<Input
-						name="name"
-						label="Name"
-						bind:value={manageFormData.values.name}
-						bind:error={manageFormData.errors.name}
-						on:validate={manageForm.validate}
-					/>
-					<Input
-						name="googleID"
-						label="Google ID"
-						bind:value={manageFormData.values.googleID}
-						bind:error={manageFormData.errors.googleID}
-						on:validate={manageForm.validate}
-					/>
-					<Input
-						name="email"
-						label="Email (optional)"
-						bind:value={manageFormData.values.email}
-						bind:error={manageFormData.errors.email}
-						on:validate={manageForm.validate}
-					/>
-					<Input
-						name="schoolID"
-						label="School ID (optional)"
-						bind:value={manageFormData.values.schoolID}
-						bind:error={manageFormData.errors.schoolID}
-						on:validate={manageForm.validate}
-					/>
-					<Input
-						name="balance"
-						label="Balance"
-						bind:value={manageFormData.values.balance}
-						bind:error={manageFormData.errors.balance}
-						on:validate={manageForm.validate}
-					/>
-					<!-- @todo - make date component -->
-					<Input
-						name="balanceExpires"
-						label="Balance Expires (optional)"
-						bind:value={manageFormData.values.balanceExpires}
-						bind:error={manageFormData.errors.balanceExpires}
-						on:validate={manageForm.validate}
-					/>
-					<Input
-						name="weeklyBalanceMultiplier"
-						label="Weekly Balance Multiplier (optional)"
-						bind:value={manageFormData.values
-							.weeklyBalanceMultiplier}
-						bind:error={manageFormData.errors
-							.weeklyBalanceMultiplier}
-						on:validate={manageForm.validate}
-					/>
-					<RoleSelect
-						name="roles"
-						label="Roles"
-						multiselect
-						bind:this={roleSelect}
-						bind:value={manageFormData.values.roles}
-						bind:error={manageFormData.errors.roles}
-						on:validate={manageForm.validate}
-					/>
-					<button
-						type="submit"
-						disabled={submitStatus == 'LOADING' ||
-							!manageFormData.isValid}
-						class="btn {submitStatus == 'ERROR'
-							? 'btn-error'
-							: 'btn-primary'} px-12 disabled:border-0 my-4"
+				{#key formRefreshControl}
+					<Form
+						on:submit={manageUser}
+						on:update={() =>
+							Object.keys(manageFormData).forEach(
+								key => (manageFormData[key] = manageForm[key]),
+							)}
+						bind:this={manageForm}
+						validators={manageValidators}
 					>
-						{#if submitStatus == 'LOADING'}
-							<div class="px-2">
-								<Loading height="2rem" />
-							</div>
-						{:else if submitStatus == 'ERROR'}
-							Error
-						{:else}
-							{selectedStudent ? 'Done' : 'Create'}
-						{/if}
-					</button>
-				</Form>
+						<Input
+							disabled
+							label="ID"
+							value={manageFormData.values._id || 'New User'}
+						/>
+						<Input
+							name="name"
+							label="Name"
+							bind:value={manageFormData.values.name}
+							bind:error={manageFormData.errors.name}
+							on:validate={manageForm.validate}
+						/>
+						<Input
+							name="googleID"
+							label="Google ID"
+							bind:value={manageFormData.values.googleID}
+							bind:error={manageFormData.errors.googleID}
+							on:validate={manageForm.validate}
+						/>
+						<Input
+							name="email"
+							label="Email (optional)"
+							bind:value={manageFormData.values.email}
+							bind:error={manageFormData.errors.email}
+							on:validate={manageForm.validate}
+						/>
+						<Input
+							name="schoolID"
+							label="School ID (optional)"
+							bind:value={manageFormData.values.schoolID}
+							bind:error={manageFormData.errors.schoolID}
+							on:validate={manageForm.validate}
+						/>
+						<Input
+							name="balance"
+							label="Balance"
+							bind:value={manageFormData.values.balance}
+							bind:error={manageFormData.errors.balance}
+							on:validate={manageForm.validate}
+						/>
+						<!-- @todo - make date component -->
+						<Input
+							name="balanceExpires"
+							label="Balance Expires (optional)"
+							bind:value={manageFormData.values.balanceExpires}
+							bind:error={manageFormData.errors.balanceExpires}
+							on:validate={manageForm.validate}
+						/>
+						<Input
+							name="weeklyBalanceMultiplier"
+							label="Weekly Balance Multiplier (optional)"
+							bind:value={manageFormData.values
+								.weeklyBalanceMultiplier}
+							bind:error={manageFormData.errors
+								.weeklyBalanceMultiplier}
+							on:validate={manageForm.validate}
+						/>
+						<RoleSelect
+							name="roles"
+							label="Roles"
+							multiselect
+							bind:this={roleSelect}
+							bind:value={manageFormData.values.roles}
+							bind:error={manageFormData.errors.roles}
+							on:validate={manageForm.validate}
+						/>
+						<button
+							type="submit"
+							disabled={submitStatus == 'LOADING' ||
+								!manageFormData.isValid}
+							class="btn {submitStatus == 'ERROR'
+								? 'btn-error'
+								: 'btn-primary'} px-12 disabled:border-0 my-4"
+						>
+							{#if submitStatus == 'LOADING'}
+								<div class="px-2">
+									<Loading height="2rem" />
+								</div>
+							{:else if submitStatus == 'ERROR'}
+								Error
+							{:else}
+								{selectedStudent ? 'Done' : 'Create'}
+							{/if}
+						</button>
+					</Form>
+				{/key}
 			</div>
 		</div>
 	</div>
