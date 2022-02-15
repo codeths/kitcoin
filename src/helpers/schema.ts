@@ -174,9 +174,8 @@ function getBalance(this: IUserDoc, balance: number) {
 		!rawBalanceExpires ||
 		rawBalanceExpires.getTime() < new Date().getTime()
 	) {
-		//This runs forever when it breaks
-		this.balance = weeklyBalance * (this.weeklyBalanceMultiplier ?? 1);
-		return this.balance;
+		return (this.balance =
+			weeklyBalance * (this.weeklyBalanceMultiplier ?? 1));
 	}
 	return balance;
 }
