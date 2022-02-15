@@ -108,7 +108,7 @@
 		schoolID: e => {
 			let v = e.value;
 			if (v) {
-				if (!/^[0-9]{5,6}$/.test(v)) return 'Invalid school ID';
+				if (!/^\d{5,6}$/.test(v)) return 'Invalid school ID';
 			}
 			return null;
 		},
