@@ -36,7 +36,7 @@
 </script>
 
 <DropdownSearch
-	label="Student"
+	label="Class"
 	bind:results
 	bind:value
 	bind:query
