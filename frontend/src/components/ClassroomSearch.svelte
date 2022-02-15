@@ -7,7 +7,7 @@
 	export let value = [];
 	export let extraClasses = [];
 	export let error = '';
-	export let query;
+	export let query = '';
 	export let role = 'any';
 	export let multiselect = false;
 	export let classes = null;
@@ -15,7 +15,7 @@
 	let loading = true;
 
 	let results = null;
-	export let el;
+	export let el = null;
 
 	async function getResults(text) {
 		if (!classes) {

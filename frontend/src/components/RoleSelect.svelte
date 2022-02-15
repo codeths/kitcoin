@@ -5,7 +5,7 @@
 
 	export let value = [];
 	export let error = '';
-	export let query;
+	export let query = '';
 	export let multiselect = false;
 
 	let loading = true;
@@ -25,7 +25,7 @@
 		},
 	];
 	let results = [];
-	export let el;
+	export let el = null;
 
 	export function setRoles(v) {
 		value = roles.filter(x => v.includes(x.value));
