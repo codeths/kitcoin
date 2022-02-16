@@ -8,6 +8,7 @@
 		Form,
 		Input,
 		Loading,
+		Transactions,
 	} from '../../components';
 	let toastContainer;
 
@@ -250,7 +251,7 @@
 <!-- Content -->
 <div class="mx-8 my-4">
 	<div class="grid grid-cols-12">
-		<div class="mx-2 my-4 col-span-12">
+		<div class="mx-2 my-4 col-span-12 md:col-span-6">
 			<h1 class="text-3xl font-medium mb-2">Manage Users</h1>
 			<div class="bg-base-100 shadow-md rounded px-8 py-8">
 				<div class="flex items-center">
@@ -395,6 +396,20 @@
 							{/if}
 						</div>
 					</Form>
+				{/key}
+			</div>
+		</div>
+		<div class="mx-2 my-4 col-span-12 md:col-span-6">
+			<h1 class="text-3xl font-medium mb-2">Manage Transactions</h1>
+			<div class="bg-base-100 shadow-md rounded px-8 py-8">
+				{#key selectedStudent}
+					{#if selectedStudent}
+						<Transactions user={selectedStudent.value} />
+					{:else}
+						<p class="text-center text-xl">
+							Select a user to view transactions
+						</p>
+					{/if}
 				{/key}
 			</div>
 		</div>
