@@ -503,4 +503,11 @@ export class Validators {
 		run: (data: unknown) => typeof data == 'string' && isValidRole(data),
 		errorMessage: '{KEY} must be a valid role',
 	});
+
+	/** Valid school ID */
+	static schoolID = () => ({
+		run: (data: unknown): boolean | string =>
+			Validators.regex(/^\d{5,6}$/).run(data),
+		errorMessage: '{KEY} must be a valid school ID',
+	});
 }

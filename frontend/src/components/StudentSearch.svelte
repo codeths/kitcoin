@@ -4,16 +4,16 @@
 	import {searchUsers} from '../utils/api';
 	import {DropdownSearch} from '.';
 
-	export let value;
+	export let value = [];
 	export let error = '';
-	export let query;
+	export let query = '';
 	export let me = null;
 	export let students = null;
 	export let multiselect = false;
 
 	let results = null;
 	let autoSubmit = false;
-	let el;
+	export let el = null;
 
 	async function getStudents(text) {
 		if (!text) {

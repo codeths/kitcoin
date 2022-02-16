@@ -133,6 +133,7 @@ app.get(
 	(req, res) => {
 		if (req.user) {
 			if (req.user.hasRole('STAFF')) return res.redirect('/staff');
+			else if (req.user.hasRole('ADMIN')) return res.redirect('/admin');
 			else if (req.user.hasRole('STUDENT'))
 				return res.redirect('/student');
 		}

@@ -115,7 +115,9 @@ userSchema.methods.setRoles = function (roles: UserRoleTypes[]): void {
 userSchema.methods.getRoles = function (): UserRoleTypes[] {
 	return Object.keys(UserRoles)
 		.map(x => x as UserRoleTypes)
-		.filter(role => this.hasRole(role));
+		.filter(
+			role => role !== 'NONE' && role !== 'ALL' && this.hasRole(role),
+		);
 };
 
 userSchema.methods.hasRole = function (role: UserRoleTypes): boolean {
@@ -172,8 +174,8 @@ function getBalance(this: IUserDoc, balance: number) {
 		!rawBalanceExpires ||
 		rawBalanceExpires.getTime() < new Date().getTime()
 	) {
-		this.balance = weeklyBalance * (this.weeklyBalanceMultiplier ?? 1);
-		return this.balance;
+		return (this.balance =
+			weeklyBalance * (this.weeklyBalanceMultiplier ?? 1));
 	}
 	return balance;
 }
@@ -199,6 +201,14 @@ userSchema.plugin(fuzzySearch, {
 			prefixOnly: true,
 		},
 	],
+	middlewares: {
+		preSave: async function () {
+			for (let key in this) {
+				if (this[key as keyof typeof this] === null)
+					(this[key as keyof typeof this] as any) = undefined;
+			}
+		},
+	},
 });
 
 const transactionSchema = new mongoose.Schema<

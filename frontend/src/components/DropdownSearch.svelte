@@ -87,8 +87,8 @@
 		}
 	}
 
-	function setValue(e, data) {
-		e.preventDefault();
+	export function setValue(e, data) {
+		if (e) e.preventDefault();
 		if (multiselect) {
 			if (!value) value = [];
 			if (value.some(v => v.value == data.value)) {
@@ -100,14 +100,14 @@
 			query = '';
 		} else {
 			value = data;
-			query = data.text;
+			query = data?.text ?? '';
 			document.body.focus();
 		}
 		validate(
 			'blur',
 			value,
 			!multiselect || value.some(x => x.value == data.value)
-				? data.text
+				? data?.text ?? ''
 				: '',
 		);
 		dispatch('change', {target: input.input, value});
@@ -140,7 +140,7 @@
 	}
 </script>
 
-<div class="group w-auto" bind:this={parent} on:keydown={key}>
+<div class="group w-full" bind:this={parent} on:keydown={key}>
 	<Input
 		class={multiselect && value && value.length > 0 && hide
 			? 'placeholder:text-base-content'
