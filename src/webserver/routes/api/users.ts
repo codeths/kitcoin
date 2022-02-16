@@ -13,7 +13,7 @@ import {
 	Validators,
 } from '../../../helpers/request';
 import {IUserDoc, requestHasUser} from '../../../types';
-import {FilterQuery} from 'mongoose';
+import {FilterQuery, isValidObjectId} from 'mongoose';
 const router = express.Router();
 
 // Search users
@@ -79,6 +79,9 @@ router.get(
 			const byID =
 				q.match(/^\d{5,6}$/) && (await User.findOne().bySchoolId(q));
 
+			const byMongoID =
+				(isValidObjectId(q) && (await User.findById(q))) || null;
+
 			let list = results
 				.map(x => x.toJSON())
 				.sort((a, b) => b.confidenceScore - a.confidenceScore)
@@ -94,6 +97,14 @@ router.get(
 					name: byID.name,
 					email: byID.email,
 					id: byID._id,
+					confidence: 100,
+				});
+
+			if (byMongoID)
+				list.unshift({
+					name: byMongoID.name,
+					email: byMongoID.email,
+					id: byMongoID._id,
 					confidence: 100,
 				});
 
