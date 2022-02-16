@@ -104,7 +104,7 @@
 			studentSearch.el.setValue(null, null);
 			setData();
 		} else {
-			toastContainer.toast('Error deleting item.', 'error');
+			toastContainer.toast('Error deleting user.', 'error');
 		}
 	}
 
