@@ -43,7 +43,7 @@
 		</div>
 		<div class="mx-2 my-4 col-span-12">
 			<h1 class="text-4xl font-medium mb-2">Transaction History</h1>
-			<div>
+			<div class="bg-base-100 shadow-md rounded px-8 py-8">
 				<Transactions />
 			</div>
 		</div>

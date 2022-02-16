@@ -69,9 +69,7 @@
 	}
 </script>
 
-<div
-	class="w-full p-4 bg-base-200 rounded shadow-md flex flex-col divide-y divide-gray-300"
->
+<div class="w-full flex flex-col divide-y divide-gray-300">
 	{#if transactions.pageCount !== 0}
 		<table class="w-full table-auto">
 			<thead class="hidden md:table-header-group w-full">
