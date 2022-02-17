@@ -159,7 +159,7 @@
 			</tbody>
 		</table>
 	{:else}
-		<h1>No transactions.</h1>
+		<p class="text-center text-xl">No transactions</p>
 	{/if}
 
 	{#if error}
