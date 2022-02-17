@@ -142,8 +142,8 @@
 								})}</span
 							></td
 						>
-						{#if item.canManage}
-							<td class="px-2 py-4 hidden md:table-cell">
+						<td class="px-2 py-4 hidden md:table-cell">
+							{#if item.canManage}
 								<button
 									class="btn btn-ghost md:w-full md:justify-self-end p-0"
 									on:click={confirm(
@@ -152,7 +152,8 @@
 								>
 									<span class="icon-delete text-xl" />
 								</button>
-							</td>{/if}
+							{/if}
+						</td>
 					</tr>
 				{/each}
 			</tbody>
