@@ -10,6 +10,7 @@
 	export let me = null;
 	export let students = null;
 	export let multiselect = false;
+	export let roles = ['STUDENT'];
 
 	let results = null;
 	let autoSubmit = false;
@@ -22,7 +23,7 @@
 			autoSubmit = false;
 
 			results = (
-				await searchUsers(text, 15, ['STUDENT'], me).catch(e => [])
+				await searchUsers(text, 15, roles, me).catch(e => [])
 			).map(x => ({text: x.name, value: x.id, confidence: x.confidence}));
 
 			if (students)

@@ -261,6 +261,7 @@
 						on:change={setUser}
 						hidelabel="true"
 						me="true"
+						roles={null}
 					/>
 					{#if selectedStudent}
 						<button
