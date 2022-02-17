@@ -200,9 +200,13 @@ export interface ITransactionMethods {
 	canManage(user?: IUserDoc): boolean;
 	/**
 	 * Turn this transaction into a JSON object for API output
-	 * @param user Current user's ID
+	 * @param user View transaction user info as this user
+	 * @param managingUser This user is managing the transaction. Defaults to the user parameter
 	 */
-	toAPIResponse(user?: IUserDoc): Promise<ITransactionAPIResponse>;
+	toAPIResponse(
+		user?: IUserDoc,
+		managingUser?: IUserDoc,
+	): Promise<ITransactionAPIResponse>;
 }
 
 export type ITransactionAPIResponse = Modify<

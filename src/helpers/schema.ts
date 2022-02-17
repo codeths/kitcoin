@@ -291,6 +291,7 @@ transactionSchema.methods.canManage = function (user?: IUserDoc): boolean {
 
 transactionSchema.methods.toAPIResponse = async function (
 	user?: IUserDoc,
+	managingUser: IUserDoc | undefined = user,
 ): Promise<ITransactionAPIResponse> {
 	let json = this.toObject({
 		getters: true,
@@ -301,7 +302,7 @@ transactionSchema.methods.toAPIResponse = async function (
 	let res: ITransactionAPIResponse = {
 		...json,
 		date: this.date.toISOString(),
-		canManage: this.canManage(user),
+		canManage: this.canManage(managingUser),
 	};
 
 	if (res.from.id && !res.from.text) {
