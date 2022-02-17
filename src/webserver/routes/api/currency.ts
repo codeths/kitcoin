@@ -121,7 +121,7 @@ router.get(
 				),
 				docCount,
 				transactions: await Promise.all(
-					transactions.map(t => t.toAPIResponse(req.user)),
+					transactions.map(t => t.toAPIResponse(dbUser)),
 				),
 			});
 		} catch (e) {
