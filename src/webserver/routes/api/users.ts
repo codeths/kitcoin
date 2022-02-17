@@ -16,6 +16,23 @@ import {IUserDoc, requestHasUser} from '../../../types';
 import {FilterQuery, isValidObjectId} from 'mongoose';
 const router = express.Router();
 
+function isValidSearchResult(user: IUserDoc, req: express.Request): boolean {
+	if (
+		!booleanFromData(req.query.me as string | undefined) &&
+		user.id === req.user!.id
+	)
+		return false;
+
+	let roleArray = req.query.roles
+		? ((req.query.roles as string)
+				.toUpperCase()
+				.split(',') as UserRoleTypes[])
+		: null;
+
+	if (roleArray && !user.hasAnyRole(roleArray)) return false;
+	return true;
+}
+
 // Search users
 router.get(
 	'/users/search',
@@ -58,23 +75,9 @@ router.get(
 
 			if (q.length < 3) return res.status(200).send([]);
 
-			let roleArray = roles
-				? (roles.toUpperCase().split(',') as UserRoleTypes[])
-				: null;
-
-			let roleBitfield = roleArray
-				? roleArray.reduce((field, role) => field | UserRoles[role], 0)
-				: UserRoles.ALL;
-
 			let countNum = count ? parseInt(count) : 10;
 
-			let options: FilterQuery<IUserDoc> = {
-				roles: {$bitsAnySet: roleBitfield},
-			};
-
-			if (!booleanFromData(me)) options._id = {$ne: req.user.id};
-
-			const results = await User.fuzzySearch(q, options);
+			const results = await User.fuzzySearch(q);
 
 			const byID =
 				q.match(/^\d{5,6}$/) && (await User.findOne().bySchoolId(q));
@@ -83,13 +86,13 @@ router.get(
 				(isValidObjectId(q) && (await User.findById(q))) || null;
 
 			let list = results
-				.map(x => x.toJSON())
 				.sort((a, b) => b.confidenceScore - a.confidenceScore)
 				.map(user => ({
 					name: user.name,
 					email: user.email,
 					id: user._id,
-					confidence: user.confidenceScore,
+					confidence: user.toJSON().confidenceScore,
+					valid: isValidSearchResult(user, req),
 				}));
 
 			if (byID)
@@ -98,6 +101,7 @@ router.get(
 					email: byID.email,
 					id: byID._id,
 					confidence: 100,
+					valid: isValidSearchResult(byID, req),
 				});
 
 			if (byMongoID)
@@ -106,6 +110,7 @@ router.get(
 					email: byMongoID.email,
 					id: byMongoID._id,
 					confidence: 100,
+					valid: isValidSearchResult(byMongoID, req),
 				});
 
 			let filtered = list.filter(x => x.confidence >= 25);
@@ -118,7 +123,15 @@ router.get(
 					x.name.toLowerCase().includes(q.toLowerCase()),
 				);
 
-			res.status(200).send(filtered.slice(0, countNum));
+			res.status(200).send(
+				filtered
+					.filter(x => x.valid)
+					.map(x => {
+						let {valid, ...rest} = x;
+						return rest;
+					})
+					.slice(0, countNum),
+			);
 		} catch (e) {
 			try {
 				const error = await DBError.generate(
