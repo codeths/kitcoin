@@ -105,15 +105,26 @@ export class AdminClient {
 	 * @param pageToken API Page Token
 	 */
 	public async processAllUsers(pageToken?: string): Promise<void> {
-		if (!this.token) return;
+		return new Promise(async (resolve, reject) => {
+			if (!this.token) return;
 
-		let users = await this.listUsers(pageToken).catch(e => {});
-		if (!users || !users.users) return;
+			let users = await this.listUsers(pageToken).catch(e => {
+				if (e && e.code && e.errors)
+					reject(
+						`Google API ${e.code}: ${e.errors
+							.map((x: any) => x.message)
+							.join(', ')}`,
+					);
+				else reject();
+			});
+			if (!users || !users.users) return;
+			resolve();
 
-		await Promise.all(users.users.map(this.processUser));
+			await Promise.all(users.users.map(this.processUser));
 
-		if (users.nextPageToken)
-			return this.processAllUsers(users.nextPageToken);
-		return;
+			if (users.nextPageToken)
+				return this.processAllUsers(users.nextPageToken);
+			return;
+		});
 	}
 }
