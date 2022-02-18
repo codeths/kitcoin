@@ -10,5 +10,9 @@
 	"gadmin_staff_ou": [
 		"xxxxx",
 		"xxxxx/yyyyy"
+	],
+	"gadmin_ignore_ou": [
+		"xxxxx",
+		"xxxxx/yyyyy"
 	]
 }

@@ -54,17 +54,18 @@ If you would like to watch for file changes and automatically execute the approp
 
 # Config
 
-| property        | type             | description                                  | example                                |
-| --------------- | ---------------- | -------------------------------------------- | -------------------------------------- |
-| mongo           | string           | MongoDB Connection URL                       | mongodb://user:pass@127.0.0.1:27017/db |
-| port            | number           | port to listen on                            | 8000                                   |
-| client_id       | string           | Google OAuth client ID                       |                                        |
-| client_secret   | string           | Google OAuth client secret                   |                                        |
-| oauthDomain     | string \| null   | Google OAuth domain, or null to disable      | mydomain.com                           |
-| sessionSecret   | string           | Session secret for Mongo                     |                                        |
-| weeklyBalance   | number           | Staff's weekly balance                       | 100                                    |
-| gadmin_domain   | string \| null   | Domain to use for Google Admin user syncing  | mydomain.com                           |
-| gadmin_staff_ou | string[] \| null | Staff OU names for Google Admin user syncing | ["Staff", "Some OU/Admins"]            |
+| property         | type             | description                                | example                                |
+| ---------------- | ---------------- | ------------------------------------------ | -------------------------------------- |
+| mongo            | string           | MongoDB Connection URL                     | mongodb://user:pass@127.0.0.1:27017/db |
+| port             | number           | port to listen on                          | 8000                                   |
+| client_id        | string           | Google OAuth client ID                     |                                        |
+| client_secret    | string           | Google OAuth client secret                 |                                        |
+| oauthDomain      | string \| null   | Google OAuth domain, or null to disable    | mydomain.com                           |
+| sessionSecret    | string           | Session secret for Mongo                   |                                        |
+| weeklyBalance    | number           | Staff's weekly balance                     | 100                                    |
+| gadmin_domain    | string \| null   | Domain to use for Google Admin syncing     | mydomain.com                           |
+| gadmin_staff_ou  | string[] \| null | Staff OU names for Google Admin syncing    | ["Staff", "Some OU/Admins"]            |
+| gadmin_ignore_ou | string[] \| null | Excluded OU names for Google Admin syncing | ["Old students"]                       |
 
 ## Google Cloud Project Setup (For OAuth)
 
