@@ -414,3 +414,15 @@ Create a user
 ### Response
 
 `IUserAPIResponse` (see [db schema](src/types/db.ts))
+
+## GET `/users/sync`
+
+Start a request to sync users with Google Admin.
+
+### Request
+
+None
+
+### Response
+
+None

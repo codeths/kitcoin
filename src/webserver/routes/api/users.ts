@@ -14,6 +14,7 @@ import {
 } from '../../../helpers/request';
 import {IUserDoc, requestHasUser} from '../../../types';
 import {FilterQuery, isValidObjectId} from 'mongoose';
+import {AdminClient} from '../../../helpers/admin';
 const router = express.Router();
 
 function isValidSearchResult(user: IUserDoc, req: express.Request): boolean {
@@ -339,6 +340,53 @@ router.delete(
 			await user.remove();
 
 			res.status(200).send();
+		} catch (e) {
+			try {
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(`An error occured. Error ID: ${error.id}`);
+			} catch (e) {}
+		}
+	},
+);
+
+router.post(
+	'/users/sync',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['ADMIN'],
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			if (
+				!req.user.tokens.scopes.includes(
+					'https://www.googleapis.com/auth/admin.directory.user.readonly',
+				)
+			)
+				return res
+					.status(403)
+					.send('You have not authorized the required scope.');
+
+			let adminClient = await new AdminClient().create(req.user);
+
+			adminClient
+				.processAllUsers()
+				.then(x => {
+					res.status(200).send();
+				})
+				.catch(e => {
+					res.status(500).send(e);
+				});
 		} catch (e) {
 			try {
 				const error = await DBError.generate(
