@@ -14,5 +14,6 @@
 	"gadmin_ignore_ou": [
 		"xxxxx",
 		"xxxxx/yyyyy"
-	]
+	],
+	"gadmin_sync_user": "xxxxx"
 }

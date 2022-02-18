@@ -66,6 +66,7 @@ If you would like to watch for file changes and automatically execute the approp
 | gadmin_domain    | string \| null   | Domain to use for Google Admin syncing     | mydomain.com                           |
 | gadmin_staff_ou  | string[] \| null | Staff OU names for Google Admin syncing    | ["Staff", "Some OU/Admins"]            |
 | gadmin_ignore_ou | string[] \| null | Excluded OU names for Google Admin syncing | ["Old students"]                       |
+| gadmin_sync_user | string \| null   | User to run the daily Google Admin sync as |                                        |
 
 ## Google Cloud Project Setup (For OAuth)
 
