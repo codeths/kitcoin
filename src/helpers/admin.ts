@@ -11,28 +11,8 @@ import {User} from './schema';
 export class AdminClient {
 	private token?: string;
 
-	/**
-	 * Use an existing OAuth client
-	 * @param token Access Token
-	 */
-	public setToken(token: string): this {
-		this.token = token;
-
-		return this;
-	}
-
-	/**
-	 * Create an OAuth client with a user's access token
-	 * @param user DB user
-	 */
-	public async create(user: IUserDoc): Promise<this> {
-		await getAccessToken(user);
-		if (user.tokens.access) this.token = user.tokens.access;
-
-		return this;
-	}
-
 	private async listUsers(pageToken?: string) {
+		console.log(pageToken);
 		if (!this.token) throw 'Could not authenticate for the Google API';
 		if (!gadmin_domain) throw 'Google Admin domain not set';
 
@@ -137,5 +117,42 @@ export class AdminClient {
 				return this.processAllUsers(users.nextPageToken);
 			return;
 		});
+	}
+
+	/**
+	 * Run a user sync
+	 * @param user The user to run the sync as. Must be able to access the Google Admin API
+	 * @returns
+	 */
+	public async startSync(user: IUserDoc) {
+		await getAccessToken(user);
+		if (!user.tokens.access) return;
+		this.token = user.tokens.access;
+
+		return this.processAllUsers();
+	}
+
+	/**
+	 * Start daily syncs
+	 * @param user The user to run the sync as. Must be able to access the Google Admin API
+	 */
+	public startDailySyncs(user: IUserDoc) {
+		try {
+			this.startSync(user);
+		} catch (e) {}
+
+		let endOfDay = new Date();
+		endOfDay.setHours(24, 0, 0, 0);
+
+		setTimeout(() => {
+			setInterval(async () => {
+				try {
+					let newUser = await User.findById(user.id);
+					if (!newUser) return;
+					user = newUser;
+					this.startSync(user);
+				} catch (e) {}
+			}, 1000 * 60 * 60 * 24);
+		}, endOfDay.getTime() - Date.now());
 	}
 }
