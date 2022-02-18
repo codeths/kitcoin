@@ -1,7 +1,11 @@
 import Google, {google} from 'googleapis';
 import {IUserDoc} from '../types';
 import {getAccessToken} from './oauth';
-import {gadmin_domain, gadmin_staff_ou} from '../config/keys.json';
+import {
+	gadmin_domain,
+	gadmin_ignore_ou,
+	gadmin_staff_ou,
+} from '../config/keys.json';
 import {User} from './schema';
 
 export class AdminClient {
@@ -46,14 +50,20 @@ export class AdminClient {
 
 	private async processUser(user: Google.admin_directory_v1.Schema$User) {
 		if (!user.id) return;
-		let suspended = user.suspended || user.archived;
+		let exclude =
+			user.suspended ||
+			user.archived ||
+			(gadmin_ignore_ou &&
+				gadmin_ignore_ou.some(ou =>
+					user.orgUnitPath?.startsWith(`/${ou}`),
+				));
 		let staff =
 			gadmin_staff_ou &&
 			gadmin_staff_ou.some(ou => user.orgUnitPath?.startsWith(`/${ou}`));
 
 		let dbUser = await User.findOne().byId(user.id);
 		if (dbUser) {
-			if (suspended) {
+			if (exclude) {
 				await dbUser.remove();
 			} else {
 				let modified = false;
@@ -87,7 +97,7 @@ export class AdminClient {
 
 				if (modified) await dbUser.save();
 			}
-		} else if (!suspended) {
+		} else if (!exclude) {
 			let newUser = new User({
 				googleID: user.id,
 				name: user.name?.fullName || 'Unknown',
