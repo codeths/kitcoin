@@ -29,8 +29,8 @@ export class AdminClient {
 	}
 
 	private async listUsers(pageToken?: string) {
-		if (!this.token) return null;
-		if (!gadmin_domain) return null;
+		if (!this.token) throw 'Could not authenticate for the Google API';
+		if (!gadmin_domain) throw 'Google Admin domain not set';
 
 		let data = await google.admin('directory_v1').users.list({
 			access_token: this.token,
@@ -106,7 +106,8 @@ export class AdminClient {
 	 */
 	public async processAllUsers(pageToken?: string): Promise<void> {
 		return new Promise(async (resolve, reject) => {
-			if (!this.token) return;
+			if (!this.token)
+				reject('Could not authenticate for the Google API');
 
 			let users = await this.listUsers(pageToken).catch(e => {
 				if (e && e.code && e.errors)
@@ -115,7 +116,7 @@ export class AdminClient {
 							.map((x: any) => x.message)
 							.join(', ')}`,
 					);
-				else reject();
+				else reject(e);
 			});
 			if (!users || !users.users) return;
 			resolve();
