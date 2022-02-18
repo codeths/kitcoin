@@ -377,10 +377,8 @@ router.post(
 					.status(403)
 					.send('You have not authorized the required scope.');
 
-			let adminClient = await new AdminClient().create(req.user);
-
-			adminClient
-				.processAllUsers()
+			new AdminClient()
+				.startSync(req.user)
 				.then(x => {
 					res.status(200).send();
 				})
