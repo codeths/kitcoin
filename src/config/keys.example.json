@@ -5,5 +5,10 @@
 	"client_secret": "xxxxxxxxxxxxxxxxxxxx",
 	"oauthDomain": null,
 	"sessionSecret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-	"weeklyBalance": 100
+	"weeklyBalance": 100,
+	"gadmin_domain": "xxxxx@xxxxx.xxx",
+	"gadmin_staff_ou": [
+		"xxxxx",
+		"xxxxx/yyyyy"
+	]
 }
