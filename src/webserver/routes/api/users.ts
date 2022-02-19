@@ -365,40 +365,25 @@ router.post(
 			roles: ['ADMIN'],
 		}),
 	async (req, res) => {
-		try {
-			if (!requestHasUser(req)) return;
+		if (!requestHasUser(req)) return;
 
-			if (
-				!req.user.tokens.scopes.includes(
-					'https://www.googleapis.com/auth/admin.directory.user.readonly',
-				)
+		if (
+			!req.user.tokens.scopes.includes(
+				'https://www.googleapis.com/auth/admin.directory.user.readonly',
 			)
-				return res
-					.status(403)
-					.send('You have not authorized the required scope.');
+		)
+			return res
+				.status(403)
+				.send('You have not authorized the required scope.');
 
-			new AdminClient()
-				.startSync(req.user)
-				.then(x => {
-					res.status(200).send();
-				})
-				.catch(e => {
-					res.status(500).send(e);
-				});
-		} catch (e) {
-			try {
-				const error = await DBError.generate(
-					{
-						request: req,
-						error: e instanceof Error ? e : undefined,
-					},
-					{
-						user: req.user?.id,
-					},
-				);
-				res.status(500).send(`An error occured. Error ID: ${error.id}`);
-			} catch (e) {}
-		}
+		new AdminClient()
+			.startSync(req.user)
+			.then(x => {
+				res.status(200).send();
+			})
+			.catch(e => {
+				res.status(500).send(e);
+			});
 	},
 );
 
