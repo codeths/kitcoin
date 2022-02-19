@@ -10,6 +10,9 @@ const OAUTH_SCOPES = {
 		'https://www.googleapis.com/auth/classroom.courses.readonly',
 		'https://www.googleapis.com/auth/classroom.rosters.readonly',
 	],
+	ADMIN_SYNC: [
+		'https://www.googleapis.com/auth/admin.directory.user.readonly',
+	],
 };
 
 type ScopeType = keyof typeof OAUTH_SCOPES;

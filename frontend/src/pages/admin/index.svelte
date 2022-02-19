@@ -1,6 +1,6 @@
 <script>
 	import {metatags} from '@roxi/routify';
-	import {onMount} from 'svelte';
+	import {onMount, getContext} from 'svelte';
 	import {
 		StudentSearch,
 		RoleSelect,
@@ -246,6 +246,20 @@
 	onMount(() => {
 		setData();
 	});
+
+	let ctx = getContext('userInfo');
+	let hasAdminScope = false;
+
+	(async () => {
+		let info = (await ctx) || null;
+		if (
+			info &&
+			info.scopes.includes(
+				'https://www.googleapis.com/auth/admin.directory.user.readonly',
+			)
+		)
+			hasAdminScope = true;
+	})();
 </script>
 
 <!-- Content -->
@@ -412,6 +426,46 @@
 						</p>
 					{/if}
 				{/key}
+			</div>
+		</div>
+		<div class="mx-2 my-4 col-span-12 md:col-span-6">
+			<h1 class="text-3xl font-medium mb-2">Sync Users</h1>
+			<div
+				class="bg-base-100 shadow-md rounded px-8 py-8 flex flex-col justify-center"
+			>
+				{#if hasAdminScope}
+					<button
+						class="btn btn-primary"
+						on:click={() => {
+							fetch('/api/users/sync', {
+								method: 'POST',
+							}).then(async x => {
+								if (x.ok) {
+									toastContainer.toast(
+										'Sync started',
+										'success',
+									);
+								} else {
+									let text = await x.text();
+									toastContainer.toast(
+										text || `Error ${x.status}}`,
+										'error',
+									);
+								}
+							});
+						}}
+						target="_self">Sync</button
+					>
+				{:else}
+					<span class="mb-2 text-center"
+						>You have not authorized Kitcoin to access Google Admin.</span
+					>
+					<a
+						class="btn btn-primary"
+						href="/login/admin_sync"
+						target="_self">Authorize Scope</a
+					>
+				{/if}
 			</div>
 		</div>
 	</div>

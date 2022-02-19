@@ -97,6 +97,20 @@ router.get(
 );
 
 router.get(
+	['/login/admin_sync', '/signin/admin_sync'],
+	(req, res, next) =>
+		request(req, res, next, {
+			authentication: false,
+		}),
+	async (req, res) => {
+		handleLogin(req, res, {
+			scopes: 'ADMIN_SYNC',
+			redirect: '/admin',
+		});
+	},
+);
+
+router.get(
 	['/logout', '/signout'],
 	(req, res, next) =>
 		request(req, res, next, {
