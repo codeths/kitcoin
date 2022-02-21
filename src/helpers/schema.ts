@@ -1,16 +1,6 @@
 import mongoose from 'mongoose';
 import {mongo as mongoURL, weeklyBalance} from '../config/keys.json';
 import {
-	IUserQueries,
-	UserRoles,
-	UserRoleTypes,
-	ITransactionAPIResponse,
-	ITransactionDoc,
-	IUserDoc,
-	IUserModel,
-	ITransactionModel,
-	ITransactionQueries,
-	ITransaction,
 	IStoreDoc,
 	IStoreModel,
 	IStoreQueries,
@@ -28,295 +18,12 @@ import {
 	IUserAPIResponse,
 } from '../types';
 
-import fuzzySearch from 'mongoose-fuzzy-searching';
 import {customAlphabet} from 'nanoid';
 const nanoid = customAlphabet('ABCDEF0123456789', 6);
 import express from 'express';
-import {ErrorDetail} from '../struct';
-import {getAccessToken} from './oauth';
+import {ErrorDetail, User} from '../struct';
 
 mongoose.connect(mongoURL);
-
-const userSchema = new mongoose.Schema<IUserDoc, IUserModel>({
-	email: String,
-	googleID: {
-		type: String,
-		required: true,
-	},
-	schoolID: {
-		type: String,
-	},
-	name: {
-		type: String,
-		required: true,
-	},
-	balance: {
-		type: Number,
-		get: getBalance,
-		default: 0,
-	},
-	balanceExpires: {
-		type: Date,
-		get: getBalanceExpires,
-	},
-	weeklyBalanceMultiplier: {
-		type: Number,
-	},
-	tokens: {
-		refresh: {
-			type: String,
-			default: null,
-		},
-		access: {
-			type: String,
-			default: null,
-		},
-		expires: {
-			type: Date,
-			default: null,
-		},
-		session: {
-			type: String,
-			default: null,
-		},
-		scopes: {
-			type: [String],
-			default: [],
-		},
-	},
-	roles: {type: Number, default: UserRoles.STUDENT},
-});
-
-userSchema.index({email: 1}, {unique: true, sparse: true});
-userSchema.index({googleID: 1}, {unique: true});
-userSchema.index({schoolID: 1}, {unique: true, sparse: true});
-
-userSchema.query.byEmail = function (email: string): IUserQueries {
-	return this.where({email});
-};
-
-userSchema.query.byId = function (googleID: string): IUserQueries {
-	return this.where({googleID});
-};
-
-userSchema.query.bySchoolId = function (schoolID: string): IUserQueries {
-	return this.where({schoolID});
-};
-
-userSchema.query.byToken = function (token: string): IUserQueries {
-	return this.where({'tokens.session': token});
-};
-
-userSchema.methods.setRoles = function (roles: UserRoleTypes[]): void {
-	this.roles = roles.reduce((acc, role) => acc | UserRoles[role], 0);
-	return;
-};
-
-userSchema.methods.getRoles = function (): UserRoleTypes[] {
-	return Object.keys(UserRoles)
-		.map(x => x as UserRoleTypes)
-		.filter(
-			role => role !== 'NONE' && role !== 'ALL' && this.hasRole(role),
-		);
-};
-
-userSchema.methods.hasRole = function (role: UserRoleTypes): boolean {
-	return (this.roles & UserRoles[role]) === UserRoles[role];
-};
-
-userSchema.methods.hasAnyRole = function (roles: UserRoleTypes[]): boolean {
-	return roles.some(role => this.hasRole(role));
-};
-
-userSchema.methods.hasAllRoles = function (roles: UserRoleTypes[]): boolean {
-	return roles.every(role => this.hasRole(role));
-};
-
-userSchema.methods.toAPIResponse = async function (
-	checkAuthorized: boolean = false,
-): Promise<IUserAPIResponse> {
-	let {tokens, ...noTokens} = this.toObject({
-		getters: true,
-		versionKey: false,
-	});
-	delete noTokens.id;
-
-	let roles = this.getRoles();
-	let scopes = this.tokens?.scopes;
-	let authorized = checkAuthorized
-		? !!(await getAccessToken(this))
-		: undefined;
-
-	let data: IUserAPIResponse = {
-		...noTokens,
-		roles,
-		scopes,
-		authorized,
-	};
-
-	return data;
-};
-
-function endOfWeek(): Date {
-	return new Date(
-		new Date().getFullYear(),
-		new Date().getMonth(),
-		new Date().getDate() + 7 - new Date().getDay(),
-	);
-}
-
-function getBalance(this: IUserDoc, balance: number) {
-	if (!this.hasRole('STAFF')) return balance;
-	let rawBalanceExpires = this.get('balanceExpires', null, {
-		getters: false,
-	});
-	if (
-		!rawBalanceExpires ||
-		rawBalanceExpires.getTime() < new Date().getTime()
-	) {
-		return (this.balance =
-			weeklyBalance * (this.weeklyBalanceMultiplier ?? 1));
-	}
-	return balance;
-}
-
-function getBalanceExpires(this: IUserDoc, balanceExpires: Date) {
-	if (!this.hasRole('STAFF')) return undefined;
-	if (!balanceExpires || balanceExpires.getTime() < new Date().getTime()) {
-		this.balanceExpires = endOfWeek();
-		return this.balanceExpires;
-	}
-	return balanceExpires;
-}
-
-userSchema.plugin(fuzzySearch, {
-	fields: [
-		{
-			name: 'name',
-			weight: 3,
-		},
-		{
-			name: 'email',
-			weight: 1,
-			prefixOnly: true,
-		},
-	],
-	middlewares: {
-		preSave: async function () {
-			for (let key in this) {
-				if (this[key as keyof typeof this] === null)
-					(this[key as keyof typeof this] as any) = undefined;
-			}
-		},
-	},
-});
-
-const transactionSchema = new mongoose.Schema<
-	ITransactionDoc,
-	ITransactionModel
->({
-	amount: {
-		type: Number,
-		required: true,
-	},
-	reason: String,
-	from: {
-		id: String,
-		text: String,
-	},
-	to: {
-		id: String,
-		text: String,
-	},
-	store: {
-		id: String,
-		item: String,
-		manager: String,
-	},
-	date: {
-		type: Date,
-		default: () => new Date(),
-	},
-});
-
-transactionSchema.query.byUser = function (
-	id: string,
-	{
-		count,
-		page,
-		search,
-	}: {
-		count: number | null;
-		page: number | null;
-		search: string | null;
-	},
-): ITransactionQueries {
-	count ??= 10;
-	page ??= 1;
-
-	let searchOptions = search
-		? {$or: [{reason: {$regex: search, $options: 'i'}}]}
-		: {};
-
-	return this.where({$or: [{'from.id': id}, {'to.id': id}], ...searchOptions})
-		.sort({
-			date: -1,
-		})
-		.limit(count)
-		.skip(count * (page - 1));
-};
-
-transactionSchema.index({user: -1});
-
-transactionSchema.methods.getUserText = async function (
-	which: 'FROM' | 'TO',
-): Promise<string | null> {
-	let data = which === 'FROM' ? this.from : this.to;
-
-	return (
-		data.text || (data.id && (await User.findById(data.id))?.name) || null
-	);
-};
-
-transactionSchema.methods.canManage = function (user?: IUserDoc): boolean {
-	return (
-		(user &&
-			(user.hasRole('ADMIN') ||
-				(user.hasRole('STAFF') &&
-					user.id === this.from.id &&
-					this.date.getTime() > Date.now() - 1000 * 60 * 60 * 24))) ||
-		false
-	);
-};
-
-transactionSchema.methods.toAPIResponse = async function (
-	user?: IUserDoc,
-	managingUser: IUserDoc | undefined = user,
-): Promise<ITransactionAPIResponse> {
-	let json = this.toObject({
-		getters: true,
-		versionKey: false,
-	});
-	delete json.id;
-
-	let res: ITransactionAPIResponse = {
-		...json,
-		date: this.date.toISOString(),
-		canManage: this.canManage(managingUser),
-	};
-
-	if (res.from.id && !res.from.text) {
-		res.from.text = (await this.getUserText('FROM')) || null;
-		if (user) res.from.me = user.id === res.from.id;
-	}
-
-	if (res.to.id && !res.to.text) {
-		res.to.text = (await this.getUserText('TO')) || null;
-		if (user) res.to.me = user.id === res.to.id;
-	}
-
-	return res;
-};
 
 const storeSchema = new mongoose.Schema<IStoreDoc, IStoreModel>({
 	name: {type: String, required: true},
@@ -341,6 +48,7 @@ storeSchema.methods.getItems = async function (): Promise<IStoreItemDoc[]> {
 };
 
 storeSchema.methods.toAPIResponse = async function (
+	this: IStoreDoc,
 	canManage: boolean,
 ): Promise<IStoreAPIResponse> {
 	let data = this.toObject({
@@ -473,11 +181,6 @@ errorSchema.statics.generate = async function (
 	return new DBError(output).save();
 };
 
-const User = mongoose.model<IUserDoc, IUserModel>('User', userSchema);
-const Transaction = mongoose.model<ITransactionDoc, ITransactionModel>(
-	'Transaction',
-	transactionSchema,
-);
 const Store = mongoose.model<IStoreDoc, IStoreModel>('Store', storeSchema);
 const StoreItem = mongoose.model<IStoreItemDoc, IStoreItemModel>(
 	'StoreItem',
@@ -486,5 +189,5 @@ const StoreItem = mongoose.model<IStoreItemDoc, IStoreItemModel>(
 
 const DBError = mongoose.model<IErrorDoc, IErrorModel>('Error', errorSchema);
 
-export {User, Transaction, Store, StoreItem, DBError};
+export {Store, StoreItem, DBError};
 export * from '../types';
