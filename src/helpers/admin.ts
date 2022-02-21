@@ -124,7 +124,12 @@ export class AdminClient {
 	 * @param user The user to run the sync as. Must be able to access the Google Admin API
 	 * @returns
 	 */
-	public async startSync(user: IUserDoc) {
+	public async startSync(user: IUserDoc | string) {
+		if (typeof user == 'string') {
+			let newUser = await User.findById(user);
+			if (!newUser) return;
+			user = newUser;
+		}
 		await getAccessToken(user);
 		if (!user.tokens.access) return;
 		this.token = user.tokens.access;
@@ -136,7 +141,7 @@ export class AdminClient {
 	 * Start daily syncs
 	 * @param user The user to run the sync as. Must be able to access the Google Admin API
 	 */
-	public startDailySyncs(user: IUserDoc) {
+	public startDailySyncs(user: string) {
 		try {
 			this.startSync(user);
 		} catch (e) {}
@@ -145,11 +150,11 @@ export class AdminClient {
 		endOfDay.setHours(24, 0, 0, 0);
 
 		setTimeout(() => {
+			try {
+				this.startSync(user);
+			} catch (e) {}
 			setInterval(async () => {
 				try {
-					let newUser = await User.findById(user.id);
-					if (!newUser) return;
-					user = newUser;
 					this.startSync(user);
 				} catch (e) {}
 			}, 1000 * 60 * 60 * 24);
