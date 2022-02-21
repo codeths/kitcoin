@@ -1,5 +1,5 @@
 import express from 'express';
-import {DBError, IUserDoc, User} from '../../../helpers/schema';
+import {DBError} from '../../../helpers/schema';
 import {request, Validators} from '../../../helpers/request';
 import Google, {google} from 'googleapis';
 import {getAccessToken} from '../../../helpers/oauth';

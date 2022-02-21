@@ -9,7 +9,8 @@ import {
 	RequestValidateKeyOptionsResolvable,
 	isValidRole,
 } from '../types';
-import {DBError, User} from './schema';
+import {User} from '../struct';
+import {DBError} from './schema';
 import {isValidObjectId} from 'mongoose';
 
 export async function request(
@@ -20,7 +21,7 @@ export async function request(
 ) {
 	const appliedOptions = getOptions(options);
 	if (req.session?.token) {
-		const user = await User.findOne().byToken(req.session.token);
+		const user = await User.findByToken(req.session.token);
 		if (user) req.user = user;
 	}
 	if (appliedOptions.authentication && !req.user)

@@ -1,8 +1,8 @@
 import express from 'express';
+import {User} from '../../../struct';
 import {
 	DBError,
 	isValidRoles,
-	User,
 	UserRoles,
 	UserRoleTypes,
 } from '../../../helpers/schema';
@@ -12,12 +12,13 @@ import {
 	request,
 	Validators,
 } from '../../../helpers/request';
-import {IUserDoc, requestHasUser} from '../../../types';
-import {FilterQuery, isValidObjectId} from 'mongoose';
+import {IUser, requestHasUser} from '../../../types';
+import {FilterQuery, isValidObjectId, Query} from 'mongoose';
+import {MongooseFuzzyModel} from 'mongoose-fuzzy-searching';
 import {AdminClient} from '../../../helpers/admin';
 const router = express.Router();
 
-function isValidSearchResult(user: IUserDoc, req: express.Request): boolean {
+function isValidSearchResult(user: IUser, req: express.Request): boolean {
 	if (
 		!booleanFromData(req.query.me as string | undefined) &&
 		user.id === req.user!.id
@@ -78,10 +79,9 @@ router.get(
 
 			let countNum = count ? parseInt(count) : 10;
 
-			const results = await User.fuzzySearch(q);
+			const results = await User.fuzzySearch<IUser>(q);
 
-			const byID =
-				q.match(/^\d{5,6}$/) && (await User.findOne().bySchoolId(q));
+			const byID = q.match(/^\d{5,6}$/) && (await User.findBySchoolId(q));
 
 			const byMongoID =
 				(isValidObjectId(q) && (await User.findById(q))) || null;

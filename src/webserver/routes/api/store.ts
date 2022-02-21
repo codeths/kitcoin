@@ -6,14 +6,13 @@ import path from 'path';
 import crypto from 'crypto';
 import {ClassroomClient} from '../../../helpers/classroom';
 import {numberFromData, request, Validators} from '../../../helpers/request';
+import {User, Transaction} from '../../../struct';
 import {
 	DBError,
 	IStoreDoc,
-	IUserDoc,
+	IUser,
 	Store,
 	StoreItem,
-	Transaction,
-	User,
 } from '../../../helpers/schema';
 import {
 	IStore,
@@ -25,7 +24,7 @@ const router = express.Router();
 
 async function getStorePerms(
 	store: IStoreDoc,
-	user: IUserDoc | undefined,
+	user: IUser | undefined,
 ): Promise<{
 	view: boolean;
 	manage: boolean;

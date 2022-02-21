@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser';
 import mongostore from 'connect-mongodb-session';
 import {mongo as mongoURL, sessionSecret, port} from '../config/keys.json';
 import {auth, api} from './routes';
-import {IUserDoc, User} from '../helpers/schema';
+import {IUser} from '../helpers/schema';
 import path from 'path';
 import {request} from '../helpers/request';
 import {cpus} from 'os';
@@ -25,7 +25,7 @@ declare module 'express-session' {
 
 declare module 'express-serve-static-core' {
 	interface Request {
-		user?: IUserDoc;
+		user?: IUser;
 	}
 }
 

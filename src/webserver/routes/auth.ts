@@ -119,7 +119,7 @@ router.get(
 	async (req, res) => {
 		if (!req.session.token) return res.redirect('/');
 		if (req.user) {
-			req.user.tokens.session = null;
+			req.user.tokens.session = undefined;
 			await req.user.save();
 		}
 		res.redirect('/');

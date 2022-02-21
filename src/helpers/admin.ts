@@ -1,12 +1,12 @@
 import Google, {google} from 'googleapis';
-import {IUserDoc} from '../types';
+import {IUser} from '../types';
 import {getAccessToken} from './oauth';
 import {
 	gadmin_domain,
 	gadmin_ignore_ou,
 	gadmin_staff_ou,
 } from '../config/keys.json';
-import {User} from './schema';
+import {User} from '../struct';
 
 export class AdminClient {
 	private token?: string;
@@ -41,7 +41,7 @@ export class AdminClient {
 			gadmin_staff_ou &&
 			gadmin_staff_ou.some(ou => user.orgUnitPath?.startsWith(`/${ou}`));
 
-		let dbUser = await User.findOne().byId(user.id);
+		let dbUser = await User.findByGoogleId(user.id);
 		if (dbUser) {
 			if (exclude) {
 				await dbUser.remove();
@@ -124,7 +124,7 @@ export class AdminClient {
 	 * @param user The user to run the sync as. Must be able to access the Google Admin API
 	 * @returns
 	 */
-	public async startSync(user: IUserDoc | string) {
+	public async startSync(user: IUser | string) {
 		if (typeof user == 'string') {
 			let newUser = await User.findById(user);
 			if (!newUser) return;

@@ -21,7 +21,8 @@ type PromptType = 'none' | 'consent' | 'select_account';
 import {google, Auth} from 'googleapis';
 import express from 'express';
 import {client_id, client_secret, oauthDomain} from '../config/keys.json';
-import {User, IUserDoc, DBError} from './schema';
+import {User, IUser} from '../struct';
+import {DBError} from './schema';
 import {ErrorDetail} from '../struct';
 
 /**
@@ -47,9 +48,7 @@ function getOAuth2Client(
  * @param user The user to get a token for
  * @returns Google OAuth2 client
  */
-async function getAccessToken(
-	user: IUserDoc,
-): Promise<Auth.OAuth2Client | null> {
+async function getAccessToken(user: IUser): Promise<Auth.OAuth2Client | null> {
 	if (!user.tokens.refresh) return null;
 	const oauth2Client = getOAuth2Client({
 		access_token: user.tokens.access,
@@ -105,7 +104,7 @@ export async function oauthCallback(
 	session: string,
 	redirect: string,
 ) {
-	return new Promise<IUserDoc>(async (resolve, reject) => {
+	return new Promise<IUser>(async (resolve, reject) => {
 		const auth = getOAuth2Client(undefined, redirect);
 		const tokens = await auth.getToken(code).catch(async () => {
 			let error = await DBError.generate({
@@ -174,7 +173,7 @@ export async function oauthCallback(
 			});
 			return reject(error);
 		}
-		let user = await User.findOne().byId(googleID);
+		let user = await User.findByGoogleId(googleID);
 		if (user) {
 			if (
 				user.name !== name ||
