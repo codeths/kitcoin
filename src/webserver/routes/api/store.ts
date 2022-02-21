@@ -6,24 +6,21 @@ import path from 'path';
 import crypto from 'crypto';
 import {ClassroomClient} from '../../../helpers/classroom';
 import {numberFromData, request, Validators} from '../../../helpers/request';
-import {User, Transaction} from '../../../struct';
 import {
-	DBError,
-	IStoreDoc,
+	User,
 	IUser,
+	Transaction,
 	Store,
-	StoreItem,
-} from '../../../helpers/schema';
-import {
 	IStore,
-	IStoreAPIResponse,
-	IStoreItemDoc,
-	requestHasUser,
-} from '../../../types';
+	StoreItem,
+	IStoreItem,
+} from '../../../struct';
+import {DBError} from '../../../helpers/schema';
+import {requestHasUser} from '../../../types';
 const router = express.Router();
 
 async function getStorePerms(
-	store: IStoreDoc,
+	store: IStore,
 	user: IUser | undefined,
 ): Promise<{
 	view: boolean;
@@ -79,7 +76,7 @@ router.get(
 			authentication: false,
 		}),
 	async (req, res) => {
-		let query: FilterQuery<IStoreDoc>[] = [
+		let query: FilterQuery<IStore>[] = [
 			{
 				public: true,
 			},
@@ -908,7 +905,7 @@ router.delete(
 				);
 			} catch (e) {}
 
-			item.imageHash = null;
+			item.imageHash = undefined;
 			await item.save();
 
 			return res.status(200).json(item);
