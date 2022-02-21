@@ -1,302 +1,8 @@
-import {
-	Callback,
-	Document,
-	Model,
-	ObjectId,
-	Query,
-	SaveOptions,
-} from 'mongoose';
-import {MongooseFuzzyModel} from 'mongoose-fuzzy-searching';
+import {Document, Model, Query, FilterQuery, LeanDocument} from 'mongoose';
+import {FuzzyQuery, Search, Callback} from 'mongoose-fuzzy-searching';
 import express from 'express';
-import {ErrorDetail} from '../struct';
+import {ErrorDetail, IUser, ITransaction} from '../struct';
 import {Modify} from '.';
-
-export interface IUser {
-	/**
-	 * The user's email
-	 */
-	email?: string;
-	/**
-	 * The user's Google ID
-	 */
-	googleID: string;
-	/**
-	 * The user's school ID
-	 */
-	schoolID?: string;
-	/**
-	 * The user's name
-	 */
-	name: string;
-	tokens: {
-		/**
-		 * OAuth refresh token
-		 */
-		refresh: string | null;
-		/**
-		 * OAuth access token
-		 */
-		access: string | null;
-		/**
-		 * OAuth access token expiration date
-		 */
-		expires: Date | null;
-		/**
-		 * Session token
-		 */
-		session: string | null;
-		/**
-		 * Authorized scopes
-		 */
-		scopes: string[];
-	};
-	/**
-	 * The user's balance
-	 */
-	balance: number;
-	/**
-	 * Staff - when their balance resets
-	 */
-	balanceExpires?: Date;
-	/**
-	 * Staff - multiplier for weekly balance
-	 */
-	weeklyBalanceMultiplier?: number;
-	/**
-	 * The user's roles (bitfield)
-	 */
-	roles: number;
-}
-
-export interface IUserMethods {
-	/**
-	 * Set the roles on this user
-	 * @param roles An array of roles to set
-	 */
-	setRoles(roles: UserRoleTypes[]): void;
-	/**
-	 * Get array of roles
-	 */
-	getRoles(): UserRoleTypes[];
-	/**
-	 * Check if the user has a role
-	 * @param role The role to check for
-	 */
-	hasRole(role: UserRoleTypes): boolean;
-	/**
-	 * Check if the user has any of the specified roles
-	 * @param role The roles to check for
-	 */
-	hasAnyRole(roles: UserRoleTypes[]): boolean;
-	/**
-	 * Check if the user has all of the specified roles
-	 * @param role The roles to check for
-	 */
-	hasAllRoles(roles: UserRoleTypes[]): boolean;
-	/**
-	 * Turn this transaction into a JSON object for API output
-	 * @param checkAuthorized Check if user has authorized OAuth
-	 */
-	toAPIResponse(checkAuthorized?: boolean): Promise<IUserAPIResponse>;
-}
-
-export type IUserAPIResponse = Modify<
-	IUser,
-	{
-		roles: UserRoleTypes[];
-		authorized?: boolean;
-		scopes: string[];
-	},
-	'tokens'
->;
-
-export type IUserDoc = IUser & IUserMethods & Document<IUser>;
-
-export type IUserQuery = Query<IUserDoc, IUserDoc> & IUserQueries;
-
-export interface IUserQueries {
-	byId(googleID: string): IUserQuery;
-	bySchoolId(schoolID: string): IUserQuery;
-	byEmail(email: string): IUserQuery;
-	byToken(token: string): IUserQuery;
-}
-
-export type IUserModel = MongooseFuzzyModel<IUserDoc, IUserQueries>;
-
-/**
- * @typedef TransactionUser
- * @property {} id The user's id
- * @property {} text Text to display (for non-user transactions)
- */
-
-export interface ITransaction {
-	/**
-	 * The amount of the transaction
-	 */
-	amount: number;
-	/**
-	 * The reason of the transaction
-	 */
-	reason: string | null;
-	/**
-	 * Who sent this transaction
-	 */
-	from: {
-		/**
-		 * The user's id
-		 */
-		id: string | null;
-		/**
-		 * Text to display (for non-user transactions)
-		 */
-		text: string | null;
-	};
-	/**
-	 * Who received this transaction
-	 */
-	to: {
-		/**
-		 * The user's id
-		 */
-		id: string | null;
-		/**
-		 * Text to display (for non-user transactions)
-		 */
-		text: string | null;
-	};
-	/**
-	 * Store details (if applicable)
-	 */
-	store?: {
-		/**
-		 * The store's id
-		 */
-		id: string;
-		/**
-		 * The item's id
-		 */
-		item: string;
-		/**
-		 * The store manager's id (who created the transaction)
-		 */
-		manager: string;
-	};
-	/**
-	 * The date of the transaction
-	 */
-	date: Date;
-}
-
-export interface ITransactionMethods {
-	/**
-	 * Get the text of the users involved in this transaction
-	 * @param which Which user to get the text of
-	 */
-	getUserText(which: 'FROM' | 'TO'): Promise<string | null>;
-	/**
-	 * Get whether or not a user can manage this transaction
-	 * @param user User to check
-	 */
-	canManage(user?: IUserDoc): boolean;
-	/**
-	 * Turn this transaction into a JSON object for API output
-	 * @param user View transaction user info as this user
-	 * @param managingUser This user is managing the transaction. Defaults to the user parameter
-	 */
-	toAPIResponse(
-		user?: IUserDoc,
-		managingUser?: IUserDoc,
-	): Promise<ITransactionAPIResponse>;
-}
-
-export type ITransactionAPIResponse = Modify<
-	ITransaction,
-	{
-		/**
-		 * The date of the transaction (ISO format)
-		 */
-		date: string;
-		from: {
-			/**
-			 * The user's id
-			 */
-			id: string | null;
-			/**
-			 * Text to display (for non-user transactions)
-			 */
-			text: string | null;
-			/**
-			 * Is from current user
-			 */
-			me?: boolean;
-		};
-		to: {
-			/**
-			 * The user's id
-			 */
-			id: string | null;
-			/**
-			 * Text to display (for non-user transactions)
-			 */
-			text: string | null;
-			/**
-			 * Is to current user
-			 */
-			me?: boolean;
-		};
-		/**
-		 * Can be managed by current user
-		 */
-		canManage: boolean;
-	}
->;
-
-export type ITransactionDoc = ITransaction &
-	ITransactionMethods &
-	Document<ITransaction>;
-
-export type ITransactionQuery = Query<ITransactionDoc, ITransactionDoc> &
-	IUserQueries;
-
-export type ITransactionsQuery = Query<ITransactionDoc[], ITransactionDoc> &
-	IUserQueries;
-
-export interface ITransactionQueries {
-	byUser(
-		id: string,
-		{
-			count,
-			page,
-			search,
-		}: {
-			count: number | null;
-			page: number | null;
-			search: string | null;
-		},
-	): ITransactionsQuery;
-}
-
-export type ITransactionModel = Model<ITransactionDoc, ITransactionQueries>;
-
-export enum UserRoles {
-	NONE = 0,
-	STUDENT = 0b0010,
-	STAFF = 0b0100,
-	ADMIN = 0b1000,
-	ALL = STUDENT | STAFF | ADMIN,
-}
-
-export type UserRoleTypes = keyof typeof UserRoles;
-
-export function isValidRole(role: unknown): role is UserRoleTypes {
-	if (Array.isArray(role)) return role.every(isValidRole);
-	return typeof role === 'string' && Object.keys(UserRoles).includes(role);
-}
-
-export function isValidRoles(roles: unknown): roles is UserRoleTypes[] {
-	if (!Array.isArray(roles)) return false;
-	return roles.every(isValidRole);
-}
 
 export interface IStore {
 	name: string;
@@ -468,3 +174,92 @@ export interface IErrorStaticMethods {
 export type IErrorDoc = IError & Document<IError>;
 
 export type IErrorModel = Model<IErrorDoc> & IErrorStaticMethods;
+
+/* NEW */
+
+export abstract class MongooseFuzzyClass {
+	public static fuzzySearch:
+		| (<T extends MongooseFuzzyClass, QueryHelpers = {}>(
+				query: Search,
+				additionalQuery?: FilterQuery<T>,
+				callback?: Callback<FuzzyQuery<T>, QueryHelpers>,
+		  ) => Query<FuzzyQuery<T>[], FuzzyQuery<T>, QueryHelpers>)
+		| (<T extends MongooseFuzzyClass, QueryHelpers = {}>(
+				query: Search,
+				callback?: Callback<FuzzyQuery<T>, QueryHelpers>,
+		  ) => Query<FuzzyQuery<T>[], FuzzyQuery<T>, QueryHelpers>);
+}
+
+export enum UserRoles {
+	NONE = 0,
+	STUDENT = 0b0010,
+	STAFF = 0b0100,
+	ADMIN = 0b1000,
+	ALL = STUDENT | STAFF | ADMIN,
+}
+
+export type UserRoleTypes = keyof typeof UserRoles;
+
+export function isValidRole(role: unknown): role is UserRoleTypes {
+	if (Array.isArray(role)) return role.every(isValidRole);
+	return typeof role === 'string' && Object.keys(UserRoles).includes(role);
+}
+
+export function isValidRoles(roles: unknown): roles is UserRoleTypes[] {
+	if (!Array.isArray(roles)) return false;
+	return roles.every(isValidRole);
+}
+
+export type IUserAPIResponse = Modify<
+	LeanDocument<IUser>,
+	{
+		roles: UserRoleTypes[];
+		authorized?: boolean;
+		scopes: string[];
+	},
+	'tokens'
+>;
+
+export type ITransactionAPIResponse = Modify<
+	LeanDocument<ITransaction>,
+	{
+		/**
+		 * The date of the transaction (ISO format)
+		 */
+		date: string;
+		from: {
+			/**
+			 * The user's id
+			 */
+			id?: string;
+			/**
+			 * Text to display (for non-user transactions)
+			 */
+			text?: string;
+			/**
+			 * Is from current user
+			 */
+			me?: boolean;
+		};
+		to: {
+			/**
+			 * The user's id
+			 */
+			id?: string;
+			/**
+			 * Text to display (for non-user transactions)
+			 */
+			text?: string;
+			/**
+			 * Is to current user
+			 */
+			me?: boolean;
+		};
+		/**
+		 * Can be managed by current user
+		 */
+		canManage: boolean;
+	}
+>;
+
+export {IUser, ITransaction};
