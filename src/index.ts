@@ -1,6 +1,5 @@
 import {gadmin_sync_user} from './config/keys.json';
 import {AdminClient} from './helpers/admin';
-import {User} from './helpers/schema';
 
 // Start webserver
 import './webserver';
