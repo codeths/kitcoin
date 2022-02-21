@@ -223,28 +223,28 @@ export default class User extends MongooseFuzzyClass {
 		return data;
 	}
 
-	public static async findByGoogleId(
+	public static findByGoogleId(
 		this: ReturnModelType<typeof User>,
 		googleID: string,
 	) {
 		return this.findOne({googleID});
 	}
 
-	public static async findBySchoolId(
+	public static findBySchoolId(
 		this: ReturnModelType<typeof User>,
 		schoolID: string,
 	) {
 		return this.findOne({schoolID});
 	}
 
-	public static async findByEmail(
+	public static findByEmail(
 		this: ReturnModelType<typeof User>,
 		email: string,
 	) {
 		return this.findOne({email});
 	}
 
-	public static async findByToken(
+	public static findByToken(
 		this: ReturnModelType<typeof User>,
 		token: string,
 	) {
