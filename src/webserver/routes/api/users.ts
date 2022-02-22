@@ -1,14 +1,16 @@
 import express from 'express';
-import {User, IUser, DBError} from '../../../struct';
+import {isValidObjectId} from 'mongoose';
+
+import {AdminClient} from '../../../helpers/admin';
 import {
 	booleanFromData,
 	dateFromData,
 	request,
 	Validators,
 } from '../../../helpers/request';
-import {requestHasUser, isValidRoles, UserRoleTypes} from '../../../types';
-import {isValidObjectId} from 'mongoose';
-import {AdminClient} from '../../../helpers/admin';
+import {DBError, IUser, User} from '../../../struct';
+import {isValidRoles, requestHasUser, UserRoleTypes} from '../../../types';
+
 const router = express.Router();
 
 function isValidSearchResult(user: IUser, req: express.Request): boolean {

@@ -18,11 +18,11 @@ const OAUTH_SCOPES = {
 type ScopeType = keyof typeof OAUTH_SCOPES;
 type PromptType = 'none' | 'consent' | 'select_account';
 
-import {google, Auth} from 'googleapis';
 import express from 'express';
+import {Auth, google} from 'googleapis';
+
 import {client_id, client_secret, oauthDomain} from '../config/keys.json';
-import {User, IUser, DBError} from '../struct';
-import {ErrorDetail} from '../struct';
+import {DBError, ErrorDetail, IUser, User} from '../struct';
 
 /**
  * Generate OAuth2 client and optionally set the credentials

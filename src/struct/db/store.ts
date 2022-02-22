@@ -1,7 +1,8 @@
-import {prop, DocumentType, index} from '@typegoose/typegoose';
-import {IStoreAPIResponse} from '../../types';
-import {User} from '.';
+import {DocumentType, index, prop} from '@typegoose/typegoose';
 import {ReturnModelType} from '@typegoose/typegoose/lib/types';
+
+import {IStoreAPIResponse} from '../../types';
+import {User} from './';
 
 @index({classIDs: 1})
 export default class Store {

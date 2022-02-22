@@ -1,11 +1,12 @@
 import express from 'express';
-const router = express.Router();
 
-import currency from './currency';
 import classroom from './classroom';
-import users from './users';
+import currency from './currency';
 import misc from './misc';
 import store from './store';
+import users from './users';
+
+const router = express.Router();
 
 router.use(currency);
 router.use(classroom);

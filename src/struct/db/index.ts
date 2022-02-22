@@ -1,9 +1,10 @@
-import {getModelForClass, DocumentType} from '@typegoose/typegoose';
-import UserClass from './user';
-import TransactionClass from './transaction';
+import {DocumentType, getModelForClass} from '@typegoose/typegoose';
+
+import DBErrorClass, {ErrorDetail} from './error';
 import StoreClass from './store';
 import StoreItemClass from './storeitem';
-import DBErrorClass, {ErrorDetail} from './error';
+import TransactionClass from './transaction';
+import UserClass from './user';
 
 export const User = getModelForClass(UserClass);
 export type IUser = DocumentType<UserClass>;

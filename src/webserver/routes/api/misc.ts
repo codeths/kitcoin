@@ -1,6 +1,8 @@
 import express from 'express';
+
 import {request, Validators} from '../../../helpers/request';
 import {DBError} from '../../../struct';
+
 const router = express.Router();
 
 router.get(

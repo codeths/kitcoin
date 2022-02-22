@@ -1,14 +1,16 @@
-import {prop, DocumentType, plugin, index} from '@typegoose/typegoose';
+import fuzzySearch from 'mongoose-fuzzy-searching';
+
+import {DocumentType, index, plugin, prop} from '@typegoose/typegoose';
+import {ReturnModelType} from '@typegoose/typegoose/lib/types';
+
+import {weeklyBalance} from '../../config/keys.json';
 import {getAccessToken} from '../../helpers/oauth';
 import {
-	MongooseFuzzyClass,
 	IUserAPIResponse,
+	MongooseFuzzyClass,
 	UserRoles,
 	UserRoleTypes,
 } from '../../types';
-import {weeklyBalance} from '../../config/keys.json';
-import fuzzySearch from 'mongoose-fuzzy-searching';
-import {ReturnModelType} from '@typegoose/typegoose/lib/types';
 
 class UserTokens {
 	/**

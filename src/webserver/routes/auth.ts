@@ -1,14 +1,16 @@
-import express from 'express';
 import crypto from 'crypto';
+import express from 'express';
+
 import {
 	getAuthURL,
-	oauthCallback,
-	ScopeType,
-	PromptType,
 	getRedirectUrl,
+	oauthCallback,
+	PromptType,
+	ScopeType,
 } from '../../helpers/oauth';
 import {request} from '../../helpers/request';
 import {DBError, ErrorDetail} from '../../struct';
+
 const router = express.Router();
 
 const ALLOWED_REDIRECTS: (string | RegExp)[] = [

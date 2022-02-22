@@ -1,16 +1,17 @@
 import express from 'express';
+import {isValidObjectId} from 'mongoose';
+
+import {DBError, User} from '../struct';
 import {
-	notEmpty,
 	getOptions,
+	isValidRole,
+	notEmpty,
 	RequestOptions,
-	RequestValidateOptions,
-	RequestValidateParts,
 	RequestValidateKeyOptions,
 	RequestValidateKeyOptionsResolvable,
-	isValidRole,
+	RequestValidateOptions,
+	RequestValidateParts,
 } from '../types';
-import {User, DBError} from '../struct';
-import {isValidObjectId} from 'mongoose';
 
 export async function request(
 	req: express.Request,

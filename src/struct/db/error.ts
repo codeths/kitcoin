@@ -1,8 +1,10 @@
-import {prop, DocumentType, index} from '@typegoose/typegoose';
-import {LeanDocument} from 'mongoose';
-import {ReturnModelType} from '@typegoose/typegoose/lib/types';
-import {customAlphabet} from 'nanoid';
 import express from 'express';
+import {LeanDocument} from 'mongoose';
+import {customAlphabet} from 'nanoid';
+
+import {DocumentType, index, prop} from '@typegoose/typegoose';
+import {ReturnModelType} from '@typegoose/typegoose/lib/types';
+
 const nanoid = customAlphabet('ABCDEF0123456789', 6);
 
 class ErrorDetailButton {

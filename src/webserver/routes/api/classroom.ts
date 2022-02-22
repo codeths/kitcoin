@@ -1,13 +1,15 @@
 import express from 'express';
-import {request, Validators} from '../../../helpers/request';
-import {getAccessToken} from '../../../helpers/oauth';
+
 import {ClassroomClient} from '../../../helpers/classroom';
+import {getAccessToken} from '../../../helpers/oauth';
+import {request, Validators} from '../../../helpers/request';
 import {DBError} from '../../../struct';
 import {
 	ClassroomRolesArray,
 	isValidClassroomRole,
 	requestHasUser,
 } from '../../../types';
+
 const router = express.Router();
 
 // Get classes

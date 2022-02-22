@@ -1,7 +1,8 @@
-import {Query, FilterQuery, LeanDocument} from 'mongoose';
-import {FuzzyQuery, Search, Callback} from 'mongoose-fuzzy-searching';
-import {IUser, ITransaction, IStore, IStoreItem, IDBError} from '../struct';
-import {Modify} from '.';
+import {FilterQuery, LeanDocument, Query} from 'mongoose';
+import {Callback, FuzzyQuery, Search} from 'mongoose-fuzzy-searching';
+
+import {IDBError, IStore, IStoreItem, ITransaction, IUser} from '../struct';
+import {Modify} from './';
 
 export abstract class MongooseFuzzyClass {
 	public static fuzzySearch:

@@ -1,11 +1,12 @@
 import express from 'express';
-import {User, Transaction, DBError} from '../../../struct';
+
 import {
 	numberFromData,
 	request,
 	stringFromData,
 	Validators,
 } from '../../../helpers/request';
+import {DBError, Transaction, User} from '../../../struct';
 import {requestHasUser} from '../../../types';
 
 const router = express.Router();

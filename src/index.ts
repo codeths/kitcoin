@@ -1,6 +1,7 @@
+import mongoose from 'mongoose';
+
 import {gadmin_sync_user, mongo} from './config/keys.json';
 import {AdminClient} from './helpers/admin';
-import mongoose from 'mongoose';
 
 // Start webserver
 import './webserver';
