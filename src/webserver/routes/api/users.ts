@@ -1,23 +1,19 @@
 import express from 'express';
-import {
-	DBError,
-	isValidRoles,
-	User,
-	UserRoles,
-	UserRoleTypes,
-} from '../../../helpers/schema';
+import {isValidObjectId} from 'mongoose';
+
+import {AdminClient} from '../../../helpers/admin';
 import {
 	booleanFromData,
 	dateFromData,
 	request,
 	Validators,
 } from '../../../helpers/request';
-import {IUserDoc, requestHasUser} from '../../../types';
-import {FilterQuery, isValidObjectId} from 'mongoose';
-import {AdminClient} from '../../../helpers/admin';
+import {DBError, IUser, User} from '../../../struct';
+import {isValidRoles, requestHasUser, UserRoleTypes} from '../../../types';
+
 const router = express.Router();
 
-function isValidSearchResult(user: IUserDoc, req: express.Request): boolean {
+function isValidSearchResult(user: IUser, req: express.Request): boolean {
 	if (
 		!booleanFromData(req.query.me as string | undefined) &&
 		user.id === req.user!.id
@@ -78,10 +74,9 @@ router.get(
 
 			let countNum = count ? parseInt(count) : 10;
 
-			const results = await User.fuzzySearch(q);
+			const results = await User.fuzzySearch<IUser>(q);
 
-			const byID =
-				q.match(/^\d{5,6}$/) && (await User.findOne().bySchoolId(q));
+			const byID = q.match(/^\d{5,6}$/) && (await User.findBySchoolId(q));
 
 			const byMongoID =
 				(isValidObjectId(q) && (await User.findById(q))) || null;

@@ -1,1 +1,1 @@
-export * from './errordetail';
+export * from './db';

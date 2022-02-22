@@ -1,11 +1,12 @@
 import express from 'express';
-import {DBError, Transaction, User} from '../../../helpers/schema';
+
 import {
 	numberFromData,
 	request,
 	stringFromData,
 	Validators,
 } from '../../../helpers/request';
+import {DBError, Transaction, User} from '../../../struct';
 import {requestHasUser} from '../../../types';
 
 const router = express.Router();
@@ -95,33 +96,20 @@ router.get(
 			const dbUser = user == 'me' ? req.user : await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
 
-			const query = Transaction.find().byUser(dbUser.id, {
+			const list = await Transaction.findByUser(dbUser.id, {
 				count,
 				page,
 				search,
 			});
 
-			const [transactions, docCount] = await Promise.all([
-				query.exec(),
-				query
-					.clone()
-					.setOptions({
-						skip: 0,
-						limit: undefined,
-					})
-					.countDocuments()
-					.exec(),
-			]);
-
 			res.status(200).send({
-				page: page ?? 1,
-				pageCount: Math.ceil(
-					docCount /
-						(query.getOptions().limit ?? transactions.length),
-				),
-				docCount,
+				page: list.page,
+				pageCount: list.pageCount,
+				docCount: list.docCount,
 				transactions: await Promise.all(
-					transactions.map(t => t.toAPIResponse(dbUser, req.user)),
+					list.transactions.map(t =>
+						t.toAPIResponse(dbUser, req.user),
+					),
 				),
 			});
 		} catch (e) {

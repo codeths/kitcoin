@@ -1,16 +1,17 @@
 import express from 'express';
+import {isValidObjectId} from 'mongoose';
+
+import {DBError, User} from '../struct';
 import {
-	notEmpty,
 	getOptions,
+	isValidRole,
+	notEmpty,
 	RequestOptions,
-	RequestValidateOptions,
-	RequestValidateParts,
 	RequestValidateKeyOptions,
 	RequestValidateKeyOptionsResolvable,
-	isValidRole,
+	RequestValidateOptions,
+	RequestValidateParts,
 } from '../types';
-import {DBError, User} from './schema';
-import {isValidObjectId} from 'mongoose';
 
 export async function request(
 	req: express.Request,
@@ -20,7 +21,7 @@ export async function request(
 ) {
 	const appliedOptions = getOptions(options);
 	if (req.session?.token) {
-		const user = await User.findOne().byToken(req.session.token);
+		const user = await User.findByToken(req.session.token);
 		if (user) req.user = user;
 	}
 	if (appliedOptions.authentication && !req.user)
@@ -128,7 +129,7 @@ export function numberFromData(data: unknown): number | null {
 export function booleanFromData(data: boolean | `${boolean}`): boolean;
 export function booleanFromData(data: unknown): boolean | null;
 export function booleanFromData(data: unknown): boolean | null {
-	let boolean = null;
+	let boolean: boolean | null = null;
 	if (Validators.booleanString().run(data)) boolean = data === 'true';
 	else if (Validators.boolean().run(data)) boolean = data;
 

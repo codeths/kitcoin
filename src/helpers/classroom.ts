@@ -1,7 +1,8 @@
 import Google, {google} from 'googleapis';
-import {IUserDoc, ClassroomRoles, notEmpty} from '../types';
+
+import {IUser, User} from '../struct';
+import {ClassroomRoles, notEmpty} from '../types';
 import {getAccessToken} from './oauth';
-import {User} from './schema';
 
 type Client = Google.Common.OAuth2Client;
 
@@ -22,7 +23,7 @@ class ClassroomClient {
 	 * Create an OAuth client
 	 * @param user DB user
 	 */
-	public async createClient(user: IUserDoc): Promise<this> {
+	public async createClient(user: IUser): Promise<this> {
 		const client = await getAccessToken(user);
 		if (client) this.client = client;
 
@@ -136,7 +137,7 @@ class ClassroomClient {
 		const dataWithIDs = (
 			await Promise.all(
 				data.map(async student => {
-					let user: IUserDoc | null = await User.findOne().byId(
+					let user: IUser | null = await User.findByGoogleId(
 						student.userId,
 					);
 					if (!user)

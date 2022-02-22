@@ -1,5 +1,7 @@
 import express from 'express';
-import {IUserDoc, UserRoleTypes} from '.';
+
+import {IUser} from '../struct';
+import {UserRoleTypes} from './';
 
 /**
  * Options for request handling
@@ -34,7 +36,7 @@ export function getOptions(
 }
 
 export interface AuthenticatedRequest extends express.Request {
-	user: IUserDoc;
+	user: IUser;
 }
 
 export type RequestValidateParts = 'query' | 'params' | 'body';
@@ -57,7 +59,7 @@ export type RequestValidateOptions = {
 };
 
 export function requestHasUser(req: express.Request): req is express.Request & {
-	user: IUserDoc;
+	user: IUser;
 } {
-	return (req.user! as IUserDoc | undefined) != undefined;
+	return (req.user! as IUser | undefined) != undefined;
 }

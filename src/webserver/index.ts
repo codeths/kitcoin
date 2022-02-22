@@ -1,15 +1,16 @@
-import express from 'express';
-import compression from 'compression';
-import session from 'express-session';
-import cookieParser from 'cookie-parser';
-import mongostore from 'connect-mongodb-session';
-import {mongo as mongoURL, sessionSecret, port} from '../config/keys.json';
-import {auth, api} from './routes';
-import {IUserDoc, User} from '../helpers/schema';
-import path from 'path';
-import {request} from '../helpers/request';
-import {cpus} from 'os';
 import cluster from 'cluster';
+import compression from 'compression';
+import mongostore from 'connect-mongodb-session';
+import cookieParser from 'cookie-parser';
+import express from 'express';
+import session from 'express-session';
+import {cpus} from 'os';
+import path from 'path';
+
+import {mongo as mongoURL, port, sessionSecret} from '../config/keys.json';
+import {request} from '../helpers/request';
+import {IUser} from '../struct';
+import {api, auth} from './routes';
 import {handleLogin} from './routes/auth';
 
 declare module 'express-session' {
@@ -25,7 +26,7 @@ declare module 'express-session' {
 
 declare module 'express-serve-static-core' {
 	interface Request {
-		user?: IUserDoc;
+		user?: IUser;
 	}
 }
 

@@ -1,15 +1,16 @@
-import express from 'express';
 import crypto from 'crypto';
+import express from 'express';
+
 import {
 	getAuthURL,
-	oauthCallback,
-	ScopeType,
-	PromptType,
 	getRedirectUrl,
+	oauthCallback,
+	PromptType,
+	ScopeType,
 } from '../../helpers/oauth';
 import {request} from '../../helpers/request';
-import {DBError} from '../../helpers/schema';
-import {ErrorDetail} from '../../struct';
+import {DBError, ErrorDetail} from '../../struct';
+
 const router = express.Router();
 
 const ALLOWED_REDIRECTS: (string | RegExp)[] = [
@@ -119,7 +120,7 @@ router.get(
 	async (req, res) => {
 		if (!req.session.token) return res.redirect('/');
 		if (req.user) {
-			req.user.tokens.session = null;
+			req.user.tokens.session = undefined;
 			await req.user.save();
 		}
 		res.redirect('/');

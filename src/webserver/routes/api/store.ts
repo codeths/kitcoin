@@ -1,31 +1,28 @@
-import express from 'express';
-import sharp from 'sharp';
-import {FilterQuery} from 'mongoose';
-import fs from 'fs';
-import path from 'path';
 import crypto from 'crypto';
+import express from 'express';
+import fs from 'fs';
+import {FilterQuery} from 'mongoose';
+import path from 'path';
+import sharp from 'sharp';
+
 import {ClassroomClient} from '../../../helpers/classroom';
 import {numberFromData, request, Validators} from '../../../helpers/request';
 import {
 	DBError,
-	IStoreDoc,
-	IUserDoc,
+	IStore,
+	IUser,
 	Store,
 	StoreItem,
 	Transaction,
 	User,
-} from '../../../helpers/schema';
-import {
-	IStore,
-	IStoreAPIResponse,
-	IStoreItemDoc,
-	requestHasUser,
-} from '../../../types';
+} from '../../../struct';
+import {requestHasUser} from '../../../types';
+
 const router = express.Router();
 
 async function getStorePerms(
-	store: IStoreDoc,
-	user: IUserDoc | undefined,
+	store: IStore,
+	user: IUser | undefined,
 ): Promise<{
 	view: boolean;
 	manage: boolean;
@@ -80,7 +77,7 @@ router.get(
 			authentication: false,
 		}),
 	async (req, res) => {
-		let query: FilterQuery<IStoreDoc>[] = [
+		let query: FilterQuery<IStore>[] = [
 			{
 				public: true,
 			},
@@ -405,7 +402,7 @@ router.delete(
 					.status(403)
 					.send('Only the owner or an admin can delete a store.');
 
-			let items = await StoreItem.find({storeID: store.id});
+			let items = await StoreItem.findByStoreID(store.id);
 			await Promise.all(
 				items.map(async item => {
 					try {
@@ -606,7 +603,7 @@ router.get(
 		let permissions = await getStorePerms(store, req.user);
 		if (!permissions.view) return res.status(403).send('Forbidden');
 
-		let items = await StoreItem.find().byStoreID(id);
+		let items = await StoreItem.findByStoreID(store.id);
 
 		res.status(200).json(items);
 	},
@@ -909,7 +906,7 @@ router.delete(
 				);
 			} catch (e) {}
 
-			item.imageHash = null;
+			item.imageHash = undefined;
 			await item.save();
 
 			return res.status(200).json(item);
