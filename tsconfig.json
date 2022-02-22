@@ -1,17 +1,23 @@
 {
 	"compilerOptions": {
 		"outDir": "dist",
-		"baseUrl": "dist",
+		"target": "es6",
 		"lib": ["esnext"],
-		"target": "es5",
-		"strict": true,
 		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
-		"allowJs": true,
-		"sourceMap": true,
-		"experimentalDecorators": true
+		"removeComments": false,
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"newLine": "LF",
+		"declaration": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"allowJs": false,
+		"inlineSourceMap": true,
+		"importHelpers": true,
+		"strictBindCallApply": true,
+		"strictFunctionTypes": true,
+		"strictNullChecks": true
 	},
 	"include": ["src/**/*"],
 	"exclude": ["frontend"]
