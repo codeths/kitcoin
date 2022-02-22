@@ -401,7 +401,7 @@ router.delete(
 					.status(403)
 					.send('Only the owner or an admin can delete a store.');
 
-			let items = await StoreItem.find({storeID: store.id});
+			let items = await StoreItem.findByStoreID(store.id);
 			await Promise.all(
 				items.map(async item => {
 					try {
@@ -602,7 +602,7 @@ router.get(
 		let permissions = await getStorePerms(store, req.user);
 		if (!permissions.view) return res.status(403).send('Forbidden');
 
-		let items = await StoreItem.find().byStoreID(id);
+		let items = await StoreItem.findByStoreID(store.id);
 
 		res.status(200).json(items);
 	},
