@@ -87,7 +87,7 @@ function getBalanceExpires(this: DocumentType<User>, balanceExpires: Date) {
 		},
 	],
 	middlewares: {
-		preSave: async function () {
+		preSave: async function (this: DocumentType<User>) {
 			for (let key in this) {
 				if (this[key as keyof typeof this] === null)
 					(this[key as keyof typeof this] as any) = undefined;
