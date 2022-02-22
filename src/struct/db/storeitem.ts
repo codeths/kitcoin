@@ -33,6 +33,19 @@ export default class StoreItem {
 	@prop()
 	imageHash?: string;
 
+	public get createdAt(): Date {
+		return (
+			this as unknown as DocumentType<typeof StoreItem>
+		)._id.getTimestamp();
+	}
+
+	public get newArrival() {
+		return (
+			(this.createdAt.getTime() || 0) >=
+			Date.now() - 1000 * 60 * 60 * 24 * 7
+		);
+	}
+
 	public static async findByStoreID(
 		this: ReturnModelType<typeof StoreItem>,
 		storeID: string,
