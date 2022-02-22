@@ -12,7 +12,6 @@ export class AdminClient {
 	private token?: string;
 
 	private async listUsers(pageToken?: string) {
-		console.log(pageToken);
 		if (!this.token) throw 'Could not authenticate for the Google API';
 		if (!gadmin_domain) throw 'Google Admin domain not set';
 
