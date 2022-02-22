@@ -10,6 +10,7 @@ class TransactionUser {
 	 */
 	@prop()
 	id?: string;
+
 	/**
 	 * Text to display (for non-user transactions)
 	 */
@@ -23,11 +24,13 @@ class TransactionStore {
 	 */
 	@prop({required: true})
 	id!: string;
+
 	/**
 	 * The item's id
 	 */
 	@prop({required: true})
 	item!: string;
+
 	/**
 	 * The store manager's id (who created the transaction)
 	 */
@@ -42,26 +45,31 @@ export default class Transaction {
 	 */
 	@prop({required: true})
 	amount!: number;
+
 	/**
 	 * The reason of the transaction
 	 */
 	@prop()
 	reason?: string;
+
 	/**
 	 * Who sent this transaction
 	 */
 	@prop({type: TransactionUser, _id: false, required: true})
 	from!: TransactionUser;
+
 	/**
 	 * Who received this transaction
 	 */
 	@prop({type: TransactionUser, _id: false, required: true})
 	to!: TransactionUser;
+
 	/**
 	 * Store details (if applicable)
 	 */
 	@prop({type: TransactionStore, _id: false})
 	store?: TransactionStore;
+
 	/**
 	 * The date of the transaction
 	 */

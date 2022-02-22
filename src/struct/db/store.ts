@@ -11,28 +11,28 @@ export default class Store {
 
 	@prop()
 	description?: string;
+
 	/**
 	 * Google classroom ID (if applicable)
 	 */
-
 	@prop({type: [String]})
 	classIDs: string[] = [];
+
 	/**
 	 * Should the store be shown to everyone
 	 */
-
 	@prop({required: true, default: true})
 	public: boolean = true;
+
 	/**
 	 * Mongo ID of the person who owns this store
 	 */
-
 	@prop({required: true})
 	owner!: string;
+
 	/**
 	 * Mongo IDs of users who can manage this store
 	 */
-
 	@prop({type: [String]})
 	managers: string[] = [];
 

@@ -8,6 +8,7 @@ export default class StoreItem {
 	 */
 	@prop({required: true})
 	storeID!: string;
+
 	/**
 	 * Name of the store item
 	 */
@@ -16,10 +17,10 @@ export default class StoreItem {
 
 	@prop()
 	quantity?: number;
+
 	/**
 	 * Item description
 	 */
-
 	@prop()
 	description?: string;
 

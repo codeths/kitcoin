@@ -133,16 +133,19 @@ export default class User extends MongooseFuzzyClass {
 	 */
 	@prop({required: true, get: getBalance, default: 0})
 	public balance!: number;
+	
 	/**
 	 * Staff - when their balance resets
 	 */
 	@prop({get: getBalanceExpires})
 	public balanceExpires?: Date;
+
 	/**
 	 * Staff - multiplier for weekly balance
 	 */
 	@prop()
 	public weeklyBalanceMultiplier?: number;
+
 	/**
 	 * The user's roles (bitfield)
 	 */
@@ -168,6 +171,7 @@ export default class User extends MongooseFuzzyClass {
 				role => role !== 'NONE' && role !== 'ALL' && this.hasRole(role),
 			);
 	}
+
 	/**
 	 * Check if the user has a role
 	 * @param role The role to check for
@@ -175,6 +179,7 @@ export default class User extends MongooseFuzzyClass {
 	public hasRole(this: DocumentType<User>, role: UserRoleTypes): boolean {
 		return (this.roles & UserRoles[role]) === UserRoles[role];
 	}
+
 	/**
 	 * Check if the user has any of the specified roles
 	 * @param role The roles to check for
@@ -185,6 +190,7 @@ export default class User extends MongooseFuzzyClass {
 	): boolean {
 		return roles.some(role => this.hasRole(role));
 	}
+
 	/**
 	 * Check if the user has all of the specified roles
 	 * @param role The roles to check for
@@ -195,6 +201,7 @@ export default class User extends MongooseFuzzyClass {
 	): boolean {
 		return roles.every(role => this.hasRole(role));
 	}
+
 	/**
 	 * Turn this transaction into a JSON object for API output
 	 * @param checkAuthorized Check if user has authorized OAuth
