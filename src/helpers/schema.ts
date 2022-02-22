@@ -14,8 +14,6 @@ const nanoid = customAlphabet('ABCDEF0123456789', 6);
 import express from 'express';
 import {ErrorDetail, User} from '../struct';
 
-mongoose.connect(mongoURL);
-
 const errorSchema = new mongoose.Schema<IErrorDoc, IErrorModel>({
 	_id: {
 		type: String,
