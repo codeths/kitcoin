@@ -267,7 +267,7 @@
 	<div class="grid grid-cols-12">
 		<div class="mx-2 my-4 col-span-12 md:col-span-6">
 			<h1 class="text-3xl font-medium mb-2">Manage Users</h1>
-			<div class="bg-base-100 shadow-md rounded px-8 py-8">
+			<div class="bg-base-100 shadow-md rounded-lg px-8 py-8">
 				<div class="flex items-center">
 					<StudentSearch
 						bind:value={selectedStudent}
@@ -416,7 +416,7 @@
 		</div>
 		<div class="mx-2 my-4 col-span-12 md:col-span-6">
 			<h1 class="text-3xl font-medium mb-2">Manage Transactions</h1>
-			<div class="bg-base-100 shadow-md rounded px-8 py-8">
+			<div class="bg-base-100 shadow-md rounded-lg px-8 py-8">
 				{#key selectedStudent}
 					{#if selectedStudent}
 						<Transactions user={selectedStudent.value} />
@@ -431,7 +431,7 @@
 		<div class="mx-2 my-4 col-span-12 md:col-span-6">
 			<h1 class="text-3xl font-medium mb-2">Sync Users</h1>
 			<div
-				class="bg-base-100 shadow-md rounded px-8 py-8 flex flex-col justify-center"
+				class="bg-base-100 shadow-md rounded-lg px-8 py-8 flex flex-col justify-center"
 			>
 				{#if hasAdminScope}
 					<button

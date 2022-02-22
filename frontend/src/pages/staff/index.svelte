@@ -83,7 +83,7 @@
 	<div class="grid grid-cols-12">
 		<div class="mx-2 my-4 col-span-12 lg:col-span-7">
 			<h1 class="text-3xl font-medium mb-2">Send Kitcoin</h1>
-			<div class="bg-base-100 shadow-md rounded px-8 py-8">
+			<div class="bg-base-100 shadow-md rounded-lg px-8 py-8">
 				<CreateTransaction
 					{balance}
 					on:balance={e => (balance = e.detail)}
@@ -93,7 +93,7 @@
 		</div>
 		<div class="mx-2 my-4 col-span-12 lg:col-span-5">
 			<h1 class="text-3xl font-medium mb-2">Available Kitcoin</h1>
-			<div class="flex bg-base-100 shadow-md rounded py-10 min-h-40">
+			<div class="flex bg-base-100 shadow-md rounded-lg py-10 min-h-40">
 				<h1
 					class="text-center text-6xl sm:text-7xl xl:text-8xl flex justify-center items-center w-full h-full"
 				>
@@ -114,7 +114,7 @@
 		</div>
 		<div class="mx-2 my-4 col-span-12">
 			<h1 class="text-3xl font-medium mb-2">Your Students</h1>
-			<div class="bg-base-100 shadow-md rounded px-8 py-8">
+			<div class="bg-base-100 shadow-md rounded-lg px-8 py-8">
 				<ClassroomSearch
 					label="Choose a class"
 					hidelabel="true"
@@ -228,7 +228,7 @@
 		</div>
 		<div class="mx-2 my-4 col-span-12">
 			<h1 class="text-4xl font-medium mb-2">Transaction History</h1>
-			<div class="bg-base-100 shadow-md rounded px-8 py-8">
+			<div class="bg-base-100 shadow-md rounded-lg px-8 py-8">
 				<Transactions
 					bind:this={transactions}
 					on:balance={e => (balance = e.detail)}
