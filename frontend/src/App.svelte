@@ -8,6 +8,7 @@
 	const routeConfig = {
 		'/staff': 'STAFF',
 		'/student': 'STUDENT',
+		'/admin': 'ADMIN',
 	};
 
 	let info = undefined;
@@ -33,12 +34,14 @@
 
 	function handleAuthCheck(path = window.location.pathname) {
 		let requirement = routeConfig[path];
-		if (
+		let unauthorized = !info || !info.authorized;
+		let shouldRedirect =
 			requirement &&
 			(!info ||
 				(typeof requirement == 'string' &&
-					!info.roles.includes(requirement)))
-		) {
+					!info.roles.includes(requirement)) ||
+				unauthorized);
+		if (shouldRedirect) {
 			window.location.href = `/login?redirect=${encodeURIComponent(
 				path,
 			)}&hint=true`;
