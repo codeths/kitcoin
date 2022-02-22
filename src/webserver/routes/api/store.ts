@@ -605,7 +605,14 @@ router.get(
 
 		let items = await StoreItem.findByStoreID(store.id);
 
-		res.status(200).json(items);
+		res.status(200).json(
+			items.map(x =>
+				x.toObject({
+					getters: true,
+					versionKey: false,
+				}),
+			),
+		);
 	},
 );
 
@@ -635,7 +642,12 @@ router.get(
 
 		if (!item) return;
 
-		res.status(200).json(item);
+		res.status(200).json(
+			item.toObject({
+				getters: true,
+				versionKey: false,
+			}),
+		);
 	},
 );
 
@@ -738,7 +750,12 @@ router.patch(
 
 			item.imageHash = hash;
 			await item.save();
-			return res.status(200).json(item);
+			return res.status(200).json(
+				item.toObject({
+					getters: true,
+					versionKey: false,
+				}),
+			);
 		} catch (e) {
 			try {
 				let error = await DBError.generate(
@@ -798,7 +815,12 @@ router.patch(
 
 			await item.save();
 
-			res.status(200).json(item);
+			res.status(200).json(
+				item.toObject({
+					getters: true,
+					versionKey: false,
+				}),
+			);
 		} catch (e) {
 			try {
 				let error = await DBError.generate(
@@ -909,7 +931,12 @@ router.delete(
 			item.imageHash = undefined;
 			await item.save();
 
-			return res.status(200).json(item);
+			return res.status(200).json(
+				item.toObject({
+					getters: true,
+					versionKey: false,
+				}),
+			);
 		} catch (e) {
 			try {
 				let error = await DBError.generate(
@@ -971,7 +998,12 @@ router.post(
 
 			if (!item) return res.status(500).send('Failed to create item');
 
-			return res.status(200).send(item);
+			return res.status(200).send(
+				item.toObject({
+					getters: true,
+					versionKey: false,
+				}),
+			);
 		} catch (e) {
 			try {
 				let error = await DBError.generate(
