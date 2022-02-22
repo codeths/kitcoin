@@ -1,20 +1,13 @@
 import express from 'express';
-import {User} from '../../../struct';
-import {
-	DBError,
-	isValidRoles,
-	UserRoles,
-	UserRoleTypes,
-} from '../../../helpers/schema';
+import {User, IUser, DBError} from '../../../struct';
 import {
 	booleanFromData,
 	dateFromData,
 	request,
 	Validators,
 } from '../../../helpers/request';
-import {IUser, requestHasUser} from '../../../types';
-import {FilterQuery, isValidObjectId, Query} from 'mongoose';
-import {MongooseFuzzyModel} from 'mongoose-fuzzy-searching';
+import {requestHasUser, isValidRoles, UserRoleTypes} from '../../../types';
+import {isValidObjectId} from 'mongoose';
 import {AdminClient} from '../../../helpers/admin';
 const router = express.Router();
 

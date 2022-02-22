@@ -1,75 +1,7 @@
-import {Document, Model, Query, FilterQuery, LeanDocument} from 'mongoose';
+import {Query, FilterQuery, LeanDocument} from 'mongoose';
 import {FuzzyQuery, Search, Callback} from 'mongoose-fuzzy-searching';
-import express from 'express';
-import {ErrorDetail, IUser, ITransaction, IStore, IStoreItem} from '../struct';
+import {IUser, ITransaction, IStore, IStoreItem, IDBError} from '../struct';
 import {Modify} from '.';
-
-export interface IErrorDetail {
-	/**
-	 * HTTP error code
-	 */
-	code?: number | null;
-	title?: string | null;
-	description?: string | null;
-	button?: {
-		text: string;
-		url: string;
-	} | null;
-}
-
-export interface IError {
-	/**
-	 * User ID (Mongo ID)
-	 */
-	user?: string;
-	/**
-	 * When the error occured
-	 */
-	date: Date;
-	error?: {
-		name?: string | null;
-		message: string;
-		stack?: string[] | null;
-	} | null;
-	/**
-	 * Request
-	 */
-	request?: {
-		method: string;
-		url: string;
-		body?: string | null;
-	} | null;
-	/**
-	 * Details to show to user on webpage
-	 */
-	details?: IErrorDetail | null;
-}
-
-export interface IErrorStaticMethods {
-	/**
-	 * Generate error
-	 */
-	generate(
-		/**
-		 * Data to parse
-		 */
-		data: {
-			error?: Error;
-			request?: express.Request;
-			details?: IErrorDetail | ErrorDetail;
-		},
-		/**
-		 * Additional raw IError data
-		 */
-		additionalData?: Partial<IError>,
-	): Promise<IErrorDoc>;
-}
-
-export type IErrorDoc = IError & Document<IError>;
-
-export type IErrorModel = Model<IErrorDoc> & IErrorStaticMethods;
-
-/* NEW */
 
 export abstract class MongooseFuzzyClass {
 	public static fuzzySearch:
@@ -173,5 +105,3 @@ export type IStoreAPIResponse = Modify<
 		}[];
 	}
 >;
-
-export {IUser, ITransaction, IStore, IStoreItem};

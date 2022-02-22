@@ -21,8 +21,7 @@ type PromptType = 'none' | 'consent' | 'select_account';
 import {google, Auth} from 'googleapis';
 import express from 'express';
 import {client_id, client_secret, oauthDomain} from '../config/keys.json';
-import {User, IUser} from '../struct';
-import {DBError} from './schema';
+import {User, IUser, DBError} from '../struct';
 import {ErrorDetail} from '../struct';
 
 /**

@@ -1,9 +1,8 @@
 import express from 'express';
-import {DBError} from '../../../helpers/schema';
 import {request, Validators} from '../../../helpers/request';
-import Google, {google} from 'googleapis';
 import {getAccessToken} from '../../../helpers/oauth';
 import {ClassroomClient} from '../../../helpers/classroom';
+import {DBError} from '../../../struct';
 import {
 	ClassroomRolesArray,
 	isValidClassroomRole,

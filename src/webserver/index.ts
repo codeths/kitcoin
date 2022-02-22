@@ -5,12 +5,12 @@ import cookieParser from 'cookie-parser';
 import mongostore from 'connect-mongodb-session';
 import {mongo as mongoURL, sessionSecret, port} from '../config/keys.json';
 import {auth, api} from './routes';
-import {IUser} from '../helpers/schema';
 import path from 'path';
 import {request} from '../helpers/request';
 import {cpus} from 'os';
 import cluster from 'cluster';
 import {handleLogin} from './routes/auth';
+import {IUser} from '../struct';
 
 declare module 'express-session' {
 	interface SessionData {

@@ -8,8 +8,7 @@ import {
 	getRedirectUrl,
 } from '../../helpers/oauth';
 import {request} from '../../helpers/request';
-import {DBError} from '../../helpers/schema';
-import {ErrorDetail} from '../../struct';
+import {DBError, ErrorDetail} from '../../struct';
 const router = express.Router();
 
 const ALLOWED_REDIRECTS: (string | RegExp)[] = [

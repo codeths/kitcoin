@@ -9,8 +9,7 @@ import {
 	RequestValidateKeyOptionsResolvable,
 	isValidRole,
 } from '../types';
-import {User} from '../struct';
-import {DBError} from './schema';
+import {User, DBError} from '../struct';
 import {isValidObjectId} from 'mongoose';
 
 export async function request(

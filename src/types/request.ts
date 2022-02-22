@@ -1,5 +1,6 @@
 import express from 'express';
-import {IUser, UserRoleTypes} from '.';
+import {UserRoleTypes} from '.';
+import {IUser} from '../struct';
 
 /**
  * Options for request handling

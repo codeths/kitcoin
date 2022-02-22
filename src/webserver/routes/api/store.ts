@@ -13,9 +13,8 @@ import {
 	Store,
 	IStore,
 	StoreItem,
-	IStoreItem,
+	DBError,
 } from '../../../struct';
-import {DBError} from '../../../helpers/schema';
 import {requestHasUser} from '../../../types';
 const router = express.Router();
 

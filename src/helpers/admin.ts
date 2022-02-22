@@ -1,12 +1,11 @@
 import Google, {google} from 'googleapis';
-import {IUser} from '../types';
 import {getAccessToken} from './oauth';
 import {
 	gadmin_domain,
 	gadmin_ignore_ou,
 	gadmin_staff_ou,
 } from '../config/keys.json';
-import {User} from '../struct';
+import {User, IUser} from '../struct';
 
 export class AdminClient {
 	private token?: string;

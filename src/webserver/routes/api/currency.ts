@@ -1,6 +1,5 @@
 import express from 'express';
-import {User, Transaction} from '../../../struct';
-import {DBError} from '../../../helpers/schema';
+import {User, Transaction, DBError} from '../../../struct';
 import {
 	numberFromData,
 	request,
