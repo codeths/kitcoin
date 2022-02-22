@@ -38,7 +38,7 @@ class UserTokens {
 	/**
 	 * Authorized scopes
 	 */
-	@prop()
+	@prop({type: [String]})
 	public scopes: string[] = [];
 }
 

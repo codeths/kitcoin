@@ -1,6 +1,6 @@
 import {prop, DocumentType, index} from '@typegoose/typegoose';
 import {IStoreAPIResponse} from '../../types';
-import {User, StoreItem} from '.';
+import {User} from '.';
 import {ReturnModelType} from '@typegoose/typegoose/lib/types';
 
 @index({classIDs: 1})
@@ -14,7 +14,7 @@ export default class Store {
 	 * Google classroom ID (if applicable)
 	 */
 
-	@prop()
+	@prop({type: [String]})
 	classIDs: string[] = [];
 	/**
 	 * Should the store be shown to everyone
@@ -32,18 +32,14 @@ export default class Store {
 	 * Mongo IDs of users who can manage this store
 	 */
 
-	@prop()
+	@prop({type: [String]})
 	managers: string[] = [];
 
 	/**
 	 * Mongo IDs of users who can view this store
 	 */
-	@prop()
+	@prop({type: [String]})
 	users: string[] = [];
-
-	public getItems(this: DocumentType<Store>) {
-		return StoreItem.findByStoreID(this.id as string);
-	}
 
 	public async toAPIResponse(
 		this: DocumentType<Store>,

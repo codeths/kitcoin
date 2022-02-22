@@ -1,6 +1,6 @@
 import {prop, DocumentType, index} from '@typegoose/typegoose';
 import {ITransactionAPIResponse} from '../../types';
-import {IUser, User} from '.';
+import {User, IUser} from '.';
 import {ReturnModelType} from '@typegoose/typegoose/lib/types';
 
 class TransactionUser {

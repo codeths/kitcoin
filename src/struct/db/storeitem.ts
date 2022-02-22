@@ -1,6 +1,4 @@
 import {prop, DocumentType, index} from '@typegoose/typegoose';
-import {IStoreAPIResponse} from '../../types';
-import {IStore, Store, User} from '.';
 import {ReturnModelType} from '@typegoose/typegoose/lib/types';
 
 @index({storeID: 1})
@@ -33,12 +31,6 @@ export default class StoreItem {
 	 */
 	@prop()
 	imageHash?: string;
-
-	public async getStore(
-		this: DocumentType<StoreItem>,
-	): Promise<IStore | null> {
-		return Store.findById(this.storeID);
-	}
 
 	public static async findByStoreID(
 		this: ReturnModelType<typeof StoreItem>,
