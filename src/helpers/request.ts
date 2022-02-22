@@ -129,7 +129,7 @@ export function numberFromData(data: unknown): number | null {
 export function booleanFromData(data: boolean | `${boolean}`): boolean;
 export function booleanFromData(data: unknown): boolean | null;
 export function booleanFromData(data: unknown): boolean | null {
-	let boolean = null;
+	let boolean: boolean | null = null;
 	if (Validators.booleanString().run(data)) boolean = data === 'true';
 	else if (Validators.boolean().run(data)) boolean = data;
 
