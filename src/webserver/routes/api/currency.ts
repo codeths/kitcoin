@@ -103,9 +103,9 @@ router.get(
 			});
 
 			res.status(200).send({
-				page: list,
-				pageCount: list,
-				docCount: list,
+				page: list.page,
+				pageCount: list.pageCount,
+				docCount: list.docCount,
 				transactions: await Promise.all(
 					list.transactions.map(t =>
 						t.toAPIResponse(dbUser, req.user),
