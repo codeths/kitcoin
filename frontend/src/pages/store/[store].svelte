@@ -103,6 +103,27 @@
 		}
 	}
 
+	const ITEM_SORTERS = {
+		name: (a, b) => a.name.localeCompare(b.name),
+		price_asc: (a, b) => a.price - b.price,
+		price_desc: (a, b) => b.price - a.price,
+		newArrival: (a, b) =>
+			b.newArrival == a.newArrival
+				? 0
+				: b.newArrival && !a.newArrival
+				? 1
+				: -1,
+	};
+
+	const ACTIVE_SORTER = ITEM_SORTERS.name;
+
+	$: {
+		if (items)
+			items.sort(
+				(a, b) => ITEM_SORTERS.newArrival(a, b) || ACTIVE_SORTER(a, b),
+			);
+	}
+
 	let balance = null;
 	(async () => {
 		balance = await getBalance().catch(e => null);
