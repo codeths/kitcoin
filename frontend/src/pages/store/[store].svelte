@@ -145,7 +145,7 @@
 	let balance = null;
 	(async () => {
 		userInfo = (await ctx) || null;
-		if (userInfo && !userInfo.roles.includes('STAFF'))
+		if (userInfo && userInfo.roles.includes('STUDENT'))
 			balance = userInfo.balance;
 	})();
 
