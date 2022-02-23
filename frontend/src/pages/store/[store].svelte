@@ -144,7 +144,9 @@
 
 	let balance = null;
 	(async () => {
-		balance = await getBalance().catch(e => null);
+		userInfo = (await ctx) || null;
+		if (userInfo && !userInfo.roles.includes('STAFF'))
+			balance = userInfo.balance;
 	})();
 
 	// Manage items
