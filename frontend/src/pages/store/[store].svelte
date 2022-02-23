@@ -105,11 +105,11 @@
 	}
 
 	const ITEM_SORTERS = {
-		name: (a, b) =>
-			ITEM_SORTERS.newArrival(a, b) || a.name.localeCompare(b.name),
-		price_asc: (a, b) => ITEM_SORTERS.newArrival(a, b) || a.price - b.price,
+		featured: (a, b) => ITEM_SORTERS.newArrival(a, b) || a.name.localeCompare(b.name),
+		name: (a, b) => a.name.localeCompare(b.name),
+		price_asc: (a, b) => a.price - b.price,
 		price_desc: (a, b) =>
-			ITEM_SORTERS.newArrival(a, b) || b.price - a.price,
+			b.price - a.price,
 		date_asc: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
 		date_desc: (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
 		newArrival: (a, b) =>
@@ -120,7 +120,7 @@
 				: -1,
 	};
 
-	let selectedSorter = 'name';
+	let selectedSorter = 'featured';
 	let ACTIVE_SORTER = ITEM_SORTERS[selectedSorter];
 	let query = '';
 	let filterCanAfford = false;
@@ -528,6 +528,7 @@
 					label="Sort by"
 					bind:value={selectedSorter}
 				>
+					<option value="featured">Featured</option>
 					<option value="name">Name</option>
 					<option value="price_desc">Price (High to Low)</option>
 					<option value="price_asc">Price (Low to High)</option>
