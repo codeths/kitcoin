@@ -105,9 +105,11 @@
 	}
 
 	const ITEM_SORTERS = {
-		name: (a, b) => a.name.localeCompare(b.name),
-		price_asc: (a, b) => a.price - b.price,
-		price_desc: (a, b) => b.price - a.price,
+		name: (a, b) =>
+			ITEM_SORTERS.newArrival(a, b) || a.name.localeCompare(b.name),
+		price_asc: (a, b) => ITEM_SORTERS.newArrival(a, b) || a.price - b.price,
+		price_desc: (a, b) =>
+			ITEM_SORTERS.newArrival(a, b) || b.price - a.price,
 		date_asc: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
 		date_desc: (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
 		newArrival: (a, b) =>
@@ -126,9 +128,7 @@
 		ACTIVE_SORTER = ITEM_SORTERS[selectedSorter];
 		filteredItems = items;
 		if (filteredItems) {
-			filteredItems = filteredItems.sort(
-				(a, b) => ITEM_SORTERS.newArrival(a, b) || ACTIVE_SORTER(a, b),
-			);
+			filteredItems = filteredItems.sort((a, b) => ACTIVE_SORTER(a, b));
 			filteredItems = filteredItems.filter(x =>
 				[x.name, x.description].some(
 					x =>
