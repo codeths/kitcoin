@@ -516,6 +516,9 @@ router.post(
 				body: {
 					user: Validators.objectID,
 					item: Validators.objectID,
+					quantity: Validators.optional(
+						Validators.and(Validators.integer, Validators.gt(0)),
+					),
 				},
 			},
 		}),
@@ -524,7 +527,6 @@ router.post(
 			if (!requestHasUser(req)) return;
 
 			let {id} = req.params;
-			let data = req.body;
 
 			let store = await Store.findById(id);
 			if (!store) return res.status(404).send('Store not found');
@@ -537,11 +539,14 @@ router.post(
 
 			let user = await User.findById(req.body.user);
 			if (!user) return res.status(400).send('User not found');
-			if (user.balance < item.price)
+
+			let quantity: number = req.body.quantity ?? 1;
+
+			if (user.balance < item.price * quantity)
 				return res.status(400).send('User does not have enough money');
 
 			await new Transaction({
-				amount: item.price * -1,
+				amount: item.price * quantity * -1,
 				from: {
 					text: `Store purchase in ${store.name}`,
 				},
@@ -551,16 +556,20 @@ router.post(
 				store: {
 					id: store.id,
 					item: item.id,
+					quantity,
 					manager: req.user.id,
 				},
-				reason: `${item.name}`,
+				reason: `${item.name}${quantity > 1 ? ` x${quantity}` : ''}`,
 			}).save();
 
-			user.balance -= item.price;
+			user.balance -= item.price * quantity;
 			await user.save();
 
-			if (typeof item.quantity === 'number' && item.quantity > 0)
-				item.quantity--;
+			if (typeof item.quantity === 'number') {
+				item.quantity -= quantity;
+				if (item.quantity < 0) item.quantity = 0;
+			}
+
 			await item.save();
 
 			return res.status(200).send();
