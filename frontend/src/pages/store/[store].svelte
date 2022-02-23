@@ -123,6 +123,7 @@
 	let selectedSorter = 'name';
 	let ACTIVE_SORTER = ITEM_SORTERS[selectedSorter];
 	let query = '';
+	let filterCanAfford = false;
 
 	$: {
 		ACTIVE_SORTER = ITEM_SORTERS[selectedSorter];
@@ -136,6 +137,8 @@
 						x.toLowerCase().includes(query.trim().toLowerCase()),
 				),
 			);
+			if (filterCanAfford && balance !== null)
+				filteredItems = filteredItems.filter(x => x.price <= balance);
 		}
 	}
 
@@ -533,6 +536,16 @@
 			<div>
 				<Input class="w-auto" label="Search" bind:value={query} />
 			</div>
+			{#if balance !== null}
+				<div>
+					<Input
+						type="switch"
+						parentClass="flex items-center h-12"
+						label="Only show what I can afford"
+						bind:value={filterCanAfford}
+					/>
+				</div>
+			{/if}
 		</div>
 		{#if error || !filteredItems || filteredItems.length == 0}
 			<h2 class="text-center text-2xl">
