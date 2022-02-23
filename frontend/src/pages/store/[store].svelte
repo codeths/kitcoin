@@ -49,6 +49,7 @@
 	let loading = false;
 	let error;
 	let items = null;
+	let filteredItems = null;
 	const LOW_STOCK = 3; //Low stock if there are this many items or less
 
 	let students = null;
@@ -115,13 +116,25 @@
 				: -1,
 	};
 
-	const ACTIVE_SORTER = ITEM_SORTERS.name;
+	let selectedSorter = 'name';
+	let ACTIVE_SORTER = ITEM_SORTERS[selectedSorter];
+	let query = '';
 
 	$: {
-		if (items)
-			items.sort(
+		ACTIVE_SORTER = ITEM_SORTERS[selectedSorter];
+		filteredItems = items;
+		if (filteredItems) {
+			filteredItems = filteredItems.sort(
 				(a, b) => ITEM_SORTERS.newArrival(a, b) || ACTIVE_SORTER(a, b),
 			);
+			filteredItems = filteredItems.filter(x =>
+				[x.name, x.description].some(
+					x =>
+						x &&
+						x.toLowerCase().includes(query.trim().toLowerCase()),
+				),
+			);
+		}
 	}
 
 	let balance = null;
@@ -500,21 +513,40 @@
 				>
 			</div>
 		{/if}
-		{#if error || !items || items.length == 0}
-			<h2 class="text-center">
+		<div class="flex space-x-2 mb-4">
+			<div>
+				<Input
+					type="select"
+					class="w-auto"
+					label="Sort by"
+					bind:value={selectedSorter}
+				>
+					<option value="name">Name</option>
+					<option value="price_asc">Price (Low to High)</option>
+					<option value="price_desc">Price (High to Low)</option>
+				</Input>
+			</div>
+			<div>
+				<Input class="w-auto" label="Search" bind:value={query} />
+			</div>
+		</div>
+		{#if error || !filteredItems || filteredItems.length == 0}
+			<h2 class="text-center text-2xl">
 				{#if error}
 					An Error Occured
 				{:else if loading && !items}
 					<Loading height="2rem" />
+				{:else if items.length > 0 && filteredItems.length == 0}
+					No results
 				{:else}
-					No Items
+					No items
 				{/if}
 			</h2>
 		{:else}
 			<div
 				class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
 			>
-				{#each items as item}
+				{#each filteredItems as item}
 					<div
 						class="p-4 bg-base-200 shadow rounded-lg flex flex-col"
 					>
