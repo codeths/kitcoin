@@ -108,6 +108,8 @@
 		name: (a, b) => a.name.localeCompare(b.name),
 		price_asc: (a, b) => a.price - b.price,
 		price_desc: (a, b) => b.price - a.price,
+		date_asc: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+		date_desc: (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
 		newArrival: (a, b) =>
 			b.newArrival == a.newArrival
 				? 0
@@ -522,8 +524,10 @@
 					bind:value={selectedSorter}
 				>
 					<option value="name">Name</option>
-					<option value="price_asc">Price (Low to High)</option>
 					<option value="price_desc">Price (High to Low)</option>
+					<option value="price_asc">Price (Low to High)</option>
+					<option value="date_desc">Date (Newest to Oldest)</option>
+					<option value="date_asc">Date (Oldest to Newest)</option>
 				</Input>
 			</div>
 			<div>
