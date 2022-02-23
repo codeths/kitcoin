@@ -32,6 +32,12 @@ class TransactionStore {
 	item!: string;
 
 	/**
+	 * How many were purchased
+	 */
+	@prop({required: true, default: 1})
+	quantity: number = 1;
+
+	/**
 	 * The store manager's id (who created the transaction)
 	 */
 	@prop({required: true})
