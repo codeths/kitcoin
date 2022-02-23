@@ -520,7 +520,7 @@
 				>
 			</div>
 		{/if}
-		<div class="flex space-x-2 mb-4">
+		<div class="flex space-x-4 mb-4">
 			<div>
 				<Input
 					type="select"
