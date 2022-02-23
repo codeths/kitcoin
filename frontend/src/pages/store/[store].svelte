@@ -319,6 +319,7 @@
 	}
 
 	let transactionToggle;
+	let selectedItem;
 
 	let transactionFormData = {
 		isValid: false,
@@ -339,16 +340,50 @@
 		},
 		item: e => {
 			let v = e.value?.value;
+
+			selectedItem = items && items.find(i => i._id == v);
+
+			transactionForm.validate({
+				detail: {
+					target: {
+						name: 'quantity',
+					},
+					value: transactionFormData.values.quantity,
+					type: '',
+				},
+			});
+
 			if (!v)
 				return e && e.type == 'blur'
 					? e.query
 						? 'Item must be selected from dropdown'
 						: 'Item is required'
 					: '';
-			let selectedItem = items.find(i => i._id == v);
 			if (!selectedItem) return 'Item not found';
 			if (studentBalance !== null && selectedItem.price > studentBalance)
 				return 'Insufficient balance';
+			return null;
+		},
+		quantity: e => {
+			let v = e.value;
+			if (!v) return null;
+			if (!/^\d*(?:\.\d+)?$/.test(v.trim()))
+				return 'Quanity must be a number';
+			let num = parseFloat(v.trim());
+			if (isNaN(num)) return 'Quanity must be an number';
+			if (num % 1 != 0) return 'Quanity must be a whole number';
+			if (num <= 0) return 'Quanity must be greater than 0';
+			let selectedItem = items.find(
+				i => i._id == transactionFormData.values.item?.value,
+			);
+			if (
+				num !== 1 &&
+				studentBalance !== null &&
+				selectedItem &&
+				selectedItem.price * num > studentBalance
+			)
+				return 'You do not have enough money';
+
 			return null;
 		},
 	};
@@ -396,6 +431,7 @@
 			body: JSON.stringify({
 				user: transactionFormData.values.student.value,
 				item: transactionFormData.values.item.value,
+				quantity: transactionFormData.values.quantity,
 			}),
 		}).catch(() => null);
 
@@ -780,6 +816,24 @@
 					on:validate={transactionForm.validate}
 					on:search={e => itemSearch(e.detail)}
 				/>
+				<Input
+					name="quantity"
+					label="Quantity (optional)"
+					placeholder="1"
+					bind:value={transactionFormData.values.quantity}
+					bind:error={transactionFormData.errors.quantity}
+					on:validate={transactionForm.validate}
+				/>
+				{#if selectedItem && selectedItem.quantity !== null && selectedItem.quantity < (transactionFormData.values.quantity || 1)}
+					<div class="alert alert-warning my-4">
+						<div class="flex-1 items-center">
+							<span
+								class="icon-warning text-2xl align-middle mr-2"
+							/>
+							<span>This item may not have enough stock.</span>
+						</div>
+					</div>
+				{/if}
 				<div class="divider" />
 				<div class="flex items-center space-x-2 justify-end">
 					<label
