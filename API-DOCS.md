@@ -379,6 +379,7 @@ Update a user
 `balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)
 `weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier
 `roles` (body): [Optional] Roles to give to the user as an arry of strings
+`doNotSync` (body): [Optional] Do not sync this user with Google Admin
 
 ### Response
 
@@ -410,6 +411,7 @@ Create a user
 `balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)
 `weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier
 `roles` (body): [Optional] Roles to give to the user as an arry of strings
+`doNotSync` (body): [Optional] Do not sync this user with Google Admin
 
 ### Response
 
