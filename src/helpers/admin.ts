@@ -74,7 +74,7 @@ export class AdminClient {
 					modified = true;
 				}
 
-				if (modified) await dbUser.save();
+				if (modified) await dbUser.save().catch(e => {});
 			}
 		} else if (!exclude) {
 			let newUser = new User({
@@ -85,7 +85,7 @@ export class AdminClient {
 
 			if (staff) newUser.setRoles(['STAFF']);
 
-			await newUser.save();
+			await newUser.save().catch(e => {});
 		}
 	}
 

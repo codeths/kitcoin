@@ -61,7 +61,7 @@ async function getAccessToken(user: IUser): Promise<Auth.OAuth2Client | null> {
 		const info = await oauth2Client.getTokenInfo(token.token);
 		user.tokens.expires = new Date(info.expiry_date);
 		user.tokens.scopes = info.scopes;
-		await user.save();
+		await user.save().catch(e => {});
 	}
 	return oauth2Client;
 }
@@ -199,7 +199,7 @@ export async function oauthCallback(
 			scopes: (scope || '').split(' '),
 		};
 
-		user = await user.save();
+		user = await user.save().catch(e => user!);
 
 		return resolve(user);
 	});

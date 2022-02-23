@@ -121,7 +121,7 @@ router.get(
 		if (!req.session.token) return res.redirect('/');
 		if (req.user) {
 			req.user.tokens.session = undefined;
-			await req.user.save();
+			await req.user.save().catch(e => {});
 		}
 		res.redirect('/');
 	},
