@@ -519,9 +519,16 @@
 						class="p-4 bg-base-200 shadow rounded-lg flex flex-col"
 					>
 						<div class="flex flex-row justify-between items-center">
-							<p class="inline-flex text-3xl font-semibold">
-								{item.name}
-							</p>
+							<div
+								class="flex text-3xl font-semibold items-center"
+							>
+								<span>{item.name}</span>
+								{#if item.newArrival}
+									<div class="badge badge-secondary ml-2">
+										NEW
+									</div>
+								{/if}
+							</div>
 							{#if store.canManage}
 								<label
 									for="editmodal"
