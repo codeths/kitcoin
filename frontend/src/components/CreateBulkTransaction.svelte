@@ -213,7 +213,6 @@
 	<Input
 		name="amount"
 		label="Amount"
-		focus={modal}
 		bind:value={formData.values.amount}
 		bind:error={formData.errors.amount}
 		on:validate={form.validate}
