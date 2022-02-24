@@ -606,7 +606,7 @@
 									/>
 								{/if}
 								<span>{item.name}</span>
-								{#if item.newArrival && !(item.pinned && selectedSorter == 'featured')}
+								{#if item.newArrival}
 									<div class="badge badge-secondary ml-2">
 										NEW
 									</div>
