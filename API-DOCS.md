@@ -217,6 +217,21 @@ Get a list of people who can access a store
 
 Null or an array of student ids
 
+## POST `/store/:id/sell`
+
+Sell an item
+
+### Request
+
+`:id` (path): Store ID  
+`user` (body): The user ID of the person buying the item  
+`item` (body): The ID of the item being sold  
+`quantity` (body): [Optional] The quantity of the item being sold
+
+### Response
+
+None
+
 ## GET `/store/:id/items`
 
 Get a list of a store's items
