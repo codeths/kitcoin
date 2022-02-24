@@ -23,9 +23,15 @@
 			let v = e.value;
 			if (!v || !v[0]) return isFirstUpload ? '' : 'Please select a file';
 			isFirstUpload = false;
-			if (!['text/csv'].includes(v[0].type)) {
+			if (
+				![
+					'text/csv',
+					'application/vnd.ms-excel',
+					'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+				].includes(v[0].type)
+			) {
 				fileUpload = [];
-				return 'File must be a CSV';
+				return 'File must be a CSV or Excel document';
 			}
 			return null;
 		},
@@ -170,7 +176,9 @@
 	bind:this={form}
 	validators={formValidators}
 >
-	<label class="label" for=""> Students - CSV from ActivityScan </label>
+	<label class="label" for="">
+		Students - CSV or Excel document.<br />Supports ActivityScan exports.
+	</label>
 	<div class="flex w-full">
 		<label for="fileinput" class="flex-1 btn btn-primary relative min-w-0">
 			<span class="text-ellipsis whitespace-nowrap overflow-hidden">
