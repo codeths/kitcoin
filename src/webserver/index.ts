@@ -8,7 +8,7 @@ import {cpus} from 'os';
 
 import {mongo as mongoURL, port, sessionSecret} from '../config/keys.js';
 import {request} from '../helpers/request.js';
-import {IUser} from '../struct/index.js';
+import {DBError, IUser} from '../struct/index.js';
 import {api, auth} from './routes/index.js';
 import {handleLogin} from './routes/auth.js';
 
@@ -78,7 +78,9 @@ app.use(['/login', '/logout', '/signin', '/signout'], (req, res) => {
 
 function servePage(res: express.Response) {
 	res.setHeader('Cache-Control', 'no-cache, max-age=604800');
-	res.sendFile(new URL('../../frontend/build/index.html', import.meta.url).pathname);
+	res.sendFile(
+		new URL('../../frontend/build/index.html', import.meta.url).pathname,
+	);
 }
 
 app.get(
@@ -123,7 +125,10 @@ app.get(
 	},
 );
 
-app.use('/schema', express.static(new URL('../schema', import.meta.url).pathname));
+app.use(
+	'/schema',
+	express.static(new URL('../schema', import.meta.url).pathname),
+);
 
 app.get('/home', (req, res) => res.redirect('/'));
 
@@ -147,6 +152,25 @@ app.use(
 		setHeaders: res => res.setHeader('Cache-Control', 'public'),
 	}),
 );
+
+app.use(async (err, req, res, next) => {
+	if (err) {
+		try {
+			const error = await DBError.generate(
+				{
+					request: req,
+					error: err instanceof Error ? err : undefined,
+				},
+				{
+					user: req.user?.id,
+				},
+			);
+			res.status(500).send(`Something went wrong. Error ID: ${error.id}`);
+		} catch (e) {}
+	} else {
+		next();
+	}
+});
 
 app.get(
 	'*',
