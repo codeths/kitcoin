@@ -18,6 +18,10 @@ export type IStore = DocumentType<StoreClass>;
 export const StoreItem = getModelForClass(StoreItemClass);
 export type IStoreItem = DocumentType<StoreItemClass>;
 
-export const DBError = getModelForClass(DBErrorClass);
+export const DBError = getModelForClass(DBErrorClass, {
+	options: {
+		customName: 'errors',
+	},
+});
 export type IDBError = DocumentType<DBErrorClass>;
 export {ErrorDetail};
