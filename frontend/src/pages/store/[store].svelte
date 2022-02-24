@@ -106,7 +106,9 @@
 
 	const ITEM_SORTERS = {
 		featured: (a, b) =>
-			ITEM_SORTERS.newArrival(a, b) || a.name.localeCompare(b.name),
+			ITEM_SORTERS.pinned(a, b) ||
+			ITEM_SORTERS.newArrival(a, b) ||
+			a.name.localeCompare(b.name),
 		name: (a, b) => a.name.localeCompare(b.name),
 		price_asc: (a, b) => a.price - b.price,
 		price_desc: (a, b) => b.price - a.price,
@@ -118,6 +120,8 @@
 				: b.newArrival && !a.newArrival
 				? 1
 				: -1,
+		pinned: (a, b) =>
+			b.pinned == a.pinned ? 0 : b.pinned && !a.pinned ? 1 : -1,
 	};
 
 	let selectedSorter = 'featured';
@@ -195,6 +199,10 @@
 
 			return null;
 		},
+		pinned: e => {
+			let v = e.value;
+			return null;
+		},
 	};
 
 	let editItem, editToggle;
@@ -208,6 +216,7 @@
 			manageForm.values.description = item.description;
 			manageForm.values.price = item.price;
 			manageForm.values.quantity = item.quantity;
+			manageForm.values.pinned = item.pinned;
 		}
 		imageUpload = [];
 		deleteImage = false;
@@ -255,6 +264,7 @@
 					quantity: !isNaN(parseFloat(manageFormData.values.quantity))
 						? parseFloat(manageFormData.values.quantity)
 						: null,
+					pinned: manageFormData.values.pinned,
 				}),
 			},
 		).catch(() => null);
@@ -627,6 +637,11 @@
 							<div
 								class="flex text-3xl font-semibold items-center"
 							>
+								{#if item.pinned && selectedSorter == 'featured'}
+									<span
+										class="icon-pin mr-2 text-secondary"
+									/>
+								{/if}
 								<span>{item.name}</span>
 								{#if item.newArrival}
 									<div class="badge badge-secondary ml-2">
@@ -784,6 +799,14 @@
 					label="Amount available (optional)"
 					bind:value={manageFormData.values.quantity}
 					bind:error={manageFormData.errors.quantity}
+					on:validate={manageForm.validate}
+				/>
+				<Input
+					name="pinned"
+					label="Pin this item to the top of the list"
+					type="switch"
+					bind:value={manageFormData.values.pinned}
+					bind:error={manageFormData.errors.pinned}
 					on:validate={manageForm.validate}
 				/>
 				<label class="label" for="">

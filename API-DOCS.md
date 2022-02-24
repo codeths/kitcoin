@@ -282,6 +282,7 @@ Update a store's item
 `description` (body): [Optional] New description  
 `price` (body): [Optional] New price  
 `quantity` (body): [Optional] New quantity
+`pinned` (body): [Optional] New pinned status
 
 ### Response
 
@@ -334,7 +335,8 @@ Create a store item
 `name` (body): Name  
 `description` (body): [Optional] Description  
 `price` (body): Price  
-`quantity` (body): [Optional] New quantity
+`quantity` (body): [Optional] Quantity
+`pinned` (body): [Optional] Pinned status
 
 ### Response
 
