@@ -596,8 +596,13 @@
 							<div
 								class="flex text-3xl font-semibold items-center"
 							>
+								{#if item.pinned && selectedSorter == 'featured'}
+									<span
+										class="icon-pin mr-2 text-secondary"
+									/>
+								{/if}
 								<span>{item.name}</span>
-								{#if item.newArrival}
+								{#if item.newArrival && !(item.pinned && selectedSorter == 'featured')}
 									<div class="badge badge-secondary ml-2">
 										NEW
 									</div>
