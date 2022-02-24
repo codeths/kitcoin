@@ -15,7 +15,8 @@
 		"format": "prettier --write .",
 		"frontend:dev": "(cd frontend && routify & vite --port 8080)",
 		"frontend:build:dev": "(cd frontend && routify -b && vite build --mode dev)",
-		"frontend:build": "(cd frontend && routify -b && vite build)"
+		"frontend:build": "(cd frontend && routify -b && vite build)",
+		"frontend:icons": "gulp icons"
 	},
 	"repository": {
 		"type": "git",
