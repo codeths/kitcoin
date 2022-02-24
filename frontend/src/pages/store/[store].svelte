@@ -216,6 +216,7 @@
 			manageForm.values.description = item.description;
 			manageForm.values.price = item.price;
 			manageForm.values.quantity = item.quantity;
+			manageForm.values.pinned = item.pinned;
 		}
 		imageUpload = [];
 		deleteImage = false;
