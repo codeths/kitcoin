@@ -7,9 +7,9 @@ import {
 	oauthCallback,
 	PromptType,
 	ScopeType,
-} from '../../helpers/oauth';
-import {request} from '../../helpers/request';
-import {DBError, ErrorDetail} from '../../struct';
+} from '../../helpers/oauth.js';
+import {request} from '../../helpers/request.js';
+import {DBError, ErrorDetail} from '../../struct/index.js';
 
 const router = express.Router();
 

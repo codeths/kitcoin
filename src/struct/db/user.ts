@@ -1,16 +1,17 @@
 import fuzzySearch from 'mongoose-fuzzy-searching';
 
-import {DocumentType, index, plugin, prop} from '@typegoose/typegoose';
+import typegoose, {DocumentType} from '@typegoose/typegoose';
+const {index, plugin, prop} = typegoose;
 import {ReturnModelType} from '@typegoose/typegoose/lib/types';
 
-import {weeklyBalance} from '../../config/keys.json';
-import {getAccessToken} from '../../helpers/oauth';
+import {weeklyBalance} from '../../config/keys.js';
+import {getAccessToken} from '../../helpers/oauth.js';
 import {
 	IUserAPIResponse,
 	MongooseFuzzyClass,
 	UserRoles,
 	UserRoleTypes,
-} from '../../types';
+} from '../../types/index.js';
 
 class UserTokens {
 	/**
@@ -133,7 +134,7 @@ export default class User extends MongooseFuzzyClass {
 	 */
 	@prop({required: true, get: getBalance, default: 0})
 	public balance!: number;
-	
+
 	/**
 	 * Staff - when their balance resets
 	 */

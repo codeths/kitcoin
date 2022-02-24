@@ -1,7 +1,8 @@
 import express from 'express';
-import {isValidObjectId} from 'mongoose';
+import mongoose from 'mongoose';
+const {isValidObjectId} = mongoose;
 
-import {DBError, User} from '../struct';
+import {DBError, User} from '../struct/index.js';
 import {
 	getOptions,
 	isValidRole,
@@ -11,7 +12,7 @@ import {
 	RequestValidateKeyOptionsResolvable,
 	RequestValidateOptions,
 	RequestValidateParts,
-} from '../types';
+} from '../types/index.js';
 
 export async function request(
 	req: express.Request,

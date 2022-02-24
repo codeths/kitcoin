@@ -1,8 +1,9 @@
-import {DocumentType, index, prop} from '@typegoose/typegoose';
+import typegoose, {DocumentType} from '@typegoose/typegoose';
+const {index, prop} = typegoose;
 import {ReturnModelType} from '@typegoose/typegoose/lib/types';
 
-import {ITransactionAPIResponse} from '../../types';
-import {IUser, User} from './';
+import {ITransactionAPIResponse} from '../../types/index.js';
+import {IUser, User} from './index.js';
 
 class TransactionUser {
 	/**

@@ -1,7 +1,7 @@
 import express from 'express';
 
-import {IUser} from '../struct';
-import {UserRoleTypes} from './';
+import {IUser} from '../struct/index.js';
+import {UserRoleTypes} from './index.js';
 
 /**
  * Options for request handling

@@ -1,10 +1,10 @@
 import express from 'express';
 
-import classroom from './classroom';
-import currency from './currency';
-import misc from './misc';
-import store from './store';
-import users from './users';
+import classroom from './classroom.js';
+import currency from './currency.js';
+import misc from './misc.js';
+import store from './store.js';
+import users from './users.js';
 
 const router = express.Router();
 

@@ -5,9 +5,9 @@ import {
 	request,
 	stringFromData,
 	Validators,
-} from '../../../helpers/request';
-import {DBError, Transaction, User} from '../../../struct';
-import {requestHasUser} from '../../../types';
+} from '../../../helpers/request.js';
+import {DBError, Transaction, User} from '../../../struct/index.js';
+import {requestHasUser} from '../../../types/index.js';
 
 const router = express.Router();
 

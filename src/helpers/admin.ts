@@ -4,9 +4,9 @@ import {
 	gadmin_domain,
 	gadmin_ignore_ou,
 	gadmin_staff_ou,
-} from '../config/keys.json';
-import {IUser, User} from '../struct';
-import {getAccessToken} from './oauth';
+} from '../config/keys.js';
+import {IUser, User} from '../struct/index.js';
+import {getAccessToken} from './oauth.js';
 
 export class AdminClient {
 	private token?: string;

@@ -1,15 +1,20 @@
 import express from 'express';
-import {isValidObjectId} from 'mongoose';
+import mongoose from 'mongoose';
+const {isValidObjectId} = mongoose;
 
-import {AdminClient} from '../../../helpers/admin';
+import {AdminClient} from '../../../helpers/admin.js';
 import {
 	booleanFromData,
 	dateFromData,
 	request,
 	Validators,
-} from '../../../helpers/request';
-import {DBError, IUser, User} from '../../../struct';
-import {isValidRoles, requestHasUser, UserRoleTypes} from '../../../types';
+} from '../../../helpers/request.js';
+import {DBError, IUser, User} from '../../../struct/index.js';
+import {
+	isValidRoles,
+	requestHasUser,
+	UserRoleTypes,
+} from '../../../types/index.js';
 
 const router = express.Router();
 
