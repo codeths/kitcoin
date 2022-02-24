@@ -120,7 +120,7 @@ Body should be sent as `multipart/formdata`
 `reason` (body): Reason for the transaction
 `data` (body): CSV of the users to send these transactions to.
 
-The CSV should have the following column named `Student ID`. Note that the space is a non-breaking space (this is important). The column should have, as the name implies, student IDs. Any subsequent columns are ignored.
+The CSV's first column can have any header and should contain the student IDs. Any subsequent columns are ignored.
 
 ### Response
 
