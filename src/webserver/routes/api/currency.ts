@@ -226,7 +226,7 @@ router.post(
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
-			roles: ['BULK_SEND', 'ADMIN'],
+			roles: ['BULK_SEND'],
 		}),
 	async (req, res) => {
 		try {
