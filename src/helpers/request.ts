@@ -56,7 +56,7 @@ export async function request(
 	next();
 }
 
-function validate(
+export function validate(
 	req: express.Request,
 	options: RequestValidateOptions,
 ): string | null {
