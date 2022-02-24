@@ -108,7 +108,7 @@ Array of transactions
 
 ## POST `/transactions/bulk`
 
-Bulk create transactions. Requires admin role.
+Bulk create transactions. Requires bulk send role.
 
 ### Request
 
