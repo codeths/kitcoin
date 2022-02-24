@@ -1,7 +1,8 @@
 import express from 'express';
-import {isValidObjectId} from 'mongoose';
+import mongoose from 'mongoose';
+const {isValidObjectId} = mongoose;
 
-import {DBError, User} from '../struct';
+import {DBError, User} from '../struct/index.js';
 import {
 	getOptions,
 	isValidRole,
@@ -11,7 +12,7 @@ import {
 	RequestValidateKeyOptionsResolvable,
 	RequestValidateOptions,
 	RequestValidateParts,
-} from '../types';
+} from '../types/index.js';
 
 export async function request(
 	req: express.Request,
@@ -55,7 +56,7 @@ export async function request(
 	next();
 }
 
-function validate(
+export function validate(
 	req: express.Request,
 	options: RequestValidateOptions,
 ): string | null {
@@ -177,6 +178,18 @@ export class Validators {
 		errorMessage: `{KEY} must be equal to ${
 			Array.isArray(value) ? `one of: ${value.join(',')}` : value
 		} (case ${caseSensitive ? '' : 'in'}sensitive)`,
+	});
+
+	/**
+	 * Data must be a non-empty string
+	 * @returns
+	 */
+	static stringNotEmpty = () => ({
+		run: (data: unknown): boolean | string => {
+			if (!Validators.string().run(data)) return '{KEY} must be a string';
+			if (data.trim() == '') return '{KEY} must not be empty';
+			return true;
+		},
 	});
 
 	/**

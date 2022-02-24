@@ -1,4 +1,6 @@
-module.exports = {
+import daisyui from 'daisyui';
+
+export default {
 	content: ['index.html', './public/**/*.html', './src/**/*.{js,svelte}'],
 	safelist: [
 		'opacity-40',
@@ -36,7 +38,7 @@ module.exports = {
 			},
 		},
 	},
-	plugins: [require('daisyui')],
+	plugins: [daisyui],
 	daisyui: {
 		logs: false,
 		themes: [

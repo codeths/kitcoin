@@ -23,6 +23,10 @@
 			text: 'Admin',
 			value: 'ADMIN',
 		},
+		{
+			text: 'Bulk Send Kitcoin',
+			value: 'BULK_SEND',
+		},
 	];
 	let results = [];
 	export let el = null;

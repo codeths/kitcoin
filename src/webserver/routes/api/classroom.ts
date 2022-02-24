@@ -1,14 +1,14 @@
 import express from 'express';
 
-import {ClassroomClient} from '../../../helpers/classroom';
-import {getAccessToken} from '../../../helpers/oauth';
-import {request, Validators} from '../../../helpers/request';
-import {DBError} from '../../../struct';
+import {ClassroomClient} from '../../../helpers/classroom.js';
+import {getAccessToken} from '../../../helpers/oauth.js';
+import {request, Validators} from '../../../helpers/request.js';
+import {DBError} from '../../../struct/index.js';
 import {
 	ClassroomRolesArray,
 	isValidClassroomRole,
 	requestHasUser,
-} from '../../../types';
+} from '../../../types/index.js';
 
 const router = express.Router();
 
@@ -111,9 +111,9 @@ router.get(
 
 			res.status(200).send(
 				students.map(s => ({
-					googleId: s.userId,
-					id: s.mongoId,
-					name: s.profile?.name?.fullName,
+					googleId: s!.userId,
+					id: s!.mongoId,
+					name: s!.profile?.name?.fullName,
 				})),
 			);
 		} catch (e) {

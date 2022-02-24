@@ -3,13 +3,14 @@
 	import {getContext} from 'svelte';
 	import {
 		Loading,
+		CreateBulkTransaction,
 		CreateTransaction,
 		ToastContainer,
 		Transactions,
 		ClassroomSearch,
 	} from '../../components';
 	let toastContainer;
-	import {getBalance, getClasses, getClassStudents} from '../../utils/api.js';
+	import {getBalance, getClassStudents} from '../../utils/api.js';
 
 	metatags.title = 'Staff Home - Kitcoin';
 
@@ -20,22 +21,24 @@
 	let balance;
 
 	let ctx = getContext('userInfo');
+	let userInfo;
 	let showPermsModal = false;
 
 	(async () => {
-		let info = (await ctx) || null;
-		if (!info || !info.roles.includes('STAFF')) {
+		userInfo = (await ctx) || null;
+		if (!userInfo || !userInfo.roles.includes('STAFF')) {
 			window.location.reload();
 		}
 		showPermsModal = [
 			'https://www.googleapis.com/auth/classroom.courses.readonly',
 			'https://www.googleapis.com/auth/classroom.rosters.readonly',
-		].some(x => !info.scopes.includes(x));
+		].some(x => !userInfo.scopes.includes(x));
 	})();
 
 	getBalance().then(b => (balance = b));
 	let modalStudent = null,
-		showModal = false;
+		showModal = false,
+		showBulkModal = false;
 
 	let multiSelect = false;
 	let multiSelectStudents = new Map();
@@ -111,6 +114,21 @@
 					{/if}
 				</h1>
 			</div>
+			{#if userInfo && userInfo.roles.includes('BULK_SEND')}
+				<h1 class="text-3xl font-medium mt-4 mb-2">
+					Bulk Send Kitcoin
+				</h1>
+				<div
+					class="bg-base-100 shadow-md rounded-lg px-8 py-8 flex flex-col justify-center"
+				>
+					<button
+						class="btn btn-primary"
+						on:click={() => (showBulkModal = true)}
+					>
+						Open Menu
+					</button>
+				</div>
+			{/if}
 		</div>
 		<div class="mx-2 my-4 col-span-12">
 			<h1 class="text-3xl font-medium mb-2">Your Students</h1>
@@ -245,8 +263,8 @@
 	disabled={(multiSelect && multiSelectStudents.size == 0) || null}
 	bind:checked={showModal}
 />
-<label class="modal" for="studentmodal">
-	<div class="modal-box">
+<div class="modal">
+	<div class="modal-box overflow-hidden">
 		<h2 class="text-2xl text-medium mb-4">
 			Send Kitcoin to {multiSelect && multiSelectStudents.size !== 0
 				? multiSelectStudents.size > 1
@@ -279,7 +297,42 @@
 			/>
 		{/key}
 	</div>
-</label>
+</div>
+
+<input
+	type="checkbox"
+	id="bulkmodal"
+	class="modal-toggle"
+	bind:checked={showBulkModal}
+/>
+<div class="modal">
+	<div class="modal-box overflow-hidden">
+		<h2 class="text-2xl text-medium mb-4">Bulk Send Kitcoin</h2>
+		{#key showBulkModal}
+			<CreateBulkTransaction
+				modal="true"
+				class="w-full"
+				on:close={e => {
+					showBulkModal = false;
+					if (e && typeof e.detail == 'number') {
+						transactions.load();
+						multiSelect = false;
+						setTimeout(
+							() =>
+								toastContainer.toast(
+									`${e.detail} transaction${
+										e.detail == 1 ? '' : 's'
+									} sent!`,
+									'success',
+								),
+							300,
+						);
+					}
+				}}
+			/>
+		{/key}
+	</div>
+</div>
 {#if showPermsModal}
 	<div class="modal modal-open">
 		<div class="modal-box">

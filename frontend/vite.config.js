@@ -1,6 +1,6 @@
 import {svelte} from '@sveltejs/vite-plugin-svelte';
 import {defineConfig} from 'vite';
-//import preprocess from 'svelte-preprocess';  //This isn't needed here
+import postcss from './postcss.config.js';
 
 export default defineConfig({
 	plugins: [svelte()],
@@ -10,5 +10,8 @@ export default defineConfig({
 	},
 	optimizeDeps: {
 		exclude: ['@roxi/ssr'],
+	},
+	css: {
+		postcss,
 	},
 });

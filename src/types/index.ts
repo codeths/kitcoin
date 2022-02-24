@@ -1,6 +1,6 @@
-export * from './db';
-export * from './google';
-export * from './request';
+export * from './db.js';
+export * from './google.js';
+export * from './request.js';
 
 export function notEmpty<T>(value: T | null | undefined): value is T {
 	return value !== null && value !== undefined;

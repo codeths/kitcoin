@@ -1,5 +1,6 @@
 import ClassroomSearch from './ClassroomSearch.svelte';
 import CreateTransaction from './CreateTransaction.svelte';
+import CreateBulkTransaction from './CreateBulkTransaction.svelte';
 import DropdownSearch from './DropdownSearch.svelte';
 import Form from './Form.svelte';
 import Input from './Input.svelte';
@@ -13,6 +14,7 @@ import Transactions from './Transactions.svelte';
 
 export {
 	ClassroomSearch,
+	CreateBulkTransaction,
 	CreateTransaction,
 	DropdownSearch,
 	Form,

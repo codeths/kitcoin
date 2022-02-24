@@ -21,8 +21,8 @@ type PromptType = 'none' | 'consent' | 'select_account';
 import express from 'express';
 import {Auth, google} from 'googleapis';
 
-import {client_id, client_secret, oauthDomain} from '../config/keys.json';
-import {DBError, ErrorDetail, IUser, User} from '../struct';
+import {client_id, client_secret, oauthDomain} from '../config/keys.js';
+import {DBError, ErrorDetail, IUser, User} from '../struct/index.js';
 
 /**
  * Generate OAuth2 client and optionally set the credentials

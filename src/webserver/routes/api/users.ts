@@ -1,15 +1,20 @@
 import express from 'express';
-import {isValidObjectId} from 'mongoose';
+import mongoose from 'mongoose';
+const {isValidObjectId} = mongoose;
 
-import {AdminClient} from '../../../helpers/admin';
+import {AdminClient} from '../../../helpers/admin.js';
 import {
 	booleanFromData,
 	dateFromData,
 	request,
 	Validators,
-} from '../../../helpers/request';
-import {DBError, IUser, User} from '../../../struct';
-import {isValidRoles, requestHasUser, UserRoleTypes} from '../../../types';
+} from '../../../helpers/request.js';
+import {DBError, IUser, User} from '../../../struct/index.js';
+import {
+	isValidRoles,
+	requestHasUser,
+	UserRoleTypes,
+} from '../../../types/index.js';
 
 const router = express.Router();
 
@@ -155,10 +160,10 @@ router.post(
 			roles: ['ADMIN'],
 			validators: {
 				body: {
-					email: Validators.optional(Validators.string),
-					googleID: Validators.string,
+					email: Validators.optional(Validators.stringNotEmpty),
+					googleID: Validators.stringNotEmpty,
 					schoolID: Validators.optional(Validators.schoolID),
-					name: Validators.string,
+					name: Validators.stringNotEmpty,
 					balance: Validators.optional(Validators.currency(true)),
 					balanceExpires: Validators.optional(Validators.date),
 					weeklyBalanceMultiplier: Validators.optional(
@@ -267,10 +272,10 @@ router.patch(
 					id: Validators.objectID,
 				},
 				body: {
-					email: Validators.optional(Validators.string),
-					googleID: Validators.string,
+					email: Validators.optional(Validators.stringNotEmpty),
+					googleID: Validators.stringNotEmpty,
 					schoolID: Validators.optional(Validators.schoolID),
-					name: Validators.string,
+					name: Validators.stringNotEmpty,
 					balance: Validators.currency(true),
 					balanceExpires: Validators.optional(Validators.date),
 					weeklyBalanceMultiplier: Validators.optional(

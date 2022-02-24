@@ -1,8 +1,8 @@
 import Google, {google} from 'googleapis';
 
-import {IUser, User} from '../struct';
-import {ClassroomRoles, notEmpty} from '../types';
-import {getAccessToken} from './oauth';
+import {IUser, User} from '../struct/index.js';
+import {ClassroomRoles, notEmpty} from '../types/index.js';
+import {getAccessToken} from './oauth.js';
 
 type Client = Google.Common.OAuth2Client;
 

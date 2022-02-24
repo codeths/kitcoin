@@ -12,6 +12,8 @@
 	export let multiselect = false;
 	export let roles = ['STUDENT'];
 
+	if (!multiselect) value = null;
+
 	let results = null;
 	let autoSubmit = false;
 	export let el = null;

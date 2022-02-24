@@ -1,4 +1,5 @@
-import {DocumentType, index, prop} from '@typegoose/typegoose';
+import typegoose, {DocumentType} from '@typegoose/typegoose';
+const {index, prop} = typegoose;
 import {ReturnModelType} from '@typegoose/typegoose/lib/types';
 
 @index({storeID: 1})

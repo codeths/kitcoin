@@ -61,7 +61,7 @@
 			body: JSON.stringify({
 				user: (formData.values.student?.value || '').split(' '),
 				amount: parseFloat(formData.values.amount),
-				reason: formData.values.reason || null,
+				reason: formData.values.reason.trim() || null,
 			}),
 		}).catch(() => null);
 

@@ -1,7 +1,7 @@
 import express from 'express';
 
-import {request, Validators} from '../../../helpers/request';
-import {DBError} from '../../../struct';
+import {request, Validators} from '../../../helpers/request.js';
+import {DBError} from '../../../struct/index.js';
 
 const router = express.Router();
 
