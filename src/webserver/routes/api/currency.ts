@@ -147,7 +147,7 @@ router.post(
 			validators: {
 				body: {
 					amount: Validators.currency,
-					reason: Validators.optional(Validators.string),
+					reason: Validators.optional(Validators.stringNotEmpty),
 					user: Validators.arrayOrValue(Validators.objectID),
 				},
 			},
@@ -184,7 +184,7 @@ router.post(
 				dbUsers.map(async dbUser => {
 					let t = await new Transaction({
 						amount,
-						reason: reason || null,
+						reason: reason?.trim() || null,
 						from: {
 							id: req.user.id,
 						},
@@ -259,8 +259,8 @@ router.post(
 				body: {
 					amount: Validators.currency,
 					fromUser: Validators.optional(Validators.objectID),
-					fromText: Validators.optional(Validators.string),
-					reason: Validators.optional(Validators.string),
+					fromText: Validators.optional(Validators.stringNotEmpty),
+					reason: Validators.optional(Validators.stringNotEmpty),
 				},
 			});
 			if (badRequest) return res.status(400).send(badRequest);
@@ -269,12 +269,12 @@ router.post(
 				req.body.amount as number | `${number}`,
 			);
 			let fromUser: string | undefined = req.body.fromUser;
-			let fromText: string | undefined = req.body.fromText;
+			let fromText: string | undefined = req.body.fromText?.trim();
 			if (!fromUser && !fromText)
 				return res
 					.status(400)
 					.send('Either fromUser or fromText must be specified');
-			let reason: string = req.body.reason;
+			let reason: string | undefined = req.body.reason?.trim();
 
 			let from = fromUser
 				? {

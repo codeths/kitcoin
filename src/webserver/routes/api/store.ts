@@ -160,8 +160,8 @@ router.post(
 			roles: ['STAFF'],
 			validators: {
 				body: {
-					name: Validators.string,
-					description: Validators.optional(Validators.string),
+					name: Validators.stringNotEmpty,
+					description: Validators.optional(Validators.stringNotEmpty),
 					classIDs: Validators.array(Validators.regex(/^\d+$/)),
 					public: Validators.boolean,
 					managers: Validators.array(Validators.objectID),
@@ -293,8 +293,8 @@ router.patch(
 					id: Validators.objectID,
 				},
 				body: {
-					name: Validators.string,
-					description: Validators.optional(Validators.string),
+					name: Validators.stringNotEmpty,
+					description: Validators.optional(Validators.stringNotEmpty),
 					classIDs: Validators.array(Validators.regex(/^\d+$/)),
 					public: Validators.boolean,
 					managers: Validators.array(Validators.objectID),
@@ -769,8 +769,8 @@ router.patch(
 					id: Validators.objectID,
 				},
 				body: {
-					name: Validators.string,
-					description: Validators.optional(Validators.string),
+					name: Validators.stringNotEmpty,
+					description: Validators.optional(Validators.stringNotEmpty),
 					price: Validators.currency,
 					quantity: Validators.optional(
 						Validators.and(Validators.integer, Validators.gte(0)),
@@ -939,8 +939,8 @@ router.post(
 					storeID: Validators.objectID,
 				},
 				body: {
-					name: Validators.string,
-					description: Validators.optional(Validators.string),
+					name: Validators.stringNotEmpty,
+					description: Validators.optional(Validators.stringNotEmpty),
 					price: Validators.currency,
 					quantity: Validators.optional(
 						Validators.and(Validators.integer, Validators.gte(0)),

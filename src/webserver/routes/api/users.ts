@@ -160,10 +160,10 @@ router.post(
 			roles: ['ADMIN'],
 			validators: {
 				body: {
-					email: Validators.optional(Validators.string),
-					googleID: Validators.string,
+					email: Validators.optional(Validators.stringNotEmpty),
+					googleID: Validators.stringNotEmpty,
 					schoolID: Validators.optional(Validators.schoolID),
-					name: Validators.string,
+					name: Validators.stringNotEmpty,
 					balance: Validators.optional(Validators.currency(true)),
 					balanceExpires: Validators.optional(Validators.date),
 					weeklyBalanceMultiplier: Validators.optional(
@@ -270,10 +270,10 @@ router.patch(
 					id: Validators.objectID,
 				},
 				body: {
-					email: Validators.optional(Validators.string),
-					googleID: Validators.string,
+					email: Validators.optional(Validators.stringNotEmpty),
+					googleID: Validators.stringNotEmpty,
 					schoolID: Validators.optional(Validators.schoolID),
-					name: Validators.string,
+					name: Validators.stringNotEmpty,
 					balance: Validators.currency(true),
 					balanceExpires: Validators.optional(Validators.date),
 					weeklyBalanceMultiplier: Validators.optional(
