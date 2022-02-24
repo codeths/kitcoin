@@ -19,10 +19,11 @@ export abstract class MongooseFuzzyClass {
 
 export enum UserRoles {
 	NONE = 0,
-	STUDENT = 0b0010,
-	STAFF = 0b0100,
-	ADMIN = 0b1000,
-	ALL = STUDENT | STAFF | ADMIN,
+	STUDENT = 0b00010,
+	STAFF = 0b00100,
+	ADMIN = 0b01000,
+	BULK_SEND = 0b10000,
+	ALL = STUDENT | STAFF | ADMIN | BULK_SEND,
 }
 
 export type UserRoleTypes = keyof typeof UserRoles;
