@@ -6,7 +6,7 @@
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
 		"removeComments": false,
-		"module": "commonjs",
+		"module": "esnext",
 		"moduleResolution": "node",
 		"newLine": "LF",
 		"declaration": true,

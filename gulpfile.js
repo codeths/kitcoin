@@ -1,10 +1,10 @@
-const gulp = require('gulp');
-const del = require('del');
-const promisify = require('util').promisify;
-const exec = promisify(require('child_process').exec);
-const spawn = require('child_process').spawn;
-const readline = require('readline');
-const fs = require('fs');
+import gulp from 'gulp';
+import del from 'del';
+import {spawn} from 'child_process';
+import readline from 'readline';
+import fs from 'fs';
+import {generateFonts} from 'fantasticon';
+
 let args = process.argv.slice(2);
 let env = process.env.NODE_ENV || 'development';
 
@@ -101,11 +101,13 @@ async function frontend() {
 }
 
 async function icons() {
-	return new Promise(res => {
-		let child = spawn('npm', ['run', 'frontend:icons'], {
-			stdio: 'inherit',
-		});
-		child.on('exit', code => res(code === 0));
+	return generateFonts({
+		inputDir: './frontend/public/assets/icons',
+		outputDir: './frontend/public/assets',
+		fontTypes: ['ttf'],
+		assetTypes: ['css'],
+		tag: 'span',
+		normalize: true,
 	});
 }
 
@@ -127,6 +129,7 @@ async function full() {
 		(await delDist()) &&
 		(await typescript()) &&
 		(await icons()) &&
+		(await frontend()) &&
 		(await task(copy()));
 	return res;
 }
