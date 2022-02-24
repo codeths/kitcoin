@@ -49,6 +49,7 @@
 	let loading = false;
 	let error;
 	let items = null;
+	let filteredItems = null;
 	const LOW_STOCK = 3; //Low stock if there are this many items or less
 
 	let students = null;
@@ -103,9 +104,50 @@
 		}
 	}
 
+	const ITEM_SORTERS = {
+		featured: (a, b) =>
+			ITEM_SORTERS.newArrival(a, b) || a.name.localeCompare(b.name),
+		name: (a, b) => a.name.localeCompare(b.name),
+		price_asc: (a, b) => a.price - b.price,
+		price_desc: (a, b) => b.price - a.price,
+		date_asc: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+		date_desc: (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+		newArrival: (a, b) =>
+			b.newArrival == a.newArrival
+				? 0
+				: b.newArrival && !a.newArrival
+				? 1
+				: -1,
+	};
+
+	let selectedSorter = 'featured';
+	let ACTIVE_SORTER = ITEM_SORTERS[selectedSorter];
+	let query = '';
+	let filterCanAfford = false;
+	let filterCollapseShown = false;
+
+	$: {
+		ACTIVE_SORTER = ITEM_SORTERS[selectedSorter];
+		filteredItems = items;
+		if (filteredItems) {
+			filteredItems = filteredItems.sort((a, b) => ACTIVE_SORTER(a, b));
+			filteredItems = filteredItems.filter(x =>
+				[x.name, x.description].some(
+					x =>
+						x &&
+						x.toLowerCase().includes(query.trim().toLowerCase()),
+				),
+			);
+			if (filterCanAfford && balance !== null)
+				filteredItems = filteredItems.filter(x => x.price <= balance);
+		}
+	}
+
 	let balance = null;
 	(async () => {
-		balance = await getBalance().catch(e => null);
+		userInfo = (await ctx) || null;
+		if (userInfo && userInfo.roles.includes('STUDENT'))
+			balance = userInfo.balance;
 	})();
 
 	// Manage items
@@ -479,28 +521,83 @@
 				>
 			</div>
 		{/if}
-		{#if error || !items || items.length == 0}
-			<h2 class="text-center">
+		<div class="collapse bg-base-200 rounded-lg collapse-arrow mb-4">
+			<input
+				type="checkbox"
+				id="filtercollapse"
+				bind:checked={filterCollapseShown}
+			/>
+			<label
+				for="filtercollapse"
+				class="collapse-title text-xl font-medium !bg-base-200"
+			>
+				{filterCollapseShown ? 'Hide' : 'Show'} filters
+			</label>
+			<div class="flex space-x-4 collapse-content !bg-base-200">
+				<div>
+					<Input
+						type="select"
+						class="w-auto"
+						label="Sort by"
+						bind:value={selectedSorter}
+					>
+						<option value="featured">Featured</option>
+						<option value="name">Name</option>
+						<option value="price_desc">Price (High to Low)</option>
+						<option value="price_asc">Price (Low to High)</option>
+						<option value="date_desc"
+							>Date (Newest to Oldest)</option
+						>
+						<option value="date_asc">Date (Oldest to Newest)</option
+						>
+					</Input>
+				</div>
+				<div>
+					<Input class="w-auto" label="Search" bind:value={query} />
+				</div>
+				{#if balance !== null}
+					<div>
+						<Input
+							type="switch"
+							parentClass="flex items-center h-12"
+							label="Only show what I can afford"
+							bind:value={filterCanAfford}
+						/>
+					</div>
+				{/if}
+			</div>
+		</div>
+		{#if error || !filteredItems || filteredItems.length == 0}
+			<h2 class="text-center text-2xl">
 				{#if error}
 					An Error Occured
 				{:else if loading && !items}
 					<Loading height="2rem" />
+				{:else if items.length > 0 && filteredItems.length == 0}
+					No results
 				{:else}
-					No Items
+					No items
 				{/if}
 			</h2>
 		{:else}
 			<div
 				class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
 			>
-				{#each items as item}
+				{#each filteredItems as item}
 					<div
 						class="p-4 bg-base-200 shadow rounded-lg flex flex-col"
 					>
 						<div class="flex flex-row justify-between items-center">
-							<p class="inline-flex text-3xl font-semibold">
-								{item.name}
-							</p>
+							<div
+								class="flex text-3xl font-semibold items-center"
+							>
+								<span>{item.name}</span>
+								{#if item.newArrival}
+									<div class="badge badge-secondary ml-2">
+										NEW
+									</div>
+								{/if}
+							</div>
 							{#if store.canManage}
 								<label
 									for="editmodal"
