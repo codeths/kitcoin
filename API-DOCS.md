@@ -81,26 +81,6 @@ Returns all transactions for a user. Requires staff role for retrieving other us
 
 ### Response
 
-Array of transactions
-
-## POST `/transactions`
-
-Create a transaction. Requires staff role.
-
-### Request
-
-Body:
-
-```ts
-{
-	amount: number,
-	reason: string | null,
-	user: string | string[]
-}
-```
-
-### Response
-
 ```ts
 {
 	page: number,
@@ -111,6 +91,37 @@ Body:
 ```
 
 see [db schema](src/types/db.ts) for `ITransactionAPIResponse`
+
+## POST `/transactions`
+
+Create a transaction. Requires staff role.
+
+### Request
+
+`amount` (body): Amount to send  
+`reason` (body): [Optional] Reason for the transaction  
+`user` (body): User ID or array of user IDs
+
+### Response
+
+Array of transactions
+
+## POST `/transactions/bulk`
+
+Bulk create transactions. Requires admin role.
+
+### Request
+
+Body should be sent as `multipart/formdata`
+
+`amount` (body): Amount to send  
+`fromUser` (body): [Optional] User ID to send these transactions from. Either this or `fromText` must be specified, but not both.  
+`fromText` (body): [Optional] Text to send these transactions from. Either this or `fromUser` must be specified, but not both.
+`reason` (body): Reason for the transaction
+
+### Response
+
+Array of transactions
 
 ## DELETE `/transactions/:id`
 
@@ -332,8 +343,6 @@ Create a store item
 Search for users
 
 ### Request
-
-Body:
 
 `q` (query): Search query  
 `roles` (query): [Optional] User must have at least one these roles. Separate multiple roles with a comma.  
