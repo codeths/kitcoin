@@ -792,6 +792,7 @@ router.patch(
 					quantity: Validators.optional(
 						Validators.and(Validators.integer, Validators.gte(0)),
 					),
+					pinned: Validators.optional(Validators.boolean),
 				},
 			},
 		}),
@@ -800,7 +801,7 @@ router.patch(
 			if (!requestHasUser(req)) return;
 
 			let {storeID, id} = req.params;
-			let {name, description, price, quantity} = req.body;
+			let {name, description, price, quantity, pinned} = req.body;
 
 			let store = await Store.findById(storeID);
 			if (!store) return res.status(404).send('Store not found');
@@ -811,7 +812,7 @@ router.patch(
 			let item = await StoreItem.findById(id);
 			if (!item) return res.status(404).send('Item not found');
 
-			Object.assign(item, {name, description, price, quantity});
+			Object.assign(item, {name, description, price, quantity, pinned});
 
 			await item.save();
 
@@ -972,6 +973,7 @@ router.post(
 					quantity: Validators.optional(
 						Validators.and(Validators.integer, Validators.gte(0)),
 					),
+					pinned: Validators.optional(Validators.boolean),
 				},
 			},
 		}),
@@ -980,7 +982,7 @@ router.post(
 			if (!requestHasUser(req)) return;
 
 			let {storeID} = req.params;
-			let {name, quantity, description, price} = req.body;
+			let {name, quantity, description, price, pinned} = req.body;
 
 			let store = await Store.findById(storeID);
 			if (!store) return res.status(404).send('Store not found');
@@ -994,6 +996,7 @@ router.post(
 				quantity,
 				description,
 				price,
+				pinned,
 			}).save();
 
 			if (!item) return res.status(500).send('Failed to create item');
