@@ -33,6 +33,9 @@ export default class StoreItem {
 	@prop()
 	public imageHash?: string;
 
+	@prop({required: true, default: false})
+	public pinned: boolean = false;
+
 	public get createdAt(): Date {
 		return (
 			this as unknown as DocumentType<typeof StoreItem>
