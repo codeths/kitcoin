@@ -106,7 +106,9 @@
 
 	const ITEM_SORTERS = {
 		featured: (a, b) =>
-			ITEM_SORTERS.newArrival(a, b) || a.name.localeCompare(b.name),
+			ITEM_SORTERS.pinned(a, b) ||
+			ITEM_SORTERS.newArrival(a, b) ||
+			a.name.localeCompare(b.name),
 		name: (a, b) => a.name.localeCompare(b.name),
 		price_asc: (a, b) => a.price - b.price,
 		price_desc: (a, b) => b.price - a.price,
@@ -118,6 +120,8 @@
 				: b.newArrival && !a.newArrival
 				? 1
 				: -1,
+		pinned: (a, b) =>
+			b.pinned == a.pinned ? 0 : b.pinned && !a.pinned ? 1 : -1,
 	};
 
 	let selectedSorter = 'featured';
