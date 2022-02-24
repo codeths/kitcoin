@@ -299,14 +299,14 @@ router.post(
 			fs.rmSync(file.filepath);
 
 			let json = await csv2jsonAsync(csvString);
+
 			if (!json || !Array.isArray(json))
 				return res.status(400).send('Invalid CSV');
 			if (json.some(j => typeof j !== 'object'))
 				return res.status(400).send('Invalid CSV');
 
-			let ids: string[] = json
-				.map(x => x['Student\u00A0ID'])
-				.filter(x => x);
+			let keys = Object.keys(json[0]);
+			let ids: string[] = json.map(x => x[keys[0]]).filter(x => x);
 
 			let dbUsers = (
 				await Promise.all(ids.map(user => User.findBySchoolId(user)))
