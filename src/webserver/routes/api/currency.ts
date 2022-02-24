@@ -1,7 +1,8 @@
 import express from 'express';
 import formidable from 'formidable';
 import fs from 'fs';
-import pkg from 'json-2-csv';
+import json2csv from 'json-2-csv';
+import readExcel from 'read-excel-file/node/index.commonjs.js';
 
 import {
 	numberFromData,
@@ -13,7 +14,7 @@ import {
 import {DBError, IUser, Transaction, User} from '../../../struct/index.js';
 import {requestHasUser} from '../../../types/index.js';
 
-const {csv2jsonAsync} = pkg;
+const {csv2jsonAsync} = json2csv;
 
 const router = express.Router();
 
@@ -292,21 +293,45 @@ router.post(
 				file = file[0];
 			}
 
-			if (file.mimetype !== 'text/csv')
-				return res.status(400).send('File is not a CSV');
+			if (
+				!file.mimetype ||
+				![
+					'text/csv',
+					'application/vnd.ms-excel',
+					'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+				].includes(file.mimetype)
+			)
+				return res
+					.status(400)
+					.send('File is not a CSV or Excel document');
 
-			let csvString = fs.readFileSync(file.filepath).toString();
+			let ids: string[] = [];
+			if (file.mimetype == 'text/csv') {
+				let json = await csv2jsonAsync(
+					fs.readFileSync(file.filepath).toString(),
+				);
+
+				if (!json || !Array.isArray(json))
+					return res.status(400).send('Invalid CSV');
+				if (json.some(j => typeof j !== 'object'))
+					return res.status(400).send('Invalid CSV');
+
+				let keys = Object.keys(json[0]);
+				ids = json.map(x => x[keys[0]]).filter(x => x);
+			} else {
+				let json = await readExcel(file.filepath);
+
+				if (!json || !Array.isArray(json))
+					return res.status(400).send('Invalid Excel document');
+				if (json.some(j => typeof j !== 'object'))
+					return res.status(400).send('Invalid Excel document');
+
+				ids = json
+					.slice(1)
+					.map(x => x[0]?.toString())
+					.filter(x => x && typeof x == 'string') as string[];
+			}
 			fs.rmSync(file.filepath);
-
-			let json = await csv2jsonAsync(csvString);
-
-			if (!json || !Array.isArray(json))
-				return res.status(400).send('Invalid CSV');
-			if (json.some(j => typeof j !== 'object'))
-				return res.status(400).send('Invalid CSV');
-
-			let keys = Object.keys(json[0]);
-			let ids: string[] = json.map(x => x[keys[0]]).filter(x => x);
 
 			let dbUsers = (
 				await Promise.all(ids.map(user => User.findBySchoolId(user)))
@@ -328,9 +353,7 @@ router.post(
 				}),
 			);
 
-			res.status(200).send(transactions);
-
-			return res.status(200).send(json);
+			return res.status(200).send(transactions);
 		} catch (e) {
 			try {
 				let error = await DBError.generate(
