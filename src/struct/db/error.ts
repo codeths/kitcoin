@@ -15,10 +15,10 @@ class ErrorDetailButton {
 }
 
 class IErrorDetail {
-	code?: number;
-	title?: string;
-	description?: string;
-	button?: ErrorDetailButton;
+	public code?: number;
+	public title?: string;
+	public description?: string;
+	public button?: ErrorDetailButton;
 }
 
 export class ErrorDetail {

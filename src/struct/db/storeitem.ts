@@ -7,31 +7,31 @@ export default class StoreItem {
 	 * Which store the item is in (Mongo ID)
 	 */
 	@prop({required: true})
-	storeID!: string;
+	public storeID!: string;
 
 	/**
 	 * Name of the store item
 	 */
 	@prop({required: true})
-	name!: string;
+	public name!: string;
 
 	@prop()
-	quantity?: number;
+	public quantity?: number;
 
 	/**
 	 * Item description
 	 */
 	@prop()
-	description?: string;
+	public description?: string;
 
 	@prop({required: true})
-	price!: number;
+	public price!: number;
 
 	/**
 	 * Hash of the item's image
 	 */
 	@prop()
-	imageHash?: string;
+	public imageHash?: string;
 
 	public get createdAt(): Date {
 		return (

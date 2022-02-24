@@ -7,40 +7,40 @@ import {User} from './';
 @index({classIDs: 1})
 export default class Store {
 	@prop({required: true})
-	name!: string;
+	public name!: string;
 
 	@prop()
-	description?: string;
+	public description?: string;
 
 	/**
 	 * Google classroom ID (if applicable)
 	 */
 	@prop({type: [String]})
-	classIDs: string[] = [];
+	public classIDs: string[] = [];
 
 	/**
 	 * Should the store be shown to everyone
 	 */
 	@prop({required: true, default: true})
-	public: boolean = true;
+	public public: boolean = true;
 
 	/**
 	 * Mongo ID of the person who owns this store
 	 */
 	@prop({required: true})
-	owner!: string;
+	public owner!: string;
 
 	/**
 	 * Mongo IDs of users who can manage this store
 	 */
 	@prop({type: [String]})
-	managers: string[] = [];
+	public managers: string[] = [];
 
 	/**
 	 * Mongo IDs of users who can view this store
 	 */
 	@prop({type: [String]})
-	users: string[] = [];
+	public users: string[] = [];
 
 	public async toAPIResponse(
 		this: DocumentType<Store>,

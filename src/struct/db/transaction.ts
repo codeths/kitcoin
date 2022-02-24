@@ -44,37 +44,37 @@ export default class Transaction {
 	 * The amount of the transaction
 	 */
 	@prop({required: true})
-	amount!: number;
+	public amount!: number;
 
 	/**
 	 * The reason of the transaction
 	 */
 	@prop()
-	reason?: string;
+	public reason?: string;
 
 	/**
 	 * Who sent this transaction
 	 */
 	@prop({type: TransactionUser, _id: false, required: true})
-	from!: TransactionUser;
+	public from!: TransactionUser;
 
 	/**
 	 * Who received this transaction
 	 */
 	@prop({type: TransactionUser, _id: false, required: true})
-	to!: TransactionUser;
+	public to!: TransactionUser;
 
 	/**
 	 * Store details (if applicable)
 	 */
 	@prop({type: TransactionStore, _id: false})
-	store?: TransactionStore;
+	public store?: TransactionStore;
 
 	/**
 	 * The date of the transaction
 	 */
 	@prop({required: true, default: () => new Date()})
-	date!: Date;
+	public date!: Date;
 
 	/**
 	 * Get the text of the users involved in this transaction
