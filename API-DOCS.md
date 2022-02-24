@@ -118,9 +118,9 @@ Body should be sent as `multipart/formdata`
 `fromUser` (body): [Optional] User ID to send these transactions from. Either this or `fromText` must be specified, but not both.  
 `fromText` (body): [Optional] Text to send these transactions from. Either this or `fromUser` must be specified, but not both.
 `reason` (body): Reason for the transaction
-`data` (body): CSV of the users to send these transactions to.
+`data` (body): CSV or Excel document of the users to send these transactions to.
 
-The CSV's first column can have any header and should contain the student IDs. Any subsequent columns are ignored.
+The file's first column can have any header and should contain the student IDs. Any subsequent columns are ignored.
 
 ### Response
 
