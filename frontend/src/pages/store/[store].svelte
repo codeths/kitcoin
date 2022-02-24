@@ -195,6 +195,10 @@
 
 			return null;
 		},
+		pinned: e => {
+			let v = e.value;
+			return null;
+		},
 	};
 
 	let editItem, editToggle;
@@ -255,6 +259,7 @@
 					quantity: !isNaN(parseFloat(manageFormData.values.quantity))
 						? parseFloat(manageFormData.values.quantity)
 						: null,
+					pinned: manageFormData.values.pinned,
 				}),
 			},
 		).catch(() => null);
@@ -748,6 +753,14 @@
 					label="Amount available (optional)"
 					bind:value={manageFormData.values.quantity}
 					bind:error={manageFormData.errors.quantity}
+					on:validate={manageForm.validate}
+				/>
+				<Input
+					name="pinned"
+					label="Pin this item to the top of the list"
+					type="switch"
+					bind:value={manageFormData.values.pinned}
+					bind:error={manageFormData.errors.pinned}
 					on:validate={manageForm.validate}
 				/>
 				<label class="label" for="">
