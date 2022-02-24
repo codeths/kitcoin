@@ -1,13 +1,19 @@
 import express from 'express';
+import formidable from 'formidable';
+import fs from 'fs';
+import pkg from 'json-2-csv';
 
 import {
 	numberFromData,
 	request,
 	stringFromData,
+	validate,
 	Validators,
 } from '../../../helpers/request.js';
-import {DBError, Transaction, User} from '../../../struct/index.js';
+import {DBError, IUser, Transaction, User} from '../../../struct/index.js';
 import {requestHasUser} from '../../../types/index.js';
+
+const {csv2jsonAsync} = pkg;
 
 const router = express.Router();
 
@@ -198,6 +204,136 @@ router.post(
 		} catch (e) {
 			try {
 				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
+// Bulk create transactions
+router.post(
+	'/transactions/bulk',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['ADMIN'],
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			const form = formidable();
+
+			let [err, fields, files]: [
+				any,
+				formidable.Fields,
+				formidable.Files,
+			] = await new Promise((resolve, reject) =>
+				form.parse(req, (...args) => resolve(args)),
+			);
+
+			if (err) return res.status(400).send('Invalid form data');
+
+			for (let key in fields) {
+				if (Array.isArray(fields[key])) fields[key] = fields[key][0];
+			}
+
+			req.body = {
+				amount: fields.amount,
+				fromUser: fields.fromUser,
+				fromText: fields.fromText,
+				reason: fields.reason,
+			};
+
+			let badRequest = validate(req, {
+				body: {
+					amount: Validators.currency,
+					fromUser: Validators.optional(Validators.objectID),
+					fromText: Validators.optional(Validators.string),
+					reason: Validators.optional(Validators.string),
+				},
+			});
+			if (badRequest) return res.status(400).send(badRequest);
+
+			let amount: number = numberFromData(
+				req.body.amount as number | `${number}`,
+			);
+			let fromUser: string | undefined = req.body.fromUser;
+			let fromText: string | undefined = req.body.fromText;
+			if (!fromUser && !fromText)
+				return res
+					.status(400)
+					.send('Either fromUser or fromText must be specified');
+			let reason: string = req.body.reason;
+
+			let from = fromUser
+				? {
+						id: fromUser,
+				  }
+				: {
+						text: fromText,
+				  };
+
+			let file = files.data;
+			if (!file) return res.status(400).send('No file provided');
+			if (Array.isArray(file)) {
+				if (file.length > 1)
+					return res.status(400).send('Too many files');
+				file = file[0];
+			}
+
+			if (file.mimetype !== 'text/csv')
+				return res.status(400).send('File is not a CSV');
+
+			let csvString = fs.readFileSync(file.filepath).toString();
+			fs.rmSync(file.filepath);
+
+			let json = await csv2jsonAsync(csvString);
+			if (!json || !Array.isArray(json))
+				return res.status(400).send('Invalid CSV');
+			if (json.some(j => typeof j !== 'object'))
+				return res.status(400).send('Invalid CSV');
+
+			let ids: string[] = json
+				.map(x => x['Student\u00A0ID'])
+				.filter(x => x);
+
+			let dbUsers = (
+				await Promise.all(ids.map(user => User.findBySchoolId(user)))
+			).filter(u => u) as IUser[];
+
+			const transactions = await Promise.all(
+				dbUsers.map(async dbUser => {
+					let t = await new Transaction({
+						amount,
+						reason: reason || null,
+						from,
+						to: {
+							id: dbUser.id,
+						},
+					}).save();
+					dbUser!.balance += amount as number;
+					await dbUser!.save();
+					return t.toAPIResponse(req.user);
+				}),
+			);
+
+			res.status(200).send(transactions);
+
+			return res.status(200).send(json);
+		} catch (e) {
+			try {
+				let error = await DBError.generate(
 					{
 						request: req,
 						error: e instanceof Error ? e : undefined,
