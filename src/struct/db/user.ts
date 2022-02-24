@@ -133,7 +133,7 @@ export default class User extends MongooseFuzzyClass {
 	 */
 	@prop({required: true, get: getBalance, default: 0})
 	public balance!: number;
-	
+
 	/**
 	 * Staff - when their balance resets
 	 */
@@ -151,6 +151,12 @@ export default class User extends MongooseFuzzyClass {
 	 */
 	@prop({required: true, default: UserRoles.STUDENT})
 	public roles!: number;
+
+	/**
+	 * Do not sync this user with Google Admin
+	 */
+	@prop({required: true, default: false})
+	public doNotSync: boolean;
 
 	/**
 	 * Set the roles on this user

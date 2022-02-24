@@ -41,6 +41,7 @@ export class AdminClient {
 			gadmin_staff_ou.some(ou => user.orgUnitPath?.startsWith(`/${ou}`));
 
 		let dbUser = await User.findByGoogleId(user.id);
+		if (dbUser && dbUser.doNotSync) return;
 		if (dbUser) {
 			if (exclude) {
 				await dbUser.remove();

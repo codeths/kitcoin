@@ -385,15 +385,16 @@ Update a user
 
 ### Request
 
-`:id` (path): The user to update
-`name` (body): Name
-`googleID` (body): Google ID
-`email` (body): [Optional] Email address
-`schoolID` (body): [Optional] School ID
-`balance` (body): Balance
-`balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)
-`weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier
-`roles` (body): [Optional] Roles to give to the user as an arry of strings
+`:id` (path): The user to update  
+`name` (body): Name  
+`googleID` (body): Google ID  
+`email` (body): [Optional] Email address  
+`schoolID` (body): [Optional] School ID  
+`balance` (body): Balance  
+`balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)  
+`weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier  
+`roles` (body): [Optional] Roles to give to the user as an arry of strings  
+`doNotSync` (body): [Optional] Do not sync this user with Google Admin
 
 ### Response
 
@@ -417,14 +418,15 @@ Create a user
 
 ### Request
 
-`name` (body): Name
-`googleID` (body): Google ID
-`email` (body): [Optional] Email address
-`schoolID` (body): [Optional] School ID
-`balance` (body): [Optional] Balance
-`balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)
-`weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier
-`roles` (body): [Optional] Roles to give to the user as an arry of strings
+`name` (body): Name  
+`googleID` (body): Google ID  
+`email` (body): [Optional] Email address  
+`schoolID` (body): [Optional] School ID  
+`balance` (body): [Optional] Balance  
+`balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)  
+`weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier  
+`roles` (body): [Optional] Roles to give to the user as an arry of strings  
+`doNotSync` (body): [Optional] Do not sync this user with Google Admin
 
 ### Response
 

@@ -53,6 +53,7 @@
 						  )
 						: null,
 					roles: manageFormData.values.roles.map(x => x.value),
+					doNotSync: manageFormData.values.doNotSync,
 				}),
 			},
 		).catch(() => null);
@@ -141,6 +142,7 @@
 		balanceExpires: '',
 		weeklyBalanceMultiplier: '',
 		roles: ['STUDENT'],
+		doNotSync: false,
 	};
 
 	// Manage items
@@ -238,6 +240,10 @@
 			return null;
 		},
 		roles: e => {
+			let v = e.value;
+			return null;
+		},
+		doNotSync: e => {
 			let v = e.value;
 			return null;
 		},
@@ -379,6 +385,14 @@
 							bind:this={roleSelect}
 							bind:value={manageFormData.values.roles}
 							bind:error={manageFormData.errors.roles}
+							on:validate={manageForm.validate}
+						/>
+						<Input
+							name="doNotSync"
+							label="Do Not Sync with Google Admin"
+							type="switch"
+							bind:value={manageFormData.values.doNotSync}
+							bind:error={manageFormData.errors.doNotSync}
 							on:validate={manageForm.validate}
 						/>
 						<div class="flex items-center">
