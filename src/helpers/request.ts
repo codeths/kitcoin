@@ -181,6 +181,18 @@ export class Validators {
 	});
 
 	/**
+	 * Data must be a non-empty string
+	 * @returns
+	 */
+	static stringNotEmpty = () => ({
+		run: (data: unknown): boolean | string => {
+			if (!Validators.string().run(data)) return '{KEY} must be a string';
+			if (data.trim() == '') return '{KEY} must not be empty';
+			return true;
+		},
+	});
+
+	/**
 	 * Data must match regex pattern
 	 * @param value Regex pattern to match
 	 */
