@@ -185,7 +185,14 @@ router.get(
 			}),
 		);
 
-		res.status(200).json(data);
+		res.status(200).json(
+			data.sort((a, b) => {
+				if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+				if (a.public !== b.public) return a.public ? -1 : 1;
+				if (a.canManage !== b.canManage) return a.canManage ? -1 : 1;
+				return a.name.localeCompare(b.name);
+			}),
+		);
 	},
 );
 
