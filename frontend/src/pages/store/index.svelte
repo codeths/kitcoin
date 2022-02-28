@@ -75,6 +75,10 @@
 			let v = e.value;
 			return null;
 		},
+		pinned: e => {
+			let v = e.value;
+			return null;
+		},
 		classes: e => {
 			let v = e.value?.value;
 			return null;
@@ -126,6 +130,7 @@
 			});
 			manageForm.values.classes = extraClasses;
 			manageForm.values.public = modalStore.public;
+			manageForm.values.pinned = modalStore.pinned;
 			manageForm.values.managers = modalStore.managers.map(x => ({
 				text: x.name,
 				value: x.id,
@@ -183,6 +188,9 @@
 				return;
 		}
 
+		console.log(manageFormData.values);
+		console.log(modalStore);
+
 		submitStatus = 'LOADING';
 		let res = await fetch(
 			modalStore ? `/api/store/${modalStore._id}` : `/api/stores`,
@@ -198,9 +206,11 @@
 						x => x.value,
 					),
 					public:
-						manageFormData.values.public ?? modalStore
-							? modalStore.public
-							: false,
+						manageFormData.values.public ??
+						(modalStore ? modalStore.public : false),
+					pinned:
+						manageFormData.values.pinned ??
+						(modalStore ? modalStore.pinned : false),
 					managers: (manageFormData.values.managers || []).map(
 						x => x.value,
 					),
@@ -474,6 +484,15 @@
 						type="switch"
 						bind:value={manageFormData.values.public}
 						bind:error={manageFormData.errors.public}
+						on:validate={manageForm.validate}
+					/>
+					<Input
+						name="pinned"
+						label="Pin this store to the top of the list"
+						type="switch"
+						disabled={!manageFormData.values.public}
+						bind:value={manageFormData.values.pinned}
+						bind:error={manageFormData.errors.pinned}
 						on:validate={manageForm.validate}
 					/>
 				{/if}
