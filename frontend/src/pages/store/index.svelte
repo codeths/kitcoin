@@ -29,9 +29,17 @@
 			authMsg = 'CLASSROOM';
 	})();
 
+	let query = '';
+	let user = undefined;
+
 	let stores = undefined;
 	async function load(useCache) {
-		await getStores(useCache)
+		stores = undefined;
+		await getStores(
+			useCache,
+			query.trim() || undefined,
+			user?.value || undefined,
+		)
 			.then(x => {
 				stores = x;
 			})
@@ -248,6 +256,27 @@
 			>
 		</div>
 	{/if}
+	{#if userInfo && userInfo.roles.includes('ADMIN')}
+		<div class="flex space-x-4 mb-4">
+			<div>
+				<StudentSearch
+					parentClass="items-center h-12"
+					label="User"
+					roles={null}
+					bind:value={user}
+					on:change={() => load(false)}
+				/>
+			</div>
+			<div>
+				<Input
+					parentClass="items-center h-12"
+					label="Search"
+					bind:value={query}
+					on:change={() => load(false)}
+				/>
+			</div>
+		</div>
+	{/if}
 	{#if stores === undefined}
 		<Loading height="2rem" />
 	{:else if stores}
@@ -361,6 +390,7 @@
 				<StudentSearch
 					name="users"
 					label="Additional users who can access this store (optional)"
+					roles={null}
 					bind:value={manageFormData.values.users}
 					bind:error={manageFormData.errors.users}
 					on:validate={manageForm.validate}
@@ -369,6 +399,7 @@
 				<StudentSearch
 					name="managers"
 					label="Additional users who can manage this store (optional)"
+					roles={null}
 					bind:value={manageFormData.values.managers}
 					bind:error={manageFormData.errors.managers}
 					on:validate={manageForm.validate}
