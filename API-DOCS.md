@@ -148,7 +148,7 @@ Get a list of stores that you have access to.
 
 ## Request
 
-`search` (query): [Optional] search for stores by name or description. Requires admin role.
+`search` (query): [Optional] search for stores by name or description. Requires admin role.  
 `user` (query): [Optional] search as a different user. Requires admin role.
 
 ### Response
