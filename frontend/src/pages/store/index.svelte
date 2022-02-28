@@ -160,8 +160,7 @@
 				)
 			)
 				return;
-		}
-		if (
+		} else if (
 			modalStore._id &&
 			userInfo &&
 			!userInfo.roles.includes('ADMIN') &&
