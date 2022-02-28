@@ -36,7 +36,6 @@
 			return null;
 		},
 		amount: e => {
-			console.log(formData);
 			let v = e.value;
 			if (!v) return e.type == 'blur' ? 'Amount is required' : '';
 			if (!/^\d*(?:\.\d+)?$/.test(v.trim()))
@@ -241,7 +240,7 @@
 		label="User"
 		hidelabel="true"
 		me="true"
-		roles={undefined}
+		roles={null}
 		bind:value={formData.values.fromUser}
 		bind:error={formData.errors.fromUser}
 		on:validate={form.validate}
