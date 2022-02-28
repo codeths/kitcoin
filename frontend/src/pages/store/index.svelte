@@ -391,6 +391,7 @@
 					name="users"
 					label="Additional users who can access this store (optional)"
 					roles={null}
+					me="true"
 					bind:value={manageFormData.values.users}
 					bind:error={manageFormData.errors.users}
 					on:validate={manageForm.validate}
@@ -400,6 +401,7 @@
 					name="managers"
 					label="Additional users who can manage this store (optional)"
 					roles={null}
+					me="true"
 					bind:value={manageFormData.values.managers}
 					bind:error={manageFormData.errors.managers}
 					on:validate={manageForm.validate}
