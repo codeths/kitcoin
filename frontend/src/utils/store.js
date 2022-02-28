@@ -7,12 +7,21 @@ export const classAnyInfo = writable(null);
 export const classTeacherInfo = writable(null);
 export const classStudentInfo = writable(null);
 
-export async function getStores(useCache = true) {
+export async function getStores(useCache = true, query, user) {
+	let queryStr = [];
+	if (query) {
+		queryStr.push(`search=${query}`);
+		useCache = false;
+	}
+	if (user) {
+		queryStr.push(`user=${user}`);
+		useCache = false;
+	}
 	if (useCache && get(storeInfo)) return get(storeInfo);
-	let res = await fetch('/api/stores');
+	let res = await fetch(`/api/stores?${queryStr.join('&')}`);
 	if (!res || !res.ok) throw new Error('Failed to fetch stores');
 	let json = await res.json();
-	storeInfo.set(json);
+	if (!query && !user) storeInfo.set(json);
 	return json;
 }
 
