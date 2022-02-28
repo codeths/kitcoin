@@ -75,6 +75,10 @@
 			let v = e.value;
 			return null;
 		},
+		pinned: e => {
+			let v = e.value;
+			return null;
+		},
 		classes: e => {
 			let v = e.value?.value;
 			return null;
@@ -126,6 +130,7 @@
 			});
 			manageForm.values.classes = extraClasses;
 			manageForm.values.public = modalStore.public;
+			manageForm.values.pinned = modalStore.pinned;
 			manageForm.values.managers = modalStore.managers.map(x => ({
 				text: x.name,
 				value: x.id,
@@ -146,6 +151,7 @@
 		e.preventDefault();
 		if (!manageFormData.isValid) return false;
 		if (
+			modalStore &&
 			modalStore._id &&
 			!(
 				userInfo &&
@@ -169,6 +175,7 @@
 			)
 				return;
 		} else if (
+			modalStore &&
 			modalStore._id &&
 			userInfo &&
 			!userInfo.roles.includes('ADMIN') &&
@@ -182,6 +189,11 @@
 			)
 				return;
 		}
+
+		if (manageFormData.values.public == '')
+			manageFormData.values.public = false;
+		if (manageFormData.values.pinned == '')
+			manageFormData.values.pinned = false;
 
 		submitStatus = 'LOADING';
 		let res = await fetch(
@@ -198,9 +210,11 @@
 						x => x.value,
 					),
 					public:
-						manageFormData.values.public ?? modalStore
-							? modalStore.public
-							: false,
+						manageFormData.values.public ??
+						(modalStore ? modalStore.public : false),
+					pinned:
+						manageFormData.values.pinned ??
+						(modalStore ? modalStore.pinned : false),
 					managers: (manageFormData.values.managers || []).map(
 						x => x.value,
 					),
@@ -338,6 +352,11 @@
 					>
 						<div class="flex flex-row justify-between items-center">
 							<p class="inline-flex text-2xl font-semibold">
+								{#if store.pinned}
+									<span
+										class="icon-pin mr-2 text-secondary group-hover:text-primary-content transition duration-300"
+									/>
+								{/if}
 								{store.name}
 							</p>
 							{#if store.canManage}
@@ -474,6 +493,15 @@
 						type="switch"
 						bind:value={manageFormData.values.public}
 						bind:error={manageFormData.errors.public}
+						on:validate={manageForm.validate}
+					/>
+					<Input
+						name="pinned"
+						label="Pin this store to the top of the list"
+						type="switch"
+						disabled={!manageFormData.values.public}
+						bind:value={manageFormData.values.pinned}
+						bind:error={manageFormData.errors.pinned}
 						on:validate={manageForm.validate}
 					/>
 				{/if}

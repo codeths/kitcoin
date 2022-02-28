@@ -43,6 +43,9 @@ export default class Store {
 	@prop({type: [String]})
 	public users: string[] = [];
 
+	@prop({required: true, default: false})
+	public pinned: boolean = false;
+
 	public async toAPIResponse(
 		this: DocumentType<Store>,
 		canManage: boolean,
