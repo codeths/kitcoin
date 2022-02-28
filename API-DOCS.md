@@ -202,6 +202,7 @@ Update a store. Requires permission to manage this store.
 `public` (body): Whether the store is public or not. Changing this setting requires admin permissions.  
 `managers` (body): An array of user IDs who can manage this store  
 `users` (body): An array of user IDs who can access this store
+`owner` (body): [Optional] The user ID of the new owner of the store. Changing this setting requires admin permissions or you to be the existing owner.
 
 ### Response
 
