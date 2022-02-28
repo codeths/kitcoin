@@ -203,6 +203,7 @@ router.post(
 					public: Validators.boolean,
 					managers: Validators.array(Validators.objectID),
 					users: Validators.array(Validators.objectID),
+					pinned: Validators.boolean,
 				},
 			},
 		}),
@@ -216,6 +217,11 @@ router.post(
 				return res
 					.status(403)
 					.send('You must be an admin to create a public store.');
+			if (body.pinned && !req.user.hasRole('ADMIN'))
+				return res
+					.status(403)
+					.send('You must be an admin to create a pinned store.');
+			if (!body.public && body.pinned) body.pinned = false;
 
 			let invalidUsers = (
 				await Promise.all(
@@ -337,6 +343,7 @@ router.patch(
 					managers: Validators.array(Validators.objectID),
 					users: Validators.array(Validators.objectID),
 					owner: Validators.optional(Validators.objectID),
+					pinned: Validators.boolean,
 				},
 			},
 		}),
@@ -355,6 +362,12 @@ router.patch(
 				return res
 					.status(403)
 					.send('You must be an admin to change the public setting.');
+			if (body.pinned !== store.pinned && !req.user.hasRole('ADMIN'))
+				return res
+					.status(403)
+					.send('You must be an admin to change the pinned setting.');
+			if (!body.public && body.pinned) body.pinned = false;
+
 			if (
 				body.owner &&
 				body.owner !== store.owner &&
