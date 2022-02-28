@@ -151,6 +151,7 @@
 		e.preventDefault();
 		if (!manageFormData.isValid) return false;
 		if (
+			modalStore &&
 			modalStore._id &&
 			!(
 				userInfo &&
@@ -174,6 +175,7 @@
 			)
 				return;
 		} else if (
+			modalStore &&
 			modalStore._id &&
 			userInfo &&
 			!userInfo.roles.includes('ADMIN') &&
@@ -187,9 +189,6 @@
 			)
 				return;
 		}
-
-		console.log(manageFormData.values);
-		console.log(modalStore);
 
 		submitStatus = 'LOADING';
 		let res = await fetch(
