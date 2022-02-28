@@ -75,6 +75,12 @@ router.get(
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: false,
+			validators: {
+				query: {
+					search: Validators.optional(Validators.string),
+					user: Validators.optional(Validators.objectID),
+				},
+			},
 		}),
 	async (req, res) => {
 		let query: FilterQuery<IStore>[] = [
@@ -89,9 +95,23 @@ router.get(
 			role: 'TEACHER' | 'STUDENT';
 		}[] = [];
 
-		if (requestHasUser(req)) {
+		let {search, user} = req.query;
+		if (search && typeof search !== 'string') search = undefined;
+		if (user && typeof user !== 'string') user = undefined;
+
+		if (!req.user?.hasRole('ADMIN') && (search || user))
+			return res
+				.status(403)
+				.send('You must be an admin to specify another user');
+
+		let reqUser = req.user;
+		if (user) reqUser = (await User.findById(user)) || undefined;
+		if (user && !reqUser) return res.status(404).send('User not found');
+		if (search && !user) reqUser = undefined;
+
+		if (reqUser) {
 			let classroomClient = await new ClassroomClient().createClient(
-				req.user,
+				reqUser,
 			);
 			classes = await Promise.all([
 				classroomClient.getClassesForRole('TEACHER'),
@@ -114,19 +134,36 @@ router.get(
 
 			query.push({classIDs: {$in: classes.map(x => x.id)}});
 			query.push({
-				managers: req.user.id,
+				managers: reqUser.id,
 			});
 			query.push({
-				users: req.user.id,
+				users: reqUser.id,
 			});
 			query.push({
-				owner: req.user.id,
+				owner: reqUser.id,
 			});
 		}
-
-		let stores = await Store.find({
+		let options: FilterQuery<IStore> = {
 			$or: query,
-		});
+		};
+		if (search) {
+			options = {};
+			options[reqUser ? '$and' : '$or'] = [
+				{$or: query},
+				{
+					$or: [
+						{
+							name: RegExp(search.toLowerCase(), 'i'),
+						},
+						{
+							description: RegExp(search.toLowerCase(), 'i'),
+						},
+					],
+				},
+			];
+		}
+
+		let stores = await Store.find(options);
 
 		let data = await Promise.all(
 			stores.map(async x => {
