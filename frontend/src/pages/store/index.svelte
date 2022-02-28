@@ -348,6 +348,11 @@
 					>
 						<div class="flex flex-row justify-between items-center">
 							<p class="inline-flex text-2xl font-semibold">
+								{#if store.pinned}
+									<span
+										class="icon-pin mr-2 text-secondary group-hover:text-primary-content transition duration-300"
+									/>
+								{/if}
 								{store.name}
 							</p>
 							{#if store.canManage}
