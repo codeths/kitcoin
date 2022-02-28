@@ -190,6 +190,11 @@
 				return;
 		}
 
+		if (manageFormData.values.public == '')
+			manageFormData.values.public = false;
+		if (manageFormData.values.pinned == '')
+			manageFormData.values.pinned = false;
+
 		submitStatus = 'LOADING';
 		let res = await fetch(
 			modalStore ? `/api/store/${modalStore._id}` : `/api/stores`,
