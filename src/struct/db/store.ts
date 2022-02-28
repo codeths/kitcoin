@@ -1,4 +1,3 @@
-
 import typegoose, {DocumentType} from '@typegoose/typegoose';
 const {index, prop} = typegoose;
 import {ReturnModelType} from '@typegoose/typegoose/lib/types';
@@ -77,6 +76,7 @@ export default class Store {
 			...data,
 			users: data.users.map(id => userData.find(x => x.id == id)!),
 			managers: data.managers.map(id => userData.find(x => x.id == id)!),
+			owner: userData.find(x => x.id == data.owner)!,
 			canManage,
 		};
 

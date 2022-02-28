@@ -336,6 +336,7 @@ router.patch(
 					public: Validators.boolean,
 					managers: Validators.array(Validators.objectID),
 					users: Validators.array(Validators.objectID),
+					owner: Validators.optional(Validators.objectID),
 				},
 			},
 		}),
@@ -350,18 +351,30 @@ router.patch(
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			let body = req.body;
-			body.owner = req.user.id;
 			if (body.public !== store.public && !req.user.hasRole('ADMIN'))
 				return res
 					.status(403)
 					.send('You must be an admin to change the public setting.');
+			if (
+				body.owner &&
+				body.owner !== store.owner &&
+				req.user.id !== store.owner &&
+				!req.user.hasRole('ADMIN')
+			)
+				return res
+					.status(403)
+					.send(
+						"You must be an admin or the current owner to change the store's owner.",
+					);
 
 			let invalidUsers = (
 				await Promise.all(
-					[body.managers, body.users].flat().map(async id => {
-						let user = await User.findById(id);
-						return user ? null : id;
-					}),
+					[body.managers, body.users, body.owner || store.owner]
+						.flat()
+						.map(async id => {
+							let user = await User.findById(id);
+							return user ? null : id;
+						}),
 				)
 			).filter(x => x);
 

@@ -96,7 +96,6 @@ export type IStoreAPIResponse = Modify<
 		canManage: boolean;
 		classIDs?: string[];
 		classNames?: string[];
-		owner?: string;
 		users?: {
 			name: string;
 			id: string;
@@ -105,5 +104,9 @@ export type IStoreAPIResponse = Modify<
 			name: string;
 			id: string;
 		}[];
+		owner?: {
+			name: string;
+			id: string;
+		};
 	}
 >;

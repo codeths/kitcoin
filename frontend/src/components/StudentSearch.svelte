@@ -12,7 +12,13 @@
 	export let multiselect = false;
 	export let roles = ['STUDENT'];
 
-	if (!multiselect) value = null;
+	if (!multiselect) {
+		if (value == []) {
+			value = null;
+		} else if (value) {
+			query = value.text;
+		}
+	}
 
 	let results = null;
 	let autoSubmit = false;

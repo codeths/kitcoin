@@ -87,6 +87,11 @@
 			let v = e.value?.value;
 			return null;
 		},
+		owner: e => {
+			let v = e.value?.value;
+			if (!v) return e && e.type == 'blur' ? 'Owner is required' : '';
+			return null;
+		},
 	};
 
 	let modalStore = null;
@@ -95,10 +100,11 @@
 	let resetTimeout;
 
 	let extraClasses = [];
+	let classes;
 
 	async function setModalStore(store) {
 		submitStatus = null;
-		let classes = store ? await getClasses('teacher') : null;
+		classes = store ? await getClasses('teacher') : null;
 		extraClasses = [];
 		manageForm.reset();
 		modalStore = store;
@@ -128,6 +134,10 @@
 				text: x.name,
 				value: x.id,
 			}));
+			manageForm.values.owner = {
+				text: modalStore.owner.name,
+				value: modalStore.owner.id,
+			};
 		}
 		modalOpen = true;
 	}
@@ -135,6 +145,44 @@
 	async function doManageStore(e) {
 		e.preventDefault();
 		if (!manageFormData.isValid) return false;
+		if (
+			modalStore._id &&
+			!(
+				userInfo &&
+				(userInfo.roles.includes('ADMIN') ||
+					manageFormData.values.owner?.value == userInfo._id ||
+					(manageFormData.values.managers || []).some(
+						x => x.value == userInfo._id,
+					))
+			) &&
+			!(
+				classes &&
+				(manageFormData.values.classes || []).some(x =>
+					classes.some(c => c.id == x.value),
+				)
+			)
+		) {
+			if (
+				!confirm(
+					'You will not be able to manage this store after this. Are you sure?',
+				)
+			)
+				return;
+		} else if (
+			modalStore._id &&
+			userInfo &&
+			!userInfo.roles.includes('ADMIN') &&
+			modalStore.owner.id == userInfo._id &&
+			manageFormData.values.owner?.value !== userInfo._id
+		) {
+			if (
+				!confirm(
+					'Are you sure you want to remove yourself as the store owner?',
+				)
+			)
+				return;
+		}
+
 		submitStatus = 'LOADING';
 		let res = await fetch(
 			modalStore ? `/api/store/${modalStore._id}` : `/api/stores`,
@@ -159,6 +207,7 @@
 					users: (manageFormData.values.users || []).map(
 						x => x.value,
 					),
+					owner: manageFormData.values.owner?.value,
 				}),
 			},
 		).catch(() => null);
@@ -407,6 +456,17 @@
 					on:validate={manageForm.validate}
 					multiselect
 				/>
+				{#if modalStore && userInfo && ((modalStore && modalStore.owner.id == userInfo._id) || userInfo.roles.includes('ADMIN'))}
+					<StudentSearch
+						name="owner"
+						label="Owner"
+						roles={null}
+						me="true"
+						bind:value={manageFormData.values.owner}
+						bind:error={manageFormData.errors.owner}
+						on:validate={manageForm.validate}
+					/>
+				{/if}
 				{#if userInfo && userInfo.roles.includes('ADMIN')}
 					<Input
 						name="public"
