@@ -247,6 +247,10 @@
 	async function manageItems(e) {
 		e.preventDefault();
 		if (!manageFormData.isValid) return false;
+
+		if (manageFormData.values.pinned == '')
+			manageFormData.values.pinned = false;
+
 		submitStatus = 'LOADING';
 		let res = await fetch(
 			editItem
