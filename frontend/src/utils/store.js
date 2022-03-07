@@ -7,6 +7,8 @@ export const classAnyInfo = writable(null);
 export const classTeacherInfo = writable(null);
 export const classStudentInfo = writable(null);
 
+export const LOW_STOCK = 3; //Low stock if there are this many items or less
+
 export async function getStores(useCache = true, query, user) {
 	let queryStr = [];
 	if (query) {
@@ -35,5 +37,12 @@ export async function getItems(store, useCache) {
 		v[store] = items;
 		return v;
 	});
+	return items;
+}
+
+export async function getNewArrivals() {
+	let res = await fetch(`/api/store/newarrivals`).catch(e => {});
+	if (!res || !res.ok) throw 'Failed to fetch items';
+	let items = await res.json();
 	return items;
 }
