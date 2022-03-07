@@ -303,6 +303,48 @@ router.post(
 );
 
 router.get(
+	'/store/newarrivals',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: false,
+		}),
+	async (req, res) => {
+		try {
+			let stores = await getStores(req.user);
+
+			let allItems = await Promise.all(
+				stores.map(x => StoreItem.findByStoreID(x.id)),
+			);
+			let newItems = allItems.flat().filter(x => x.newArrival);
+
+			res.status(200).json(
+				newItems.map(x =>
+					x.toObject({
+						getters: true,
+						versionKey: false,
+					}),
+				),
+			);
+		} catch (e) {
+			try {
+				let error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
+router.get(
 	'/store/:id',
 	async (req, res, next) =>
 		request(req, res, next, {
