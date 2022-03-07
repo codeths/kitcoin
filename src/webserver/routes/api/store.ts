@@ -70,6 +70,100 @@ async function getStorePerms(
 	return {view, manage};
 }
 
+async function getStores(
+	user?: IUser,
+	search?: string,
+	reqUser: IUser | undefined = user,
+) {
+	let query: FilterQuery<IStore>[] = [
+		{
+			public: true,
+		},
+	];
+
+	let classes: {
+		id: string;
+		name: string | null;
+		role: 'TEACHER' | 'STUDENT';
+	}[] = [];
+
+	if (user) {
+		let classroomClient = await new ClassroomClient().createClient(user);
+		classes = await Promise.all([
+			classroomClient.getClassesForRole('TEACHER'),
+			classroomClient.getClassesForRole('STUDENT'),
+		]).then(x =>
+			x
+				.map((x, i) =>
+					(x || [])
+						.filter(x => x.id)
+						.map(x => ({
+							id: x.id as string,
+							name: x.name || null,
+							role: (i === 0 ? 'TEACHER' : 'STUDENT') as
+								| 'TEACHER'
+								| 'STUDENT',
+						})),
+				)
+				.flat(),
+		);
+
+		query.push({classIDs: {$in: classes.map(x => x.id)}});
+		query.push({
+			managers: user.id,
+		});
+		query.push({
+			users: user.id,
+		});
+		query.push({
+			owner: user.id,
+		});
+	}
+	let options: FilterQuery<IStore> = {
+		$or: query,
+	};
+	if (search) {
+		options = {};
+		options[user ? '$and' : '$or'] = [
+			{$or: query},
+			{
+				$or: [
+					{
+						name: RegExp(search.toLowerCase(), 'i'),
+					},
+					{
+						description: RegExp(search.toLowerCase(), 'i'),
+					},
+				],
+			},
+		];
+	}
+
+	let stores = await Store.find(options);
+
+	let data = await Promise.all(
+		stores.map(async x => {
+			let canManage = reqUser
+				? reqUser.hasRole('ADMIN') ||
+				  (x.classIDs &&
+						classes
+							.filter(x => x.role === 'TEACHER')
+							.some(c => x.classIDs.includes(c.id))) ||
+				  x.owner == reqUser.id ||
+				  x.managers.includes(reqUser.id)
+				: false;
+			let res = await x.toAPIResponse(canManage);
+			res.classNames =
+				classes
+					.filter(c => x.classIDs.includes(c.id) && c.name)
+					.map(x => x.name!) || [];
+			return res;
+		}),
+	);
+
+	return data;
+}
+
 router.get(
 	'/stores',
 	async (req, res, next) =>
@@ -83,18 +177,6 @@ router.get(
 			},
 		}),
 	async (req, res) => {
-		let query: FilterQuery<IStore>[] = [
-			{
-				public: true,
-			},
-		];
-
-		let classes: {
-			id: string;
-			name: string | null;
-			role: 'TEACHER' | 'STUDENT';
-		}[] = [];
-
 		let {search, user} = req.query;
 		if (search && typeof search !== 'string') search = undefined;
 		if (user && typeof user !== 'string') user = undefined;
@@ -109,84 +191,10 @@ router.get(
 		if (user && !reqUser) return res.status(404).send('User not found');
 		if (search && !user) reqUser = undefined;
 
-		if (reqUser) {
-			let classroomClient = await new ClassroomClient().createClient(
-				reqUser,
-			);
-			classes = await Promise.all([
-				classroomClient.getClassesForRole('TEACHER'),
-				classroomClient.getClassesForRole('STUDENT'),
-			]).then(x =>
-				x
-					.map((x, i) =>
-						(x || [])
-							.filter(x => x.id)
-							.map(x => ({
-								id: x.id as string,
-								name: x.name || null,
-								role: (i === 0 ? 'TEACHER' : 'STUDENT') as
-									| 'TEACHER'
-									| 'STUDENT',
-							})),
-					)
-					.flat(),
-			);
-
-			query.push({classIDs: {$in: classes.map(x => x.id)}});
-			query.push({
-				managers: reqUser.id,
-			});
-			query.push({
-				users: reqUser.id,
-			});
-			query.push({
-				owner: reqUser.id,
-			});
-		}
-		let options: FilterQuery<IStore> = {
-			$or: query,
-		};
-		if (search) {
-			options = {};
-			options[reqUser ? '$and' : '$or'] = [
-				{$or: query},
-				{
-					$or: [
-						{
-							name: RegExp(search.toLowerCase(), 'i'),
-						},
-						{
-							description: RegExp(search.toLowerCase(), 'i'),
-						},
-					],
-				},
-			];
-		}
-
-		let stores = await Store.find(options);
-
-		let data = await Promise.all(
-			stores.map(async x => {
-				let canManage = req.user
-					? req.user.hasRole('ADMIN') ||
-					  (x.classIDs &&
-							classes
-								.filter(x => x.role === 'TEACHER')
-								.some(c => x.classIDs.includes(c.id))) ||
-					  x.owner == req.user.id ||
-					  x.managers.includes(req.user.id)
-					: false;
-				let res = await x.toAPIResponse(canManage);
-				res.classNames =
-					classes
-						.filter(c => x.classIDs.includes(c.id) && c.name)
-						.map(x => x.name!) || [];
-				return res;
-			}),
-		);
+		let stores = await getStores(reqUser, search, req.user);
 
 		res.status(200).json(
-			data.sort((a, b) => {
+			stores.sort((a, b) => {
 				if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
 				if (a.public !== b.public) return a.public ? -1 : 1;
 				if (a.canManage !== b.canManage) return a.canManage ? -1 : 1;
