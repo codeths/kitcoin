@@ -16,7 +16,7 @@ import {
 	Transaction,
 	User,
 } from '../../../struct/index.js';
-import {requestHasUser} from '../../../types/index.js';
+import {IStoreAPIResponse, requestHasUser} from '../../../types/index.js';
 
 const router = express.Router();
 
@@ -192,10 +192,13 @@ router.get(
 		if (user && !reqUser) return res.status(404).send('User not found');
 		if (search && !user) reqUser = undefined;
 
-		let stores = await Promise.all(
+		let stores: IStoreAPIResponse[] = await Promise.all(
 			(
 				await getStores(reqUser, search, req.user)
-			).map(x => x.toAPIResponse(x.canManage)),
+			).map(async x => ({
+				...(await x.toAPIResponse(x.canManage)),
+				classNames: x.classNames,
+			})),
 		);
 
 		res.status(200).json(
