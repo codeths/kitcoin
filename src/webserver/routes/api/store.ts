@@ -141,25 +141,26 @@ async function getStores(
 
 	let stores = await Store.find(options);
 
-	let data = await Promise.all(
-		stores.map(async x => {
-			let canManage = reqUser
-				? reqUser.hasRole('ADMIN') ||
-				  (x.classIDs &&
-						classes
-							.filter(x => x.role === 'TEACHER')
-							.some(c => x.classIDs.includes(c.id))) ||
-				  x.owner == reqUser.id ||
-				  x.managers.includes(reqUser.id)
-				: false;
-			let res = await x.toAPIResponse(canManage);
-			res.classNames =
-				classes
-					.filter(c => x.classIDs.includes(c.id) && c.name)
-					.map(x => x.name!) || [];
-			return res;
-		}),
-	);
+	let data = stores.map(x => {
+		let res: any = x;
+		res.canManage = reqUser
+			? reqUser.hasRole('ADMIN') ||
+			  (x.classIDs &&
+					classes
+						.filter(x => x.role === 'TEACHER')
+						.some(c => x.classIDs.includes(c.id))) ||
+			  x.owner == reqUser.id ||
+			  x.managers.includes(reqUser.id)
+			: false;
+		res.classNames =
+			classes
+				.filter(c => x.classIDs.includes(c.id) && c.name)
+				.map(x => x.name!) || [];
+		return res as IStore & {
+			canManage: boolean;
+			classNames: string[];
+		};
+	});
 
 	return data;
 }
@@ -191,7 +192,11 @@ router.get(
 		if (user && !reqUser) return res.status(404).send('User not found');
 		if (search && !user) reqUser = undefined;
 
-		let stores = await getStores(reqUser, search, req.user);
+		let stores = await Promise.all(
+			(
+				await getStores(reqUser, search, req.user)
+			).map(x => x.toAPIResponse(x.canManage)),
+		);
 
 		res.status(200).json(
 			stores.sort((a, b) => {
