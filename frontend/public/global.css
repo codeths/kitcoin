@@ -115,4 +115,16 @@ span[class^='icon-']::before {
 	.drawer-side .menu a {
 		@apply rounded-lg my-1;
 	}
+
+	@keyframes attention {
+		from {
+			@apply bg-yellow-200;
+		}
+		to {
+		}
+	}
+
+	.attention {
+		@apply animate-[attention_1s];
+	}
 }
