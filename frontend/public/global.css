@@ -125,6 +125,6 @@ span[class^='icon-']::before {
 	}
 
 	.attention {
-		@apply animate-[attention_1s];
+		animation: attention 1s linear 0.1s;
 	}
 }
