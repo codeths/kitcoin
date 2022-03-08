@@ -282,7 +282,7 @@
 </script>
 
 <!-- Content -->
-<div class="p-12 mt-6 flex flex-col">
+<div class="px-12 my-6 flex flex-col">
 	<h2 class="text-4xl font-bold mb-6">Your Stores</h2>
 	{#if authMsg}
 		<div class="alert alert-error my-4">
@@ -398,7 +398,7 @@
 	{/if}
 </div>
 {#if userInfo == null || (userInfo && userInfo.roles.includes('STUDENT'))}
-	<div class="p-12 flex flex-col w-screen">
+	<div class="px-12 my-6 flex flex-col w-screen">
 		<h1 class="text-3xl font-medium mb-2">New Arrivals</h1>
 		<NewArrivals />
 	</div>
