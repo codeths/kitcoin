@@ -342,7 +342,9 @@
 		</div>
 	{/if}
 	{#if stores === undefined}
-		<Loading height="2rem" />
+		<div class="flex bg-base-100 shadow-md rounded-lg py-10 min-h-40">
+			<Loading height="2rem" />
+		</div>
 	{:else if stores}
 		{#if stores.length > 0}
 			<div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
