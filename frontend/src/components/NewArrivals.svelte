@@ -40,7 +40,7 @@
 	>
 		{#each newArrivals as item}
 			<a
-				class="min-w-[20rem] carousel-item p-4 bg-base-100 shadow rounded-lg flex flex-col flex-grow transition duration-300"
+				class="w-80 carousel-item p-4 bg-base-100 shadow rounded-lg flex flex-col flex-grow transition duration-300"
 				href="/store/{item.storeID}#{item.id}"
 			>
 				<div class="flex flex-row justify-between items-center">
