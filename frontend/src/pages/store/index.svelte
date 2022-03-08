@@ -8,6 +8,7 @@
 		Input,
 		StudentSearch,
 		ClassroomSearch,
+		NewArrivals,
 	} from '../../components';
 	let toastContainer;
 	import {getStores} from '../../utils/store';
@@ -396,6 +397,12 @@
 		<h2>Error loading stores</h2>
 	{/if}
 </div>
+{#if userInfo == null || (userInfo && userInfo.roles.includes('STUDENT'))}
+	<div class="p-12 flex flex-col w-screen">
+		<h1 class="text-3xl font-medium mb-2">New Arrivals</h1>
+		<NewArrivals />
+	</div>
+{/if}
 
 <input
 	type="checkbox"
