@@ -349,7 +349,7 @@
 				{#each stores as store}
 					<a
 						href={$url('./:store', {store: store._id})}
-						class="group p-4 bg-base-200 hover:bg-primary hover:text-primary-content hover:scale-110 shadow rounded-lg flex flex-col transition duration-300"
+						class="group p-4 bg-base-100 hover:bg-primary hover:text-primary-content hover:scale-110 shadow rounded-lg flex flex-col transition duration-300"
 					>
 						<div class="flex flex-row justify-between items-center">
 							<p class="inline-flex text-2xl font-semibold">

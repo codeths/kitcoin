@@ -546,7 +546,7 @@
 	</a>
 	{#if balance !== null && (!store || !store.canManage)}
 		<div
-			class="inline-flex flex-col self-center p-4 bg-base-200 rounded-lg mx-6 my-4"
+			class="inline-flex flex-col self-center p-4 bg-base-100 rounded-lg mx-6 my-4"
 		>
 			<span>
 				Your balance: <span
@@ -583,7 +583,7 @@
 				>
 			</div>
 		{/if}
-		<div class="collapse bg-base-200 rounded-lg collapse-arrow mb-4">
+		<div class="collapse bg-base-100 rounded-lg collapse-arrow mb-4">
 			<input
 				type="checkbox"
 				id="filtercollapse"
@@ -591,11 +591,11 @@
 			/>
 			<label
 				for="filtercollapse"
-				class="collapse-title text-xl font-medium !bg-base-200"
+				class="collapse-title text-xl font-medium !bg-base-100"
 			>
 				{filterCollapseShown ? 'Hide' : 'Show'} filters
 			</label>
-			<div class="flex space-x-4 collapse-content !bg-base-200">
+			<div class="flex space-x-4 collapse-content !bg-base-100">
 				<div>
 					<Input
 						type="select"
@@ -647,7 +647,7 @@
 			>
 				{#each filteredItems as item}
 					<div
-						class="p-4 bg-base-200 shadow rounded-lg flex flex-col"
+						class="p-4 bg-base-100 shadow rounded-lg flex flex-col"
 						class:attention={hash == item.id}
 					>
 						<div class="flex flex-row justify-between items-center">
