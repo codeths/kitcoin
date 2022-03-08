@@ -20,6 +20,8 @@
 	(async () => {
 		stores = await getStores();
 		newArrivals = await getNewArrivals().catch(e => e);
+		if (Array.isArray(newArrivals))
+			newArrivals.sort((a, b) => a.name.localeCompare(b.name));
 		setTimeout(checkShouldScroll, 0);
 	})();
 
