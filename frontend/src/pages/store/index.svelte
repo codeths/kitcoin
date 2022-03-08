@@ -391,10 +391,22 @@
 				{/each}
 			</div>
 		{:else}
-			<h2>No stores available</h2>
+			<div class="flex bg-base-100 shadow-md rounded-lg py-10 min-h-40">
+				<span
+					class="text-center text-3xl flex justify-center items-center w-full h-full"
+				>
+					No stores available.
+				</span>
+			</div>
 		{/if}
 	{:else}
-		<h2>Error loading stores</h2>
+		<div class="flex bg-base-100 shadow-md rounded-lg py-10 min-h-40">
+			<span
+				class="text-center text-3xl flex justify-center items-center w-full h-full"
+			>
+				Error loading stores.
+			</span>
+		</div>
 	{/if}
 </div>
 {#if userInfo == null || (userInfo && userInfo.roles.includes('STUDENT'))}
