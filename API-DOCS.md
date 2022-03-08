@@ -177,6 +177,18 @@ Create a store. Requires staff permissions.
 
 `IStoreAPIResponse` (see [db schema](src/types/db.ts))
 
+## GET `/store/newarrivals`
+
+Get a list of new store items
+
+### Request
+
+None
+
+### Response
+
+`IStoreItem[]` (see [db schema](src/types/db.ts))
+
 ## GET `/store/:id`
 
 Get a store's info by its ID
