@@ -25,7 +25,8 @@
 		showNextBtn =
 			carousel.scrollWidth -
 				carousel.scrollLeft -
-				carousel.lastChild.clientWidth >
+				carousel.lastChild.clientWidth +
+				100 >
 			carousel.clientWidth;
 	}
 
