@@ -26,7 +26,10 @@
 	let carousel, showNextBtn;
 	function checkShouldScroll() {
 		showNextBtn =
-			carousel.scrollWidth - carousel.scrollLeft > carousel.clientWidth;
+			carousel.scrollWidth -
+				carousel.scrollLeft -
+				carousel.lastChild.clientWidth >
+			carousel.clientWidth;
 	}
 </script>
 
