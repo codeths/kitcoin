@@ -85,7 +85,7 @@
 				<p class="flex-grow" />
 				{#if item.imageHash}
 					<img
-						class="store-item mt-6 object-contain max-h-80 rounded-lg"
+						class="store-item mt-6 object-contain max-h-60 rounded-lg"
 						src="/api/store/{item.storeID}/item/{item._id}/image"
 						alt={item.name}
 						onload="this.style.display = ''"
