@@ -33,6 +33,8 @@
 				carousel.lastChild.clientWidth >
 			carousel.clientWidth;
 	}
+
+	window.addEventListener('resize', checkShouldScroll);
 </script>
 
 <!-- Content-->
