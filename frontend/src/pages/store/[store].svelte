@@ -714,7 +714,7 @@
 						{#key item.imageHash}
 							{#if item.imageHash}
 								<img
-									class="store-item mt-6 object-contain max-h-80"
+									class="store-item mt-6 object-contain max-h-80 rounded-lg"
 									src="/api/store/{storeID}/item/{item._id}/image"
 									alt={item.name}
 									onload="this.style.display = ''"
