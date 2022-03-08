@@ -20,7 +20,14 @@
 	(async () => {
 		stores = await getStores();
 		newArrivals = await getNewArrivals().catch(e => e);
+		setTimeout(checkShouldScroll, 0);
 	})();
+
+	let carousel, showNextBtn;
+	function checkShouldScroll() {
+		showNextBtn =
+			carousel.scrollWidth - carousel.scrollLeft > carousel.clientWidth;
+	}
 </script>
 
 <!-- Content-->
@@ -52,11 +59,14 @@
 		<div class="mx-2 my-4 col-span-12 lg:col-span-6">
 			<h1 class="text-3xl font-medium mb-2">New Arrivals</h1>
 			{#if Array.isArray(newArrivals) && newArrivals.length > 0}
-				<div class="carousel gap-4">
+				<div
+					class="carousel gap-4 rounded-lg"
+					bind:this={carousel}
+					on:scroll={checkShouldScroll}
+				>
 					{#each newArrivals as item}
-						<!-- @todo fix scaling overflow (hover) -->
 						<a
-							class="min-w-[20rem] carousel-item p-4 bg-base-100 shadow rounded-lg flex flex-col flex-grow hover:scale-105 transition duration-300"
+							class="min-w-[20rem] carousel-item p-4 bg-base-100 shadow rounded-lg flex flex-col flex-grow transition duration-300"
 							href="/store/{item.storeID}#{item.id}"
 						>
 							<div
@@ -120,6 +130,11 @@
 						</a>
 					{/each}
 				</div>
+				<span
+					class:opacity-0={!showNextBtn}
+					class="transition-opacity duration-300 block mt-2"
+					>Scroll for more <span class="icon-arrow-right" /></span
+				>
 			{:else}
 				<div
 					class="flex bg-base-100 shadow-md rounded-lg py-10 min-h-40"
