@@ -409,7 +409,7 @@
 			<h2 class="inline-flex text-2xl text-medium">
 				{modalStore ? `Edit ${modalStore.name}` : 'Create store'}
 			</h2>
-			{#if modalStore && modalStore.owner === userInfo.id}
+			{#if modalStore && (modalStore.owner.id === userInfo._id || userInfo.roles.includes('ADMIN'))}
 				<button
 					class="inline-flex btn btn-circle btn-ghost text-3xl modal-button"
 					on:click={deleteStore}
