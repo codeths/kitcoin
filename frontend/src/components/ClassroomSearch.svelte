@@ -17,6 +17,8 @@
 	let results = null;
 	export let el = null;
 
+	let isOpen = false;
+
 	async function getResults(text) {
 		if (!classes) {
 			classes = await getClasses(role);
@@ -27,6 +29,7 @@
 					classes.push({name: classData.text, id: classData.value});
 			});
 		}
+		if (!isOpen) return;
 
 		results = classes
 			.filter(x => x.name.toLowerCase().includes(text.toLowerCase()))
@@ -49,6 +52,8 @@
 	on:validate
 	on:change
 	on:search={e => getResults(e.detail)}
+	on:focus={() => (isOpen = true)}
+	on:blur={() => (isOpen = false)}
 	{multiselect}
 	disabled={loading}
 	placeholderOverride={loading ? 'Loading...' : null}

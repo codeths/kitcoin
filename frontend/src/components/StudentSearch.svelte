@@ -24,15 +24,21 @@
 	let autoSubmit = false;
 	export let el = null;
 
+	let isOpen = false;
+
 	async function getStudents(text) {
 		if (!text) {
 			results = null;
 		} else {
 			autoSubmit = false;
 
-			results = (
+			let fetchedResults = (
 				await searchUsers(text, 15, roles, me).catch(e => [])
 			).map(x => ({text: x.name, value: x.id, confidence: x.confidence}));
+
+			if (!isOpen) return;
+
+			results = fetchedResults;
 
 			if (students)
 				results = results.filter(x => students.includes(x.value));
@@ -65,6 +71,8 @@
 		}
 	}}
 	on:search={e => getStudents(e.detail)}
+	on:focus={() => (isOpen = true)}
+	on:blur={() => (isOpen = false)}
 	{multiselect}
 	{...$$restProps}
 />
