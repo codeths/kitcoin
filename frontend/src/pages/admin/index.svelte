@@ -262,6 +262,9 @@
 			info &&
 			info.scopes.includes(
 				'https://www.googleapis.com/auth/admin.directory.user.readonly',
+			) &&
+			info.scopes.includes(
+				'https://www.googleapis.com/auth/spreadsheets.readonly',
 			)
 		)
 			hasAdminScope = true;
@@ -472,7 +475,8 @@
 					>
 				{:else}
 					<span class="mb-2 text-center"
-						>You have not authorized Kitcoin to access Google Admin.</span
+						>You have not authorized Kitcoin to access Google Admin
+						and/or Google Sheets.</span
 					>
 					<a
 						class="btn btn-primary"
