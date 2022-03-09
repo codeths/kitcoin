@@ -12,6 +12,7 @@ const OAUTH_SCOPES = {
 	],
 	ADMIN_SYNC: [
 		'https://www.googleapis.com/auth/admin.directory.user.readonly',
+		'https://www.googleapis.com/auth/spreadsheets.readonly',
 	],
 };
 
