@@ -122,7 +122,6 @@ export class AdminClient {
 	/**
 	 * Run a user sync
 	 * @param user The user to run the sync as. Must be able to access the Google Admin API
-	 * @returns
 	 */
 	public async startSync(user: IUser | string) {
 		if (typeof user == 'string') {

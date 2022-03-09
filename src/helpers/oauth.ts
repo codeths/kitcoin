@@ -95,8 +95,8 @@ function getAuthURL({
 
 /**
  * Handle OAuth2 callback
- * @param {string} code Code from callback query string
- * @param {string} session Session ID
+ * @param code Code from callback query string
+ * @param session Session ID
  */
 export async function oauthCallback(
 	code: string,

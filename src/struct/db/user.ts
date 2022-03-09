@@ -189,7 +189,7 @@ export default class User extends MongooseFuzzyClass {
 
 	/**
 	 * Check if the user has any of the specified roles
-	 * @param role The roles to check for
+	 * @param roles The roles to check for
 	 */
 	public hasAnyRole(
 		this: DocumentType<User>,
@@ -200,7 +200,7 @@ export default class User extends MongooseFuzzyClass {
 
 	/**
 	 * Check if the user has all of the specified roles
-	 * @param role The roles to check for
+	 * @param roles The roles to check for
 	 */
 	public hasAllRoles(
 		this: DocumentType<User>,

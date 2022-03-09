@@ -120,7 +120,6 @@ class ClassroomClient {
 	/**
 	 * Get a list of students in their class along with their ID in the database (and create them if they don't exist)
 	 * @param courseID Course ID
-	 * @returns
 	 */
 	public async getStudentsWithIds(courseID: string) {
 		const students = await this.getStudents(courseID);

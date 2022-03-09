@@ -5,11 +5,15 @@ import {UserRoleTypes} from './index.js';
 
 /**
  * Options for request handling
- * @param [authentication=false] Is authentication required
- * @param [roles=["NONE"]] Roles required to make the request
  */
 export interface RequestOptions {
+	/**
+	 * Is authentication required
+	 */
 	authentication: boolean;
+	/**
+	 * Roles required to make the request
+	 */
 	roles: UserRoleTypes[];
 	validators: RequestValidateOptions;
 }

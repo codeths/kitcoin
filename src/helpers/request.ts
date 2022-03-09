@@ -182,7 +182,6 @@ export class Validators {
 
 	/**
 	 * Data must be a non-empty string
-	 * @returns
 	 */
 	static stringNotEmpty = () => ({
 		run: (data: unknown): boolean | string => {
