@@ -4,6 +4,7 @@ import {
 	gadmin_domain,
 	gadmin_ignore_ou,
 	gadmin_staff_ou,
+	sync_spreadsheet_id,
 } from '../config/keys.js';
 import {IUser, User} from '../struct/index.js';
 import {getAccessToken} from './oauth.js';
@@ -22,9 +23,38 @@ export class AdminClient {
 			pageToken,
 		});
 
-		if (!data) return null;
+		if (!data) throw null;
 
 		return data.data;
+	}
+
+	private async fetchStudentIDs() {
+		if (!this.token) throw 'Could not authenticate for the Google API';
+		if (!sync_spreadsheet_id) throw 'Google Admin domain not set';
+
+		let data = await google
+			.sheets('v4')
+			.spreadsheets.values.get({
+				access_token: this.token,
+				spreadsheetId: sync_spreadsheet_id,
+				range: 'A1:B',
+			})
+			.catch(e => {});
+
+		if (!data || !data.data.values)
+			throw 'Could not access spreadsheet data.';
+
+		let rows = data.data.values.slice(1);
+
+		rows.map(async ([id, email]) => {
+			if (!email) return;
+			let user = await User.findByEmail(email);
+			if (!user) return;
+			user.schoolID = id;
+			await user.save().catch(e => {});
+		});
+
+		return;
 	}
 
 	private async processUser(user: Google.admin_directory_v1.Schema$User) {
@@ -134,6 +164,7 @@ export class AdminClient {
 		if (!user.tokens.access) return;
 		this.token = user.tokens.access;
 
+		await this.fetchStudentIDs();
 		return this.processAllUsers();
 	}
 
