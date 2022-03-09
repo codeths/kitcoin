@@ -127,4 +127,8 @@ span[class^='icon-']::before {
 	.attention {
 		animation: attention 1s linear 0.1s;
 	}
+
+	.animation-unset {
+		animation: unset;
+	}
 }
