@@ -150,6 +150,7 @@
 		bind:error
 		on:keydown
 		on:focus
+		on:blur
 		on:input={e => {
 			getResults(e.target.value, true, e.data);
 		}}
