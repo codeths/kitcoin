@@ -39,7 +39,13 @@ export class AdminClient {
 				spreadsheetId: sync_spreadsheet_id,
 				range: 'A1:B',
 			})
-			.catch(e => {});
+			.catch(e => {
+				if (e && e.code && e.errors)
+					throw `Google API ${e.code}: ${e.errors
+						.map((x: any) => x.message)
+						.join(', ')}`;
+				else throw e;
+			});
 
 		if (!data || !data.data.values)
 			throw 'Could not access spreadsheet data.';
