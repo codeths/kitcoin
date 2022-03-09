@@ -12,6 +12,7 @@ interface Keys {
 	gadmin_staff_ou: string[] | null;
 	gadmin_ignore_ou: string[] | null;
 	gadmin_sync_user: string | null;
+	sync_spreadsheet_id: string | null;
 }
 
 let data = fs.readFileSync(new URL('./keys.json', import.meta.url).pathname);
@@ -29,6 +30,7 @@ let {
 	gadmin_staff_ou,
 	gadmin_ignore_ou,
 	gadmin_sync_user,
+	sync_spreadsheet_id,
 } = json;
 
 export {
@@ -43,4 +45,5 @@ export {
 	gadmin_staff_ou,
 	gadmin_ignore_ou,
 	gadmin_sync_user,
+	sync_spreadsheet_id,
 };
