@@ -41,9 +41,9 @@ export class AdminClient {
 			})
 			.catch(e => {
 				if (e && e.code && e.errors)
-					throw `Google API ${e.code}: ${e.errors
-						.map((x: any) => x.message)
-						.join(', ')}`;
+					throw `Error syncing spreadsheet: Google API ${
+						e.code
+					}: ${e.errors.map((x: any) => x.message).join(', ')}`;
 				else throw e;
 			});
 
@@ -137,7 +137,7 @@ export class AdminClient {
 			let users = await this.listUsers(pageToken).catch(e => {
 				if (e && e.code && e.errors)
 					reject(
-						`Google API ${e.code}: ${e.errors
+						`Error syncing admin: Google API ${e.code}: ${e.errors
 							.map((x: any) => x.message)
 							.join(', ')}`,
 					);
