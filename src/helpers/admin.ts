@@ -28,6 +28,10 @@ export class AdminClient {
 		return data.data;
 	}
 
+	/**
+	 * Fetch student IDs from the spreadsheet
+	 * First column should have student IDs, second column should have student emails
+	 */
 	private async fetchStudentIDs() {
 		if (!this.token) throw 'Could not authenticate for the Google API';
 		if (!sync_spreadsheet_id) throw 'Google Admin domain not set';
@@ -49,7 +53,10 @@ export class AdminClient {
 
 		if (!data || !data.data.values) return;
 
-		let rows = data.data.values.slice(1);
+		let rows = data.data.values.slice(1) as [
+			string | undefined,
+			string | undefined,
+		][];
 
 		rows.map(async ([id, email]) => {
 			if (!email) return;
