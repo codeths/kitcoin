@@ -47,8 +47,7 @@ export class AdminClient {
 				else throw e;
 			});
 
-		if (!data || !data.data.values)
-			throw 'Could not access spreadsheet data.';
+		if (!data || !data.data.values) return;
 
 		let rows = data.data.values.slice(1);
 
