@@ -77,7 +77,8 @@ Returns all transactions for a user. Requires staff role for retrieving other us
 `:user` (path): The user to get transactions for, or `me` to get for the authenticated user  
 `count` (query): [Optional] the number of transactions to return. Defaults to 10  
 `page` (query): [Optional] the page of transactions to return. Defaults to 1  
-`search` (query): [Optional] filter transactions by reason text (todo: user search)
+`search` (query): [Optional] filter transactions by reason text  
+`user` (query): [Optional] filter transactions by this user
 
 ### Response
 
