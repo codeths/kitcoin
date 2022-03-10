@@ -120,10 +120,7 @@
 				? ''
 				: 's'}
 		{:else}
-			Found {transactions.docCount} transaction{transactions.docCount ===
-			1
-				? ''
-				: 's'}
+			Found {totalDocCount} transaction{totalDocCount === 1 ? '' : 's'}
 		{/if}
 	</p>
 {/if}
