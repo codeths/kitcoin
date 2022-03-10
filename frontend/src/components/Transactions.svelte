@@ -27,6 +27,7 @@
 	let filterCollapseShown = false;
 	let search = '';
 	let userSearch = null;
+	let hasFilter = false;
 
 	export async function load(p = page, which) {
 		if (which) loading[which] = true;
@@ -41,6 +42,7 @@
 			});
 
 		if (which) loading[which] = false;
+		hasFilter = (search || user) && true;
 	}
 
 	async function deleteTransaction(id) {
@@ -194,7 +196,11 @@
 			</tbody>
 		</table>
 	{:else}
-		<p class="text-center text-xl">No transactions</p>
+		<p class="text-center text-xl">
+			{hasFilter
+				? 'No transactions match your search'
+				: 'No transactions'}
+		</p>
 	{/if}
 
 	{#if error}
