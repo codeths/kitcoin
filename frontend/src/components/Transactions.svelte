@@ -25,8 +25,8 @@
 	};
 
 	let filterCollapseShown = false;
-	let search = '';
-	let userSearch = null;
+	export let search = '';
+	export let userSearch = null;
 	let hasFilter = false;
 
 	let totalDocCount = null;
