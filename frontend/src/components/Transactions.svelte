@@ -48,7 +48,8 @@
 		hasFilter = (search || userSearch) && true;
 
 		filteredDocCount = transactions.docCount;
-		if (!hasFilter) totalDocCount = transactions.docCount;
+		if (!hasFilter || transactions.docCount == null)
+			totalDocCount = transactions.docCount;
 	}
 
 	async function deleteTransaction(id) {
