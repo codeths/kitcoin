@@ -29,6 +29,9 @@
 	let userSearch = null;
 	let hasFilter = false;
 
+	let totalDocCount = null;
+	let filteredDocCount = null;
+
 	export async function load(p = page, which) {
 		if (which) loading[which] = true;
 		await getTransactions(user, p, search, userSearch?.value)
@@ -42,7 +45,10 @@
 			});
 
 		if (which) loading[which] = false;
-		hasFilter = (search || user) && true;
+		hasFilter = (search || userSearch) && true;
+
+		filteredDocCount = transactions.docCount;
+		if (!hasFilter) totalDocCount = transactions.docCount;
 	}
 
 	async function deleteTransaction(id) {
@@ -106,6 +112,21 @@
 		</div>
 	</div>
 </div>
+{#if totalDocCount !== null}
+	<p class="text-center text-xl my-2">
+		{#if hasFilter}
+			Showing {filteredDocCount} of {totalDocCount} transaction{totalDocCount ===
+			1
+				? ''
+				: 's'}
+		{:else}
+			Found {transactions.docCount} transaction{transactions.docCount ===
+			1
+				? ''
+				: 's'}
+		{/if}
+	</p>
+{/if}
 <div class="w-full flex flex-col divide-y divide-gray-300">
 	{#if transactions.pageCount !== 0}
 		<table class="w-full table-auto">
