@@ -374,16 +374,7 @@
 			studentBalance = null;
 		}
 
-		if (transactionForm.validate)
-			transactionForm.validate({
-				detail: {
-					target: {
-						name: 'item',
-					},
-					value: transactionFormData.values.item?.value,
-					type: '',
-				},
-			});
+		validatePriceData();
 	}
 
 	let transactionToggle;
