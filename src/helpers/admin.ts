@@ -4,6 +4,7 @@ import {
 	gadmin_domain,
 	gadmin_ignore_ou,
 	gadmin_staff_ou,
+	sync_spreadsheet_id,
 } from '../config/keys.js';
 import {IUser, User} from '../struct/index.js';
 import {getAccessToken} from './oauth.js';
@@ -22,9 +23,50 @@ export class AdminClient {
 			pageToken,
 		});
 
-		if (!data) return null;
+		if (!data) throw null;
 
 		return data.data;
+	}
+
+	/**
+	 * Fetch student IDs from the spreadsheet
+	 * First column should have student IDs, second column should have student emails
+	 */
+	private async fetchStudentIDs() {
+		if (!this.token) throw 'Could not authenticate for the Google API';
+		if (!sync_spreadsheet_id) throw 'Google Admin domain not set';
+
+		let data = await google
+			.sheets('v4')
+			.spreadsheets.values.get({
+				access_token: this.token,
+				spreadsheetId: sync_spreadsheet_id,
+				range: 'A1:B',
+			})
+			.catch(e => {
+				if (e && e.code && e.errors)
+					throw `Error syncing spreadsheet: Google API ${
+						e.code
+					}: ${e.errors.map((x: any) => x.message).join(', ')}`;
+				else throw e;
+			});
+
+		if (!data || !data.data.values) return;
+
+		let rows = data.data.values.slice(1) as [
+			string | undefined,
+			string | undefined,
+		][];
+
+		rows.map(async ([id, email]) => {
+			if (!email) return;
+			let user = await User.findByEmail(email);
+			if (!user) return;
+			user.schoolID = id;
+			await user.save().catch(e => {});
+		});
+
+		return;
 	}
 
 	private async processUser(user: Google.admin_directory_v1.Schema$User) {
@@ -102,7 +144,7 @@ export class AdminClient {
 			let users = await this.listUsers(pageToken).catch(e => {
 				if (e && e.code && e.errors)
 					reject(
-						`Google API ${e.code}: ${e.errors
+						`Error syncing admin: Google API ${e.code}: ${e.errors
 							.map((x: any) => x.message)
 							.join(', ')}`,
 					);
@@ -133,6 +175,7 @@ export class AdminClient {
 		if (!user.tokens.access) return;
 		this.token = user.tokens.access;
 
+		await this.fetchStudentIDs();
 		return this.processAllUsers();
 	}
 

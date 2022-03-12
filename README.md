@@ -54,24 +54,25 @@ If you would like to watch for file changes and automatically execute the approp
 
 # Config
 
-| property         | type             | description                                | example                                |
-| ---------------- | ---------------- | ------------------------------------------ | -------------------------------------- |
-| mongo            | string           | MongoDB Connection URL                     | mongodb://user:pass@127.0.0.1:27017/db |
-| port             | number           | port to listen on                          | 8000                                   |
-| client_id        | string           | Google OAuth client ID                     |                                        |
-| client_secret    | string           | Google OAuth client secret                 |                                        |
-| oauthDomain      | string \| null   | Google OAuth domain, or null to disable    | mydomain.com                           |
-| sessionSecret    | string           | Session secret for Mongo                   |                                        |
-| weeklyBalance    | number           | Staff's weekly balance                     | 100                                    |
-| gadmin_domain    | string \| null   | Domain to use for Google Admin syncing     | mydomain.com                           |
-| gadmin_staff_ou  | string[] \| null | Staff OU names for Google Admin syncing    | ["Staff", "Some OU/Admins"]            |
-| gadmin_ignore_ou | string[] \| null | Excluded OU names for Google Admin syncing | ["Old students"]                       |
-| gadmin_sync_user | string \| null   | User to run the daily Google Admin sync as |                                        |
+| property            | type             | description                                | example                                |
+| ------------------- | ---------------- | ------------------------------------------ | -------------------------------------- |
+| mongo               | string           | MongoDB Connection URL                     | mongodb://user:pass@127.0.0.1:27017/db |
+| port                | number           | port to listen on                          | 8000                                   |
+| client_id           | string           | Google OAuth client ID                     |                                        |
+| client_secret       | string           | Google OAuth client secret                 |                                        |
+| oauthDomain         | string \| null   | Google OAuth domain, or null to disable    | mydomain.com                           |
+| sessionSecret       | string           | Session secret for Mongo                   |                                        |
+| weeklyBalance       | number           | Staff's weekly balance                     | 100                                    |
+| gadmin_domain       | string \| null   | Domain to use for Google Admin syncing     | mydomain.com                           |
+| gadmin_staff_ou     | string[] \| null | Staff OU names for Google Admin syncing    | ["Staff", "Some OU/Admins"]            |
+| gadmin_ignore_ou    | string[] \| null | Excluded OU names for Google Admin syncing | ["Old students"]                       |
+| gadmin_sync_user    | string \| null   | User to run daily Google Admin/Sheets sync |                                        |
+| sync_spreadsheet_id | string \| null   | Google Sheet for student ID sync           |                                        |
 
 ## Google Cloud Project Setup (For OAuth)
 
 1. Create a [Google Cloud Project](https://console.cloud.google.com/projectcreate)
-2. Go to APIs & Services > Library. Enable the Google Classroom API, Google People API, and Admin SDK API.
+2. Go to APIs & Services > Library. Enable the Google Classroom API, Google People API, Admin SDK API, and Google Sheets API.
 3. Go to APIs & Services > OAuth consent screen. Setup as desired.
 4. Go to APIs & Services > Credentials. Click "Create credentials" and select "OAuth client ID".
 5. Select "Web application" for the type. Add your domain to the authorized origins. For redirect URIs, add your domain with the path `/auth/cbk`.

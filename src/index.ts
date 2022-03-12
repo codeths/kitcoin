@@ -9,7 +9,9 @@ import './webserver/index.js';
 // Start user sync
 let user = gadmin_sync_user as string | null;
 if (typeof user == 'string') {
-	new AdminClient().startDailySyncs(user);
+	try {
+		new AdminClient().startDailySyncs(user);
+	} catch (e) {}
 }
 
 mongoose.connect(mongo);

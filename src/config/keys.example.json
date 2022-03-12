@@ -15,5 +15,6 @@
 		"xxxxx",
 		"xxxxx/yyyyy"
 	],
-	"gadmin_sync_user": "xxxxx"
+	"gadmin_sync_user": "xxxxx",
+	"sync_spreadsheet_id": "xxxxx"
 }
