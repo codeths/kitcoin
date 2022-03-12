@@ -15,10 +15,21 @@ async function getBalance(user = 'me') {
 	}
 }
 
-async function getTransactions(user = 'me', page = 1) {
-	const res = await fetch(`/api/transactions/${user}?page=${page}`).catch(
-		e => null,
-	);
+async function getTransactions(
+	user = 'me',
+	page = 1,
+	search = null,
+	userSearch = null,
+) {
+	let query = {
+		page,
+	};
+	if (search) query.search = search;
+	if (userSearch) query.user = userSearch;
+
+	const res = await fetch(
+		`/api/transactions/${user}?${new URLSearchParams(query).toString()}`,
+	).catch(e => null);
 	if (res && res.ok) {
 		try {
 			const json = await res.json();

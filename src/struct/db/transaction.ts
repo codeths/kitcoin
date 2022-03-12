@@ -1,9 +1,9 @@
 import typegoose, {DocumentType} from '@typegoose/typegoose';
-const {index, prop} = typegoose;
 import {ReturnModelType} from '@typegoose/typegoose/lib/types';
-
+import {FilterQuery} from 'mongoose';
 import {ITransactionAPIResponse} from '../../types/index.js';
-import {IUser, User} from './index.js';
+import {ITransaction, IUser, User} from './index.js';
+const {index, prop} = typegoose;
 
 class TransactionUser {
 	/**
@@ -158,22 +158,28 @@ export default class Transaction {
 			count,
 			page,
 			search,
+			userSearch,
 		}: {
 			count: number | null;
 			page: number | null;
 			search: string | null;
+			userSearch: string | null;
 		},
 	) {
 		count ??= 10;
 		page ??= 1;
 
-		let searchOptions = search
-			? {$or: [{reason: {$regex: search, $options: 'i'}}]}
-			: {};
+		let searchOptions: FilterQuery<ITransaction>[] = [];
+
+		if (search)
+			searchOptions.push({reason: {$regex: search, $options: 'i'}});
+		if (userSearch)
+			searchOptions.push({
+				$or: [{'from.id': userSearch}, {'to.id': userSearch}],
+			});
 
 		const query = this.find({
-			$or: [{'from.id': id}, {'to.id': id}],
-			...searchOptions,
+			$and: [{$or: [{'from.id': id}, {'to.id': id}]}, ...searchOptions],
 		})
 			.sort({
 				date: -1,

@@ -87,6 +87,7 @@ router.get(
 						Validators.and(Validators.integer, Validators.gt(0)),
 					),
 					search: Validators.optional(Validators.string),
+					user: Validators.optional(Validators.objectID),
 				},
 			},
 		}),
@@ -99,14 +100,22 @@ router.get(
 			let count = numberFromData(req.query.count);
 			let page = numberFromData(req.query.page);
 			let search = stringFromData(req.query.search);
+			let userSearch = stringFromData(req.query.user);
 
 			const dbUser = user == 'me' ? req.user : await User.findById(user);
-			if (!dbUser) return res.status(404).send('Invalid user');
+			if (!dbUser) return res.status(404).send('Could not find user');
+
+			const searchUser = userSearch
+				? await User.findById(userSearch)
+				: null;
+			if (userSearch && !searchUser)
+				return res.status(404).send('Could not find search user');
 
 			const list = await Transaction.findByUser(dbUser.id, {
 				count,
 				page,
 				search,
+				userSearch,
 			});
 
 			res.status(200).send({

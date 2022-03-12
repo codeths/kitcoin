@@ -18,6 +18,18 @@ span[class^='icon-']::before {
 	font-size: calc(1em * var(--cap-height));
 }
 
+.collapse {
+	overflow: unset;
+}
+
+.collapse-open .collapse-content,
+.collapse:focus:not(.collapse-close) .collapse-content,
+.collapse:not(.collapse-close)
+	input[type='checkbox']:checked
+	~ .collapse-content {
+	overflow: unset;
+}
+
 @layer utilities {
 	.flex-break {
 		flex-basis: 100%;

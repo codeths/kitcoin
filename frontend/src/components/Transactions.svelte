@@ -5,7 +5,7 @@
 	import {getBalance, getTransactions} from '../utils/api.js';
 	import {createEventDispatcher} from 'svelte';
 	const dispatch = createEventDispatcher();
-	import {Loading, ToastContainer} from '.';
+	import {Loading, ToastContainer, Input, StudentSearch} from '.';
 	let toastContainer;
 
 	export let user = undefined;
@@ -24,9 +24,17 @@
 		any: false,
 	};
 
+	let filterCollapseShown = false;
+	export let search = '';
+	export let userSearch = null;
+	let hasFilter = false;
+
+	let totalDocCount = null;
+	let filteredDocCount = null;
+
 	export async function load(p = page, which) {
 		if (which) loading[which] = true;
-		await getTransactions(user, p)
+		await getTransactions(user, p, search, userSearch?.value)
 			.then(res => {
 				error = null;
 				(transactions = res), (page = p);
@@ -37,6 +45,11 @@
 			});
 
 		if (which) loading[which] = false;
+		hasFilter = (search || userSearch) && true;
+
+		filteredDocCount = transactions.docCount;
+		if (!hasFilter || transactions.docCount == null)
+			totalDocCount = transactions.docCount;
 	}
 
 	async function deleteTransaction(id) {
@@ -69,6 +82,49 @@
 	}
 </script>
 
+<div class="collapse bg-base-200 rounded-lg collapse-arrow mb-4">
+	<input
+		type="checkbox"
+		id="filtercollapse"
+		bind:checked={filterCollapseShown}
+	/>
+	<label
+		for="filtercollapse"
+		class="collapse-title text-xl font-medium !bg-base-200"
+	>
+		{filterCollapseShown ? 'Hide' : 'Show'} filters
+	</label>
+	<div class="flex space-x-4 collapse-content !bg-base-200">
+		<div>
+			<Input
+				class="w-auto"
+				label="Search description"
+				bind:value={search}
+				on:change={() => load()}
+			/>
+		</div>
+		<div>
+			<StudentSearch
+				class="w-auto relative"
+				label="Search user"
+				bind:value={userSearch}
+				on:change={() => load()}
+			/>
+		</div>
+	</div>
+</div>
+{#if totalDocCount !== null}
+	<p class="text-center text-xl my-2">
+		{#if hasFilter}
+			Showing {filteredDocCount} of {totalDocCount} transaction{totalDocCount ===
+			1
+				? ''
+				: 's'}
+		{:else}
+			Found {totalDocCount} transaction{totalDocCount === 1 ? '' : 's'}
+		{/if}
+	</p>
+{/if}
 <div class="w-full flex flex-col divide-y divide-gray-300">
 	{#if transactions.pageCount !== 0}
 		<table class="w-full table-auto">
@@ -159,7 +215,11 @@
 			</tbody>
 		</table>
 	{:else}
-		<p class="text-center text-xl">No transactions</p>
+		<p class="text-center text-xl">
+			{hasFilter
+				? 'No transactions match your search'
+				: 'No transactions'}
+		</p>
 	{/if}
 
 	{#if error}
