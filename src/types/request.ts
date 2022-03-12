@@ -16,12 +16,14 @@ export interface RequestOptions {
 	 */
 	roles: UserRoleTypes[];
 	validators: RequestValidateOptions;
+	validatorConfig: RequestValidateConfig;
 }
 
 const defaultOptions: RequestOptions = {
 	authentication: false,
 	roles: ['NONE'],
 	validators: {},
+	validatorConfig: {},
 };
 
 export function getOptions(
@@ -58,6 +60,17 @@ export type RequestValidateOptions = {
 	[key in RequestValidateParts]?:
 		| {
 				[key: string]: RequestValidateKeyOptionsResolvable;
+		  }
+		| undefined;
+};
+
+export type RequestValidateConfig = {
+	[key in RequestValidateParts]?:
+		| {
+				/**
+				 * Do not remove keys without a validator. This can be an array of keys to keep, or true to keep all keys.
+				 */
+				keepExtraKeys?: boolean | string[];
 		  }
 		| undefined;
 };
