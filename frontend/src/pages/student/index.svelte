@@ -1,7 +1,7 @@
 <script>
 	import {metatags} from '@roxi/routify';
 	import {getContext} from 'svelte';
-	import {Transactions, Loading} from '../../components';
+	import {Transactions, Loading, NewArrivals} from '../../components';
 	import {getBalance} from '../../utils/api.js';
 
 	metatags.title = 'Student Home - Kitcoin';
@@ -40,6 +40,10 @@
 					{/await}
 				</h1>
 			</div>
+		</div>
+		<div class="mx-2 my-4 col-span-12 lg:col-span-6">
+			<h1 class="text-3xl font-medium mb-2">New Arrivals</h1>
+			<NewArrivals />
 		</div>
 		<div class="mx-2 my-4 col-span-12">
 			<h1 class="text-3xl font-medium mb-2">Transaction History</h1>

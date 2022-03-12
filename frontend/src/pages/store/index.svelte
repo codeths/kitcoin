@@ -8,6 +8,7 @@
 		Input,
 		StudentSearch,
 		ClassroomSearch,
+		NewArrivals,
 	} from '../../components';
 	let toastContainer;
 	import {getStores} from '../../utils/store';
@@ -291,7 +292,7 @@
 </script>
 
 <!-- Content -->
-<div class="p-12 mt-6 flex flex-col">
+<div class="px-12 my-6 flex flex-col">
 	<h2 class="text-4xl font-bold mb-6">Your Stores</h2>
 	{#if authMsg}
 		<div class="alert alert-error my-4">
@@ -351,14 +352,16 @@
 		</div>
 	{/if}
 	{#if stores === undefined}
-		<Loading height="2rem" />
+		<div class="flex bg-base-100 shadow-md rounded-lg py-10 min-h-40">
+			<Loading height="2rem" />
+		</div>
 	{:else if stores}
 		{#if stores.length > 0}
 			<div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 				{#each stores as store}
 					<a
 						href={$url('./:store', {store: store._id})}
-						class="group p-4 bg-base-200 hover:bg-primary hover:text-primary-content hover:scale-110 shadow rounded-lg flex flex-col transition duration-300"
+						class="group p-4 bg-base-100 hover:bg-primary hover:text-primary-content hover:scale-110 shadow rounded-lg flex flex-col transition duration-300"
 					>
 						<div class="flex flex-row justify-between items-center">
 							<p class="inline-flex text-2xl font-semibold">
@@ -400,12 +403,30 @@
 				{/each}
 			</div>
 		{:else}
-			<h2>No stores available</h2>
+			<div class="flex bg-base-100 shadow-md rounded-lg py-10 min-h-40">
+				<span
+					class="text-center text-3xl flex justify-center items-center w-full h-full"
+				>
+					No stores available.
+				</span>
+			</div>
 		{/if}
 	{:else}
-		<h2>Error loading stores</h2>
+		<div class="flex bg-base-100 shadow-md rounded-lg py-10 min-h-40">
+			<span
+				class="text-center text-3xl flex justify-center items-center w-full h-full"
+			>
+				Error loading stores.
+			</span>
+		</div>
 	{/if}
 </div>
+{#if userInfo == null || (userInfo && userInfo.roles.includes('STUDENT'))}
+	<div class="px-12 my-6 flex flex-col w-screen">
+		<h1 class="text-3xl font-medium mb-2">New Arrivals</h1>
+		<NewArrivals />
+	</div>
+{/if}
 
 <input
 	type="checkbox"

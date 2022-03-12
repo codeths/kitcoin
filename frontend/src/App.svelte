@@ -12,9 +12,7 @@
 	};
 
 	let info = undefined;
-	const userInfoPromise = getUserInfo().catch(e => {
-		info = null;
-	});
+	const userInfoPromise = getUserInfo().catch(e => null);
 	setContext('userInfo', userInfoPromise);
 	userInfoPromise
 		.then(i => {

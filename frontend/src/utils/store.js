@@ -3,9 +3,12 @@ import {writable, get} from 'svelte/store';
 export const storeInfo = writable(null);
 export const userInfo = writable(null);
 export const storeItemList = writable({});
+export const newArrivalList = writable(null);
 export const classAnyInfo = writable(null);
 export const classTeacherInfo = writable(null);
 export const classStudentInfo = writable(null);
+
+export const LOW_STOCK = 3; //Low stock if there are this many items or less
 
 export async function getStores(useCache = true, query, user) {
 	let queryStr = [];
@@ -35,5 +38,15 @@ export async function getItems(store, useCache) {
 		v[store] = items;
 		return v;
 	});
+	return items;
+}
+
+export async function getNewArrivals() {
+	let cached = get(newArrivalList);
+	if (cached) return cached;
+	let res = await fetch(`/api/store/newarrivals`).catch(e => {});
+	if (!res || !res.ok) throw 'Failed to fetch items';
+	let items = await res.json();
+	newArrivalList.set(items);
 	return items;
 }

@@ -10,11 +10,22 @@
 		DropdownSearch,
 	} from '../../components';
 	let toastContainer;
-	import {storeInfo, getStores, getItems} from '../../utils/store.js';
+	import {
+		storeInfo,
+		getStores,
+		getItems,
+		LOW_STOCK,
+	} from '../../utils/store.js';
 	import {getBalance} from '../../utils/api.js';
 
 	let info = $storeInfo;
 	let nextEl;
+
+	let hash = window.location.hash.slice(1);
+	window.addEventListener('hashchange', () => {
+		hash = window.location.hash.slice(1);
+		items = items;
+	});
 
 	storeInfo.subscribe(newInfo => {
 		info = newInfo;
@@ -50,7 +61,6 @@
 	let error;
 	let items = null;
 	let filteredItems = null;
-	const LOW_STOCK = 3; //Low stock if there are this many items or less
 
 	let students = null;
 
@@ -106,6 +116,7 @@
 
 	const ITEM_SORTERS = {
 		featured: (a, b) =>
+			ITEM_SORTERS.hash(a, b) ||
 			ITEM_SORTERS.pinned(a, b) ||
 			ITEM_SORTERS.newArrival(a, b) ||
 			a.name.localeCompare(b.name),
@@ -122,6 +133,7 @@
 				: -1,
 		pinned: (a, b) =>
 			b.pinned == a.pinned ? 0 : b.pinned && !a.pinned ? 1 : -1,
+		hash: (a, b) => (hash == a.id ? -1 : hash == b.id ? 1 : 0),
 	};
 
 	let selectedSorter = 'featured';
@@ -577,7 +589,7 @@
 	</a>
 	{#if balance !== null && (!store || !store.canManage)}
 		<div
-			class="inline-flex flex-col self-center p-4 bg-base-200 rounded-lg mx-6 my-4"
+			class="inline-flex flex-col self-center p-4 bg-base-100 rounded-lg mx-6 my-4"
 		>
 			<span>
 				Your balance: <span
@@ -615,7 +627,7 @@
 				>
 			</div>
 		{/if}
-		<div class="collapse bg-base-200 rounded-lg collapse-arrow mb-4">
+		<div class="collapse bg-base-100 rounded-lg collapse-arrow mb-4">
 			<input
 				type="checkbox"
 				id="filtercollapse"
@@ -623,11 +635,11 @@
 			/>
 			<label
 				for="filtercollapse"
-				class="collapse-title text-xl font-medium !bg-base-200"
+				class="collapse-title text-xl font-medium !bg-base-100"
 			>
 				{filterCollapseShown ? 'Hide' : 'Show'} filters
 			</label>
-			<div class="flex space-x-4 collapse-content !bg-base-200">
+			<div class="flex space-x-4 collapse-content !bg-base-100">
 				<div>
 					<Input
 						type="select"
@@ -679,7 +691,8 @@
 			>
 				{#each filteredItems as item}
 					<div
-						class="p-4 bg-base-200 shadow rounded-lg flex flex-col"
+						class="p-4 bg-base-100 shadow rounded-lg flex flex-col"
+						class:attention={hash == item.id}
 					>
 						<div class="flex flex-row justify-between items-center">
 							<div
@@ -745,7 +758,7 @@
 						{#key item.imageHash}
 							{#if item.imageHash}
 								<img
-									class="store-item mt-6 object-contain max-h-80"
+									class="store-item mt-6 object-contain max-h-80 rounded-lg"
 									src="/api/store/{storeID}/item/{item._id}/image"
 									alt={item.name}
 									onload="this.style.display = ''"
