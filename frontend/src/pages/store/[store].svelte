@@ -399,16 +399,6 @@
 
 			selectedItem = items && items.find(i => i._id == v);
 
-			transactionForm.validate({
-				detail: {
-					target: {
-						name: 'quantity',
-					},
-					value: transactionFormData.values.quantity,
-					type: '',
-				},
-			});
-
 			if (!v)
 				return e && e.type == 'blur'
 					? e.query
@@ -416,8 +406,11 @@
 						: 'Item is required'
 					: '';
 			if (!selectedItem) return 'Item not found';
-			if (studentBalance !== null && selectedItem.price > studentBalance)
-				return 'Insufficient balance';
+
+			transactionFormData.errors.item = null;
+			if (e.type !== 'validateprice') validatePriceData('item');
+			if (!checkCanAfford()) return '';
+
 			return null;
 		},
 		quantity: e => {
@@ -429,20 +422,69 @@
 			if (isNaN(num)) return 'Quanity must be an number';
 			if (num % 1 != 0) return 'Quanity must be a whole number';
 			if (num <= 0) return 'Quanity must be greater than 0';
-			let selectedItem = items.find(
-				i => i._id == transactionFormData.values.item?.value,
-			);
-			if (
-				num !== 1 &&
-				studentBalance !== null &&
-				selectedItem &&
-				selectedItem.price * num > studentBalance
-			)
-				return 'You do not have enough money';
+
+			transactionFormData.errors.quantity = null;
+			if (e.type !== 'validateprice') validatePriceData('quantity');
+			if (!checkCanAfford()) return '';
+
+			return null;
+		},
+		deduct: e => {
+			let v = e.value;
+			if (!v) return null;
+			if (!/^\d*(?:\.\d+)?$/.test(v.trim()))
+				return 'Amount must be a number';
+			let num = parseFloat(v.trim());
+			if (isNaN(num)) return 'Amount must be an number';
+			if (Math.round(num * 100) / 100 !== num)
+				return 'Amount cannot have more than 2 decimal places';
+			if (num <= 0) return 'Amount must be greater than 0';
+
+			transactionFormData.errors.deduct = null;
+			if (e.type !== 'validateprice') validatePriceData('deduct');
+			if (!checkCanAfford()) return '';
+			if (price < 0) return 'Amount must be less than the price';
 
 			return null;
 		},
 	};
+
+	let price = null,
+		canAfford = null;
+	function calculatePrice() {
+		let selectedItem =
+			items &&
+			items.find(i => i._id == transactionFormData.values.item?.value);
+		if (!selectedItem) return (price = null);
+		if (transactionFormData.errors.quantity) return (price = null);
+		if (transactionFormData.errors.deduct) return (price = null);
+		let quantity = parseFloat(transactionFormData.values.quantity?.trim());
+		if (isNaN(quantity)) quantity = 1;
+		let deduct = parseFloat(transactionFormData.values.deduct?.trim());
+		if (isNaN(deduct)) deduct = 0;
+		return (price = selectedItem.price * quantity - deduct);
+	}
+
+	function checkCanAfford() {
+		if (studentBalance === null) return (canAfford = null);
+		if (calculatePrice() === null) return (canAfford = null);
+		return (canAfford = calculatePrice() <= studentBalance);
+	}
+
+	const PRICE_FIELDS = ['item', 'quantity', 'deduct'];
+	function validatePriceData(ignore) {
+		PRICE_FIELDS.filter(x => ignore !== x).forEach(which =>
+			transactionForm.validate({
+				detail: {
+					target: {
+						name: which,
+					},
+					value: transactionFormData.values[which],
+					type: 'validateprice',
+				},
+			}),
+		);
+	}
 
 	let itemResults = null;
 
@@ -487,7 +529,8 @@
 			body: JSON.stringify({
 				user: transactionFormData.values.student.value,
 				item: transactionFormData.values.item.value,
-				quantity: transactionFormData.values.quantity,
+				quantity: parseFloat(transactionFormData.values.quantity),
+				deduct: parseFloat(transactionFormData.values.deduct),
 			}),
 		}).catch(() => null);
 
@@ -560,6 +603,7 @@
 						class="btn btn-primary self-end px-12 mx-1 modal-button"
 						on:click={() => {
 							submitStatus = null;
+							studentBalance = null;
 							transactionForm.reset();
 						}}>Sell Item</label
 					>
@@ -917,6 +961,7 @@
 						key =>
 							(transactionFormData[key] = transactionForm[key]),
 					)}
+				on:update={() => checkCanAfford() ?? calculatePrice()}
 				bind:this={transactionForm}
 				validators={transactionValidate}
 			>
@@ -948,6 +993,14 @@
 					bind:error={transactionFormData.errors.quantity}
 					on:validate={transactionForm.validate}
 				/>
+				<Input
+					name="deduct"
+					label="Deduct amount (optional)"
+					placeholder="0"
+					bind:value={transactionFormData.values.deduct}
+					bind:error={transactionFormData.errors.deduct}
+					on:validate={transactionForm.validate}
+				/>
 				{#if selectedItem && selectedItem.quantity !== null && selectedItem.quantity < (transactionFormData.values.quantity || 1)}
 					<div class="alert alert-warning my-4">
 						<div class="flex-1 items-center">
@@ -956,6 +1009,29 @@
 							/>
 							<span>This item may not have enough stock.</span>
 						</div>
+					</div>
+				{/if}
+				{#if studentBalance !== null}
+					<div class="text-right my-2">
+						Student Balance: <span
+							class="icon-currency mr-1"
+						/>{studentBalance.toLocaleString([], {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2,
+						})}
+					</div>
+				{/if}
+				{#if price !== null}
+					<div
+						class="text-right my-2"
+						class:text-red-500={canAfford == false}
+					>
+						Total Cost: <span
+							class="icon-currency mr-1"
+						/>{price.toLocaleString([], {
+							minimumFractionDigits: 2,
+							maximumFractionDigits: 2,
+						})}
 					</div>
 				{/if}
 				<div class="divider" />
