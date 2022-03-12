@@ -993,14 +993,16 @@
 					bind:error={transactionFormData.errors.quantity}
 					on:validate={transactionForm.validate}
 				/>
-				<Input
-					name="deduct"
-					label="Deduct amount (optional)"
-					placeholder="0"
-					bind:value={transactionFormData.values.deduct}
-					bind:error={transactionFormData.errors.deduct}
-					on:validate={transactionForm.validate}
-				/>
+				{#if store && store.allowDeductions}
+					<Input
+						name="deduct"
+						label="Deduct amount (optional)"
+						placeholder="0"
+						bind:value={transactionFormData.values.deduct}
+						bind:error={transactionFormData.errors.deduct}
+						on:validate={transactionForm.validate}
+					/>
+				{/if}
 				{#if selectedItem && selectedItem.quantity !== null && selectedItem.quantity < (transactionFormData.values.quantity || 1)}
 					<div class="alert alert-warning my-4">
 						<div class="flex-1 items-center">
