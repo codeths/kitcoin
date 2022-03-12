@@ -22,10 +22,10 @@
 		let event = e.detail;
 		if (!event) return;
 		let which = event.target.name;
+		values[which] = event.value;
 
 		let res = validators[which](event);
 
-		values[which] = event.value;
 		errors[which] = res;
 		valid[which] = res == null;
 
