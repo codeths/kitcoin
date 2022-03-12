@@ -79,6 +79,10 @@
 			let v = e.value;
 			return null;
 		},
+		allowDeductions: e => {
+			let v = e.value;
+			return null;
+		},
 		classes: e => {
 			let v = e.value?.value;
 			return null;
@@ -131,6 +135,7 @@
 			manageForm.values.classes = extraClasses;
 			manageForm.values.public = modalStore.public;
 			manageForm.values.pinned = modalStore.pinned;
+			manageForm.values.allowDeductions = modalStore.allowDeductions;
 			manageForm.values.managers = modalStore.managers.map(x => ({
 				text: x.name,
 				value: x.id,
@@ -194,6 +199,8 @@
 			manageFormData.values.public = false;
 		if (manageFormData.values.pinned == '')
 			manageFormData.values.pinned = false;
+		if (manageFormData.values.allowDeductions == '')
+			manageFormData.values.allowDeductions = false;
 
 		submitStatus = 'LOADING';
 		let res = await fetch(
@@ -215,6 +222,9 @@
 					pinned:
 						manageFormData.values.pinned ??
 						(modalStore ? modalStore.pinned : false),
+					allowDeductions:
+						manageFormData.values.allowDeductions ??
+						(modalStore ? modalStore.allowDeductions : false),
 					managers: (manageFormData.values.managers || []).map(
 						x => x.value,
 					),
@@ -493,6 +503,14 @@
 						type="switch"
 						bind:value={manageFormData.values.public}
 						bind:error={manageFormData.errors.public}
+						on:validate={manageForm.validate}
+					/>
+					<Input
+						name="allowDeductions"
+						label="Allow deductions from price when selling items"
+						type="switch"
+						bind:value={manageFormData.values.allowDeductions}
+						bind:error={manageFormData.errors.allowDeductions}
 						on:validate={manageForm.validate}
 					/>
 					<Input
