@@ -256,14 +256,20 @@ router.post(
 				reason: fields.reason,
 			};
 
-			let badRequest = validate(req, {
-				body: {
-					amount: Validators.currency,
-					fromUser: Validators.optional(Validators.objectID),
-					fromText: Validators.optional(Validators.stringNotEmpty),
-					reason: Validators.optional(Validators.stringNotEmpty),
+			let badRequest = validate(
+				req,
+				{
+					body: {
+						amount: Validators.currency,
+						fromUser: Validators.optional(Validators.objectID),
+						fromText: Validators.optional(
+							Validators.stringNotEmpty,
+						),
+						reason: Validators.optional(Validators.stringNotEmpty),
+					},
 				},
-			});
+				{},
+			);
 			if (badRequest) return res.status(400).send(badRequest);
 
 			let amount: number = numberFromData(
