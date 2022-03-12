@@ -46,6 +46,12 @@ export default class Store {
 	@prop({required: true, default: false})
 	public pinned: boolean = false;
 
+	/**
+	 * Allow deductions from price when selling item
+	 */
+	@prop({required: true, default: false})
+	public allowDeductions: boolean = false;
+
 	public async toAPIResponse(
 		this: DocumentType<Store>,
 		canManage: boolean,
