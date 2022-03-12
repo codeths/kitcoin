@@ -8,6 +8,7 @@ import {
 	isValidRole,
 	notEmpty,
 	RequestOptions,
+	RequestValidateConfig,
 	RequestValidateKeyOptions,
 	RequestValidateKeyOptionsResolvable,
 	RequestValidateOptions,
@@ -34,7 +35,11 @@ export async function request(
 	}
 
 	try {
-		const badRequest = validate(req, appliedOptions.validators);
+		const badRequest = validate(
+			req,
+			appliedOptions.validators,
+			appliedOptions.validatorConfig,
+		);
 		if (badRequest) return res.status(400).send(badRequest);
 	} catch (e) {
 		try {
@@ -59,6 +64,7 @@ export async function request(
 export function validate(
 	req: express.Request,
 	options: RequestValidateOptions,
+	config: RequestValidateConfig,
 ): string | null {
 	let partKeys = (Object.keys(options) as RequestValidateParts[]).filter(x =>
 		notEmpty(options[x]),
@@ -70,13 +76,19 @@ export function validate(
 	for (let partKey of partKeys) {
 		const part = options[partKey] || {};
 		const data: {[key: string]: unknown} = req[partKey] || {};
+		const {keepExtraKeys} = config[partKey] || {};
 
 		if (typeof data === 'object') {
 			const validatorKeys = Object.keys(part);
 			const dataKeys = Object.keys(data);
-			dataKeys.forEach(key => {
-				if (!validatorKeys.includes(key)) delete req[partKey][key];
-			});
+			if (keepExtraKeys !== true)
+				dataKeys.forEach(key => {
+					if (
+						!validatorKeys.includes(key) &&
+						(!keepExtraKeys || !keepExtraKeys.includes(key))
+					)
+						delete req[partKey][key];
+				});
 
 			// Loop through each key of the request data
 			for (let key of validatorKeys) {
