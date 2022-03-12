@@ -113,7 +113,7 @@
 		</div>
 	</div>
 </div>
-{#if totalDocCount !== null}
+{#if totalDocCount}
 	<p class="text-center text-xl my-2">
 		{#if hasFilter}
 			Showing {filteredDocCount} of {totalDocCount} transaction{totalDocCount ===
