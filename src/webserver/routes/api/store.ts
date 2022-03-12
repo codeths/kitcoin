@@ -589,6 +589,7 @@ router.post(
 					quantity: Validators.optional(
 						Validators.and(Validators.integer, Validators.gt(0)),
 					),
+					deduct: Validators.optional(Validators.currency(false)),
 				},
 			},
 		}),
@@ -606,17 +607,26 @@ router.post(
 
 			let item = await StoreItem.findById(req.body.item);
 			if (!item) return res.status(400).send('Item not found');
+			let price = item.price;
 
 			let user = await User.findById(req.body.user);
 			if (!user) return res.status(400).send('User not found');
 
 			let quantity: number = req.body.quantity ?? 1;
+			price *= quantity;
 
-			if (user.balance < item.price * quantity)
+			let deduct: number = req.body.deduct ?? 0;
+			if (deduct > price)
+				return res
+					.status(400)
+					.send('You cannot deduct more than the price');
+			price -= deduct;
+
+			if (user.balance < price)
 				return res.status(400).send('User does not have enough money');
 
 			await new Transaction({
-				amount: item.price * quantity * -1,
+				amount: price * -1,
 				from: {
 					text: `Store purchase in ${store.name}`,
 				},
@@ -632,7 +642,7 @@ router.post(
 				reason: `${item.name}${quantity > 1 ? ` x${quantity}` : ''}`,
 			}).save();
 
-			user.balance -= item.price * quantity;
+			user.balance -= price;
 			await user.save();
 
 			if (typeof item.quantity === 'number') {
