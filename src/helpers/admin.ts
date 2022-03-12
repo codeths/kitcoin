@@ -34,7 +34,7 @@ export class AdminClient {
 	 */
 	private async fetchStudentIDs() {
 		if (!this.token) throw 'Could not authenticate for the Google API';
-		if (!sync_spreadsheet_id) throw 'Google Admin domain not set';
+		if (!sync_spreadsheet_id) throw 'Spreadsheet not set';
 
 		let data = await google
 			.sheets('v4')
@@ -175,8 +175,12 @@ export class AdminClient {
 		if (!user.tokens.access) return;
 		this.token = user.tokens.access;
 
-		await this.fetchStudentIDs();
-		return this.processAllUsers();
+		if (sync_spreadsheet_id) {
+			await this.fetchStudentIDs();
+		}
+		if (gadmin_domain) {
+			return this.processAllUsers();
+		}
 	}
 
 	/**
