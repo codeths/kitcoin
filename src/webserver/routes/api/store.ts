@@ -211,6 +211,7 @@ router.post(
 					managers: Validators.array(Validators.objectID),
 					users: Validators.array(Validators.objectID),
 					pinned: Validators.boolean,
+					allowDeductions: Validators.boolean,
 				},
 			},
 		}),
@@ -228,6 +229,10 @@ router.post(
 				return res
 					.status(403)
 					.send('You must be an admin to create a pinned store.');
+			if (body.allowDeductions && !req.user.hasRole('ADMIN'))
+				return res
+					.status(403)
+					.send('You must be an admin to enable allowDeductions.');
 			if (!body.public && body.pinned) body.pinned = false;
 
 			let invalidUsers = (
@@ -351,6 +356,7 @@ router.patch(
 					users: Validators.array(Validators.objectID),
 					owner: Validators.optional(Validators.objectID),
 					pinned: Validators.boolean,
+					allowDeductions: Validators.boolean,
 				},
 			},
 		}),
@@ -373,6 +379,12 @@ router.patch(
 				return res
 					.status(403)
 					.send('You must be an admin to change the pinned setting.');
+			if (body.pinned !== store.pinned && !req.user.hasRole('ADMIN'))
+				return res
+					.status(403)
+					.send(
+						'You must be an admin to change the allowDeductions setting.',
+					);
 			if (!body.public && body.pinned) body.pinned = false;
 
 			if (
