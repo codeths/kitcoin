@@ -73,6 +73,10 @@ export function validate(
 
 		if (typeof data === 'object') {
 			const validatorKeys = Object.keys(part);
+			const dataKeys = Object.keys(data);
+			dataKeys.forEach(key => {
+				if (!validatorKeys.includes(key)) delete req[partKey][key];
+			});
 
 			// Loop through each key of the request data
 			for (let key of validatorKeys) {
