@@ -244,7 +244,8 @@ Sell an item
 `:id` (path): Store ID  
 `user` (body): The user ID of the person buying the item  
 `item` (body): The ID of the item being sold  
-`quantity` (body): [Optional] The quantity of the item being sold
+`quantity` (body): [Optional] The quantity of the item being sold  
+`deduct` (body): [Optional] Deduct this amount from the price, for example if the user is partially paying in cash.
 
 ### Response
 
