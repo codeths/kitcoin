@@ -24,6 +24,7 @@
 	let showLeftBtn = false;
 	let showRightBtn = true;
 	function checkShouldScroll() {
+		if (!carousel.lastChild) return;
 		showNextBtn =
 			carousel.scrollWidth -
 				carousel.scrollLeft -
