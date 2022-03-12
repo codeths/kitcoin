@@ -628,6 +628,10 @@ router.post(
 			price *= quantity;
 
 			let deduct: number = req.body.deduct ?? 0;
+			if (deduct !== 0 && !store.allowDeductions)
+				return res
+					.status(400)
+					.send('This store does not allow price deductions');
 			if (deduct > price)
 				return res
 					.status(400)
