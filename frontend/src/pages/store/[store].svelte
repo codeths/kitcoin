@@ -626,11 +626,11 @@
 			/>
 			<label
 				for="filtercollapse"
-				class="collapse-title text-xl font-medium !bg-base-100"
+				class="collapse-title rounded-lg text-xl font-medium !bg-base-100"
 			>
 				{filterCollapseShown ? 'Hide' : 'Show'} filters
 			</label>
-			<div class="flex space-x-4 collapse-content !bg-base-100">
+			<div class="flex space-x-4 collapse-content rounded-lg !bg-base-100">
 				<div>
 					<Input
 						type="select"

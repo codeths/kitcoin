@@ -90,11 +90,11 @@
 	/>
 	<label
 		for="filtercollapse"
-		class="collapse-title text-xl font-medium !bg-base-200"
+		class="collapse-title rounded-lg text-xl font-medium !bg-base-200"
 	>
 		{filterCollapseShown ? 'Hide' : 'Show'} filters
 	</label>
-	<div class="flex space-x-4 collapse-content !bg-base-200">
+	<div class="flex space-x-4 collapse-content rounded-lg !bg-base-200">
 		<div>
 			<Input
 				class="w-auto"
