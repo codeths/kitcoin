@@ -179,7 +179,11 @@ router.post(
 			let returnArray = Array.isArray(user);
 
 			if (!Array.isArray(user)) user = [user];
-			user = user.filter(u => u != req.user.id);
+			if (user.length == 0) return res.status(400).send('No users');
+			if (user.includes(req.user.id))
+				return res
+					.status(400)
+					.send('You cannot send Kitcoin to yourself');
 
 			if (typeof amount == 'string') amount = numberFromData(amount);
 			let dbUsers = await Promise.all(
