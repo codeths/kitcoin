@@ -10,9 +10,9 @@ const router = express.Router();
 
 router.use(currency);
 router.use(classroom);
-router.use(users);
 router.use(misc);
-router.use(store);
+router.use('/store', store);
+router.use('/users', users);
 
 router.use((req, res) => res.status(404).send());
 

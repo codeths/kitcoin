@@ -37,7 +37,7 @@ function isValidSearchResult(user: IUser, req: express.Request): boolean {
 
 // Search users
 router.get(
-	'/users/search',
+	'/search',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
@@ -153,7 +153,7 @@ router.get(
 );
 
 router.post(
-	'/users',
+	'/',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
@@ -215,7 +215,7 @@ router.post(
 );
 
 router.get(
-	'/users/:id',
+	'/:id',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
@@ -262,7 +262,7 @@ router.get(
 );
 
 router.patch(
-	'/users/:id',
+	'/:id',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
@@ -330,7 +330,7 @@ router.patch(
 );
 
 router.delete(
-	'/users/:id',
+	'/:id',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
@@ -362,7 +362,7 @@ router.delete(
 );
 
 router.post(
-	'/users/sync',
+	'/sync',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,

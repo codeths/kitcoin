@@ -166,7 +166,7 @@ async function getStores(
 }
 
 router.get(
-	'/stores',
+	'/',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: false,
@@ -213,7 +213,7 @@ router.get(
 );
 
 router.post(
-	'/stores',
+	'/',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: false,
@@ -311,7 +311,7 @@ router.post(
 );
 
 router.get(
-	'/store/newarrivals',
+	'/newarrivals',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: false,
@@ -353,7 +353,7 @@ router.get(
 );
 
 router.get(
-	'/store/:id',
+	'/:id',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: false,
@@ -396,7 +396,7 @@ router.get(
 );
 
 router.patch(
-	'/store/:id',
+	'/:id',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: false,
@@ -519,7 +519,7 @@ router.patch(
 );
 
 router.delete(
-	'/store/:id',
+	'/:id',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: false,
@@ -580,7 +580,7 @@ router.delete(
 );
 
 router.get(
-	'/store/:id/students',
+	'/:id/students',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
@@ -644,7 +644,7 @@ router.get(
 );
 
 router.post(
-	'/store/:id/sell',
+	'/:id/sell',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
@@ -747,7 +747,7 @@ router.post(
 );
 
 router.get(
-	'/store/:id/items',
+	'/:id/items',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: false,
@@ -780,7 +780,7 @@ router.get(
 );
 
 router.get(
-	'/store/:storeID/item/:id',
+	'/:storeID/item/:id',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: false,
@@ -815,7 +815,7 @@ router.get(
 );
 
 router.get(
-	'/store/:storeID/item/:id/image',
+	'/:storeID/item/:id/image',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: false,
@@ -858,7 +858,7 @@ router.get(
 );
 
 router.patch(
-	'/store/:storeID/item/:id/image',
+	'/:storeID/item/:id/image',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
@@ -939,7 +939,7 @@ router.patch(
 );
 
 router.patch(
-	'/store/:storeID/item/:id',
+	'/:storeID/item/:id',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
@@ -1005,7 +1005,7 @@ router.patch(
 );
 
 router.delete(
-	'/store/:storeID/item/:id',
+	'/:storeID/item/:id',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
@@ -1060,7 +1060,7 @@ router.delete(
 );
 
 router.delete(
-	'/store/:storeID/item/:id/image',
+	'/:storeID/item/:id/image',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
@@ -1121,7 +1121,7 @@ router.delete(
 );
 
 router.post(
-	'/store/:storeID/items',
+	'/:storeID/items',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
