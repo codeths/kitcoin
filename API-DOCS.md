@@ -143,7 +143,7 @@ None
 
 # Store
 
-## GET `/stores`
+## GET `/store`
 
 Get a list of stores that you have access to.
 
@@ -158,7 +158,7 @@ Get a list of stores that you have access to.
 
 `IStoreAPIResponse[]` (see [db schema](src/types/db.ts))
 
-## POST `/stores`
+## POST `/store`
 
 Create a store. Requires staff permissions.
 

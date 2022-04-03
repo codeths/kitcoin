@@ -21,7 +21,7 @@ export async function getStores(useCache = true, query, user) {
 		useCache = false;
 	}
 	if (useCache && get(storeInfo)) return get(storeInfo);
-	let res = await fetch(`/api/stores?${queryStr.join('&')}`);
+	let res = await fetch(`/api/store?${queryStr.join('&')}`);
 	if (!res || !res.ok) throw new Error('Failed to fetch stores');
 	let json = await res.json();
 	if (!query && !user) storeInfo.set(json);

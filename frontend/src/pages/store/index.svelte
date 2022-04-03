@@ -205,7 +205,7 @@
 
 		submitStatus = 'LOADING';
 		let res = await fetch(
-			modalStore ? `/api/store/${modalStore._id}` : `/api/stores`,
+			modalStore ? `/api/store/${modalStore._id}` : `/api/store`,
 			{
 				method: modalStore ? 'PATCH' : 'POST',
 				headers: {
