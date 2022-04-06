@@ -71,6 +71,6 @@
 		"mongoose-fuzzy-searching": "github:codeths/mongoose-fuzzy-searching",
 		"nanoid": "^3.3.2",
 		"read-excel-file": "^5.2.28",
-		"sharp": "~0.27.2"
+		"sharp": "~0.30.3"
 	}
 }
