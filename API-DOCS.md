@@ -477,3 +477,53 @@ None
 ### Response
 
 None
+
+# Reports
+
+All reporting routes require admin permissions
+
+## GET `/reports/transactions/daily`
+
+Get daily transactions report
+
+### Request
+
+`from` (query): [Optional] Date to start from (ISO or epoch MS). Defaults to 30 days ago.  
+`to` (query): [Optional] Date to end at (ISO or epoch MS). Defaults to today.
+
+### Response
+
+```ts
+{
+	/** Date as YYYY-MM-DD */
+	date: string;
+	/** Number of transactions */
+	count: number;
+	/** Total transaction value */
+	total: number;
+}
+[];
+```
+
+## GET `/reports/purchases/daily`
+
+Get daily store purchases report
+
+### Request
+
+`from` (query): [Optional] Date to start from (ISO or epoch MS). Defaults to 30 days ago.  
+`to` (query): [Optional] Date to end at (ISO or epoch MS). Defaults to today.
+
+### Response
+
+```ts
+{
+	/** Date as YYYY-MM-DD */
+	date: string;
+	/** Number of transactions */
+	count: number;
+	/** Total transaction value */
+	total: number;
+}
+[];
+```
