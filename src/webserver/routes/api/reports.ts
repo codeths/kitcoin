@@ -47,6 +47,8 @@ async function getDailyTransactions(
 		let count = dateTransactions.length;
 		let total = dateTransactions.reduce((a, c) => a + c.amount, 0);
 
+		total = Math.round(total * 100) / 100;
+
 		return {
 			date: date.toLocaleDateString('en-US', {
 				year: 'numeric',
