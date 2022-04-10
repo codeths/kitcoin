@@ -18,6 +18,9 @@
 	let submitStatus = null;
 	let resetTimeout;
 
+	const views = ['users', 'sync', 'analytics'];
+	let activeView = 0; //Active view as an index of the array above
+
 	let formRefreshControl = {};
 
 	metatags.title = 'Admin Home - Kitcoin';
@@ -273,8 +276,25 @@
 
 <!-- Content -->
 <div class="mx-8 my-4">
+	<div class="flex justify-center">
+		<div class="tabs tabs-boxed">
+			{#each views as view, index}
+				<button
+					class="tab tab-lg"
+					class:tab-active={index == activeView}
+					on:click={() => (activeView = index)}
+					>{view.toUpperCase()}</button
+				>
+			{/each}
+		</div>
+	</div>
+
 	<div class="grid grid-cols-12">
-		<div class="mx-2 my-4 col-span-12 md:col-span-6">
+		<div
+			class="mx-2 my-4 col-span-12 md:col-span-6 {activeView == 0
+				? 'block'
+				: 'hidden'}"
+		>
 			<h1 class="text-3xl font-medium mb-2">Manage Users</h1>
 			<div class="bg-base-100 shadow-md rounded-lg px-8 py-8">
 				<div class="flex items-center">
@@ -431,7 +451,11 @@
 				{/key}
 			</div>
 		</div>
-		<div class="mx-2 my-4 col-span-12 md:col-span-6">
+		<div
+			class="mx-2 my-4 col-span-12 md:col-span-6 {activeView == 0
+				? 'block'
+				: 'hidden'}"
+		>
 			<h1 class="text-3xl font-medium mb-2">Manage Transactions</h1>
 			<div class="bg-base-100 shadow-md rounded-lg px-8 py-8">
 				{#key selectedStudent}
@@ -445,7 +469,11 @@
 				{/key}
 			</div>
 		</div>
-		<div class="mx-2 my-4 col-span-12 md:col-span-6">
+		<div
+			class="mx-2 my-4 col-span-12 md:col-span-6 {activeView == 1
+				? 'block'
+				: 'hidden'}"
+		>
 			<h1 class="text-3xl font-medium mb-2">Sync Users</h1>
 			<div
 				class="bg-base-100 shadow-md rounded-lg px-8 py-8 flex flex-col justify-center"
@@ -485,6 +513,13 @@
 					>
 				{/if}
 			</div>
+		</div>
+		<div
+			class="mx-2 my-4 col-span-12 md:col-span-6 {activeView == 2
+				? 'block'
+				: 'hidden'}"
+		>
+			<h1 class="text-3xl font-medium mb-2">Reports & Statistics</h1>
 		</div>
 	</div>
 </div>
