@@ -1,6 +1,7 @@
 <script>
 	import {metatags} from '@roxi/routify';
 	import {onMount, getContext} from 'svelte';
+	import Line from 'svelte-chartjs/src/Line.svelte';
 	import {
 		StudentSearch,
 		RoleSelect,
@@ -272,6 +273,47 @@
 		)
 			hasAdminScope = true;
 	})();
+
+	let chartdata;
+	let chartoptions = {
+		scales: {
+			x: {
+				title: {
+					display: true,
+					text: 'Date',
+				},
+			},
+			y: {
+				title: {
+					display: true,
+					text: 'Kitcoin sent',
+				},
+			},
+		},
+		plugins: {
+			legend: {
+				display: false,
+			},
+		},
+	};
+
+	(async () => {
+		let res = await fetch('/api/reports/transactions/daily');
+		let data = await res.json();
+		chartdata = {
+			datasets: [
+				{
+					label: 'Kitcoin sent',
+					borderColor: 'rgba(32, 102, 233, 0.5)',
+					backgroundColor: 'rgba(32, 102, 233, 0.75)',
+					data: data.map(data => ({
+						x: data.date,
+						y: data.total,
+					})),
+				},
+			],
+		};
+	})();
 </script>
 
 <!-- Content -->
@@ -519,6 +561,11 @@
 				: 'hidden'}"
 		>
 			<h1 class="text-3xl font-medium mb-2">Reports & Statistics</h1>
+
+			<h2 class="text-xl font-medium-mb-2">Kitcoin sent per day</h2>
+			{#if chartdata}
+				<Line data={chartdata} options={chartoptions} class="my-4" />
+			{/if}
 		</div>
 	</div>
 </div>
