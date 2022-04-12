@@ -42,7 +42,7 @@
 
 	let formRefreshControl = {};
 
-	metatags.title = 'Admin Home - Kitcoin';
+	$: metatags.title = `Admin Home - ${views[activeView]} - Kitcoin`;
 
 	async function manageUser(e) {
 		e.preventDefault();
