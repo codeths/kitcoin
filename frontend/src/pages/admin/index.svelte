@@ -22,6 +22,24 @@
 	const views = ['Users', 'Sync', 'Analytics'];
 	let activeView = 0; //Active view as an index of the array above
 
+	function goToHashPage() {
+		let hash = window.location.hash?.slice(1);
+		if (hash) {
+			let index = views.findIndex(
+				x => x.toLowerCase() === hash.toLowerCase(),
+			);
+			if (index !== -1) goToPage(index);
+		}
+	}
+
+	goToHashPage();
+	window.addEventListener('hashchange', goToHashPage);
+
+	function goToPage(index) {
+		activeView = index;
+		window.location.hash = index ? views[index].toLowerCase() : '';
+	}
+
 	let formRefreshControl = {};
 
 	metatags.title = 'Admin Home - Kitcoin';
@@ -324,7 +342,7 @@
 				<button
 					class="tab tab-lg transition-colors rounded-lg duration-300"
 					class:tab-active={index == activeView}
-					on:click={() => (activeView = index)}>{view}</button
+					on:click={() => goToPage(index)}>{view}</button
 				>
 			{/each}
 		</div>
