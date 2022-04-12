@@ -582,7 +582,11 @@
 
 			<h2 class="text-xl font-medium-mb-2">Kitcoin sent per day</h2>
 			{#if chartdata}
-				<Line data={chartdata} options={chartoptions} class="my-4" />
+				<Line
+					data={chartdata}
+					options={chartoptions}
+					class="bg-base-100 rounded-lg p-4 my-4"
+				/>
 			{/if}
 		</div>
 	</div>
