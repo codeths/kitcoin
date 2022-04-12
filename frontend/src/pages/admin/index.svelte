@@ -280,7 +280,7 @@
 		<div class="tabs tabs-boxed">
 			{#each views as view, index}
 				<button
-					class="tab tab-lg"
+					class="tab tab-lg transition-colors rounded-lg duration-300"
 					class:tab-active={index == activeView}
 					on:click={() => (activeView = index)}>{view}</button
 				>
