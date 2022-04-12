@@ -18,7 +18,7 @@
 	let submitStatus = null;
 	let resetTimeout;
 
-	const views = ['users', 'sync', 'analytics'];
+	const views = ['Users', 'Sync', 'Analytics'];
 	let activeView = 0; //Active view as an index of the array above
 
 	let formRefreshControl = {};
@@ -282,8 +282,7 @@
 				<button
 					class="tab tab-lg"
 					class:tab-active={index == activeView}
-					on:click={() => (activeView = index)}
-					>{view.toUpperCase()}</button
+					on:click={() => (activeView = index)}>{view}</button
 				>
 			{/each}
 		</div>
