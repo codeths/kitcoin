@@ -292,7 +292,9 @@
 			hasAdminScope = true;
 	})();
 
-	let chartdata;
+	let transactionData;
+	let purchaseData;
+
 	let chartoptions = {
 		scales: {
 			x: {
@@ -304,7 +306,7 @@
 			y: {
 				title: {
 					display: true,
-					text: 'Kitcoin sent',
+					text: 'Number of Kitcoin',
 				},
 			},
 		},
@@ -315,10 +317,10 @@
 		},
 	};
 
-	(async () => {
+	async function getDailyTransactions() {
 		let res = await fetch('/api/reports/transactions/daily');
 		let data = await res.json();
-		chartdata = {
+		transactionData = {
 			datasets: [
 				{
 					label: 'Kitcoin sent',
@@ -331,7 +333,28 @@
 				},
 			],
 		};
-	})();
+	}
+
+	async function getDailyPurchases() {
+		let res = await fetch('/api/reports/purchases/daily');
+		let data = await res.json();
+		purchaseData = {
+			datasets: [
+				{
+					label: 'Kitcoin spent (purchases)',
+					borderColor: 'rgba(32, 102, 233, 0.5)',
+					backgroundColor: 'rgba(32, 102, 233, 0.75)',
+					data: data.map(data => ({
+						x: data.date,
+						y: data.total,
+					})),
+				},
+			],
+		};
+	}
+
+	getDailyTransactions();
+	getDailyPurchases();
 </script>
 
 <!-- Content -->
@@ -574,20 +597,38 @@
 			</div>
 		</div>
 		<div
-			class="mx-2 my-4 col-span-12 md:col-span-6 {activeView == 2
+			class="mx-2 my-4 col-span-12 grid grid-cols-12 gap-4 {activeView ==
+			2
 				? 'block'
 				: 'hidden'}"
 		>
-			<h1 class="text-3xl font-medium mb-2">Reports & Statistics</h1>
-
-			<h2 class="text-xl font-medium-mb-2">Kitcoin sent per day</h2>
-			{#if chartdata}
-				<Line
-					data={chartdata}
-					options={chartoptions}
-					class="bg-base-100 rounded-lg p-4 my-4"
-				/>
-			{/if}
+			{#key activeView}
+				<h1 class="col-span-12 text-3xl font-medium">
+					Reports & Statistics
+				</h1>
+				<div class="col-span-12 lg:col-span-6">
+					<h2 class="text-xl font-medium">Kitcoin sent per day</h2>
+					{#if transactionData}
+						<Line
+							data={transactionData}
+							options={chartoptions}
+							class="bg-base-100 rounded-lg p-4 my-4"
+						/>
+					{/if}
+				</div>
+				<div class="col-span-12 lg:col-span-6">
+					<h2 class="text-xl font-medium">
+						Kitcoin spent per day (purchases)
+					</h2>
+					{#if purchaseData}
+						<Line
+							data={purchaseData}
+							options={chartoptions}
+							class="bg-base-100 rounded-lg p-4 my-4"
+						/>
+					{/if}
+				</div>
+			{/key}
 		</div>
 	</div>
 </div>
