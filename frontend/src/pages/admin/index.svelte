@@ -365,6 +365,16 @@
 		if (e) toastContainer.toast('Refreshed daily purchases.', 'success');
 	}
 
+	async function getBalance() {
+		const res = await fetch(`/api/reports/balance/total`).catch(e => null);
+		try {
+			const json = await res.json();
+			return json.balance;
+		} catch (e) {
+			throw 'An error occured.';
+		}
+	}
+
 	getDailyTransactions();
 	getDailyPurchases();
 </script>
@@ -618,6 +628,34 @@
 				<h1 class="col-span-12 text-3xl font-medium">
 					Reports & Statistics
 				</h1>
+
+				<div class="col-span-12 grid grid-cols-12">
+					<h2
+						class="col-span-12 text-xl font-medium flex justify-between items-center"
+					>
+						Kitcoin in circulation
+					</h2>
+					<div
+						class="flex bg-base-100 shadow-md rounded-lg py-10 min-h-40 border-t-8 border-primary col-span-12 md:col-span-10 lg:col-span-8"
+					>
+						<h1
+							class="text-center text-4xl sm:text-6xl lg:text-7xl xl:text-8xl flex justify-center items-center w-full h-full"
+						>
+							{#await getBalance()}
+								<Loading height="2rem" />
+							{:then balance}
+								<span
+									class="icon-currency mr-3"
+								/>{balance.toLocaleString([], {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2,
+								})}
+							{:catch error}
+								{error}
+							{/await}
+						</h1>
+					</div>
+				</div>
 				<div class="col-span-12 lg:col-span-6">
 					<h2
 						class="text-xl font-medium flex justify-between items-center"
