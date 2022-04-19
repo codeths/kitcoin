@@ -3,15 +3,15 @@ import json2csv from 'json-2-csv';
 import mongoose from 'mongoose';
 import {
 	booleanFromData,
+	numberFromData,
 	request,
 	Validators,
 } from '../../../helpers/request.js';
 import {
 	DBError,
-	User,
-	IUser,
 	ITransaction,
 	Transaction,
+	User,
 } from '../../../struct/index.js';
 import {UserRoles} from '../../../types/db.js';
 
@@ -226,7 +226,6 @@ router.get(
 			roles: ['ADMIN'],
 		}),
 	async (req, res) => {
-		// Get sum of balance on all users
 		let [{balance}] = await User.aggregate([
 			{
 				$match: {
@@ -249,6 +248,35 @@ router.get(
 		]);
 
 		res.status(200).json({balance});
+	},
+);
+
+router.get(
+	'/balance/top',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['ADMIN'],
+			validators: {
+				query: {
+					count: Validators.optional(
+						Validators.and(Validators.integer, Validators.gte(1)),
+					),
+				},
+			},
+		}),
+	async (req, res) => {
+		let count = numberFromData(req.query.count) || 10;
+		let topUsers = await User.find().sort({balance: -1}).limit(count);
+
+		res.status(200).json(
+			topUsers.map(x => ({
+				_id: x._id,
+				name: x.name,
+				email: x.email,
+				balance: x.balance,
+			})),
+		);
 	},
 );
 
