@@ -291,7 +291,7 @@ router.get(
 			let csv = await json2csv.json2csvAsync(topUsers, {
 				keys: [
 					{
-						field: '_id',
+						field: 'id',
 						title: 'ID',
 					},
 					{
@@ -318,7 +318,7 @@ router.get(
 
 		res.status(200).json(
 			topUsers.map(x => ({
-				_id: x._id,
+				_id: x.id,
 				name: x.name,
 				email: x.email,
 				balance: x.balance,
