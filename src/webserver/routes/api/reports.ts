@@ -231,10 +231,10 @@ router.get(
 				$match: {
 					$and: [
 						{
-							roles: {$bitsAllSet: [UserRoles.STUDENT]},
+							roles: {$bitsAllSet: UserRoles.STUDENT},
 						},
 						{
-							roles: {$bitsAllClear: [UserRoles.STAFF]},
+							roles: {$bitsAllClear: UserRoles.STAFF},
 						},
 					],
 				},
@@ -267,7 +267,18 @@ router.get(
 		}),
 	async (req, res) => {
 		let count = numberFromData(req.query.count) || 10;
-		let topUsers = await User.find().sort({balance: -1}).limit(count);
+		let topUsers = await User.find({
+			$and: [
+				{
+					roles: {$bitsAllSet: UserRoles.STUDENT},
+				},
+				{
+					roles: {$bitsAllClear: UserRoles.STAFF},
+				},
+			],
+		})
+			.sort({balance: -1})
+			.limit(count);
 
 		res.status(200).json(
 			topUsers.map(x => ({
