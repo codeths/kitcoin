@@ -533,3 +533,42 @@ Get daily store purchases report
 ```
 
 Or in equivalent CSV form if `csv` is `true`
+
+## GET `/reports/balance/total`
+
+Get total balance of all students
+
+### Request
+
+None
+
+### Response
+
+```ts
+{
+	balance: number;
+}
+```
+
+## GET `/reports/balance/top`
+
+Get top balances of all students
+
+### Request
+
+`count` (query): [Optional] Number of results to return. Defaults to 10  
+`csv` (query): [Optional] Return CSV instead of JSON. Should be `true` or `false`. Defaults to `false`.
+
+### Response
+
+```ts
+{
+	_id: string;
+	name: string;
+	email: string;
+	balance: number;
+}
+[];
+```
+
+Or in equivalent CSV form if `csv` is `true`
