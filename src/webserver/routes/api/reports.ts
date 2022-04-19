@@ -55,11 +55,7 @@ async function getDailyTransactions(
 		total = Math.round(total * 100) / 100;
 
 		return {
-			date: date.toLocaleDateString('en-US', {
-				year: 'numeric',
-				month: '2-digit',
-				day: '2-digit',
-			}),
+			date: date.toISOString().split('T')[0],
 			count,
 			total,
 		};
