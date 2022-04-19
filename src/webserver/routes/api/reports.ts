@@ -95,7 +95,22 @@ router.get(
 			});
 
 			if (req.query.csv && booleanFromData(req.query.csv)) {
-				let csv = await json2csv.json2csvAsync(transactions);
+				let csv = await json2csv.json2csvAsync(transactions, {
+					keys: [
+						{
+							field: 'date',
+							title: 'Date',
+						},
+						{
+							field: 'count',
+							title: 'Number of transactions',
+						},
+						{
+							field: 'total',
+							title: 'Total Kitcoin value',
+						},
+					],
+				});
 				res.setHeader('Content-Type', 'text/csv');
 				res.setHeader(
 					'Content-Disposition',
@@ -153,7 +168,22 @@ router.get(
 			});
 
 			if (req.query.csv && booleanFromData(req.query.csv)) {
-				let csv = await json2csv.json2csvAsync(transactions);
+				let csv = await json2csv.json2csvAsync(transactions, {
+					keys: [
+						{
+							field: 'date',
+							title: 'Date',
+						},
+						{
+							field: 'count',
+							title: 'Number of purchases',
+						},
+						{
+							field: 'total',
+							title: 'Total Kitcoin value',
+						},
+					],
+				});
 				res.setHeader('Content-Type', 'text/csv');
 				res.setHeader(
 					'Content-Disposition',
