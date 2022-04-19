@@ -294,6 +294,7 @@
 
 	let transactionData;
 	let purchaseData;
+	let topBalanceUsers = [];
 
 	let chartoptions = {
 		scales: {
@@ -365,6 +366,13 @@
 		if (e) toastContainer.toast('Refreshed daily purchases.', 'success');
 	}
 
+	async function getTopBalance(e) {
+		let res = await fetch('/api/reports/balance/top');
+		topBalanceUsers = await res.json();
+
+		if (e) toastContainer.toast('Refreshed top balances.', 'success');
+	}
+
 	async function getBalance() {
 		const res = await fetch(`/api/reports/balance/total`).catch(e => null);
 		try {
@@ -377,6 +385,7 @@
 
 	getDailyTransactions();
 	getDailyPurchases();
+	getTopBalance();
 </script>
 
 <!-- Content -->
@@ -712,6 +721,73 @@
 							options={chartoptions}
 							class="bg-base-100 rounded-lg p-4 my-4"
 						/>
+					{/if}
+				</div>
+				<div class="col-span-12">
+					<h2
+						class="text-xl font-medium flex justify-between items-center mb-2"
+					>
+						<span>Students with highest balance</span>
+						<div>
+							<button
+								class="btn btn-ghost"
+								on:click={getTopBalance}
+							>
+								<span class="icon-refresh text-2xl" />
+							</button>
+							<a
+								class="btn btn-primary"
+								href="/api/reports/balance/top?csv=true"
+								target="_self"
+							>
+								<span class="icon-download text-2xl mr-2" />CSV
+							</a>
+						</div>
+					</h2>
+					{#if topBalanceUsers && topBalanceUsers.length > 0}
+						<div class="w-full bg-base-100 rounded-lg p-4">
+							<table class="w-full table-auto">
+								<thead
+									class="border-b border-gray-300 text-left"
+								>
+									<tr>
+										<th class="px-2 py-4">ID</th>
+										<th class="px-2 py-4">Name</th>
+										<th class="px-2 py-4">Email</th>
+										<th class="px-2 py-4">Balance</th>
+									</tr>
+								</thead>
+								<tbody class="divide-y divide-gray-300">
+									{#each topBalanceUsers as user}
+										<tr>
+											<td class="px-2 py-4">{user._id}</td
+											>
+											<td class="px-2 py-4"
+												>{user.name}</td
+											>
+											<td class="px-2 py-4"
+												>{user.email}</td
+											>
+											<td class="px-2 py-4">
+												<span>
+													<span
+														class="icon-currency mx-1"
+													/>
+													{Math.abs(
+														user.balance,
+													).toLocaleString([], {
+														minimumFractionDigits: 2,
+														maximumFractionDigits: 2,
+													})}
+												</span>
+											</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</div>
+					{:else}
+						<p class="text-center text-xl">No users</p>
 					{/if}
 				</div>
 			{/key}
