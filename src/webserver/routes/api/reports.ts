@@ -123,6 +123,7 @@ router.get(
 					'attachment; filename="transactions.csv"',
 				);
 				res.send(csv);
+				return;
 			}
 
 			res.status(200).json(transactions);
@@ -196,6 +197,7 @@ router.get(
 					'attachment; filename="purchases.csv"',
 				);
 				res.send(csv);
+				return;
 			}
 
 			res.status(200).json(
@@ -314,6 +316,7 @@ router.get(
 				'attachment; filename="topusers.csv"',
 			);
 			res.send(csv);
+			return;
 		}
 
 		res.status(200).json(
