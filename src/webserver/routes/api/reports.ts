@@ -1,13 +1,19 @@
 import express from 'express';
-import mongoose from 'mongoose';
 import json2csv from 'json-2-csv';
-
+import mongoose from 'mongoose';
 import {
+	booleanFromData,
 	request,
 	Validators,
-	booleanFromData,
 } from '../../../helpers/request.js';
-import {DBError, ITransaction, Transaction} from '../../../struct/index.js';
+import {
+	DBError,
+	User,
+	IUser,
+	ITransaction,
+	Transaction,
+} from '../../../struct/index.js';
+import {UserRoles} from '../../../types/db.js';
 
 const router = express.Router();
 
@@ -209,6 +215,40 @@ router.get(
 				res.status(500).send(`An error occured. Error ID: ${error.id}`);
 			} catch (e) {}
 		}
+	},
+);
+
+router.get(
+	'/balance',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['ADMIN'],
+		}),
+	async (req, res) => {
+		// Get sum of balance on all users
+		let [{balance}] = await User.aggregate([
+			{
+				$match: {
+					$and: [
+						{
+							roles: {$bitsAllSet: [UserRoles.STUDENT]},
+						},
+						{
+							roles: {$bitsAllClear: [UserRoles.STAFF]},
+						},
+					],
+				},
+			},
+			{
+				$group: {
+					_id: null,
+					balance: {$sum: '$balance'},
+				},
+			},
+		]);
+
+		res.status(200).json({balance});
 	},
 );
 
