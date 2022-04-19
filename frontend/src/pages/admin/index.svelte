@@ -634,13 +634,13 @@
 				: 'hidden'}"
 		>
 			{#key activeView}
-				<h1 class="col-span-12 text-3xl font-medium">
+				<h1 class="col-span-12 text-3xl font-bold">
 					Reports & Statistics
 				</h1>
 
 				<div class="col-span-12 grid grid-cols-12">
 					<h2
-						class="col-span-12 text-xl font-medium flex justify-between items-center"
+						class="col-span-12 text-xl font-bold flex justify-between items-center"
 					>
 						Kitcoin in circulation
 					</h2>
@@ -667,7 +667,7 @@
 				</div>
 				<div class="col-span-12 lg:col-span-6">
 					<h2
-						class="text-xl font-medium flex justify-between items-center"
+						class="text-xl font-bold flex justify-between items-center"
 					>
 						<span>Kitcoin sent per day</span>
 						<div>
@@ -696,7 +696,7 @@
 				</div>
 				<div class="col-span-12 lg:col-span-6">
 					<h2
-						class="text-xl font-medium flex justify-between items-center"
+						class="text-xl font-bold flex justify-between items-center"
 					>
 						<span>Kitcoin spent per day (purchases)</span>
 						<div>
