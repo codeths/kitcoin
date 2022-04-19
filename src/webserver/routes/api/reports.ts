@@ -219,7 +219,7 @@ router.get(
 );
 
 router.get(
-	'/balance',
+	'/balance/total',
 	async (req, res, next) =>
 		request(req, res, next, {
 			authentication: true,
