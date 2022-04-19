@@ -247,6 +247,8 @@ router.get(
 			},
 		]);
 
+		balance = Math.round(balance * 100) / 100;
+
 		res.status(200).json({balance});
 	},
 );
@@ -262,6 +264,7 @@ router.get(
 					count: Validators.optional(
 						Validators.and(Validators.integer, Validators.gte(1)),
 					),
+					csv: Validators.optional(Validators.booleanString),
 				},
 			},
 		}),
@@ -279,6 +282,39 @@ router.get(
 		})
 			.sort({balance: -1})
 			.limit(count);
+
+		topUsers.forEach(x => {
+			x.balance = Math.round(x.balance * 100) / 100;
+		});
+
+		if (req.query.csv && booleanFromData(req.query.csv)) {
+			let csv = await json2csv.json2csvAsync(topUsers, {
+				keys: [
+					{
+						field: '_id',
+						title: 'ID',
+					},
+					{
+						field: 'name',
+						title: 'Name',
+					},
+					{
+						field: 'email',
+						title: 'Email',
+					},
+					{
+						field: 'balance',
+						title: 'Balance',
+					},
+				],
+			});
+			res.setHeader('Content-Type', 'text/csv');
+			res.setHeader(
+				'Content-Disposition',
+				'attachment; filename="topusers.csv"',
+			);
+			res.send(csv);
+		}
 
 		res.status(200).json(
 			topUsers.map(x => ({
