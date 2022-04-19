@@ -317,7 +317,7 @@
 		},
 	};
 
-	async function getDailyTransactions() {
+	async function getDailyTransactions(e) {
 		let res = await fetch('/api/reports/transactions/daily');
 		let data = await res.json();
 		transactionData = {
@@ -333,9 +333,11 @@
 				},
 			],
 		};
+
+		if (e) toastContainer.toast('Refreshed daily transactions.', 'success');
 	}
 
-	async function getDailyPurchases() {
+	async function getDailyPurchases(e) {
 		let res = await fetch('/api/reports/purchases/daily');
 		let data = await res.json();
 		purchaseData = {
@@ -351,6 +353,8 @@
 				},
 			],
 		};
+
+		if (e) toastContainer.toast('Refreshed daily purchases.', 'success');
 	}
 
 	getDailyTransactions();
@@ -611,13 +615,21 @@
 						class="text-xl font-medium flex justify-between items-center"
 					>
 						<span>Kitcoin sent per day</span>
-						<a
-							class="btn btn-primary"
-							href="/api/reports/transactions/daily?csv=true"
-							target="_self"
-						>
-							<span class="icon-download text-2xl mr-2" />CSV
-						</a>
+						<div>
+							<button
+								class="btn btn-ghost"
+								on:click={getDailyTransactions}
+							>
+								<span class="icon-refresh text-2xl" />
+							</button>
+							<a
+								class="btn btn-primary"
+								href="/api/reports/transactions/daily?csv=true"
+								target="_self"
+							>
+								<span class="icon-download text-2xl mr-2" />CSV
+							</a>
+						</div>
 					</h2>
 					{#if transactionData}
 						<Line
@@ -632,13 +644,21 @@
 						class="text-xl font-medium flex justify-between items-center"
 					>
 						<span>Kitcoin spent per day (purchases)</span>
-						<a
-							class="btn btn-primary"
-							href="/api/reports/transactions/daily?csv=true"
-							target="_self"
-						>
-							<span class="icon-download text-2xl mr-2" />CSV
-						</a>
+						<div>
+							<button
+								class="btn btn-ghost"
+								on:click={getDailyPurchases}
+							>
+								<span class="icon-refresh text-2xl" />
+							</button>
+							<a
+								class="btn btn-primary"
+								href="/api/reports/purchases/daily?csv=true"
+								target="_self"
+							>
+								<span class="icon-download text-2xl mr-2" />CSV
+							</a>
+						</div>
 					</h2>
 					{#if purchaseData}
 						<Line
