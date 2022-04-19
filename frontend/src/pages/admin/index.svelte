@@ -645,7 +645,7 @@
 						Kitcoin in circulation
 					</h2>
 					<div
-						class="flex bg-base-100 shadow-md rounded-lg py-10 min-h-40 border-t-8 border-primary col-span-12 md:col-span-10 lg:col-span-8"
+						class="flex bg-base-100 shadow-md rounded-lg py-10 my-4 min-h-40 border-t-8 border-primary col-span-12 md:col-span-10 lg:col-span-8"
 					>
 						<h1
 							class="text-center text-4xl sm:text-6xl lg:text-7xl xl:text-8xl flex justify-center items-center w-full h-full"
@@ -725,7 +725,7 @@
 				</div>
 				<div class="col-span-12">
 					<h2
-						class="text-xl font-medium flex justify-between items-center mb-2"
+						class="text-xl font-medium flex justify-between items-center"
 					>
 						<span>Students with highest balance</span>
 						<div>
@@ -745,7 +745,7 @@
 						</div>
 					</h2>
 					{#if topBalanceUsers && topBalanceUsers.length > 0}
-						<div class="w-full bg-base-100 rounded-lg p-4">
+						<div class="w-full bg-base-100 rounded-lg p-4 my-4">
 							<table class="w-full table-auto">
 								<thead
 									class="border-b border-gray-300 text-left"
