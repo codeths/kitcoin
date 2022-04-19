@@ -1,7 +1,12 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import json2csv from 'json-2-csv';
 
-import {request, Validators} from '../../../helpers/request.js';
+import {
+	request,
+	Validators,
+	booleanFromData,
+} from '../../../helpers/request.js';
 import {DBError, ITransaction, Transaction} from '../../../struct/index.js';
 
 const router = express.Router();
@@ -73,6 +78,7 @@ router.get(
 				query: {
 					from: Validators.optional(Validators.date),
 					to: Validators.optional(Validators.date),
+					csv: Validators.optional(Validators.booleanString),
 				},
 			},
 		}),
@@ -91,6 +97,16 @@ router.get(
 			let transactions = await getDailyTransactions(from, to, {
 				store: {$exists: false},
 			});
+
+			if (req.query.csv && booleanFromData(req.query.csv)) {
+				let csv = await json2csv.json2csvAsync(transactions);
+				res.setHeader('Content-Type', 'text/csv');
+				res.setHeader(
+					'Content-Disposition',
+					'attachment; filename="transactions.csv"',
+				);
+				res.send(csv);
+			}
 
 			res.status(200).json(transactions);
 		} catch (e) {
@@ -120,6 +136,7 @@ router.get(
 				query: {
 					from: Validators.optional(Validators.date),
 					to: Validators.optional(Validators.date),
+					csv: Validators.optional(Validators.booleanString),
 				},
 			},
 		}),
@@ -138,6 +155,16 @@ router.get(
 			let transactions = await getDailyTransactions(from, to, {
 				store: {$exists: true},
 			});
+
+			if (req.query.csv && booleanFromData(req.query.csv)) {
+				let csv = await json2csv.json2csvAsync(transactions);
+				res.setHeader('Content-Type', 'text/csv');
+				res.setHeader(
+					'Content-Disposition',
+					'attachment; filename="purchases.csv"',
+				);
+				res.send(csv);
+			}
 
 			res.status(200).json(
 				transactions.map(x => ({...x, total: -x.total})),
