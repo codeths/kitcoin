@@ -607,7 +607,18 @@
 					Reports & Statistics
 				</h1>
 				<div class="col-span-12 lg:col-span-6">
-					<h2 class="text-xl font-medium">Kitcoin sent per day</h2>
+					<h2
+						class="text-xl font-medium flex justify-between items-center"
+					>
+						<span>Kitcoin sent per day</span>
+						<a
+							class="btn btn-primary"
+							href="/api/reports/transactions/daily?csv=true"
+							target="_self"
+						>
+							<span class="icon-download text-2xl mr-2" />CSV
+						</a>
+					</h2>
 					{#if transactionData}
 						<Line
 							data={transactionData}
@@ -617,8 +628,17 @@
 					{/if}
 				</div>
 				<div class="col-span-12 lg:col-span-6">
-					<h2 class="text-xl font-medium">
-						Kitcoin spent per day (purchases)
+					<h2
+						class="text-xl font-medium flex justify-between items-center"
+					>
+						<span>Kitcoin spent per day (purchases)</span>
+						<a
+							class="btn btn-primary"
+							href="/api/reports/transactions/daily?csv=true"
+							target="_self"
+						>
+							<span class="icon-download text-2xl mr-2" />CSV
+						</a>
 					</h2>
 					{#if purchaseData}
 						<Line
