@@ -489,7 +489,8 @@ Get daily transactions report
 ### Request
 
 `from` (query): [Optional] Date to start from (ISO or epoch MS). Defaults to 30 days ago.  
-`to` (query): [Optional] Date to end at (ISO or epoch MS). Defaults to today.
+`to` (query): [Optional] Date to end at (ISO or epoch MS). Defaults to today.  
+`csv` (query): [Optional] Return CSV instead of JSON. Should be `true` or `false`. Defaults to `false`.
 
 ### Response
 
@@ -504,6 +505,8 @@ Get daily transactions report
 }
 [];
 ```
+
+Or in equivalent CSV form if `csv` is `true`
 
 ## GET `/reports/purchases/daily`
 
@@ -512,7 +515,8 @@ Get daily store purchases report
 ### Request
 
 `from` (query): [Optional] Date to start from (ISO or epoch MS). Defaults to 30 days ago.  
-`to` (query): [Optional] Date to end at (ISO or epoch MS). Defaults to today.
+`to` (query): [Optional] Date to end at (ISO or epoch MS). Defaults to today.  
+`csv` (query): [Optional] Return CSV instead of JSON. Should be `true` or `false`. Defaults to `false`.
 
 ### Response
 
@@ -527,3 +531,5 @@ Get daily store purchases report
 }
 [];
 ```
+
+Or in equivalent CSV form if `csv` is `true`
