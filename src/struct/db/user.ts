@@ -126,7 +126,14 @@ export default class User extends MongooseFuzzyClass {
 	@prop()
 	public schoolID?: string;
 
-	@prop({type: UserTokens, _id: false, required: true})
+	@prop({
+		type: UserTokens,
+		_id: false,
+		required: true,
+		default: {
+			scopes: [],
+		},
+	})
 	public tokens!: UserTokens;
 
 	/**
