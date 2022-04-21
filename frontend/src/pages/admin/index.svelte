@@ -766,7 +766,7 @@
 												>{user.name}</td
 											>
 											<td class="px-2 py-4"
-												>{user.email}</td
+												>{user.email || '-'}</td
 											>
 											<td class="px-2 py-4">
 												<span>
