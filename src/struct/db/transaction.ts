@@ -1,6 +1,7 @@
 import typegoose, {DocumentType} from '@typegoose/typegoose';
 import {ReturnModelType} from '@typegoose/typegoose/lib/types';
 import {FilterQuery} from 'mongoose';
+import {roundCurrency} from '../../helpers/misc.js';
 import {ITransactionAPIResponse} from '../../types/index.js';
 import {ITransaction, IUser, User} from './index.js';
 const {index, prop} = typegoose;
@@ -50,7 +51,7 @@ export default class Transaction {
 	/**
 	 * The amount of the transaction
 	 */
-	@prop({required: true})
+	@prop({required: true, get: roundCurrency, set: roundCurrency})
 	public amount!: number;
 
 	/**
