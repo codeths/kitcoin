@@ -1,7 +1,7 @@
 import express from 'express';
 
 import {IUser} from '../struct/index.js';
-import {UserRoleTypes} from './index.js';
+import {Modify, UserRoleTypes} from './index.js';
 
 /**
  * Options for request handling
@@ -76,7 +76,12 @@ export type RequestValidateConfig = {
 };
 
 export function requestHasUser(req: express.Request): req is express.Request & {
-	user: IUser;
+	user: Modify<
+		IUser,
+		{
+			tokens: Exclude<IUser['tokens'], undefined>;
+		}
+	>;
 } {
-	return (req.user! as IUser | undefined) != undefined;
+	return req.user !== undefined;
 }
