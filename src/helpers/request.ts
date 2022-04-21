@@ -14,6 +14,7 @@ import {
 	RequestValidateOptions,
 	RequestValidateParts,
 } from '../types/index.js';
+import {roundCurrency} from './misc.js';
 
 export async function request(
 	req: express.Request,
@@ -487,7 +488,7 @@ export class Validators {
 					if (!Validators.anyNumber().run(data))
 						return '{KEY} must be a number';
 					return (
-						Math.round(numberFromData(data) * 100) / 100 ==
+						roundCurrency(numberFromData(data)) ==
 						numberFromData(data)
 					);
 				},
