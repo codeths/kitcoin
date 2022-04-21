@@ -1,7 +1,7 @@
 import typegoose, {DocumentType} from '@typegoose/typegoose';
 const {index, prop} = typegoose;
 import {ReturnModelType} from '@typegoose/typegoose/lib/types';
-import {roundCurrency} from '../../helpers/misc';
+import {roundCurrency} from '../../helpers/misc.js';
 
 @index({storeID: 1})
 export default class StoreItem {
