@@ -565,7 +565,7 @@ Get top balances of all students
 {
 	_id: string;
 	name: string;
-	email: string;
+	email: string | undefined;
 	balance: number;
 }
 [];
