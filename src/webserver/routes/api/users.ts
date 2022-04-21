@@ -372,7 +372,7 @@ router.post(
 		if (!requestHasUser(req)) return;
 
 		if (
-			!req.user.tokens.scopes.includes(
+			!req.user.tokens.scopes?.includes(
 				'https://www.googleapis.com/auth/admin.directory.user.readonly',
 			)
 		)

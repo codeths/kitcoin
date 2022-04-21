@@ -42,7 +42,7 @@ class UserTokens {
 	 * Authorized scopes
 	 */
 	@prop({type: [String]})
-	public scopes: string[] = [];
+	public scopes?: string[];
 }
 
 function endOfWeek(): Date {
@@ -126,8 +126,8 @@ export default class User extends MongooseFuzzyClass {
 	@prop()
 	public schoolID?: string;
 
-	@prop({type: UserTokens, _id: false, required: true})
-	public tokens!: UserTokens;
+	@prop({type: UserTokens, _id: false})
+	public tokens?: UserTokens;
 
 	/**
 	 * The user's balance
