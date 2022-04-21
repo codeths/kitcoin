@@ -10,6 +10,7 @@ import {
 } from '../../helpers/oauth.js';
 import {request} from '../../helpers/request.js';
 import {DBError, ErrorDetail} from '../../struct/index.js';
+import {requestHasUser} from '../../types/request.js';
 
 const router = express.Router();
 
@@ -118,6 +119,8 @@ router.get(
 			authentication: true,
 		}),
 	async (req, res) => {
+		if (!requestHasUser(req)) return;
+
 		if (!req.session.token) return res.redirect('/');
 		if (req.user) {
 			req.user.tokens.session = undefined;

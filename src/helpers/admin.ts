@@ -172,7 +172,7 @@ export class AdminClient {
 			user = newUser;
 		}
 		await getAccessToken(user);
-		if (!user.tokens.access) return;
+		if (!user.tokens?.access) return;
 		this.token = user.tokens.access;
 
 		if (sync_spreadsheet_id) {

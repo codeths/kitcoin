@@ -49,7 +49,8 @@ function getOAuth2Client(
  * @returns Google OAuth2 client
  */
 async function getAccessToken(user: IUser): Promise<Auth.OAuth2Client | null> {
-	if (!user.tokens.refresh) return null;
+	if (!user.tokens?.refresh) return null;
+
 	const oauth2Client = getOAuth2Client({
 		access_token: user.tokens.access,
 		refresh_token: user.tokens.refresh,
