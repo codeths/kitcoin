@@ -838,6 +838,7 @@ router.get(
 			},
 		}),
 	async (req, res) => {
+		// lgtm [js/missing-rate-limiting]
 		let {storeID, id} = req.params;
 
 		let store = await Store.findById(storeID);
@@ -952,6 +953,7 @@ router.patch(
 router.patch(
 	'/:storeID/item/:id',
 	async (req, res, next) =>
+		// lgtm [js/missing-rate-limiting]
 		request(req, res, next, {
 			authentication: true,
 			validators: {
@@ -1018,6 +1020,7 @@ router.patch(
 router.delete(
 	'/:storeID/item/:id',
 	async (req, res, next) =>
+		// lgtm [js/missing-rate-limiting]
 		request(req, res, next, {
 			authentication: true,
 			validators: {
@@ -1073,6 +1076,7 @@ router.delete(
 router.delete(
 	'/:storeID/item/:id/image',
 	async (req, res, next) =>
+		// lgtm [js/missing-rate-limiting]
 		request(req, res, next, {
 			authentication: true,
 			validators: {
