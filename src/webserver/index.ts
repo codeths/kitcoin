@@ -2,6 +2,7 @@ import cluster from 'cluster';
 import compression from 'compression';
 import mongostore from 'connect-mongodb-session';
 import cookieParser from 'cookie-parser';
+import csrf from 'csurf';
 import express from 'express';
 import session from 'express-session';
 import {cpus} from 'os';
@@ -9,8 +10,8 @@ import {cpus} from 'os';
 import {mongo as mongoURL, port, sessionSecret} from '../config/keys.js';
 import {request} from '../helpers/request.js';
 import {DBError, IUser} from '../struct/index.js';
-import {api, auth} from './routes/index.js';
 import {handleLogin} from './routes/auth.js';
+import {api, auth} from './routes/index.js';
 
 declare module 'express-session' {
 	interface SessionData {
@@ -54,6 +55,7 @@ app.set('trust proxy', 1);
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(csrf());
 app.use(compression());
 
 app.use(
