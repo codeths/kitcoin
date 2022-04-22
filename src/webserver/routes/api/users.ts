@@ -73,7 +73,7 @@ router.get(
 				count?: string;
 			};
 
-			if (q.length < 3) return res.status(200).send([]);
+			if (q.length < 3) return res.status(200).send([]); // lgtm [js/type-confusion-through-parameter-tampering]
 
 			let countNum = count ? parseInt(count) : 10;
 
