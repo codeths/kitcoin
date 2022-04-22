@@ -1,6 +1,7 @@
 import express from 'express';
 import json2csv from 'json-2-csv';
 import mongoose from 'mongoose';
+import {roundCurrency} from '../../../helpers/misc.js';
 import {
 	booleanFromData,
 	dateFromData,
@@ -414,6 +415,113 @@ router.get(
 				balance: x.balance,
 			})),
 		);
+	},
+);
+
+router.get(
+	'/sent/top',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['ADMIN'],
+			validators: {
+				query: {
+					from: Validators.optional(Validators.date),
+					to: Validators.optional(Validators.date),
+					count: Validators.optional(
+						Validators.and(Validators.integer, Validators.gte(1)),
+					),
+					csv: Validators.optional(Validators.booleanString),
+				},
+			},
+		}),
+	async (req, res) => {
+		let from = dateFromData(req.query.from);
+		let to = dateFromData(req.query.to);
+		let count = numberFromData(req.query.count) || 10;
+
+		let query: mongoose.FilterQuery<ITransaction> = {
+			'from.id': {$exists: true},
+		};
+		if (from || to) query.date = {};
+		if (from) query.date.$gte = from;
+		if (to) query.date.$lte = to;
+
+		let transactions: {
+			_id: string;
+			amount: number;
+			count: number;
+		}[] = await Transaction.aggregate([
+			{
+				$match: query,
+			},
+			{
+				$group: {
+					_id: '$from.id',
+					amount: {$sum: '$amount'},
+					count: {$sum: 1},
+				},
+			},
+			{
+				$sort: {
+					amount: -1,
+				},
+			},
+			{
+				$limit: count,
+			},
+		]);
+
+		let data = await Promise.all(
+			transactions.map(async x => {
+				let user = await User.findById(x._id);
+
+				return {
+					_id: x._id,
+					name: user?.name,
+					email: user?.email,
+					amount: roundCurrency(x.amount),
+					count: x.count,
+				};
+			}),
+		);
+
+		if (req.query.csv && booleanFromData(req.query.csv)) {
+			let csv = await json2csv.json2csvAsync(data, {
+				keys: [
+					{
+						field: '_id',
+						title: 'ID',
+					},
+					{
+						field: 'name',
+						title: 'Name',
+					},
+					{
+						field: 'email',
+						title: 'Email',
+					},
+					{
+						field: 'amount',
+						title: 'Amount',
+					},
+					{
+						field: 'count',
+						title: 'Count',
+					},
+				],
+				emptyFieldValue: '',
+			});
+			res.setHeader('Content-Type', 'text/csv');
+			res.setHeader(
+				'Content-Disposition',
+				'attachment; filename="topsent.csv"',
+			);
+			res.send(csv);
+			return;
+		}
+
+		res.status(200).json(data);
 	},
 );
 
