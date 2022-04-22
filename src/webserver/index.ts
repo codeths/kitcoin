@@ -86,7 +86,7 @@ function servePage(res: express.Response) {
 }
 
 app.get(
-	'/student',
+	'/student', // lgtm [js/missing-rate-limiting]
 	(...req) => request(...req, {}),
 	(req, res) => {
 		if (req.user && req.user.hasRole('STUDENT')) servePage(res);
@@ -100,7 +100,7 @@ app.get(
 );
 
 app.get(
-	'/staff',
+	'/staff', // lgtm [js/missing-rate-limiting]
 	(...req) => request(...req, {}),
 	(req, res) => {
 		if (req.user && req.user.hasRole('STAFF')) servePage(res);
@@ -114,7 +114,7 @@ app.get(
 );
 
 app.get(
-	'/admin',
+	'/admin', // lgtm [js/missing-rate-limiting]
 	(...req) => request(...req, {}),
 	(req, res) => {
 		if (req.user && req.user.hasRole('ADMIN')) servePage(res);
