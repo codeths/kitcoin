@@ -3,6 +3,7 @@ import json2csv from 'json-2-csv';
 import mongoose from 'mongoose';
 import {
 	booleanFromData,
+	dateFromData,
 	numberFromData,
 	request,
 	Validators,
@@ -217,6 +218,92 @@ router.get(
 				res.status(500).send(`An error occured. Error ID: ${error.id}`);
 			} catch (e) {}
 		}
+	},
+);
+
+router.get(
+	'/transactions/top',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['ADMIN'],
+			validators: {
+				query: {
+					from: Validators.optional(Validators.date),
+					to: Validators.optional(Validators.date),
+					count: Validators.optional(
+						Validators.and(Validators.integer, Validators.gte(1)),
+					),
+					csv: Validators.optional(Validators.booleanString),
+				},
+			},
+		}),
+	async (req, res) => {
+		let from = dateFromData(req.query.from);
+		let to = dateFromData(req.query.to);
+		let count = numberFromData(req.query.count) || 10;
+
+		let query: mongoose.FilterQuery<ITransaction> = {};
+		if (from || to) query.date = {};
+		if (from) query.date.$gte = from;
+		if (to) query.date.$lte = to;
+
+		let transactions = await Transaction.find(query)
+			.sort({
+				amount: -1,
+			})
+			.limit(count);
+
+		let data = await Promise.all(transactions.map(x => x.toAPIResponse()));
+
+		if (req.query.csv && booleanFromData(req.query.csv)) {
+			let csv = await json2csv.json2csvAsync(data, {
+				keys: [
+					{
+						field: '_id',
+						title: 'ID',
+					},
+					{
+						field: 'date',
+						title: 'Date',
+					},
+					{
+						field: 'from.text',
+						title: 'From Name',
+					},
+					{
+						field: 'from.id',
+						title: 'From ID',
+					},
+					{
+						field: 'to.text',
+						title: 'To Name',
+					},
+					{
+						field: 'to.id',
+						title: 'To ID',
+					},
+					{
+						field: 'amount',
+						title: 'Amount',
+					},
+					{
+						field: 'reason',
+						title: 'Reason',
+					},
+				],
+				emptyFieldValue: '',
+			});
+			res.setHeader('Content-Type', 'text/csv');
+			res.setHeader(
+				'Content-Disposition',
+				'attachment; filename="toptransactions.csv"',
+			);
+			res.send(csv);
+			return;
+		}
+
+		res.status(200).json(data);
 	},
 );
 
