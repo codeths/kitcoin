@@ -8,7 +8,7 @@ import path from 'path';
 import sharp from 'sharp';
 
 import {ClassroomClient} from '../../../helpers/classroom.js';
-import {numberFromData, request, Validators} from '../../../helpers/request.js';
+import {request, Validators} from '../../../helpers/request.js';
 import {
 	DBError,
 	IStore,
