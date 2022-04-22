@@ -534,6 +534,39 @@ Get daily store purchases report
 
 Or in equivalent CSV form if `csv` is `true`
 
+## GET `/reports/transactions/top`
+
+Get top transactions by amount
+
+### Request
+
+`from` (query): [Optional] Date to start from (ISO or epoch MS). Defaults to none.  
+`to` (query): [Optional] Date to end at (ISO or epoch MS). Defaults to none.  
+`count` (query): [Optional] Number of results to return. Defaults to 10.  
+`csv` (query): [Optional] Return CSV instead of JSON. Should be `true` or `false`. Defaults to `false`.
+
+### Response
+
+Array of transactions
+
+Or in equivalent CSV form if `csv` is `true`
+
+## GET `/reports/transactions/all`
+
+Get all transactions
+
+### Request
+
+`from` (query): [Optional] Date to start from (ISO or epoch MS). Defaults to none.  
+`to` (query): [Optional] Date to end at (ISO or epoch MS). Defaults to none.  
+`count` (query): [Optional] Number of results to return. Defaults to none (all transactions returned).  
+`skip` (query): [Optional] Number of results to skip. Defaults to 0.  
+`csv` (query): [Optional] Return CSV instead of JSON. Should be `true` or `false`. Defaults to `false`.
+
+### Response
+
+Array of transactions
+
 ## GET `/reports/balance/total`
 
 Get total balance of all students
@@ -556,7 +589,7 @@ Get top balances of all students
 
 ### Request
 
-`count` (query): [Optional] Number of results to return. Defaults to 10  
+`count` (query): [Optional] Number of results to return. Defaults to 10.  
 `csv` (query): [Optional] Return CSV instead of JSON. Should be `true` or `false`. Defaults to `false`.
 
 ### Response
@@ -567,6 +600,32 @@ Get top balances of all students
 	name: string;
 	email: string | undefined;
 	balance: number;
+}
+[];
+```
+
+Or in equivalent CSV form if `csv` is `true`
+
+## GET `/reports/sent/top`
+
+Gets users who sent the most Kitcoin
+
+### Request
+
+`from` (query): [Optional] Date to start from (ISO or epoch MS). Defaults to none.  
+`to` (query): [Optional] Date to end at (ISO or epoch MS). Defaults to none.  
+`count` (query): [Optional] Number of results to return. Defaults to 10  
+`csv` (query): [Optional] Return CSV instead of JSON. Should be `true` or `false`. Defaults to `false`.
+
+### Response
+
+```ts
+{
+	_id: string;
+	name: string | undefined;
+	email: string | undefined;
+	amount: number;
+	count: number;
 }
 [];
 ```
