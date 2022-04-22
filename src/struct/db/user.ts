@@ -6,6 +6,7 @@ import {ReturnModelType} from '@typegoose/typegoose/lib/types';
 
 import {weeklyBalance} from '../../config/keys.js';
 import {getAccessToken} from '../../helpers/oauth.js';
+import {roundCurrency} from '../../helpers/misc.js';
 import {
 	IUserAPIResponse,
 	MongooseFuzzyClass,
@@ -54,7 +55,7 @@ function endOfWeek(): Date {
 }
 
 function getBalance(this: DocumentType<User>, balance: number) {
-	if (!this.hasRole('STAFF')) return balance;
+	if (!this.hasRole('STAFF')) return roundCurrency(balance);
 	let rawBalanceExpires = this.get('balanceExpires', null, {
 		getters: false,
 	});
@@ -62,10 +63,12 @@ function getBalance(this: DocumentType<User>, balance: number) {
 		!rawBalanceExpires ||
 		rawBalanceExpires.getTime() < new Date().getTime()
 	) {
-		return (this.balance =
-			weeklyBalance * (this.weeklyBalanceMultiplier ?? 1));
+		return roundCurrency(
+			(this.balance =
+				weeklyBalance * (this.weeklyBalanceMultiplier ?? 1)),
+		);
 	}
-	return balance;
+	return roundCurrency(balance);
 }
 
 function getBalanceExpires(this: DocumentType<User>, balanceExpires: Date) {
@@ -132,7 +135,7 @@ export default class User extends MongooseFuzzyClass {
 	/**
 	 * The user's balance
 	 */
-	@prop({required: true, get: getBalance, default: 0})
+	@prop({required: true, get: getBalance, set: roundCurrency, default: 0})
 	public balance!: number;
 
 	/**

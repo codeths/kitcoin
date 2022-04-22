@@ -68,14 +68,12 @@ router.get(
 		try {
 			if (!requestHasUser(req)) return;
 
-			const {q, roles, count, me} = req.query as {
+			const {q, count} = req.query as {
 				q: string;
-				roles?: string;
 				count?: string;
-				me?: string;
 			};
 
-			if (q.length < 3) return res.status(200).send([]);
+			if (q.length < 3) return res.status(200).send([]); // lgtm [js/type-confusion-through-parameter-tampering]
 
 			let countNum = count ? parseInt(count) : 10;
 

@@ -34,6 +34,8 @@
 		"@types/compression": "^1.7.2",
 		"@types/connect-mongodb-session": "^2.4.2",
 		"@types/cookie-parser": "^1.4.2",
+		"@types/csurf": "^1.11.2",
+		"@types/escape-html": "^1.0.2",
 		"@types/express": "^4.17.13",
 		"@types/express-session": "^1.17.4",
 		"@types/formidable": "^2.0.4",
@@ -63,6 +65,8 @@
 		"compression": "^1.7.4",
 		"connect-mongodb-session": "^3.1.1",
 		"cookie-parser": "^1.4.6",
+		"csurf": "^1.11.0",
+		"escape-html": "^1.0.3",
 		"express": "^4.17.3",
 		"express-session": "^1.17.2",
 		"formidable": "^3.2.1",
@@ -72,6 +76,7 @@
 		"mongoose-fuzzy-searching": "github:codeths/mongoose-fuzzy-searching",
 		"nanoid": "^3.3.2",
 		"read-excel-file": "^5.2.28",
-		"sharp": "^0.30.4"
+		"sharp": "^0.30.4",
+		"regex-escape": "^3.4.10"
 	}
 }

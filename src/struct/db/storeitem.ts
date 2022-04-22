@@ -1,6 +1,7 @@
 import typegoose, {DocumentType} from '@typegoose/typegoose';
 const {index, prop} = typegoose;
 import {ReturnModelType} from '@typegoose/typegoose/lib/types';
+import {roundCurrency} from '../../helpers/misc.js';
 
 @index({storeID: 1})
 export default class StoreItem {
@@ -25,7 +26,7 @@ export default class StoreItem {
 	@prop()
 	public description?: string;
 
-	@prop({required: true})
+	@prop({required: true, get: roundCurrency, set: roundCurrency})
 	public price!: number;
 
 	/**

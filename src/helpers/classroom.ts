@@ -48,7 +48,7 @@ class ClassroomClient {
 			const classes: Google.Common.GaxiosResponse<Google.classroom_v1.Schema$ListCoursesResponse> | null =
 				await google
 					.classroom({version: 'v1', auth: this.client})
-					.courses.list(options || {})
+					.courses.list(options)
 					.catch(e => null);
 
 			if (!classes || !classes.data || !classes.data.courses) return null;
