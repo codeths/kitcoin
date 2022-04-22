@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import escapeHTML from 'escape-html';
+import escapeRegex from 'regex-escape';
 import express from 'express';
 import fs from 'fs';
 import {FilterQuery} from 'mongoose';
@@ -130,10 +131,13 @@ async function getStores(
 			{
 				$or: [
 					{
-						name: RegExp(search.toLowerCase(), 'i'),
+						name: RegExp(escapeRegex(search).toLowerCase(), 'i'),
 					},
 					{
-						description: RegExp(search.toLowerCase(), 'i'),
+						description: RegExp(
+							escapeRegex(search).toLowerCase(),
+							'i',
+						),
 					},
 				],
 			},
