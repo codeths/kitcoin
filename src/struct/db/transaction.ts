@@ -130,10 +130,13 @@ export default class Transaction {
 			getters: true,
 			versionKey: false,
 		});
+
+		let id = json.id;
 		delete json.id;
 
 		let res: ITransactionAPIResponse = {
 			...json,
+			_id: id,
 			date: this.date.toISOString(),
 			canManage: this.canManage(managingUser),
 		};
