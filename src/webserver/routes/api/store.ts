@@ -1,4 +1,6 @@
 import crypto from 'crypto';
+import escapeHTML from 'escape-html';
+import escapeRegex from 'regex-escape';
 import express from 'express';
 import fs from 'fs';
 import {FilterQuery} from 'mongoose';
@@ -6,7 +8,7 @@ import path from 'path';
 import sharp from 'sharp';
 
 import {ClassroomClient} from '../../../helpers/classroom.js';
-import {numberFromData, request, Validators} from '../../../helpers/request.js';
+import {request, Validators} from '../../../helpers/request.js';
 import {
 	DBError,
 	IStore,
@@ -129,10 +131,13 @@ async function getStores(
 			{
 				$or: [
 					{
-						name: RegExp(search.toLowerCase(), 'i'),
+						name: RegExp(escapeRegex(search).toLowerCase(), 'i'),
 					},
 					{
-						description: RegExp(search.toLowerCase(), 'i'),
+						description: RegExp(
+							escapeRegex(search).toLowerCase(),
+							'i',
+						),
 					},
 				],
 			},
@@ -263,7 +268,11 @@ router.post(
 			if (invalidUsers.length > 0)
 				return res
 					.status(400)
-					.send(`Invalid user IDs: ${invalidUsers.join(', ')}`);
+					.send(
+						`Invalid user IDs: ${escapeHTML(
+							invalidUsers.join(', '),
+						)}`,
+					);
 
 			if (body.classIDs.length > 0) {
 				let classroomClient = await new ClassroomClient().createClient(
@@ -282,7 +291,9 @@ router.post(
 					return res
 						.status(400)
 						.send(
-							`Invalid class IDs: ${invalidClasses.join(', ')}`,
+							`Invalid class IDs: ${escapeHTML(
+								invalidClasses.join(', '),
+							)}`,
 						);
 			}
 
@@ -471,7 +482,11 @@ router.patch(
 			if (invalidUsers.length > 0)
 				return res
 					.status(400)
-					.send(`Invalid user IDs: ${invalidUsers.join(', ')}`);
+					.send(
+						`Invalid user IDs: ${escapeHTML(
+							invalidUsers.join(', '),
+						)}`,
+					);
 
 			if (body.classIDs.length > 0) {
 				let classroomClient = await new ClassroomClient().createClient(
@@ -491,7 +506,9 @@ router.patch(
 					return res
 						.status(400)
 						.send(
-							`Invalid class IDs: ${invalidClasses.join(', ')}`,
+							`Invalid class IDs: ${escapeHTML(
+								invalidClasses.join(', '),
+							)}`,
 						);
 			}
 
@@ -803,8 +820,6 @@ router.get(
 		let item = await StoreItem.findById(id);
 		if (!item) return res.status(404).send('Item not found');
 
-		if (!item) return;
-
 		res.status(200).json(
 			item.toObject({
 				getters: true,
@@ -827,6 +842,7 @@ router.get(
 			},
 		}),
 	async (req, res) => {
+		// lgtm [js/missing-rate-limiting]
 		let {storeID, id} = req.params;
 
 		let store = await Store.findById(storeID);
@@ -837,8 +853,6 @@ router.get(
 
 		let item = await StoreItem.findById(id);
 		if (!item) return res.status(404).send('Item not found');
-
-		if (!item) return;
 
 		let image;
 		try {
@@ -941,6 +955,7 @@ router.patch(
 router.patch(
 	'/:storeID/item/:id',
 	async (req, res, next) =>
+		// lgtm [js/missing-rate-limiting]
 		request(req, res, next, {
 			authentication: true,
 			validators: {
@@ -1007,6 +1022,7 @@ router.patch(
 router.delete(
 	'/:storeID/item/:id',
 	async (req, res, next) =>
+		// lgtm [js/missing-rate-limiting]
 		request(req, res, next, {
 			authentication: true,
 			validators: {
@@ -1062,6 +1078,7 @@ router.delete(
 router.delete(
 	'/:storeID/item/:id/image',
 	async (req, res, next) =>
+		// lgtm [js/missing-rate-limiting]
 		request(req, res, next, {
 			authentication: true,
 			validators: {

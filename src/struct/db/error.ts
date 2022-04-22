@@ -1,5 +1,4 @@
 import express from 'express';
-import {LeanDocument} from 'mongoose';
 import {customAlphabet} from 'nanoid';
 
 import typegoose, {DocumentType} from '@typegoose/typegoose';
