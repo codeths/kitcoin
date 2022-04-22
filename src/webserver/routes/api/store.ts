@@ -814,8 +814,6 @@ router.get(
 		let item = await StoreItem.findById(id);
 		if (!item) return res.status(404).send('Item not found');
 
-		if (!item) return;
-
 		res.status(200).json(
 			item.toObject({
 				getters: true,
@@ -849,8 +847,6 @@ router.get(
 
 		let item = await StoreItem.findById(id);
 		if (!item) return res.status(404).send('Item not found');
-
-		if (!item) return;
 
 		let image;
 		try {
