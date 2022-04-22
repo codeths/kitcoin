@@ -482,7 +482,11 @@ router.patch(
 			if (invalidUsers.length > 0)
 				return res
 					.status(400)
-					.send(`Invalid user IDs: ${invalidUsers.join(', ')}`);
+					.send(
+						`Invalid user IDs: ${escapeHTML(
+							invalidUsers.join(', '),
+						)}`,
+					);
 
 			if (body.classIDs.length > 0) {
 				let classroomClient = await new ClassroomClient().createClient(
@@ -502,7 +506,9 @@ router.patch(
 					return res
 						.status(400)
 						.send(
-							`Invalid class IDs: ${invalidClasses.join(', ')}`,
+							`Invalid class IDs: ${escapeHTML(
+								invalidClasses.join(', '),
+							)}`,
 						);
 			}
 
