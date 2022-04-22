@@ -60,7 +60,7 @@ async function getDailyTransactions(
 		let count = dateTransactions.length;
 		let total = dateTransactions.reduce((a, c) => a + c.amount, 0);
 
-		total = Math.round(total * 100) / 100;
+		total = roundCurrency(total);
 
 		return {
 			date: date.toISOString().split('T')[0],
@@ -426,7 +426,7 @@ router.get(
 			},
 		]);
 
-		balance = Math.round(balance * 100) / 100;
+		balance = roundCurrency(balance);
 
 		res.status(200).json({balance});
 	},
@@ -463,7 +463,7 @@ router.get(
 			.limit(count);
 
 		topUsers.forEach(x => {
-			x.balance = Math.round(x.balance * 100) / 100;
+			x.balance = roundCurrency(x.balance);
 		});
 
 		if (req.query.csv && booleanFromData(req.query.csv)) {
