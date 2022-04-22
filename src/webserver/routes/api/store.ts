@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import escapeHTML from 'escape-html';
 import express from 'express';
 import fs from 'fs';
 import {FilterQuery} from 'mongoose';
@@ -263,7 +264,11 @@ router.post(
 			if (invalidUsers.length > 0)
 				return res
 					.status(400)
-					.send(`Invalid user IDs: ${invalidUsers.join(', ')}`);
+					.send(
+						`Invalid user IDs: ${escapeHTML(
+							invalidUsers.join(', '),
+						)}`,
+					);
 
 			if (body.classIDs.length > 0) {
 				let classroomClient = await new ClassroomClient().createClient(
@@ -282,7 +287,9 @@ router.post(
 					return res
 						.status(400)
 						.send(
-							`Invalid class IDs: ${invalidClasses.join(', ')}`,
+							`Invalid class IDs: ${escapeHTML(
+								invalidClasses.join(', '),
+							)}`,
 						);
 			}
 
