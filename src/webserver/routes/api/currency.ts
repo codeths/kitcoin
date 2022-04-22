@@ -243,6 +243,7 @@ router.post(
 			roles: ['BULK_SEND'],
 		}),
 	async (req, res) => {
+		// lgtm [js/missing-rate-limiting]
 		try {
 			if (!requestHasUser(req)) return;
 
