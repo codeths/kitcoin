@@ -89,7 +89,6 @@ app.get(
 	'/student',
 	(...req) => request(...req, {}),
 	(req, res) => {
-		// lgtm [js/missing-rate-limiting]
 		if (req.user && req.user.hasRole('STUDENT')) servePage(res);
 		else if (req.user) res.redirect('/');
 		else
@@ -104,7 +103,6 @@ app.get(
 	'/staff',
 	(...req) => request(...req, {}),
 	(req, res) => {
-		// lgtm [js/missing-rate-limiting]
 		if (req.user && req.user.hasRole('STAFF')) servePage(res);
 		else if (req.user) res.redirect('/');
 		else
@@ -119,7 +117,6 @@ app.get(
 	'/admin',
 	(...req) => request(...req, {}),
 	(req, res) => {
-		// lgtm [js/missing-rate-limiting]
 		if (req.user && req.user.hasRole('ADMIN')) servePage(res);
 		else if (req.user) res.redirect('/');
 		else
