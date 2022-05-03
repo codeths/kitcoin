@@ -474,13 +474,13 @@
 				<table class="w-full table-auto">
 					<thead class="w-full">
 						<tr class="text-left border-b border-gray-300">
-							<th class="px-2 pb-2" />
-							<th class="px-2 pb-2">Date</th>
-							<th class="px-2 pb-2">Store</th>
-							<th class="px-2 pb-2">Item</th>
-							<th class="px-2 pb-2">Quantity</th>
-							<th class="px-2 pb-2">Price</th>
-							<th class="px-2 pb-2" />
+							<th class="p-4" />
+							<th class="p-4">Date</th>
+							<th class="p-4">Store</th>
+							<th class="p-4">Item</th>
+							<th class="p-4">Quantity</th>
+							<th class="p-4">Price</th>
+							<th class="p-4" />
 						</tr>
 					</thead>
 					<tbody class="w-full divide-y divide-gray-300">
@@ -508,7 +508,7 @@
 										</div>
 									{/if}
 								</td>
-								<td>
+								<td class="p-4">
 									{new Date(
 										request.date,
 									).toLocaleDateString()}
@@ -531,7 +531,7 @@
 										maximumFractionDigits: 2,
 									})}</td
 								>
-								<td>
+								<td class="p-4">
 									{#if request.status == 'PENDING'}
 										<button
 											class="btn-circle btn-ghost text-2xl"
