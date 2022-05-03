@@ -2,7 +2,7 @@ import {FilterQuery, LeanDocument, Query} from 'mongoose';
 import {Callback, FuzzyQuery, Search} from 'mongoose-fuzzy-searching';
 
 import {IStore, IStoreRequest, ITransaction, IUser} from '../struct/index.js';
-import {Modify} from './index.js';
+import {isValidEnumValue, isValidEnumValueArray, Modify} from './index.js';
 
 export abstract class MongooseFuzzyClass {
 	public static fuzzySearch:
@@ -28,15 +28,10 @@ export enum UserRoles {
 
 export type UserRoleTypes = keyof typeof UserRoles;
 
-export function isValidRole(role: unknown): role is UserRoleTypes {
-	if (Array.isArray(role)) return role.every(isValidRole);
-	return typeof role === 'string' && Object.keys(UserRoles).includes(role);
-}
-
-export function isValidRoles(roles: unknown): roles is UserRoleTypes[] {
-	if (!Array.isArray(roles)) return false;
-	return roles.every(isValidRole);
-}
+export const isValidRole = (role: unknown): role is UserRoleTypes =>
+	isValidEnumValue(UserRoles, role);
+export const isValidRoles = (roles: unknown): roles is UserRoleTypes[] =>
+	isValidEnumValueArray(UserRoles, roles);
 
 export type IUserAPIResponse = Modify<
 	LeanDocument<IUser>,
@@ -134,6 +129,7 @@ export type IStoreRequestAPIResponse = Modify<
 			name: string;
 			id: string;
 		};
+		status: string;
 	},
 	'storeID' | 'itemID' | 'studentID'
 >;
