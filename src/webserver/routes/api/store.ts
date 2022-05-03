@@ -19,7 +19,11 @@ import {
 	Transaction,
 	User,
 } from '../../../struct/index.js';
-import {IStoreAPIResponse, requestHasUser} from '../../../types/index.js';
+import {
+	IStoreAPIResponse,
+	requestHasUser,
+	StoreRequestStatus,
+} from '../../../types/index.js';
 
 const router = express.Router();
 
@@ -1254,6 +1258,60 @@ router.post(
 				quantity,
 			}).save();
 
+			res.status(200).json(await request.toAPIResponse());
+		} catch (e) {
+			try {
+				let error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
+router.delete(
+	'/request/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			validators: {
+				params: {
+					id: Validators.objectID,
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			let request = await StoreRequest.findById(req.params.id);
+			if (!request) return res.status(404).send('Request not found');
+
+			let store = await Store.findById(request.storeID);
+			if (!store) return res.status(404).send('Store not found');
+
+			if (request.studentID == req.user._id) {
+				if (request.status === StoreRequestStatus.PENDING)
+					request.status = StoreRequestStatus.CANCELLED;
+			} else {
+				let permissions = await getStorePerms(store, req.user);
+				if (!permissions.manage)
+					return res.status(403).send('Forbidden');
+
+				if (request.status === StoreRequestStatus.PENDING)
+					request.status = StoreRequestStatus.DENIED;
+			}
+
+			await request.save();
 			res.status(200).json(await request.toAPIResponse());
 		} catch (e) {
 			try {
