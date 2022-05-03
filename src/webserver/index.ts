@@ -2,7 +2,6 @@ import cluster from 'cluster';
 import compression from 'compression';
 import mongostore from 'connect-mongodb-session';
 import cookieParser from 'cookie-parser';
-import csrf from 'csurf';
 import express from 'express';
 import session from 'express-session';
 import {cpus} from 'os';
