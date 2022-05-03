@@ -27,6 +27,12 @@ export default class StoreRequest {
 	@prop({required: true})
 	public studentID!: string;
 
+	/**
+	 * Transaction ID (Mongo ID)
+	 */
+	@prop({required: true})
+	public transactionID!: string;
+
 	@prop()
 	public quantity?: number;
 
