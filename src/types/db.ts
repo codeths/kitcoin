@@ -1,7 +1,7 @@
 import {FilterQuery, LeanDocument, Query} from 'mongoose';
 import {Callback, FuzzyQuery, Search} from 'mongoose-fuzzy-searching';
 
-import {IStore, ITransaction, IUser} from '../struct/index.js';
+import {IStore, IStoreRequest, ITransaction, IUser} from '../struct/index.js';
 import {Modify} from './index.js';
 
 export abstract class MongooseFuzzyClass {
@@ -109,4 +109,31 @@ export type IStoreAPIResponse = Modify<
 			id: string;
 		};
 	}
+>;
+
+export enum StoreRequestStatus {
+	PENDING = 0,
+	APPROVED = 1,
+	DENIED = 2,
+	CANCELLED = 3,
+}
+
+export type IStoreRequestAPIResponse = Modify<
+	LeanDocument<IStoreRequest>,
+	{
+		date: string;
+		store: {
+			name: string;
+			id: string;
+		};
+		item: {
+			name: string;
+			id: string;
+		};
+		student: {
+			name: string;
+			id: string;
+		};
+	},
+	'storeID' | 'itemID' | 'studentID'
 >;
