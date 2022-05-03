@@ -378,6 +378,7 @@
 	}
 
 	let transactionToggle;
+	let requestToggle;
 	let selectedItem;
 
 	let transactionFormData = {
@@ -556,6 +557,82 @@
 		load(false);
 	}
 
+	let requestFormData = {
+		isValid: false,
+		values: {},
+		errors: {},
+	};
+	let requestForm = requestFormData;
+	let requestItem = null;
+	let requestValidate = {
+		quantity: e => {
+			let v = e.value;
+			if (!v) return requestChecks();
+			if (!/^\d*(?:\.\d+)?$/.test(v.trim()))
+				return 'Quanity must be a number';
+			let num = parseFloat(v.trim());
+			if (isNaN(num)) return 'Quanity must be an number';
+			if (num % 1 != 0) return 'Quanity must be a whole number';
+			if (num <= 0) return 'Quanity must be greater than 0';
+
+			return requestChecks(num);
+		},
+	};
+
+	function requestChecks(quantity) {
+		if (!requestItem) return null;
+		if (!quantity) quantity = 1;
+
+		if (requestItem.price * quantity > balance)
+			return 'You do not have enough money.';
+		if (
+			typeof requestItem.quantity == 'number' &&
+			requestItem.quantity < quantity
+		)
+			return 'This item does not have enough stock.';
+
+		return null;
+	}
+
+	async function createRequest() {
+		submitStatus = 'LOADING';
+
+		let res = await fetch(`/api/store/request`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				store: storeID,
+				item: requestItem._id,
+				quantity: parseFloat(requestFormData.values.quantity),
+			}),
+		}).catch(() => null);
+
+		submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
+		clearTimeout(resetTimeout);
+		resetTimeout = setTimeout(() => {
+			submitStatus = null;
+		}, 5000);
+		if (submitStatus == 'SUCCESS') {
+			requestToggle = false;
+			toastContainer.toast(`Requested ${requestItem.name}.`, 'success');
+			requestItem = null;
+		} else {
+			let text = res && (await res.text());
+			if (text) toastContainer.toast(text, 'error');
+		}
+
+		load(false);
+	}
+
+	function requestPrompt(item) {
+		if (item.quantity == 0) return;
+		requestForm.reset();
+		requestItem = item;
+		requestToggle = true;
+	}
+
 	// Misc
 
 	window.addEventListener('keydown', e => {
@@ -630,7 +707,9 @@
 			>
 				{filterCollapseShown ? 'Hide' : 'Show'} filters
 			</label>
-			<div class="flex space-x-4 collapse-content rounded-lg !bg-base-100">
+			<div
+				class="flex space-x-4 collapse-content rounded-lg !bg-base-100"
+			>
 				<div>
 					<Input
 						type="select"
@@ -757,6 +836,17 @@
 								/>
 							{/if}
 						{/key}
+						{#if !store.canManage && store.requests && userInfo && userInfo.roles.includes('STUDENT')}
+							<div class="flex flex-row justify-end mt-2">
+								<button
+									class="btn {item.quantity == 0
+										? 'btn-disabled'
+										: 'btn-primary'} px-12"
+									on:click={() => requestPrompt(item)}
+									>Buy</button
+								>
+							</div>
+						{/if}
 					</div>
 				{/each}
 			</div>
@@ -1067,6 +1157,63 @@
 							Error
 						{:else}
 							Sell
+						{/if}
+					</button>
+				</div>
+			</Form>{/key}
+	</div>
+</div>
+
+<input
+	type="checkbox"
+	id="requestmodal"
+	class="modal-toggle"
+	bind:checked={requestToggle}
+/>
+<div class="modal">
+	<div class="modal-box">
+		<h2 class="inline-flex text-2xl text-medium">
+			Request to buy {requestItem?.name}
+		</h2>
+		{#key requestToggle}
+			<Form
+				on:submit={createRequest}
+				on:update={() =>
+					Object.keys(requestFormData).forEach(
+						key => (requestFormData[key] = requestForm[key]),
+					)}
+				on:update={() => checkCanAfford() ?? calculatePrice()}
+				bind:this={requestForm}
+				validators={requestValidate}
+			>
+				<Input
+					name="quantity"
+					label="Quantity (optional)"
+					placeholder="1"
+					bind:value={requestFormData.values.quantity}
+					bind:error={requestFormData.errors.quantity}
+					on:validate={requestForm.validate}
+				/>
+				<div class="flex items-center space-x-2 justify-end mt-4">
+					<label for="requestmodal" class="btn btn-outline px-12">
+						Cancel
+					</label>
+					<button
+						type="submit"
+						disabled={submitStatus == 'LOADING' ||
+							!requestFormData.isValid}
+						class="btn {submitStatus == 'ERROR'
+							? 'btn-error'
+							: 'btn-primary'} px-12 disabled:border-0"
+					>
+						{#if submitStatus == 'LOADING'}
+							<div class="px-2">
+								<Loading height="2rem" />
+							</div>
+						{:else if submitStatus == 'ERROR'}
+							Error
+						{:else}
+							Request item
 						{/if}
 					</button>
 				</div>
