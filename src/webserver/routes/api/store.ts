@@ -1278,6 +1278,97 @@ router.post(
 	},
 );
 
+router.post(
+	'/request/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['STAFF'],
+			validators: {
+				params: {
+					id: Validators.objectID,
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			let request = await StoreRequest.findById(req.params.id);
+			if (!request) return res.status(404).send('Request not found');
+
+			let store = await Store.findById(request.storeID);
+			if (!store) return res.status(404).send('Store not found');
+
+			let permissions = await getStorePerms(store, req.user);
+			if (!permissions.manage) return res.status(403).send('Forbidden');
+
+			if (request.status !== StoreRequestStatus.PENDING)
+				return res.status(400).send('Request is not pending');
+
+			let item = await StoreItem.findById(request.itemID);
+			if (!item) return res.status(404).send('Item not found');
+
+			let student = await User.findById(request.studentID);
+			if (!student) return res.status(404).send('Student not found');
+
+			let price = item.price;
+
+			let quantity = request.quantity ?? 1;
+			price *= quantity;
+
+			if (student.balance < price)
+				return res.status(400).send('Student does enough money');
+
+			await new Transaction({
+				amount: price * -1,
+				from: {
+					text: `Store purchase in ${store.name}`,
+				},
+				to: {
+					id: student._id,
+				},
+				store: {
+					id: store.id,
+					item: item.id,
+					quantity,
+					manager: req.user.id,
+				},
+				reason: `${item.name}${quantity > 1 ? ` x${quantity}` : ''}`,
+			}).save();
+
+			student.balance -= price;
+			await student.save();
+
+			if (typeof item.quantity === 'number') {
+				item.quantity -= quantity;
+				if (item.quantity < 0) item.quantity = 0;
+			}
+
+			await item.save();
+
+			request.status = StoreRequestStatus.APPROVED;
+			await request.save();
+			res.status(200).json(await request.toAPIResponse());
+		} catch (e) {
+			try {
+				let error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
 router.delete(
 	'/request/:id',
 	async (req, res, next) =>
