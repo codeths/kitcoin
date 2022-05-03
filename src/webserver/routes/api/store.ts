@@ -694,7 +694,8 @@ router.post(
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(req.body.item);
-			if (!item) return res.status(400).send('Item not found');
+			if (!item || item.storeID !== store.id)
+				return res.status(400).send('Item not found');
 			let price = item.price;
 
 			let user = await User.findById(req.body.user);
@@ -819,7 +820,8 @@ router.get(
 		if (!permissions.view) return res.status(403).send('Forbidden');
 
 		let item = await StoreItem.findById(id);
-		if (!item) return res.status(404).send('Item not found');
+		if (!item || item.storeID !== store.id)
+			return res.status(400).send('Item not found');
 
 		res.status(200).json(
 			item.toObject({
@@ -852,7 +854,8 @@ router.get(
 		if (!permissions.view) return res.status(403).send('Forbidden');
 
 		let item = await StoreItem.findById(id);
-		if (!item) return res.status(404).send('Item not found');
+		if (!item || item.storeID !== store.id)
+			return res.status(400).send('Item not found');
 
 		let image;
 		try {
@@ -903,7 +906,8 @@ router.patch(
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(id);
-			if (!item) return res.status(404).send('Item not found');
+			if (!item || item.storeID !== store.id)
+				return res.status(400).send('Item not found');
 
 			image = await sharp(image)
 				.resize({width: 512, height: 512, fit: 'inside'})
@@ -987,7 +991,8 @@ router.patch(
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(id);
-			if (!item) return res.status(404).send('Item not found');
+			if (!item || item.storeID !== store.id)
+				return res.status(400).send('Item not found');
 
 			Object.assign(item, {name, description, price, quantity, pinned});
 
@@ -1043,7 +1048,8 @@ router.delete(
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(id);
-			if (!item) return res.status(404).send('Item not found');
+			if (!item || item.storeID !== store.id)
+				return res.status(400).send('Item not found');
 
 			await item.delete();
 
@@ -1098,7 +1104,8 @@ router.delete(
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(id);
-			if (!item) return res.status(404).send('Item not found');
+			if (!item || item.storeID !== store.id)
+				return res.status(400).send('Item not found');
 
 			try {
 				fs.rmSync(
@@ -1230,7 +1237,8 @@ router.post(
 			if (!permissions.view) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(req.body.item);
-			if (!item) return res.status(400).send('Item not found');
+			if (!item || item.storeID !== store.id)
+				return res.status(400).send('Item not found');
 			let price = item.price;
 
 			let quantity: number = req.body.quantity ?? 1;
