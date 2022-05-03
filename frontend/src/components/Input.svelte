@@ -38,7 +38,7 @@
 </script>
 
 {#if !hidelabel}
-	<label class="label" for="">
+	<label class="label px-0" for="">
 		<span class="label-text"> {label} </span>
 	</label>
 {/if}
