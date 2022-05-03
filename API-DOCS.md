@@ -170,6 +170,7 @@ Create a store. Requires staff permissions.
 `public` (body): Whether the store is public or not. Public stores require admin permissions.  
 `pinned` (body): Whether the store is pinned or not. Pinned stores require admin permissions. The store must be public to be pinned.  
 `allowDeductions` (body): Whether deductions are allowed when selling items. Changing this setting requires admin permissions.  
+`requests` (body): Whether purchase requests are allowed in this store.  
 `managers` (body): An array of user IDs who can manage this store  
 `users` (body): An array of user IDs who can access this store
 
@@ -218,6 +219,7 @@ Update a store. Requires permission to manage this store.
 `public` (body): Whether the store is public or not. Changing this setting requires admin permissions.  
 `pinned` (body): Whether the store is pinned or not. Changing this setting require admin permissions. The store must be public to be pinned.  
 `allowDeductions` (body): Whether deductions are allowed when selling items. Changing this setting requires admin permissions.  
+`requests` (body): Whether purchase requests are allowed in this store.  
 `managers` (body): An array of user IDs who can manage this store  
 `users` (body): An array of user IDs who can access this store  
 `owner` (body): [Optional] The user ID of the new owner of the store. Changing this setting requires admin permissions or you to be the existing owner.

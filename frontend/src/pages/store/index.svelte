@@ -84,6 +84,10 @@
 			let v = e.value;
 			return null;
 		},
+		requests: e => {
+			let v = e.value;
+			return null;
+		},
 		classes: e => {
 			let v = e.value?.value;
 			return null;
@@ -136,6 +140,7 @@
 			manageForm.values.classes = extraClasses;
 			manageForm.values.public = modalStore.public;
 			manageForm.values.pinned = modalStore.pinned;
+			manageForm.values.requests = modalStore.requests;
 			manageForm.values.allowDeductions = modalStore.allowDeductions;
 			manageForm.values.managers = modalStore.managers.map(x => ({
 				text: x.name,
@@ -226,6 +231,7 @@
 					allowDeductions:
 						manageFormData.values.allowDeductions ??
 						(modalStore ? modalStore.allowDeductions : false),
+					requests: manageFormData.values.requests,
 					managers: (manageFormData.values.managers || []).map(
 						x => x.value,
 					),
@@ -544,6 +550,14 @@
 						on:validate={manageForm.validate}
 					/>
 				{/if}
+				<Input
+					name="requests"
+					label="Allow students to request to buy items"
+					type="switch"
+					bind:value={manageFormData.values.requests}
+					bind:error={manageFormData.errors.requests}
+					on:validate={manageForm.validate}
+				/>
 
 				<div class="divider" />
 				<div class="flex items-center space-x-2 justify-end">

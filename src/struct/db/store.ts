@@ -47,6 +47,12 @@ export default class Store {
 	public pinned: boolean = false;
 
 	/**
+	 * Allow purchase requests
+	 */
+	@prop({required: true, default: true})
+	public requests: boolean = true;
+
+	/**
 	 * Allow deductions from price when selling item
 	 */
 	@prop({required: true, default: false})
