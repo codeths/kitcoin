@@ -12,6 +12,7 @@ import {request, Validators} from '../../../helpers/request.js';
 import {
 	DBError,
 	IStore,
+	IStoreRequest,
 	IUser,
 	Store,
 	StoreItem,
@@ -173,6 +174,29 @@ async function getStores(
 	});
 
 	return data;
+}
+
+async function handleDeletedRequestData(request: IStoreRequest) {
+	let item = await StoreItem.findById(request.itemID);
+
+	if (item && typeof item.quantity === 'number') {
+		item.quantity += request.quantity ?? 1;
+		await item.save();
+	}
+
+	let transaction = await Transaction.findById({_id: request.transactionID});
+
+	if (transaction) {
+		let user = await User.findById(request.studentID);
+		if (user) {
+			user.balance += transaction.amount;
+			await user.save();
+		}
+
+		await transaction.delete();
+	}
+
+	await request.delete();
 }
 
 router.get(
@@ -390,7 +414,16 @@ router.get(
 			});
 
 			let data = (
-				await Promise.all(requests.map(r => r.toAPIResponse()))
+				await Promise.all(
+					requests.map(async r => {
+						let data = await r.toAPIResponse();
+						if (!data) {
+							handleDeletedRequestData(r);
+							return null;
+						}
+						return data;
+					}),
+				)
 			).filter(x => x);
 
 			return res.status(200).json(data);
@@ -443,7 +476,16 @@ router.get(
 			requests.sort((a, b) => b.date.getTime() - a.date.getTime());
 
 			let data = (
-				await Promise.all(requests.map(r => r.toAPIResponse()))
+				await Promise.all(
+					requests.map(async r => {
+						let data = await r.toAPIResponse();
+						if (!data) {
+							handleDeletedRequestData(r);
+							return null;
+						}
+						return data;
+					}),
+				)
 			).filter(x => x);
 
 			return res.status(200).json(data);
@@ -1428,7 +1470,10 @@ router.post(
 			if (!request) return res.status(404).send('Request not found');
 
 			let store = await Store.findById(request.storeID);
-			if (!store) return res.status(404).send('Store not found');
+			if (!store) {
+				handleDeletedRequestData(request);
+				return res.status(404).send('Request not found');
+			}
 
 			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
@@ -1437,14 +1482,22 @@ router.post(
 				return res.status(400).send('Request is not pending');
 
 			let item = await StoreItem.findById(request.itemID);
-			if (!item) return res.status(404).send('Item not found');
+			if (!item) {
+				handleDeletedRequestData(request);
+				return res.status(404).send('Request not found');
+			}
 
 			let student = await User.findById(request.studentID);
-			if (!student) return res.status(404).send('Student not found');
+			if (!student) {
+				handleDeletedRequestData(request);
+				return res.status(404).send('Request not found');
+			}
 
 			let transaction = await Transaction.findById(request.transactionID);
-			if (!transaction)
-				return res.status(404).send('Transaction not found');
+			if (!transaction) {
+				handleDeletedRequestData(request);
+				return res.status(404).send('Request not found');
+			}
 			transaction.from.text = `Store purchase in ${store.name}`;
 			await transaction.save();
 
@@ -1489,10 +1542,16 @@ router.delete(
 			if (!request) return res.status(404).send('Request not found');
 
 			let store = await Store.findById(request.storeID);
-			if (!store) return res.status(404).send('Store not found');
+			if (!store) {
+				handleDeletedRequestData(request);
+				return res.status(404).send('Request not found');
+			}
 
 			let item = await StoreItem.findById(request.itemID);
-			if (!item) return res.status(404).send('Item not found');
+			if (!item) {
+				handleDeletedRequestData(request);
+				return res.status(404).send('Request not found');
+			}
 			let price = item.price;
 
 			let quantity: number = request.quantity ?? 1;
