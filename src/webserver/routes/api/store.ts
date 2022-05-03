@@ -15,6 +15,7 @@ import {
 	IUser,
 	Store,
 	StoreItem,
+	StoreRequest,
 	Transaction,
 	User,
 } from '../../../struct/index.js';
@@ -1183,6 +1184,69 @@ router.post(
 					versionKey: false,
 				}),
 			);
+		} catch (e) {
+			try {
+				let error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
+router.post(
+	'/request',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['STUDENT'],
+			validators: {
+				body: {
+					store: Validators.objectID,
+					item: Validators.objectID,
+					quantity: Validators.optional(
+						Validators.and(Validators.integer, Validators.gt(0)),
+					),
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			let store = await Store.findById(req.body.store);
+			if (!store) return res.status(404).send('Store not found');
+
+			let permissions = await getStorePerms(store, req.user);
+			if (!permissions.view) return res.status(403).send('Forbidden');
+
+			let item = await StoreItem.findById(req.body.item);
+			if (!item) return res.status(400).send('Item not found');
+			let price = item.price;
+
+			let quantity: number = req.body.quantity ?? 1;
+			price *= quantity;
+
+			if (req.user.balance < price)
+				return res.status(400).send('You do not have enough money');
+
+			let request = await new StoreRequest({
+				storeID: store._id,
+				itemID: item._id,
+				studentID: req.user._id,
+				quantity,
+			}).save();
+
+			res.status(200).json(await request.toAPIResponse());
 		} catch (e) {
 			try {
 				let error = await DBError.generate(
