@@ -69,7 +69,6 @@ app.use(
 		},
 	}),
 );
-app.use(csrf());
 
 app.use('/auth', auth);
 app.use('/api', api);
