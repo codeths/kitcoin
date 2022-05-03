@@ -3,6 +3,7 @@ const {getModelForClass} = typegoose;
 import DBErrorClass, {ErrorDetail} from './error.js';
 import StoreClass from './store.js';
 import StoreItemClass from './storeitem.js';
+import StoreRequestClass from './storerequest.js';
 import TransactionClass from './transaction.js';
 import UserClass from './user.js';
 
@@ -17,6 +18,9 @@ export type IStore = DocumentType<StoreClass>;
 
 export const StoreItem = getModelForClass(StoreItemClass);
 export type IStoreItem = DocumentType<StoreItemClass>;
+
+export const StoreRequest = getModelForClass(StoreRequestClass);
+export type IStoreRequest = DocumentType<StoreRequestClass>;
 
 export const DBError = getModelForClass(DBErrorClass, {
 	options: {
