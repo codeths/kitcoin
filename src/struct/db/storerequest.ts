@@ -77,6 +77,7 @@ export default class StoreRequest {
 				id: student.id,
 				name: student.name,
 			},
+			status: StoreRequestStatus[this.status],
 		};
 
 		return res;
