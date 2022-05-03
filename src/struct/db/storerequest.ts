@@ -7,6 +7,7 @@ import {Store, StoreItem, User} from './index.js';
 const {index, prop} = typegoose;
 
 @index({storeID: 1})
+@index({studentID: 1})
 export default class StoreRequest {
 	/**
 	 * Which store the request is in (Mongo ID)
