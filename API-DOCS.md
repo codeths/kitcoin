@@ -376,6 +376,68 @@ Create a store item
 
 `IStoreItem` (see [db schema](src/types/db.ts))
 
+## GET `/store/requests`
+
+Get a list of your requests
+
+### Request
+
+None
+
+### Response
+
+`IStoreRequestAPIResponse[]` (see [db schema](src/types/db.ts))
+
+## GET `/store/requests/:id`
+
+Get a list of pending requests for a store. You must be a manager of the store.
+
+### Request
+
+`:id` (path): Store ID
+
+### Resposne
+
+`IStoreRequestAPIResponse[]` (see [db schema](src/types/db.ts))
+
+## POST `/store/request`
+
+Create store request
+
+### Request
+
+`store` (body): Store ID  
+`item` (body): Item ID  
+`quantity` (body): [Optional] Quantity to purchase
+
+### Response
+
+`IStoreRequestAPIResponse` (see [db schema](src/types/db.ts))
+
+## POST `/store/request/:id`
+
+Approve a request. You must be a manager of the store.
+
+### Request
+
+`:id` (path): Request ID
+
+### Response
+
+`IStoreRequestAPIResponse` (see [db schema](src/types/db.ts))
+
+## DELETE `/store/request/:id`
+
+Deny/Cancel a request. You must be a manager of the store or the person who created the request.
+
+### Request
+
+`:id` (path): Request ID
+
+### Response
+
+`IStoreRequestAPIResponse` (see [db schema](src/types/db.ts))
+
 # Users
 
 ## GET `/users/search`
