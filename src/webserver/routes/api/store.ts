@@ -189,7 +189,7 @@ async function handleDeletedRequestData(request: IStoreRequest) {
 	if (transaction) {
 		let user = await User.findById(request.studentID);
 		if (user) {
-			user.balance += transaction.amount;
+			user.balance += request.price;
 			await user.save();
 		}
 
@@ -1426,6 +1426,7 @@ router.post(
 				studentID: req.user._id,
 				transactionID: transaction._id,
 				quantity,
+				price,
 			}).save();
 
 			await item.save();
@@ -1552,10 +1553,6 @@ router.delete(
 				handleDeletedRequestData(request);
 				return res.status(404).send('Request not found');
 			}
-			let price = item.price;
-
-			let quantity: number = request.quantity ?? 1;
-			price *= quantity;
 
 			if (request.status !== StoreRequestStatus.PENDING)
 				return res.status(400).send('Request is not pending');
@@ -1570,11 +1567,11 @@ router.delete(
 				request.status = StoreRequestStatus.DENIED;
 			}
 
-			req.user.balance += price;
+			req.user.balance += request.price;
 			await req.user.save();
 
 			if (typeof item.quantity === 'number') {
-				item.quantity += quantity;
+				item.quantity += request.quantity ?? 1;
 			}
 
 			await item.save();

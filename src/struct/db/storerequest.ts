@@ -36,6 +36,9 @@ export default class StoreRequest {
 	@prop()
 	public quantity?: number;
 
+	@prop({required: true})
+	public price!: number;
+
 	@prop({
 		required: true,
 		type: Number,
