@@ -1390,16 +1390,17 @@ router.delete(
 			let store = await Store.findById(request.storeID);
 			if (!store) return res.status(404).send('Store not found');
 
+			if (request.status !== StoreRequestStatus.PENDING)
+				return res.status(400).send('Request is not pending');
+
 			if (request.studentID == req.user._id) {
-				if (request.status === StoreRequestStatus.PENDING)
-					request.status = StoreRequestStatus.CANCELLED;
+				request.status = StoreRequestStatus.CANCELLED;
 			} else {
 				let permissions = await getStorePerms(store, req.user);
 				if (!permissions.manage)
 					return res.status(403).send('Forbidden');
 
-				if (request.status === StoreRequestStatus.PENDING)
-					request.status = StoreRequestStatus.DENIED;
+				request.status = StoreRequestStatus.DENIED;
 			}
 
 			await request.save();
