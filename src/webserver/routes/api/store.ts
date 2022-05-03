@@ -369,6 +369,103 @@ router.get(
 );
 
 router.get(
+	'/requests',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['STUDENT'],
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			let requests = await StoreRequest.find({
+				userID: req.user.id,
+			});
+
+			requests.sort((a, b) => {
+				if (a.status !== b.status) return a.status - b.status;
+				return b.date.getTime() - a.date.getTime();
+			});
+
+			let data = (
+				await Promise.all(requests.map(r => r.toAPIResponse()))
+			).filter(x => x);
+
+			return res.status(200).json(data);
+		} catch (e) {
+			try {
+				let error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
+router.get(
+	'/requests/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['STAFF'],
+			validators: {
+				params: {
+					id: Validators.objectID,
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			let store = await Store.findById(req.params.id);
+			if (!store) return res.status(404).send('Store not found');
+
+			let permissions = await getStorePerms(store, req.user);
+			if (!permissions.manage) return res.status(403).send('Forbidden');
+
+			let requests = await StoreRequest.find({
+				storeID: store.id,
+				status: StoreRequestStatus.PENDING,
+			});
+
+			requests.sort((a, b) => b.date.getTime() - a.date.getTime());
+
+			let data = (
+				await Promise.all(requests.map(r => r.toAPIResponse()))
+			).filter(x => x);
+
+			return res.status(200).json(data);
+		} catch (e) {
+			try {
+				let error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
+router.get(
 	'/:id',
 	async (req, res, next) =>
 		request(req, res, next, {
