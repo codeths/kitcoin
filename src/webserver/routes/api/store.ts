@@ -1335,6 +1335,8 @@ router.post(
 
 			let store = await Store.findById(req.body.store);
 			if (!store) return res.status(404).send('Store not found');
+			if (!store.requests)
+				return res.status(400).send('Store does not accept requests');
 
 			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.view) return res.status(403).send('Forbidden');
