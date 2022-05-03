@@ -1348,12 +1348,41 @@ router.post(
 			if (req.user.balance < price)
 				return res.status(400).send('You do not have enough money');
 
+			if (typeof item.quantity === 'number') {
+				if (item.quantity - quantity < 0)
+					return res.status(400).send('Not enough stock');
+				item.quantity -= quantity;
+			}
+
+			let transaction = await new Transaction({
+				amount: price * -1,
+				from: {
+					text: `[PENDING] Store purchase request in ${store.name}`,
+				},
+				to: {
+					id: req.user._id,
+				},
+				store: {
+					id: store.id,
+					item: item.id,
+					quantity,
+					manager: req.user.id,
+				},
+				reason: `${item.name}${quantity > 1 ? ` x${quantity}` : ''}`,
+			}).save();
+
+			req.user.balance -= price;
+			await req.user.save();
+
 			let request = await new StoreRequest({
 				storeID: store._id,
 				itemID: item._id,
 				studentID: req.user._id,
+				transactionID: transaction._id,
 				quantity,
 			}).save();
+
+			await item.save();
 
 			res.status(200).json(await request.toAPIResponse());
 		} catch (e) {
@@ -1409,40 +1438,11 @@ router.post(
 			let student = await User.findById(request.studentID);
 			if (!student) return res.status(404).send('Student not found');
 
-			let price = item.price;
-
-			let quantity = request.quantity ?? 1;
-			price *= quantity;
-
-			if (student.balance < price)
-				return res.status(400).send('Student does enough money');
-
-			await new Transaction({
-				amount: price * -1,
-				from: {
-					text: `Store purchase in ${store.name}`,
-				},
-				to: {
-					id: student._id,
-				},
-				store: {
-					id: store.id,
-					item: item.id,
-					quantity,
-					manager: req.user.id,
-				},
-				reason: `${item.name}${quantity > 1 ? ` x${quantity}` : ''}`,
-			}).save();
-
-			student.balance -= price;
-			await student.save();
-
-			if (typeof item.quantity === 'number') {
-				item.quantity -= quantity;
-				if (item.quantity < 0) item.quantity = 0;
-			}
-
-			await item.save();
+			let transaction = await Transaction.findById(request.transactionID);
+			if (!transaction)
+				return res.status(404).send('Transaction not found');
+			transaction.from.text = `Store purchase in ${store.name}`;
+			await transaction.save();
 
 			request.status = StoreRequestStatus.APPROVED;
 			await request.save();
@@ -1487,6 +1487,13 @@ router.delete(
 			let store = await Store.findById(request.storeID);
 			if (!store) return res.status(404).send('Store not found');
 
+			let item = await StoreItem.findById(request.itemID);
+			if (!item) return res.status(404).send('Item not found');
+			let price = item.price;
+
+			let quantity: number = request.quantity ?? 1;
+			price *= quantity;
+
 			if (request.status !== StoreRequestStatus.PENDING)
 				return res.status(400).send('Request is not pending');
 
@@ -1499,6 +1506,17 @@ router.delete(
 
 				request.status = StoreRequestStatus.DENIED;
 			}
+
+			req.user.balance += price;
+			await req.user.save();
+
+			if (typeof item.quantity === 'number') {
+				item.quantity += quantity;
+			}
+
+			await item.save();
+
+			await Transaction.deleteOne({_id: request.transactionID});
 
 			await request.save();
 			res.status(200).json(await request.toAPIResponse());
