@@ -295,6 +295,32 @@
 			return;
 		}
 	}
+
+	let requests = null;
+	async function getRequests() {
+		let res = await fetch(`/api/store/requests`).catch(() => null);
+
+		if (!res) return;
+
+		requests = await res.json();
+	}
+	getRequests();
+
+	async function cancelRequest(id) {
+		if (!confirm('Are you sure you want to cancel this request?')) return;
+
+		let res = await fetch(`/api/store/request/${id}`, {
+			method: 'DELETE',
+		}).catch(() => null);
+
+		if (res.ok) {
+			toastContainer.toast('Request cancelled.', 'success');
+		} else {
+			toastContainer.toast('Error cancelling request.', 'error');
+		}
+
+		getRequests();
+	}
 </script>
 
 <!-- Content -->
@@ -431,6 +457,103 @@
 	<div class="px-12 my-6 flex flex-col w-screen">
 		<h1 class="text-3xl font-medium mb-2">New Arrivals</h1>
 		<NewArrivals />
+	</div>
+
+	<div class="px-12 my-6 flex flex-col w-screen">
+		<h1 class="text-3xl font-medium mb-2">Purchase requests</h1>
+		<div
+			class="flex bg-base-100 shadow-md rounded-lg py-10 min-h-40 overflow-x-auto"
+		>
+			{#if !requests}
+				<span
+					class="text-center text-3xl flex justify-center items-center w-full h-full"
+				>
+					Loading...
+				</span>
+			{:else if requests.length > 0}
+				<table class="w-full table-auto">
+					<thead class="w-full">
+						<tr class="text-left border-b border-gray-300">
+							<th class="px-2 pb-2" />
+							<th class="px-2 pb-2">Date</th>
+							<th class="px-2 pb-2">Store</th>
+							<th class="px-2 pb-2">Item</th>
+							<th class="px-2 pb-2">Quantity</th>
+							<th class="px-2 pb-2">Price</th>
+							<th class="px-2 pb-2" />
+						</tr>
+					</thead>
+					<tbody class="w-full divide-y divide-gray-300">
+						{#each requests as request}
+							<tr>
+								<td class="p-4">
+									{#if request.status == 'PENDING'}
+										<div class="badge badge-warning">
+											Pending
+										</div>
+									{/if}
+									{#if request.status == 'APPROVED'}
+										<div class="badge badge-success">
+											Approved
+										</div>
+									{/if}
+									{#if request.status == 'DENIED'}
+										<div class="badge badge-error">
+											Denied
+										</div>
+									{/if}
+									{#if request.status == 'CANCELLED'}
+										<div class="badge badge-error">
+											Cancelled
+										</div>
+									{/if}
+								</td>
+								<td>
+									{new Date(
+										request.date,
+									).toLocaleDateString()}
+									{new Date(request.date).toLocaleTimeString(
+										[],
+										{
+											hour: 'numeric',
+											minute: '2-digit',
+										},
+									)}</td
+								>
+								<td class="p-4">{request.store.name}</td>
+								<td class="p-4">{request.item.name}</td>
+								<td class="p-4">{request.quantity}</td>
+								<td class="p-4"
+									><span
+										class="icon-currency mx-1"
+									/>{request.price.toLocaleString([], {
+										minimumFractionDigits: 2,
+										maximumFractionDigits: 2,
+									})}</td
+								>
+								<td>
+									{#if request.status == 'PENDING'}
+										<button
+											class="btn-circle btn-ghost text-2xl"
+											on:click={() =>
+												cancelRequest(request._id)}
+										>
+											<span class="icon-delete" />
+										</button>
+									{/if}
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			{:else}
+				<span
+					class="text-center text-3xl flex justify-center items-center w-full h-full"
+				>
+					No purchase requests.
+				</span>
+			{/if}
+		</div>
 	</div>
 {/if}
 
