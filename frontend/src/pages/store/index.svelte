@@ -12,7 +12,7 @@
 		RequestRow,
 	} from '../../components';
 	let toastContainer;
-	import {getStores} from '../../utils/store';
+	import {getStores, getRequests} from '../../utils/store';
 	import {getClasses} from '../../utils/api';
 
 	metatags.title = 'Stores - Kitcoin';
@@ -35,6 +35,7 @@
 	let user = undefined;
 
 	let stores = undefined;
+	let storeRequests = {};
 	async function load(useCache) {
 		stores = undefined;
 		await getStores(
@@ -48,6 +49,12 @@
 			.catch(e => {
 				stores = null;
 			});
+		stores.forEach(async store => {
+			if (store.canManage) {
+				let requests = await getRequests(store._id);
+				if (requests) storeRequests[store._id] = requests.length;
+			}
+		});
 		return;
 	}
 	load();
@@ -302,7 +309,7 @@
 	let completedRequests = null;
 	let requestCollapse = false;
 
-	async function getRequests() {
+	async function loadRequests() {
 		let res = await fetch(`/api/store/requests`).catch(() => null);
 
 		if (!res) return;
@@ -314,7 +321,7 @@
 		pendingRequests = requests.filter(x => x.status == 'PENDING');
 		completedRequests = requests.filter(x => x.status !== 'PENDING');
 	}
-	getRequests();
+	loadRequests();
 </script>
 
 <!-- Content -->
@@ -390,13 +397,27 @@
 						class="group p-4 bg-base-100 hover:bg-primary hover:text-primary-content hover:scale-110 shadow rounded-lg flex flex-col transition duration-300"
 					>
 						<div class="flex flex-row justify-between items-center">
-							<p class="inline-flex text-2xl font-semibold">
+							<p
+								class="inline-flex text-2xl font-semibold items-center"
+							>
 								{#if store.pinned}
 									<span
 										class="icon-pin mr-2 text-secondary group-hover:text-primary-content transition duration-300"
 									/>
 								{/if}
 								{store.name}
+								{#if storeRequests[store._id]}
+									<div
+										class="tooltip"
+										data-tip="Pending purchase requests"
+									>
+										<div class="badge badge-secondary ml-2">
+											{storeRequests[
+												store._id
+											].toLocaleString()}
+										</div>
+									</div>
+								{/if}
 							</p>
 							{#if store.canManage}
 								<button
@@ -484,7 +505,7 @@
 									{request}
 									{toastContainer}
 									staff={false}
-									on:reload={getRequests}
+									on:reload={loadRequests}
 								/>
 							{/each}
 						{:else}
@@ -526,7 +547,7 @@
 										{request}
 										{toastContainer}
 										staff={false}
-										on:reload={getRequests}
+										on:reload={loadRequests}
 									/>
 								{/each}
 							</div>

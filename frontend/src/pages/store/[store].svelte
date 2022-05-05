@@ -714,8 +714,11 @@
 		{/if}
 		{#if requests && requests.length > 0}
 			<div class="mb-4 flex flex-col">
-				<h1 class="text-3xl font-medium mb-2">
+				<h1 class="text-3xl font-medium mb-2 inline-flex items-center">
 					Pending purchase requests
+					<div class="badge badge-secondary ml-2">
+						{requests.length.toLocaleString()}
+					</div>
 				</h1>
 				<div
 					class="flex bg-base-100 shadow-md rounded-lg min-h-40 overflow-x-auto"
