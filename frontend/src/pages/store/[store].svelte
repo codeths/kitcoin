@@ -627,7 +627,8 @@
 	}
 
 	function requestPrompt(item) {
-		if (item.quantity == 0) return;
+		if (item.quantity == 0 || (balance !== null && balance < item.price))
+			return;
 		requestForm.reset();
 		requestItem = item;
 		requestToggle = true;
@@ -839,7 +840,8 @@
 						{#if !store.canManage && store.requests && userInfo && userInfo.roles.includes('STUDENT')}
 							<div class="flex flex-row justify-end mt-2">
 								<button
-									class="btn {item.quantity == 0
+									class="btn {item.quantity == 0 ||
+									(balance !== null && balance < item.price)
 										? 'btn-disabled'
 										: 'btn-primary'} px-12"
 									on:click={() => requestPrompt(item)}
