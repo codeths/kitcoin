@@ -41,7 +41,10 @@
 				getStore()
 					.then(x => {
 						store = x;
-						if (store.canManage) getStudents();
+						if (store.canManage) {
+							getStudents();
+							loadRequests();
+						}
 					})
 					.catch(e => {
 						store = null;
@@ -99,7 +102,6 @@
 			throw 'Could not fetch store';
 		});
 		store = json;
-		if (store.canManage) loadRequests();
 		return json;
 	}
 
