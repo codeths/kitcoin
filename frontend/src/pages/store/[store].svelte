@@ -642,7 +642,12 @@
 	let requests = null;
 	async function loadRequests(useCache) {
 		requests = await getRequests(storeID, useCache);
-		requests = requests.filter(x => x.status == 'PENDING');
+		requests = requests
+			.filter(x => x.status == 'PENDING')
+			.sort(
+				(a, b) =>
+					new Date(a.date).getTime() - new Date(b.date).getTime(),
+			);
 	}
 
 	// Misc

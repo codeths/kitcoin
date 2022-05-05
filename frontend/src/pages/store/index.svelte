@@ -308,6 +308,9 @@
 		if (!res) return;
 
 		requests = await res.json();
+		requests.sort(
+			(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+		);
 		pendingRequests = requests.filter(x => x.status == 'PENDING');
 		completedRequests = requests.filter(x => x.status !== 'PENDING');
 	}

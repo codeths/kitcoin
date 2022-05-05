@@ -408,11 +408,6 @@ router.get(
 				userID: req.user.id,
 			});
 
-			requests.sort((a, b) => {
-				if (a.status !== b.status) return a.status - b.status;
-				return b.date.getTime() - a.date.getTime();
-			});
-
 			let data = (
 				await Promise.all(
 					requests.map(async r => {
@@ -472,8 +467,6 @@ router.get(
 				storeID: store.id,
 				status: StoreRequestStatus.PENDING,
 			});
-
-			requests.sort((a, b) => b.date.getTime() - a.date.getTime());
 
 			let data = (
 				await Promise.all(
