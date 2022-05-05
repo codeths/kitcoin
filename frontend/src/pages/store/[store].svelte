@@ -8,6 +8,7 @@
 		StudentSearch,
 		Form,
 		DropdownSearch,
+		RequestRow,
 	} from '../../components';
 	let toastContainer;
 	import {
@@ -15,6 +16,7 @@
 		getStores,
 		getItems,
 		LOW_STOCK,
+		getRequests,
 	} from '../../utils/store.js';
 	import {getBalance} from '../../utils/api.js';
 
@@ -97,6 +99,7 @@
 			throw 'Could not fetch store';
 		});
 		store = json;
+		if (store.canManage) loadRequests();
 		return json;
 	}
 
@@ -634,6 +637,14 @@
 		requestToggle = true;
 	}
 
+	// Requests
+
+	let requests = null;
+	async function loadRequests(useCache) {
+		requests = await getRequests(storeID, useCache);
+		requests = requests.filter(x => x.status == 'PENDING');
+	}
+
 	// Misc
 
 	window.addEventListener('keydown', e => {
@@ -656,7 +667,7 @@
 	>
 		Back to store list
 	</a>
-	{#if balance !== null && (!store || !store.canManage)}
+	{#if balance !== null && userInfo && userInfo.roles.includes('STUDENT')}
 		<div
 			class="inline-flex flex-col self-center p-4 bg-base-100 rounded-lg mx-6 my-4"
 		>
@@ -694,6 +705,42 @@
 					class="btn btn-secondary self-end px-12 mx-1 modal-button"
 					on:click={() => manageFormModal()}>New Item</label
 				>
+			</div>
+		{/if}
+		{#if requests && requests.length > 0}
+			<div class="mb-4 flex flex-col">
+				<h1 class="text-3xl font-medium mb-2">
+					Pending purchase requests
+				</h1>
+				<div
+					class="flex bg-base-100 shadow-md rounded-lg min-h-40 overflow-x-auto"
+				>
+					<table class="w-full table-auto">
+						<thead class="w-full">
+							<tr class="text-left border-b border-gray-300">
+								<th class="p-4">Date</th>
+								<th class="p-4">Student</th>
+								<th class="p-4">Item</th>
+								<th class="p-4">Quantity</th>
+								<th class="p-4">Price</th>
+								<th class="p-4" />
+							</tr>
+						</thead>
+						<tbody class="w-full divide-y divide-gray-300">
+							{#each requests as request}
+								<RequestRow
+									{request}
+									{toastContainer}
+									staff={true}
+									on:reload={() => {
+										loadRequests(false);
+										load(false);
+									}}
+								/>
+							{/each}
+						</tbody>
+					</table>
+				</div>
 			</div>
 		{/if}
 		<div class="collapse bg-base-100 rounded-lg collapse-arrow mb-4">
@@ -793,7 +840,8 @@
 						<p
 							class="text-2xl font-semibold {balance !== null &&
 							balance < item.price &&
-							!store.canManage
+							userInfo &&
+							userInfo.roles.includes('STUDENT')
 								? 'text-red-500'
 								: ''}"
 						>
@@ -837,7 +885,7 @@
 								/>
 							{/if}
 						{/key}
-						{#if !store.canManage && store.requests && userInfo && userInfo.roles.includes('STUDENT')}
+						{#if store.requests && userInfo && userInfo.roles.includes('STUDENT')}
 							<div class="flex flex-row justify-end mt-2">
 								<button
 									class="btn {item.quantity == 0 ||
