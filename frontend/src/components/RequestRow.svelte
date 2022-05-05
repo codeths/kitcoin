@@ -47,20 +47,22 @@
 </script>
 
 <tr>
-	<td class="p-4">
-		{#if request.status == 'PENDING'}
-			<div class="badge badge-warning">Pending</div>
-		{/if}
-		{#if request.status == 'APPROVED'}
-			<div class="badge badge-success">Approved</div>
-		{/if}
-		{#if request.status == 'DENIED'}
-			<div class="badge badge-error">Denied</div>
-		{/if}
-		{#if request.status == 'CANCELLED'}
-			<div class="badge badge-error">Cancelled</div>
-		{/if}
-	</td>
+	{#if !staff}
+		<td class="p-4">
+			{#if request.status == 'PENDING'}
+				<div class="badge badge-warning">Pending</div>
+			{/if}
+			{#if request.status == 'APPROVED'}
+				<div class="badge badge-success">Approved</div>
+			{/if}
+			{#if request.status == 'DENIED'}
+				<div class="badge badge-error">Denied</div>
+			{/if}
+			{#if request.status == 'CANCELLED'}
+				<div class="badge badge-error">Cancelled</div>
+			{/if}
+		</td>
+	{/if}
 	<td class="p-4">
 		{new Date(request.date).toLocaleDateString()}
 		{new Date(request.date).toLocaleTimeString([], {
