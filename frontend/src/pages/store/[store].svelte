@@ -165,11 +165,7 @@
 	}
 
 	let balance = null;
-	(async () => {
-		userInfo = (await ctx) || null;
-		if (userInfo && userInfo.roles.includes('STUDENT'))
-			balance = userInfo.balance;
-	})();
+	getBalance().then(x => (balance = x));
 
 	// Manage items
 	let manageFormData = {
@@ -629,6 +625,7 @@
 		}
 
 		load(false);
+		balance = await getBalance();
 	}
 
 	function requestPrompt(item) {
