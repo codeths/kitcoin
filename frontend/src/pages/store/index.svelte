@@ -408,10 +408,10 @@
 								{store.name}
 								{#if storeRequests[store._id]}
 									<div
-										class="tooltip"
+										class="tooltip flex ml-2"
 										data-tip="Pending purchase requests"
 									>
-										<div class="badge badge-secondary ml-2">
+										<div class="badge badge-secondary">
 											{storeRequests[
 												store._id
 											].toLocaleString()}
