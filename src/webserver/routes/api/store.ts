@@ -405,7 +405,7 @@ router.get(
 			if (!requestHasUser(req)) return;
 
 			let requests = await StoreRequest.find({
-				userID: req.user.id,
+				studentID: req.user.id,
 			});
 
 			let data = (
