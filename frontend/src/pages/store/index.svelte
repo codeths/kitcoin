@@ -560,7 +560,7 @@
 				</table>
 			{:else}
 				<span
-					class="text-center text-3xl flex justify-center items-center w-full h-full"
+					class="text-center text-3xl flex justify-center items-center w-full h-full py-10"
 				>
 					No purchase requests.
 				</span>
