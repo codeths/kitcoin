@@ -521,7 +521,11 @@
 						{/if}
 						{#if completedRequests.length > 0}
 							<tr>
-								<td colspan="7" class="p-2">
+								<td
+									colspan="7"
+									class="p-2"
+									class:pb-0={requestCollapse}
+								>
 									<div class="collapse collapse-arrow">
 										<input
 											type="checkbox"
