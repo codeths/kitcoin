@@ -481,9 +481,9 @@
 		>
 			{#if !requests}
 				<span
-					class="text-center text-3xl flex justify-center items-center w-full h-full"
+					class="text-center text-3xl flex justify-center items-center w-full h-full py-10"
 				>
-					Loading...
+					<Loading height="2rem" />
 				</span>
 			{:else if requests.length > 0}
 				<table class="w-full table-auto">
