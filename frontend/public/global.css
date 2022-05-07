@@ -143,8 +143,4 @@ span[class^='icon-']::before {
 	.animation-unset {
 		animation: unset;
 	}
-
-	.visibility-collapse {
-		visibility: collapse;
-	}
 }

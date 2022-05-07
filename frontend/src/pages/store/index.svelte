@@ -544,7 +544,7 @@
 							</tr>
 							<div
 								class="contents"
-								class:visibility-collapse={!requestCollapse}
+								class:hidden={!requestCollapse}
 							>
 								{#each completedRequests as request}
 									<RequestRow
