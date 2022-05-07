@@ -7,6 +7,7 @@ import Input from './Input.svelte';
 import ItemDisplay from './ItemDisplay.svelte';
 import Loading from './Loading.svelte';
 import NewArrivals from './NewArrivals.svelte';
+import RequestRow from './RequestRow.svelte';
 import RoleSelect from './RoleSelect.svelte';
 import StudentSearch from './StudentSearch.svelte';
 import Toast from './Toast.svelte';
@@ -23,6 +24,7 @@ export {
 	ItemDisplay,
 	Loading,
 	NewArrivals,
+	RequestRow,
 	RoleSelect,
 	StudentSearch,
 	Toast,

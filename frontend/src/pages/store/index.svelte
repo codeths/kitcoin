@@ -9,9 +9,10 @@
 		StudentSearch,
 		ClassroomSearch,
 		NewArrivals,
+		RequestRow,
 	} from '../../components';
 	let toastContainer;
-	import {getStores} from '../../utils/store';
+	import {getStores, getRequests} from '../../utils/store';
 	import {getClasses} from '../../utils/api';
 
 	metatags.title = 'Stores - Kitcoin';
@@ -34,6 +35,7 @@
 	let user = undefined;
 
 	let stores = undefined;
+	let storeRequests = {};
 	async function load(useCache) {
 		stores = undefined;
 		await getStores(
@@ -47,6 +49,12 @@
 			.catch(e => {
 				stores = null;
 			});
+		stores.forEach(async store => {
+			if (store.canManage) {
+				let requests = await getRequests(store._id);
+				if (requests) storeRequests[store._id] = requests.length;
+			}
+		});
 		return;
 	}
 	load();
@@ -81,6 +89,10 @@
 			return null;
 		},
 		allowDeductions: e => {
+			let v = e.value;
+			return null;
+		},
+		requests: e => {
 			let v = e.value;
 			return null;
 		},
@@ -136,6 +148,7 @@
 			manageForm.values.classes = extraClasses;
 			manageForm.values.public = modalStore.public;
 			manageForm.values.pinned = modalStore.pinned;
+			manageForm.values.requests = modalStore.requests;
 			manageForm.values.allowDeductions = modalStore.allowDeductions;
 			manageForm.values.managers = modalStore.managers.map(x => ({
 				text: x.name,
@@ -226,6 +239,7 @@
 					allowDeductions:
 						manageFormData.values.allowDeductions ??
 						(modalStore ? modalStore.allowDeductions : false),
+					requests: manageFormData.values.requests,
 					managers: (manageFormData.values.managers || []).map(
 						x => x.value,
 					),
@@ -289,6 +303,25 @@
 			return;
 		}
 	}
+
+	let requests = null;
+	let pendingRequests = null;
+	let completedRequests = null;
+	let requestCollapse = false;
+
+	async function loadRequests() {
+		let res = await fetch(`/api/store/requests`).catch(() => null);
+
+		if (!res || !res.ok) return;
+
+		requests = await res.json();
+		requests.sort(
+			(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+		);
+		pendingRequests = requests.filter(x => x.status == 'PENDING');
+		completedRequests = requests.filter(x => x.status !== 'PENDING');
+	}
+	loadRequests();
 </script>
 
 <!-- Content -->
@@ -364,13 +397,27 @@
 						class="group p-4 bg-base-100 hover:bg-primary hover:text-primary-content hover:scale-110 shadow rounded-lg flex flex-col transition duration-300"
 					>
 						<div class="flex flex-row justify-between items-center">
-							<p class="inline-flex text-2xl font-semibold">
+							<p
+								class="inline-flex text-2xl font-semibold items-center"
+							>
 								{#if store.pinned}
 									<span
 										class="icon-pin mr-2 text-secondary group-hover:text-primary-content transition duration-300"
 									/>
 								{/if}
 								{store.name}
+								{#if storeRequests[store._id]}
+									<div
+										class="tooltip flex ml-2"
+										data-tip="Pending purchase requests"
+									>
+										<div class="badge badge-secondary">
+											{storeRequests[
+												store._id
+											].toLocaleString()}
+										</div>
+									</div>
+								{/if}
 							</p>
 							{#if store.canManage}
 								<button
@@ -425,6 +472,100 @@
 	<div class="px-12 my-6 flex flex-col w-screen">
 		<h1 class="text-3xl font-medium mb-2">New Arrivals</h1>
 		<NewArrivals />
+	</div>
+
+	<div class="px-12 my-6 flex flex-col w-screen">
+		<h1 class="text-3xl font-medium mb-2">Purchase requests</h1>
+		<div
+			class="flex bg-base-100 shadow-md rounded-lg min-h-40 overflow-x-auto"
+		>
+			{#if !requests}
+				<span
+					class="text-center text-3xl flex justify-center items-center w-full h-full py-10"
+				>
+					<Loading height="2rem" />
+				</span>
+			{:else if requests.length > 0}
+				<table class="w-full table-auto">
+					<thead class="w-full">
+						<tr class="text-left border-b border-gray-300">
+							<th class="p-4" />
+							<th class="p-4">Date</th>
+							<th class="p-4">Store</th>
+							<th class="p-4">Item</th>
+							<th class="p-4">Quantity</th>
+							<th class="p-4">Price</th>
+							<th class="p-4" />
+						</tr>
+					</thead>
+					<tbody class="w-full divide-y divide-gray-300">
+						{#if pendingRequests.length > 0}
+							{#each pendingRequests as request}
+								<RequestRow
+									{request}
+									{toastContainer}
+									staff={false}
+									on:reload={loadRequests}
+								/>
+							{/each}
+						{:else}
+							<tr>
+								<td colspan="7" class="py-8">
+									<span
+										class="text-center text-2xl flex justify-center items-center w-full h-full"
+									>
+										No pending requests.
+									</span>
+								</td>
+							</tr>
+						{/if}
+						{#if completedRequests.length > 0}
+							<tr>
+								<td
+									colspan="7"
+									class="p-2"
+									class:pb-0={requestCollapse}
+								>
+									<div class="collapse collapse-arrow">
+										<input
+											type="checkbox"
+											id="requestcollapse"
+											bind:checked={requestCollapse}
+										/>
+										<label
+											for="requestcollapse"
+											class="rounded-lg text-xl font-medium collapse-title !bg-base-200"
+										>
+											{requestCollapse ? 'Hide' : 'Show'} completed
+											requests
+										</label>
+									</div>
+								</td>
+							</tr>
+							<div
+								class="contents"
+								class:hidden={!requestCollapse}
+							>
+								{#each completedRequests as request}
+									<RequestRow
+										{request}
+										{toastContainer}
+										staff={false}
+										on:reload={loadRequests}
+									/>
+								{/each}
+							</div>
+						{/if}
+					</tbody>
+				</table>
+			{:else}
+				<span
+					class="text-center text-3xl flex justify-center items-center w-full h-full py-10"
+				>
+					No purchase requests.
+				</span>
+			{/if}
+		</div>
 	</div>
 {/if}
 
@@ -544,6 +685,14 @@
 						on:validate={manageForm.validate}
 					/>
 				{/if}
+				<Input
+					name="requests"
+					label="Allow students to request to buy items"
+					type="switch"
+					bind:value={manageFormData.values.requests}
+					bind:error={manageFormData.errors.requests}
+					on:validate={manageForm.validate}
+				/>
 
 				<div class="divider" />
 				<div class="flex items-center space-x-2 justify-end">

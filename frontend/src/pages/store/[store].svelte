@@ -8,6 +8,7 @@
 		StudentSearch,
 		Form,
 		DropdownSearch,
+		RequestRow,
 	} from '../../components';
 	let toastContainer;
 	import {
@@ -15,6 +16,7 @@
 		getStores,
 		getItems,
 		LOW_STOCK,
+		getRequests,
 	} from '../../utils/store.js';
 	import {getBalance} from '../../utils/api.js';
 
@@ -39,7 +41,10 @@
 				getStore()
 					.then(x => {
 						store = x;
-						if (store.canManage) getStudents();
+						if (store.canManage) {
+							getStudents();
+							loadRequests();
+						}
 					})
 					.catch(e => {
 						store = null;
@@ -160,11 +165,7 @@
 	}
 
 	let balance = null;
-	(async () => {
-		userInfo = (await ctx) || null;
-		if (userInfo && userInfo.roles.includes('STUDENT'))
-			balance = userInfo.balance;
-	})();
+	getBalance().then(x => (balance = x));
 
 	// Manage items
 	let manageFormData = {
@@ -378,6 +379,7 @@
 	}
 
 	let transactionToggle;
+	let requestToggle;
 	let selectedItem;
 
 	let transactionFormData = {
@@ -556,6 +558,97 @@
 		load(false);
 	}
 
+	let requestFormData = {
+		isValid: false,
+		values: {},
+		errors: {},
+	};
+	let requestForm = requestFormData;
+	let requestItem = null;
+	let requestValidate = {
+		quantity: e => {
+			let v = e.value;
+			if (!v) return requestChecks();
+			if (!/^\d*(?:\.\d+)?$/.test(v.trim()))
+				return 'Quanity must be a number';
+			let num = parseFloat(v.trim());
+			if (isNaN(num)) return 'Quanity must be an number';
+			if (num % 1 != 0) return 'Quanity must be a whole number';
+			if (num <= 0) return 'Quanity must be greater than 0';
+
+			return requestChecks(num);
+		},
+	};
+
+	function requestChecks(quantity) {
+		if (!requestItem) return null;
+		if (!quantity) quantity = 1;
+
+		if (requestItem.price * quantity > balance)
+			return 'You do not have enough money.';
+		if (
+			typeof requestItem.quantity == 'number' &&
+			requestItem.quantity < quantity
+		)
+			return 'This item does not have enough stock.';
+
+		return null;
+	}
+
+	async function createRequest() {
+		submitStatus = 'LOADING';
+
+		let res = await fetch(`/api/store/request`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				store: storeID,
+				item: requestItem._id,
+				quantity: parseFloat(requestFormData.values.quantity),
+			}),
+		}).catch(() => null);
+
+		submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
+		clearTimeout(resetTimeout);
+		resetTimeout = setTimeout(() => {
+			submitStatus = null;
+		}, 5000);
+		if (submitStatus == 'SUCCESS') {
+			requestToggle = false;
+			toastContainer.toast(`Requested ${requestItem.name}.`, 'success');
+			requestItem = null;
+		} else {
+			let text = res && (await res.text());
+			if (text) toastContainer.toast(text, 'error');
+		}
+
+		load(false);
+		balance = await getBalance();
+	}
+
+	function requestPrompt(item) {
+		if (item.quantity == 0 || (balance !== null && balance < item.price))
+			return;
+		requestForm.reset();
+		requestItem = item;
+		requestToggle = true;
+	}
+
+	// Requests
+
+	let requests = null;
+	async function loadRequests(useCache) {
+		requests = await getRequests(storeID, useCache);
+		requests = requests
+			.filter(x => x.status == 'PENDING')
+			.sort(
+				(a, b) =>
+					new Date(a.date).getTime() - new Date(b.date).getTime(),
+			);
+	}
+
 	// Misc
 
 	window.addEventListener('keydown', e => {
@@ -578,7 +671,7 @@
 	>
 		Back to store list
 	</a>
-	{#if balance !== null && (!store || !store.canManage)}
+	{#if balance !== null && userInfo && userInfo.roles.includes('STUDENT')}
 		<div
 			class="inline-flex flex-col self-center p-4 bg-base-100 rounded-lg mx-6 my-4"
 		>
@@ -618,6 +711,45 @@
 				>
 			</div>
 		{/if}
+		{#if requests && requests.length > 0}
+			<div class="mb-4 flex flex-col">
+				<h1 class="text-3xl font-medium mb-2 inline-flex items-center">
+					Pending purchase requests
+					<div class="badge badge-secondary ml-2">
+						{requests.length.toLocaleString()}
+					</div>
+				</h1>
+				<div
+					class="flex bg-base-100 shadow-md rounded-lg min-h-40 overflow-x-auto"
+				>
+					<table class="w-full table-auto">
+						<thead class="w-full">
+							<tr class="text-left border-b border-gray-300">
+								<th class="p-4">Date</th>
+								<th class="p-4">Student</th>
+								<th class="p-4">Item</th>
+								<th class="p-4">Quantity</th>
+								<th class="p-4">Price</th>
+								<th class="p-4" />
+							</tr>
+						</thead>
+						<tbody class="w-full divide-y divide-gray-300">
+							{#each requests as request}
+								<RequestRow
+									{request}
+									{toastContainer}
+									staff={true}
+									on:reload={() => {
+										loadRequests(false);
+										load(false);
+									}}
+								/>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		{/if}
 		<div class="collapse bg-base-100 rounded-lg collapse-arrow mb-4">
 			<input
 				type="checkbox"
@@ -630,7 +762,9 @@
 			>
 				{filterCollapseShown ? 'Hide' : 'Show'} filters
 			</label>
-			<div class="flex space-x-4 collapse-content rounded-lg !bg-base-100">
+			<div
+				class="flex space-x-4 collapse-content rounded-lg !bg-base-100"
+			>
 				<div>
 					<Input
 						type="select"
@@ -713,7 +847,8 @@
 						<p
 							class="text-2xl font-semibold {balance !== null &&
 							balance < item.price &&
-							!store.canManage
+							userInfo &&
+							userInfo.roles.includes('STUDENT')
 								? 'text-red-500'
 								: ''}"
 						>
@@ -757,6 +892,18 @@
 								/>
 							{/if}
 						{/key}
+						{#if store.requests && userInfo && userInfo.roles.includes('STUDENT')}
+							<div class="flex flex-row justify-end mt-2">
+								<button
+									class="btn {item.quantity == 0 ||
+									(balance !== null && balance < item.price)
+										? 'btn-disabled'
+										: 'btn-primary'} px-12"
+									on:click={() => requestPrompt(item)}
+									>Buy</button
+								>
+							</div>
+						{/if}
 					</div>
 				{/each}
 			</div>
@@ -1067,6 +1214,63 @@
 							Error
 						{:else}
 							Sell
+						{/if}
+					</button>
+				</div>
+			</Form>{/key}
+	</div>
+</div>
+
+<input
+	type="checkbox"
+	id="requestmodal"
+	class="modal-toggle"
+	bind:checked={requestToggle}
+/>
+<div class="modal">
+	<div class="modal-box">
+		<h2 class="inline-flex text-2xl text-medium">
+			Request to buy {requestItem?.name}
+		</h2>
+		{#key requestToggle}
+			<Form
+				on:submit={createRequest}
+				on:update={() =>
+					Object.keys(requestFormData).forEach(
+						key => (requestFormData[key] = requestForm[key]),
+					)}
+				on:update={() => checkCanAfford() ?? calculatePrice()}
+				bind:this={requestForm}
+				validators={requestValidate}
+			>
+				<Input
+					name="quantity"
+					label="Quantity (optional)"
+					placeholder="1"
+					bind:value={requestFormData.values.quantity}
+					bind:error={requestFormData.errors.quantity}
+					on:validate={requestForm.validate}
+				/>
+				<div class="flex items-center space-x-2 justify-end mt-4">
+					<label for="requestmodal" class="btn btn-outline px-12">
+						Cancel
+					</label>
+					<button
+						type="submit"
+						disabled={submitStatus == 'LOADING' ||
+							!requestFormData.isValid}
+						class="btn {submitStatus == 'ERROR'
+							? 'btn-error'
+							: 'btn-primary'} px-12 disabled:border-0"
+					>
+						{#if submitStatus == 'LOADING'}
+							<div class="px-2">
+								<Loading height="2rem" />
+							</div>
+						{:else if submitStatus == 'ERROR'}
+							Error
+						{:else}
+							Request item
 						{/if}
 					</button>
 				</div>

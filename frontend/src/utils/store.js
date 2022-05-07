@@ -3,6 +3,7 @@ import {writable, get} from 'svelte/store';
 export const storeInfo = writable(null);
 export const userInfo = writable(null);
 export const storeItemList = writable({});
+export const storeRequestList = writable({});
 export const newArrivalList = writable(null);
 export const classAnyInfo = writable(null);
 export const classTeacherInfo = writable(null);
@@ -39,6 +40,19 @@ export async function getItems(store, useCache) {
 		return v;
 	});
 	return items;
+}
+
+export async function getRequests(store, useCache) {
+	let cached = get(storeRequestList)[store];
+	if (cached && useCache) return cached;
+	let res = await fetch(`/api/store/requests/${store}`).catch(e => {});
+	if (!res || !res.ok) throw new Error('Failed to fetch requests');
+	let requests = await res.json();
+	storeRequestList.update(v => {
+		v[store] = requests;
+		return v;
+	});
+	return requests;
 }
 
 export async function getNewArrivals() {
