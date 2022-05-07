@@ -96,7 +96,7 @@
 					class="btn-circle btn-ghost text-2xl"
 					on:click={() => cancelRequest(request._id)}
 				>
-					<span class="icon-delete" />
+					<span class="icon-close" />
 				</button>
 			{:else}
 				<button
