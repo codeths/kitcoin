@@ -66,11 +66,37 @@ export default class StoreRequest {
 		delete json.id;
 
 		let {storeID, itemID, studentID, ...rest} = json;
+		let isPending = json.status === StoreRequestStatus.PENDING;
 
-		let store = await Store.findById(storeID);
-		let item = await StoreItem.findById(itemID);
-		let student = await User.findById(studentID);
-		if (!store || !item || !student) return null;
+		type DBData = {
+			name: string;
+			id: string;
+		} | null;
+
+		let store: DBData = await Store.findById(storeID);
+		let item: DBData = await StoreItem.findById(itemID);
+		let student: DBData = await User.findById(studentID);
+		if (!store) {
+			if (isPending) return null;
+			store = {
+				id: storeID,
+				name: 'Unknown Store',
+			};
+		}
+		if (!item) {
+			if (isPending) return null;
+			item = {
+				id: itemID,
+				name: 'Unknown Item',
+			};
+		}
+		if (!student) {
+			if (isPending) return null;
+			student = {
+				id: studentID,
+				name: 'Unknown Student',
+			};
+		}
 
 		let res: IStoreRequestAPIResponse = {
 			...rest,
