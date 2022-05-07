@@ -312,7 +312,7 @@
 	async function loadRequests() {
 		let res = await fetch(`/api/store/requests`).catch(() => null);
 
-		if (!res) return;
+		if (!res || !res.ok) return;
 
 		requests = await res.json();
 		requests.sort(
