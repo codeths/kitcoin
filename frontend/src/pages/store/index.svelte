@@ -162,6 +162,8 @@
 				text: modalStore.owner.name,
 				value: modalStore.owner.id,
 			};
+		} else {
+			manageForm.values.requests = true;
 		}
 		modalOpen = true;
 	}
