@@ -1560,8 +1560,11 @@ router.delete(
 				request.status = StoreRequestStatus.DENIED;
 			}
 
-			req.user.balance += request.price;
-			await req.user.save();
+			let student = await User.findById(request.studentID);
+			if (student) {
+				student.balance += request.price;
+				await student.save();
+			}
 
 			if (typeof item.quantity === 'number') {
 				item.quantity += request.quantity ?? 1;
