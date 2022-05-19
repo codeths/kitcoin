@@ -184,7 +184,7 @@
 										: 'btn-secondary'} mx-4 my-2"
 									on:click={() =>
 										(modalStudent = multiSelectStudents)}
-									>Manage {multiSelectStudents.size} student{multiSelectStudents.size ==
+									>Send Kitcoin to {multiSelectStudents.size} student{multiSelectStudents.size ==
 									1
 										? ''
 										: 's'}</label
