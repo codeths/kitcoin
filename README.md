@@ -35,7 +35,7 @@ Create a [config file](#config) called keys.json in that direcory.
 
 ### Run
 
-Use `node .` to run. [pm2](https://pm2.keymetrics.io/) or equivalent is recommended.
+Use `npm start` to run. [pm2](https://pm2.keymetrics.io/) or equivalent is recommended.
 
 ## Development
 
