@@ -13,4 +13,4 @@ COPY frontend/*.config.js frontend/*rc* frontend/index.html ./frontend/
 RUN npm run build:production
 RUN rm -rf src tsconfig.json gulpfile.js frontend/src frontend/public frontend/*.config.js frontend/*rc*
 ENV NODE_ENV production
-CMD ["node", "."]
+CMD ["npm", "start"]

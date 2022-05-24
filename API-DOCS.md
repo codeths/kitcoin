@@ -541,3 +541,22 @@ None
 ### Response
 
 None
+
+# Other
+
+## GET `/check-version`
+
+Get version info.
+
+## Request
+
+None
+
+### Response
+
+```ts
+[
+	string | null, // version
+	string | null, // package name
+]
+```

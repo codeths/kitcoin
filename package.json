@@ -6,6 +6,7 @@
 	"type": "module",
 	"module": "esnext",
 	"scripts": {
+		"start": "node .",
 		"build": "gulp",
 		"build:dev": "gulp --dev",
 		"build:production": "gulp --production",
