@@ -294,6 +294,7 @@
 
 	let transactionData;
 	let purchaseData;
+	let topTransactions = [];
 	let topBalanceUsers = [];
 
 	let chartoptions = {
@@ -373,6 +374,13 @@
 		if (e) toastContainer.toast('Refreshed top balances.', 'success');
 	}
 
+	async function getTopTransactions(e) {
+		let res = await fetch('/api/reports/transactions/top');
+		topTransactions = await res.json();
+
+		if (e) toastContainer.toast('Refreshed top transactions.', 'success');
+	}
+
 	async function getBalance() {
 		const res = await fetch(`/api/reports/balance/total`).catch(e => null);
 		try {
@@ -386,6 +394,7 @@
 	getDailyTransactions();
 	getDailyPurchases();
 	getTopBalance();
+	getTopTransactions();
 </script>
 
 <!-- Content -->
@@ -721,6 +730,98 @@
 							options={chartoptions}
 							class="bg-base-100 rounded-lg p-4 my-4"
 						/>
+					{/if}
+				</div>
+				<div class="col-span-12">
+					<h2
+						class="text-xl font-medium flex justify-between items-center"
+					>
+						<span>Top Transactions</span>
+						<div>
+							<button
+								class="btn btn-ghost"
+								on:click={getTopTransactions}
+							>
+								<span class="icon-refresh text-2xl" />
+							</button>
+							<a
+								class="btn btn-primary"
+								href="/api/reports/transactions/top?csv=true"
+								target="_self"
+							>
+								<span class="icon-download text-2xl mr-2" />CSV
+							</a>
+						</div>
+					</h2>
+					{#if topTransactions && topTransactions.length > 0}
+						<div class="w-full bg-base-100 rounded-lg p-4 my-4">
+							<table class="w-full table-auto">
+								<thead
+									class="border-b border-gray-300 text-left"
+								>
+									<tr>
+										<th class="px-2 py-4">Date</th>
+										<th class="px-2 py-4">Transaction ID</th
+										>
+										<th class="px-2 py-4">From</th>
+										<th class="px-2 py-4">Message</th>
+										<th class="px-2 py-4">To</th>
+										<th class="px-2 py-4">Amount</th>
+									</tr>
+								</thead>
+								<tbody class="divide-y divide-gray-300">
+									{#each topTransactions as transaction}
+										<tr>
+											<td class="px-2 py-4">
+												{new Date(
+													transaction.date,
+												).toLocaleDateString()}
+												{new Date(
+													transaction.date,
+												).toLocaleTimeString([], {
+													hour: 'numeric',
+													minute: '2-digit',
+												})}
+											</td>
+											<td class="px-2 py-4"
+												>{transaction._id}</td
+											>
+											<td class="px-2 py-4"
+												>{transaction.from.text}</td
+											>
+											<td class="px-2 py-4"
+												>{transaction.reason || '-'}</td
+											>
+											<td class="px-2 py-4"
+												>{transaction.to.text}</td
+											>
+											<td
+												class="px-2 py-4"
+												class:text-error={transaction.amount <
+													0}
+											>
+												{#if transaction.amount < 0}
+													<span>&minus;&nbsp;</span>
+												{:else}
+													<span>&ensp;&nbsp;</span>
+												{/if}
+												<span
+													class="icon-currency mx-1"
+												/>
+												{Math.abs(
+													transaction.amount,
+												).toLocaleString([], {
+													minimumFractionDigits: 2,
+													maximumFractionDigits: 2,
+												})}
+											</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</div>
+					{:else}
+						<p class="text-center text-xl">No Transactions</p>
 					{/if}
 				</div>
 				<div class="col-span-12">
