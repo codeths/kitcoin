@@ -387,7 +387,7 @@ router.get(
 			res.setHeader('Content-Type', 'text/csv');
 			res.setHeader(
 				'Content-Disposition',
-				'attachment; filename="toptransactions.csv"',
+				'attachment; filename="alltransactions.csv"',
 			);
 			res.send(csv);
 			return;

@@ -647,14 +647,14 @@
 					Reports & Statistics
 				</h1>
 
-				<div class="col-span-12 grid grid-cols-12">
+				<div class="col-span-12 lg:col-span-6">
 					<h2
 						class="col-span-12 text-xl font-bold flex justify-between items-center"
 					>
 						Kitcoin in circulation
 					</h2>
 					<div
-						class="flex bg-base-100 shadow-md rounded-lg py-10 my-4 min-h-40 border-t-8 border-primary col-span-12 md:col-span-10 lg:col-span-8"
+						class="flex bg-base-100 shadow-md rounded-lg py-10 my-4 min-h-40 border-t-8 border-primary"
 					>
 						<h1
 							class="text-center text-4xl sm:text-6xl lg:text-7xl xl:text-8xl flex justify-center items-center w-full h-full"
@@ -672,6 +672,25 @@
 								{error}
 							{/await}
 						</h1>
+					</div>
+				</div>
+				<div class="col-span-12 lg:col-span-6">
+					<h2
+						class="col-span-12 text-xl font-bold flex justify-between items-center"
+					>
+						All Transactions
+					</h2>
+					<div
+						class="bg-base-100 shadow-md rounded-lg px-8 py-8 my-4 flex flex-col"
+					>
+						<a
+							class="btn btn-primary"
+							href="/api/reports/transactions/all?csv=true"
+							target="_self"
+						>
+							<span class="icon-download text-2xl mr-2" />
+							Download CSV
+						</a>
 					</div>
 				</div>
 				<div class="col-span-12 lg:col-span-6">
