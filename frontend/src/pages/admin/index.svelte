@@ -679,7 +679,7 @@
 						class="text-xl font-bold flex justify-between items-center"
 					>
 						<span>Kitcoin sent per day</span>
-						<div>
+						<div class="flex">
 							<button
 								class="btn btn-ghost"
 								on:click={getDailyTransactions}
@@ -708,7 +708,7 @@
 						class="text-xl font-bold flex justify-between items-center"
 					>
 						<span>Kitcoin spent per day (purchases)</span>
-						<div>
+						<div class="flex">
 							<button
 								class="btn btn-ghost"
 								on:click={getDailyPurchases}
@@ -737,7 +737,7 @@
 						class="text-xl font-medium flex justify-between items-center"
 					>
 						<span>Top Transactions</span>
-						<div>
+						<div class="flex">
 							<button
 								class="btn btn-ghost"
 								on:click={getTopTransactions}
@@ -754,7 +754,9 @@
 						</div>
 					</h2>
 					{#if topTransactions && topTransactions.length > 0}
-						<div class="w-full bg-base-100 rounded-lg p-4 my-4">
+						<div
+							class="w-full bg-base-100 rounded-lg p-4 my-4 overflow-x-auto text-sm md:text-base"
+						>
 							<table class="w-full table-auto">
 								<thead
 									class="border-b border-gray-300 text-left"
@@ -829,7 +831,7 @@
 						class="text-xl font-medium flex justify-between items-center"
 					>
 						<span>Students with highest balance</span>
-						<div>
+						<div class="flex">
 							<button
 								class="btn btn-ghost"
 								on:click={getTopBalance}
@@ -846,7 +848,9 @@
 						</div>
 					</h2>
 					{#if topBalanceUsers && topBalanceUsers.length > 0}
-						<div class="w-full bg-base-100 rounded-lg p-4 my-4">
+						<div
+							class="w-full bg-base-100 rounded-lg p-4 my-4 overflow-x-auto text-sm md:text-base"
+						>
 							<table class="w-full table-auto">
 								<thead
 									class="border-b border-gray-300 text-left"
