@@ -55,7 +55,7 @@ app.set('trust proxy', 1);
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(csrf());
+// app.use(csrf());
 app.use(compression());
 
 app.use(
