@@ -918,7 +918,7 @@
 													minute: '2-digit',
 												})}
 											</td>
-											<td class="px-2 py-4"
+											<td class="px-2 py-4 font-mono"
 												>{transaction._id}</td
 											>
 											<td class="px-2 py-4"
@@ -998,7 +998,8 @@
 								<tbody class="divide-y divide-gray-300">
 									{#each topBalanceUsers as user}
 										<tr>
-											<td class="px-2 py-4">{user._id}</td
+											<td class="px-2 py-4 font-mono"
+												>{user._id}</td
 											>
 											<td class="px-2 py-4"
 												>{user.name}</td
