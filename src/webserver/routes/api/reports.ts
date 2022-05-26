@@ -249,13 +249,35 @@ router.get(
 		if (from) query.date.$gte = from;
 		if (to) query.date.$lte = to;
 
-		let transactions = await Transaction.find(query)
-			.sort({
-				amount: -1,
-			})
-			.limit(count);
+		let transactions = await Transaction.aggregate([
+			{
+				$match: query,
+			},
+			{
+				$set: {
+					amountAbs: {
+						$abs: '$amount',
+					},
+				},
+			},
+			{
+				$sort: {
+					amountAbs: -1,
+				},
+			},
+			{
+				$unset: 'amountAbs',
+			},
+			{
+				$limit: count,
+			},
+		]);
 
-		let data = await Promise.all(transactions.map(x => x.toAPIResponse()));
+		let data = await Promise.all(
+			transactions
+				.map(x => new Transaction(x))
+				.map(x => x.toAPIResponse()),
+		);
 
 		if (req.query.csv && booleanFromData(req.query.csv)) {
 			let csv = await json2csv.json2csvAsync(data, {

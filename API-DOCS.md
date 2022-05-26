@@ -536,7 +536,7 @@ Or in equivalent CSV form if `csv` is `true`
 
 ## GET `/reports/transactions/top`
 
-Get top transactions by amount
+Get top transactions by absolute value of amount
 
 ### Request
 
