@@ -254,7 +254,7 @@ router.get(
 				$match: query,
 			},
 			{
-				$set: {
+				$addFields: {
 					amountAbs: {
 						$abs: '$amount',
 					},
@@ -266,13 +266,11 @@ router.get(
 				},
 			},
 			{
-				$unset: 'amountAbs',
-			},
-			{
 				$limit: count,
 			},
 		]);
 
+		// We did add an extra field, but mongoose takes it out
 		let data = await Promise.all(
 			transactions
 				.map(x => new Transaction(x))
