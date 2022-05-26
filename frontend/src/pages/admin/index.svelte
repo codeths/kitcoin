@@ -2,6 +2,7 @@
 	import {metatags} from '@roxi/routify';
 	import {onMount, getContext} from 'svelte';
 	import Line from 'svelte-chartjs/src/Line.svelte';
+	import Scatter from 'svelte-chartjs/src/Scatter.svelte';
 	import {
 		StudentSearch,
 		RoleSelect,
@@ -294,10 +295,11 @@
 
 	let transactionData;
 	let purchaseData;
+	let topSentData;
 	let topTransactions = [];
 	let topBalanceUsers = [];
 
-	let chartoptions = {
+	let chartOptions = {
 		scales: {
 			x: {
 				title: {
@@ -315,6 +317,66 @@
 		plugins: {
 			legend: {
 				display: false,
+			},
+			tooltip: {
+				displayColors: false,
+			},
+		},
+	};
+	let scatterOptions = {
+		scales: {
+			x: {
+				title: {
+					display: true,
+					text: 'Total Kitcoin sent',
+				},
+				type: 'linear',
+				suggestedMin: 0,
+			},
+			y: {
+				title: {
+					display: true,
+					text: 'Times sent',
+				},
+				type: 'linear',
+				suggestedMin: 0,
+				ticks: {
+					precision: 0,
+				},
+			},
+		},
+		elements: {
+			point: {
+				radius: 10,
+				hoverRadius: 8,
+			},
+		},
+		plugins: {
+			legend: {
+				onClick: null,
+				labels: {
+					boxWidth: 20,
+				},
+			},
+			tooltip: {
+				displayColors: false,
+				callbacks: {
+					label: ctx => {
+						const [user, email, id] =
+							ctx.dataset.labels[ctx.dataIndex];
+						return [
+							user,
+							email,
+							'ID: ' + id,
+							'Times sent: ' + ctx.parsed.y.toLocaleString(),
+							'Total Kitcoin sent: ' +
+								ctx.parsed.x.toLocaleString([], {
+									minimumFractionDigits: 2,
+									maximumFractionDigits: 2,
+								}),
+						];
+					},
+				},
 			},
 		},
 	};
@@ -367,6 +429,31 @@
 		if (e) toastContainer.toast('Refreshed daily purchases.', 'success');
 	}
 
+	async function getTopSent(e) {
+		let res = await fetch('/api/reports/sent/top');
+		let data = await res.json();
+		topSentData = {
+			datasets: [
+				{
+					label: 'User (hover for info)',
+					labels: data.map(data => [
+						data.name || 'Unknown User',
+						data.email || '-',
+						data._id,
+					]),
+					borderColor: 'rgba(32, 102, 233, 0.75)',
+					backgroundColor: 'rgba(32, 102, 233, 0.5)',
+					data: data.map(data => ({
+						x: data.amount,
+						y: data.count,
+					})),
+				},
+			],
+		};
+
+		if (e) toastContainer.toast('Refreshed top Kitcoin sent.', 'success');
+	}
+
 	async function getTopBalance(e) {
 		let res = await fetch('/api/reports/balance/top');
 		topBalanceUsers = await res.json();
@@ -393,6 +480,7 @@
 
 	getDailyTransactions();
 	getDailyPurchases();
+	getTopSent();
 	getTopBalance();
 	getTopTransactions();
 </script>
@@ -717,7 +805,7 @@
 					{#if transactionData}
 						<Line
 							data={transactionData}
-							options={chartoptions}
+							options={chartOptions}
 							class="bg-base-100 rounded-lg p-4 my-4"
 						/>
 					{/if}
@@ -746,7 +834,33 @@
 					{#if purchaseData}
 						<Line
 							data={purchaseData}
-							options={chartoptions}
+							options={chartOptions}
+							class="bg-base-100 rounded-lg p-4 my-4"
+						/>
+					{/if}
+				</div>
+				<div class="col-span-12 lg:col-span-6">
+					<h2
+						class="text-xl font-bold flex justify-between items-center"
+					>
+						<span>Top Kitcoin sent by staff</span>
+						<div class="flex">
+							<button class="btn btn-ghost" on:click={getTopSent}>
+								<span class="icon-refresh text-2xl" />
+							</button>
+							<a
+								class="btn btn-primary"
+								href="/api/reports/sent/top?csv=true"
+								target="_self"
+							>
+								<span class="icon-download text-2xl mr-2" />CSV
+							</a>
+						</div>
+					</h2>
+					{#if topSentData}
+						<Scatter
+							data={topSentData}
+							options={scatterOptions}
 							class="bg-base-100 rounded-lg p-4 my-4"
 						/>
 					{/if}
