@@ -88,12 +88,10 @@ router.get(
 		}),
 	async (req, res) => {
 		try {
-			let from = new Date(
-				(req.query.from || Date.now() - 30 * 24 * 60 * 60 * 1000) as
-					| string
-					| number,
-			);
-			let to = new Date((req.query.to || Date.now()) as string | number);
+			let from =
+				dateFromData(req.query.from) ||
+				new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+			let to = dateFromData(req.query.to) || new Date();
 
 			from.setHours(0, 0, 0, 0);
 			to.setHours(23, 59, 59, 999);
@@ -162,12 +160,10 @@ router.get(
 		}),
 	async (req, res) => {
 		try {
-			let from = new Date(
-				(req.query.from || Date.now() - 30 * 24 * 60 * 60 * 1000) as
-					| string
-					| number,
-			);
-			let to = new Date((req.query.to || Date.now()) as string | number);
+			let from =
+				dateFromData(req.query.from) ||
+				new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+			let to = dateFromData(req.query.to) || new Date();
 
 			from.setHours(0, 0, 0, 0);
 			to.setHours(23, 59, 59, 999);
