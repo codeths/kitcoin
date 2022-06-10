@@ -293,6 +293,8 @@
 			hasAdminScope = true;
 	})();
 
+	let resultsNum = '10';
+
 	let transactionData;
 	let purchaseData;
 	let topSentData;
@@ -430,7 +432,7 @@
 	}
 
 	async function getTopSent(e) {
-		let res = await fetch('/api/reports/sent/top');
+		let res = await fetch(`/api/reports/sent/top?count=${resultsNum}`);
 		let data = await res.json();
 		topSentData = {
 			datasets: [
@@ -455,14 +457,16 @@
 	}
 
 	async function getTopBalance(e) {
-		let res = await fetch('/api/reports/balance/top');
+		let res = await fetch(`/api/reports/balance/top?count=${resultsNum}`);
 		topBalanceUsers = await res.json();
 
 		if (e) toastContainer.toast('Refreshed top balances.', 'success');
 	}
 
 	async function getTopTransactions(e) {
-		let res = await fetch('/api/reports/transactions/top');
+		let res = await fetch(
+			`/api/reports/transactions/top?count=${resultsNum}`,
+		);
 		topTransactions = await res.json();
 
 		if (e) toastContainer.toast('Refreshed top transactions.', 'success');
@@ -478,11 +482,15 @@
 		}
 	}
 
-	getDailyTransactions();
-	getDailyPurchases();
-	getTopSent();
-	getTopBalance();
-	getTopTransactions();
+	function updateReports() {
+		getDailyTransactions();
+		getDailyPurchases();
+		getTopSent();
+		getTopBalance();
+		getTopTransactions();
+	}
+
+	updateReports();
 </script>
 
 <!-- Content -->
@@ -731,9 +739,24 @@
 				: 'hidden'}"
 		>
 			{#key activeView}
-				<h1 class="col-span-12 text-3xl font-bold">
-					Reports & Statistics
-				</h1>
+				<div class="col-span-12 flex flex-wrap justify-between">
+					<h1 class="text-3xl font-bold">Reports & Statistics</h1>
+					<div>
+						<Input
+							type="select"
+							label="# of entries shown"
+							bind:value={resultsNum}
+							on:change={e => (
+								(resultsNum = e.target.value), updateReports()
+							)}
+						>
+							<option>5</option>
+							<option>10</option>
+							<option>20</option>
+							<option>50</option>
+						</Input>
+					</div>
+				</div>
 
 				<div class="col-span-12 lg:col-span-6">
 					<h2
