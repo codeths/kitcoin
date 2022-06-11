@@ -95,6 +95,26 @@
 			bind:this={input}
 			{...$$restProps}
 		/>
+	{:else if type == 'date'}
+		<input
+			class="input input-bordered	w-full {additionalClasses}"
+			class:input-success={error === null}
+			class:input-error={error}
+			type="date"
+			{disabled}
+			placeholder={label}
+			on:input={handle}
+			on:focus={handle}
+			on:blur={handle}
+			on:change
+			on:input
+			on:keydown
+			on:focus
+			on:blur
+			bind:value
+			bind:this={input}
+			{...$$restProps}
+		/>
 	{:else if type == 'select'}
 		<select
 			class="select select-bordered w-full {additionalClasses}"
