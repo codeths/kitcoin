@@ -77,7 +77,7 @@
 		/>
 	{:else if type == 'datetime-local'}
 		<input
-			class="input input-bordered	w-full {additionalClasses}"
+			class="input input-bordered w-full {additionalClasses}"
 			class:input-success={error === null}
 			class:input-error={error}
 			type="datetime-local"
@@ -97,7 +97,7 @@
 		/>
 	{:else if type == 'date'}
 		<input
-			class="input input-bordered	w-full {additionalClasses}"
+			class="input input-bordered w-full {additionalClasses}"
 			class:input-success={error === null}
 			class:input-error={error}
 			type="date"
@@ -137,7 +137,7 @@
 		</select>
 	{:else}
 		<input
-			class="input input-bordered	w-full {additionalClasses}"
+			class="input input-bordered w-full {additionalClasses}"
 			class:input-success={error === null}
 			class:input-error={error}
 			{disabled}
