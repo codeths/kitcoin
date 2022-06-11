@@ -293,7 +293,53 @@
 			hasAdminScope = true;
 	})();
 
+	function getDate(date = new Date()) {
+		const offset = new Date(
+			date.getTime() - date.getTimezoneOffset() * 60 * 1000,
+		);
+		return offset.toISOString().split('T')[0];
+	}
+
+	const TODAY = getDate();
+	const DEFAULT_FROM = getDate(
+		new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+	);
 	let resultsNum = '10';
+	let dateRange = {
+		to: TODAY,
+		from: DEFAULT_FROM,
+	};
+	let dateRangeValues = Object.assign({}, dateRange);
+	let dateRangeText = '';
+
+	function dateRangeIsValid() {
+		return (
+			dateRangeValues.to == '' ||
+			dateRangeValues.from == '' ||
+			new Date(dateRangeValues.to).getTime() >=
+				new Date(dateRangeValues.from).getTime()
+		);
+	}
+	function updateRangeText() {
+		dateRangeText =
+			dateRange.to == dateRange.from
+				? dateRange.to == TODAY
+					? 'Today'
+					: dateRange.to
+				: `${dateRange.from} to ${
+						dateRange.to == TODAY ? 'today' : dateRange.to
+				  }`;
+		if (!dateRangeValues.to) dateRangeValues.to = TODAY;
+		if (!dateRangeValues.from) dateRangeValues.from = DEFAULT_FROM;
+	}
+	function applyRange(e) {
+		dateRange = {
+			to: dateRangeValues.to || TODAY,
+			from: dateRangeValues.from || DEFAULT_FROM,
+		};
+		updateRangeText();
+		e.target.blur();
+	}
 
 	let transactionData;
 	let purchaseData;
@@ -491,12 +537,13 @@
 	}
 
 	updateReports();
+	updateRangeText();
 </script>
 
 <!-- Content -->
 <div class="mx-8 my-4">
 	<div class="flex justify-center">
-		<div class="tabs tabs-boxed">
+		<div class="tabs tabs-boxed justify-center">
 			{#each views as view, index}
 				<button
 					class="tab tab-lg transition-colors rounded-lg duration-300"
@@ -739,22 +786,75 @@
 				: 'hidden'}"
 		>
 			{#key activeView}
-				<div class="col-span-12 flex flex-wrap justify-between">
+				<div class="col-span-12 flex flex-wrap justify-between gap-y-2">
 					<h1 class="text-3xl font-bold">Reports & Statistics</h1>
-					<div>
-						<Input
-							type="select"
-							label="# of entries shown"
-							bind:value={resultsNum}
-							on:change={e => (
-								(resultsNum = e.target.value), updateReports()
-							)}
-						>
-							<option>5</option>
-							<option>10</option>
-							<option>20</option>
-							<option>50</option>
-						</Input>
+					<div class="flex gap-x-4 items-end flex-wrap">
+						<div>
+							<label class="label" for="">
+								<span class="label-text">Date range</span>
+							</label>
+							<div class="dropdown dropdown-end">
+								<label
+									tabindex="0"
+									for=""
+									class="flex items-center input input-bordered"
+								>
+									<span class="text-sm">{dateRangeText}</span>
+									<span
+										class="icon-calendar-range text-xl ml-3"
+									/>
+								</label>
+								<ul
+									tabindex="0"
+									class="dropdown-content menu p-2 mt-2 shadow bg-base-100 rounded-box w-52"
+								>
+									<Input
+										type="date"
+										label="From"
+										bind:value={dateRangeValues.from}
+										error={dateRangeIsValid()
+											? dateRangeValues.from == ''
+												? false
+												: null
+											: `"From" can't be after "to"`}
+										max={TODAY}
+									/>
+									<Input
+										type="date"
+										label="To"
+										bind:value={dateRangeValues.to}
+										error={dateRangeIsValid()
+											? dateRangeValues.to == ''
+												? false
+												: null
+											: `"To" can't be before "from"`}
+										max={TODAY}
+									/>
+									<button
+										class="btn btn-sm btn-primary mt-2"
+										on:click={applyRange}
+										disabled={!dateRangeIsValid()}
+										>Apply date range</button
+									>
+								</ul>
+							</div>
+						</div>
+						<div>
+							<Input
+								type="select"
+								label="# of entries shown"
+								bind:value={resultsNum}
+								on:change={e => (
+									(resultsNum = e.target.value),
+									updateReports()
+								)}
+							>
+								<option>5</option>
+								<option>10</option>
+								<option>20</option>
+								<option>50</option>
+							</Input>
+						</div>
 					</div>
 				</div>
 
