@@ -311,6 +311,7 @@
 	};
 	let dateRangeValues = Object.assign({}, dateRange);
 	let dateRangeText = '';
+	let dateRangeActive = false;
 
 	function dateRangeIsValid() {
 		return (
@@ -792,51 +793,65 @@
 						<div>
 							<label class="label" for="">
 								<span class="label-text">Date range</span>
+								<span class="label-text pr-0.5">Active</span>
 							</label>
-							<div class="dropdown dropdown-end">
-								<label
-									tabindex="0"
-									for=""
-									class="flex items-center input input-bordered"
-								>
-									<span class="text-sm">{dateRangeText}</span>
-									<span
-										class="icon-calendar-range text-xl ml-3"
-									/>
-								</label>
-								<ul
-									tabindex="0"
-									class="dropdown-content menu p-2 mt-2 shadow bg-base-100 rounded-box w-52"
-								>
-									<Input
-										type="date"
-										label="From"
-										bind:value={dateRangeValues.from}
-										error={dateRangeIsValid()
-											? dateRangeValues.from == ''
-												? false
-												: null
-											: `"From" can't be after "to"`}
-										max={TODAY}
-									/>
-									<Input
-										type="date"
-										label="To"
-										bind:value={dateRangeValues.to}
-										error={dateRangeIsValid()
-											? dateRangeValues.to == ''
-												? false
-												: null
-											: `"To" can't be before "from"`}
-										max={TODAY}
-									/>
-									<button
-										class="btn btn-sm btn-primary mt-2"
-										on:click={applyRange}
-										disabled={!dateRangeIsValid()}
-										>Apply date range</button
+							<div
+								class="flex items-center input input-bordered divide-x divide-gray-300 dark:divide-gray-500"
+							>
+								<div class="dropdown dropdown-end">
+									<label
+										class="pr-2 flex items-center cursor-pointer"
+										for=""
+										tabindex="0"
 									>
-								</ul>
+										<span class="text-sm"
+											>{dateRangeText}</span
+										>
+										<span
+											class="icon-calendar-range text-xl ml-3"
+										/>
+									</label>
+									<ul
+										tabindex="0"
+										class="dropdown-content menu p-2 mt-4 shadow bg-base-100 rounded-box w-52"
+									>
+										<Input
+											type="date"
+											label="From"
+											bind:value={dateRangeValues.from}
+											error={dateRangeIsValid()
+												? dateRangeValues.from == ''
+													? false
+													: null
+												: `"From" can't be after "to"`}
+											max={TODAY}
+										/>
+										<Input
+											type="date"
+											label="To"
+											bind:value={dateRangeValues.to}
+											error={dateRangeIsValid()
+												? dateRangeValues.to == ''
+													? false
+													: null
+												: `"To" can't be before "from"`}
+											max={TODAY}
+										/>
+										<button
+											class="btn btn-sm btn-primary mt-2"
+											on:click={applyRange}
+											disabled={!dateRangeIsValid()}
+											>Apply date range</button
+										>
+									</ul>
+								</div>
+								<div class="pl-2 h-full flex items-center">
+									<input
+										type="checkbox"
+										class="checkbox"
+										bind:checked={dateRangeActive}
+									/>
+								</div>
 							</div>
 						</div>
 						<div>
