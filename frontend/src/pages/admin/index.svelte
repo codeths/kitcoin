@@ -546,6 +546,7 @@
 		}
 	}
 
+	let isInitialUpdate = true;
 	function updateReports() {
 		getDailyTransactions();
 		getDailyPurchases();
@@ -554,6 +555,10 @@
 		getTopTransactions();
 
 		dateRangeCSV = getRangeParams('&');
+
+		isInitialUpdate
+			? (isInitialUpdate = false)
+			: toastContainer.toast('Refreshed reports.', 'success');
 	}
 
 	updateReports();
