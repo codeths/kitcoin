@@ -451,11 +451,14 @@
 					borderColor: 'rgba(32, 102, 233, 0.5)',
 					backgroundColor: 'rgba(32, 102, 233, 0.75)',
 					data: data.map(data => ({
-						x: new Date(data.date).toLocaleDateString([], {
-							year: 'numeric',
-							month: '2-digit',
-							day: '2-digit',
-						}),
+						x: new Date(data.date + 'T00:00:00').toLocaleDateString(
+							[],
+							{
+								year: 'numeric',
+								month: '2-digit',
+								day: '2-digit',
+							},
+						),
 						y: data.total,
 					})),
 				},
@@ -477,11 +480,14 @@
 					borderColor: 'rgba(32, 102, 233, 0.5)',
 					backgroundColor: 'rgba(32, 102, 233, 0.75)',
 					data: data.map(data => ({
-						x: new Date(data.date).toLocaleDateString([], {
-							year: 'numeric',
-							month: '2-digit',
-							day: '2-digit',
-						}),
+						x: new Date(data.date + 'T00:00:00').toLocaleDateString(
+							[],
+							{
+								year: 'numeric',
+								month: '2-digit',
+								day: '2-digit',
+							},
+						),
 						y: data.total,
 					})),
 				},
