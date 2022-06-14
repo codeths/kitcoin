@@ -312,6 +312,7 @@
 	let dateRangeValues = Object.assign({}, dateRange);
 	let dateRangeText = '';
 	let dateRangeActive = false;
+	let dateRangeCSV = '';
 
 	function dateRangeIsValid() {
 		return (
@@ -339,7 +340,15 @@
 			from: dateRangeValues.from || DEFAULT_FROM,
 		};
 		updateRangeText();
+		if (dateRangeActive) updateReports();
 		e.target.blur();
+	}
+	function getRangeParams(start) {
+		return dateRangeActive
+			? `${start || ''}to=${dateRange.to}T23:59:59&from=${
+					dateRange.from
+			  }T00:00:00`
+			: '';
 	}
 
 	let transactionData;
@@ -431,7 +440,9 @@
 	};
 
 	async function getDailyTransactions(e) {
-		let res = await fetch('/api/reports/transactions/daily');
+		let res = await fetch(
+			`/api/reports/transactions/daily${getRangeParams('?')}`,
+		);
 		let data = await res.json();
 		transactionData = {
 			datasets: [
@@ -455,7 +466,9 @@
 	}
 
 	async function getDailyPurchases(e) {
-		let res = await fetch('/api/reports/purchases/daily');
+		let res = await fetch(
+			`/api/reports/purchases/daily${getRangeParams('?')}`,
+		);
 		let data = await res.json();
 		purchaseData = {
 			datasets: [
@@ -479,7 +492,9 @@
 	}
 
 	async function getTopSent(e) {
-		let res = await fetch(`/api/reports/sent/top?count=${resultsNum}`);
+		let res = await fetch(
+			`/api/reports/sent/top?count=${resultsNum}${getRangeParams('&')}`,
+		);
 		let data = await res.json();
 		topSentData = {
 			datasets: [
@@ -512,7 +527,9 @@
 
 	async function getTopTransactions(e) {
 		let res = await fetch(
-			`/api/reports/transactions/top?count=${resultsNum}`,
+			`/api/reports/transactions/top?count=${resultsNum}${getRangeParams(
+				'&',
+			)}`,
 		);
 		topTransactions = await res.json();
 
@@ -535,6 +552,8 @@
 		getTopSent();
 		getTopBalance();
 		getTopTransactions();
+
+		dateRangeCSV = getRangeParams('&');
 	}
 
 	updateReports();
@@ -850,6 +869,7 @@
 										type="checkbox"
 										class="checkbox"
 										bind:checked={dateRangeActive}
+										on:change={updateReports}
 									/>
 								</div>
 							</div>
@@ -933,7 +953,7 @@
 							</button>
 							<a
 								class="btn btn-primary"
-								href="/api/reports/transactions/daily?csv=true"
+								href="/api/reports/transactions/daily?csv=true{dateRangeCSV}"
 								target="_self"
 							>
 								<span class="icon-download text-2xl mr-2" />CSV
@@ -962,7 +982,7 @@
 							</button>
 							<a
 								class="btn btn-primary"
-								href="/api/reports/purchases/daily?csv=true"
+								href="/api/reports/purchases/daily?csv=true{dateRangeCSV}"
 								target="_self"
 							>
 								<span class="icon-download text-2xl mr-2" />CSV
@@ -988,7 +1008,7 @@
 							</button>
 							<a
 								class="btn btn-primary"
-								href="/api/reports/sent/top?csv=true"
+								href="/api/reports/sent/top?csv=true{dateRangeCSV}"
 								target="_self"
 							>
 								<span class="icon-download text-2xl mr-2" />CSV
@@ -1017,7 +1037,7 @@
 							</button>
 							<a
 								class="btn btn-primary"
-								href="/api/reports/transactions/top?csv=true"
+								href="/api/reports/transactions/top?csv=true{dateRangeCSV}"
 								target="_self"
 							>
 								<span class="icon-download text-2xl mr-2" />CSV
