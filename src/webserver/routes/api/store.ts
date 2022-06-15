@@ -12,13 +12,19 @@ import {request, Validators} from '../../../helpers/request.js';
 import {
 	DBError,
 	IStore,
+	IStoreRequest,
 	IUser,
 	Store,
 	StoreItem,
+	StoreRequest,
 	Transaction,
 	User,
 } from '../../../struct/index.js';
-import {IStoreAPIResponse, requestHasUser} from '../../../types/index.js';
+import {
+	IStoreAPIResponse,
+	requestHasUser,
+	StoreRequestStatus,
+} from '../../../types/index.js';
 
 const router = express.Router();
 
@@ -170,6 +176,29 @@ async function getStores(
 	return data;
 }
 
+async function handleDeletedRequestData(request: IStoreRequest) {
+	let item = await StoreItem.findById(request.itemID);
+
+	if (item && typeof item.quantity === 'number') {
+		item.quantity += request.quantity ?? 1;
+		await item.save();
+	}
+
+	let transaction = await Transaction.findById({_id: request.transactionID});
+
+	if (transaction) {
+		let user = await User.findById(request.studentID);
+		if (user) {
+			user.balance += request.price;
+			await user.save();
+		}
+
+		await transaction.delete();
+	}
+
+	await request.delete();
+}
+
 router.get(
 	'/',
 	async (req, res, next) =>
@@ -232,6 +261,7 @@ router.post(
 					managers: Validators.array(Validators.objectID),
 					users: Validators.array(Validators.objectID),
 					pinned: Validators.boolean,
+					requests: Validators.boolean,
 					allowDeductions: Validators.boolean,
 				},
 			},
@@ -364,6 +394,114 @@ router.get(
 );
 
 router.get(
+	'/requests',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['STUDENT'],
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			let requests = await StoreRequest.find({
+				studentID: req.user.id,
+			});
+
+			let data = (
+				await Promise.all(
+					requests.map(async r => {
+						let data = await r.toAPIResponse();
+						if (!data) {
+							handleDeletedRequestData(r);
+							return null;
+						}
+						return data;
+					}),
+				)
+			).filter(x => x);
+
+			return res.status(200).json(data);
+		} catch (e) {
+			try {
+				let error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
+router.get(
+	'/requests/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['STAFF'],
+			validators: {
+				params: {
+					id: Validators.objectID,
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			let store = await Store.findById(req.params.id);
+			if (!store) return res.status(404).send('Store not found');
+
+			let permissions = await getStorePerms(store, req.user);
+			if (!permissions.manage) return res.status(403).send('Forbidden');
+
+			let requests = await StoreRequest.find({
+				storeID: store.id,
+				status: StoreRequestStatus.PENDING,
+			});
+
+			let data = (
+				await Promise.all(
+					requests.map(async r => {
+						let data = await r.toAPIResponse();
+						if (!data) {
+							handleDeletedRequestData(r);
+							return null;
+						}
+						return data;
+					}),
+				)
+			).filter(x => x);
+
+			return res.status(200).json(data);
+		} catch (e) {
+			try {
+				let error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
+router.get(
 	'/:id',
 	async (req, res, next) =>
 		request(req, res, next, {
@@ -425,6 +563,7 @@ router.patch(
 					users: Validators.array(Validators.objectID),
 					owner: Validators.optional(Validators.objectID),
 					pinned: Validators.boolean,
+					requests: Validators.boolean,
 					allowDeductions: Validators.boolean,
 				},
 			},
@@ -693,7 +832,8 @@ router.post(
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(req.body.item);
-			if (!item) return res.status(400).send('Item not found');
+			if (!item || item.storeID !== store.id)
+				return res.status(400).send('Item not found');
 			let price = item.price;
 
 			let user = await User.findById(req.body.user);
@@ -818,7 +958,8 @@ router.get(
 		if (!permissions.view) return res.status(403).send('Forbidden');
 
 		let item = await StoreItem.findById(id);
-		if (!item) return res.status(404).send('Item not found');
+		if (!item || item.storeID !== store.id)
+			return res.status(400).send('Item not found');
 
 		res.status(200).json(
 			item.toObject({
@@ -842,7 +983,6 @@ router.get(
 			},
 		}),
 	async (req, res) => {
-		// lgtm [js/missing-rate-limiting]
 		let {storeID, id} = req.params;
 
 		let store = await Store.findById(storeID);
@@ -852,7 +992,8 @@ router.get(
 		if (!permissions.view) return res.status(403).send('Forbidden');
 
 		let item = await StoreItem.findById(id);
-		if (!item) return res.status(404).send('Item not found');
+		if (!item || item.storeID !== store.id)
+			return res.status(400).send('Item not found');
 
 		let image;
 		try {
@@ -903,7 +1044,8 @@ router.patch(
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(id);
-			if (!item) return res.status(404).send('Item not found');
+			if (!item || item.storeID !== store.id)
+				return res.status(400).send('Item not found');
 
 			image = await sharp(image)
 				.resize({width: 512, height: 512, fit: 'inside'})
@@ -955,7 +1097,6 @@ router.patch(
 router.patch(
 	'/:storeID/item/:id',
 	async (req, res, next) =>
-		// lgtm [js/missing-rate-limiting]
 		request(req, res, next, {
 			authentication: true,
 			validators: {
@@ -988,7 +1129,8 @@ router.patch(
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(id);
-			if (!item) return res.status(404).send('Item not found');
+			if (!item || item.storeID !== store.id)
+				return res.status(400).send('Item not found');
 
 			Object.assign(item, {name, description, price, quantity, pinned});
 
@@ -1022,7 +1164,6 @@ router.patch(
 router.delete(
 	'/:storeID/item/:id',
 	async (req, res, next) =>
-		// lgtm [js/missing-rate-limiting]
 		request(req, res, next, {
 			authentication: true,
 			validators: {
@@ -1045,7 +1186,8 @@ router.delete(
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(id);
-			if (!item) return res.status(404).send('Item not found');
+			if (!item || item.storeID !== store.id)
+				return res.status(400).send('Item not found');
 
 			await item.delete();
 
@@ -1078,7 +1220,6 @@ router.delete(
 router.delete(
 	'/:storeID/item/:id/image',
 	async (req, res, next) =>
-		// lgtm [js/missing-rate-limiting]
 		request(req, res, next, {
 			authentication: true,
 			validators: {
@@ -1101,7 +1242,8 @@ router.delete(
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(id);
-			if (!item) return res.status(404).send('Item not found');
+			if (!item || item.storeID !== store.id)
+				return res.status(400).send('Item not found');
 
 			try {
 				fs.rmSync(
@@ -1187,6 +1329,253 @@ router.post(
 					versionKey: false,
 				}),
 			);
+		} catch (e) {
+			try {
+				let error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
+router.post(
+	'/request',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['STUDENT'],
+			validators: {
+				body: {
+					store: Validators.objectID,
+					item: Validators.objectID,
+					quantity: Validators.optional(
+						Validators.and(Validators.integer, Validators.gt(0)),
+					),
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			let store = await Store.findById(req.body.store);
+			if (!store) return res.status(404).send('Store not found');
+			if (!store.requests)
+				return res.status(400).send('Store does not accept requests');
+
+			let permissions = await getStorePerms(store, req.user);
+			if (!permissions.view) return res.status(403).send('Forbidden');
+
+			let item = await StoreItem.findById(req.body.item);
+			if (!item || item.storeID !== store.id)
+				return res.status(400).send('Item not found');
+			let price = item.price;
+
+			let quantity: number = req.body.quantity ?? 1;
+			price *= quantity;
+
+			if (req.user.balance < price)
+				return res.status(400).send('You do not have enough money');
+
+			if (typeof item.quantity === 'number') {
+				if (item.quantity - quantity < 0)
+					return res.status(400).send('Not enough stock');
+				item.quantity -= quantity;
+			}
+
+			let transaction = await new Transaction({
+				amount: price * -1,
+				from: {
+					text: `[PENDING] Store purchase request in ${store.name}`,
+				},
+				to: {
+					id: req.user._id,
+				},
+				store: {
+					id: store.id,
+					item: item.id,
+					quantity,
+					manager: req.user.id,
+				},
+				reason: `${item.name}${quantity > 1 ? ` x${quantity}` : ''}`,
+			}).save();
+
+			req.user.balance -= price;
+			await req.user.save();
+
+			let request = await new StoreRequest({
+				storeID: store._id,
+				itemID: item._id,
+				studentID: req.user._id,
+				transactionID: transaction._id,
+				quantity,
+				price,
+			}).save();
+
+			await item.save();
+
+			res.status(200).json(await request.toAPIResponse());
+		} catch (e) {
+			try {
+				let error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
+router.post(
+	'/request/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			roles: ['STAFF'],
+			validators: {
+				params: {
+					id: Validators.objectID,
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			let request = await StoreRequest.findById(req.params.id);
+			if (!request) return res.status(404).send('Request not found');
+
+			let store = await Store.findById(request.storeID);
+			if (!store) {
+				handleDeletedRequestData(request);
+				return res.status(404).send('Request not found');
+			}
+
+			let permissions = await getStorePerms(store, req.user);
+			if (!permissions.manage) return res.status(403).send('Forbidden');
+
+			if (request.status !== StoreRequestStatus.PENDING)
+				return res.status(400).send('Request is not pending');
+
+			let item = await StoreItem.findById(request.itemID);
+			if (!item) {
+				handleDeletedRequestData(request);
+				return res.status(404).send('Request not found');
+			}
+
+			let student = await User.findById(request.studentID);
+			if (!student) {
+				handleDeletedRequestData(request);
+				return res.status(404).send('Request not found');
+			}
+
+			let transaction = await Transaction.findById(request.transactionID);
+			if (!transaction) {
+				handleDeletedRequestData(request);
+				return res.status(404).send('Request not found');
+			}
+			transaction.from.text = `Store purchase in ${store.name}`;
+			await transaction.save();
+
+			request.status = StoreRequestStatus.APPROVED;
+			await request.save();
+			res.status(200).json(await request.toAPIResponse());
+		} catch (e) {
+			try {
+				let error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
+	},
+);
+
+router.delete(
+	'/request/:id',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+			validators: {
+				params: {
+					id: Validators.objectID,
+				},
+			},
+		}),
+	async (req, res) => {
+		try {
+			if (!requestHasUser(req)) return;
+
+			let request = await StoreRequest.findById(req.params.id);
+			if (!request) return res.status(404).send('Request not found');
+
+			let store = await Store.findById(request.storeID);
+			if (!store) {
+				handleDeletedRequestData(request);
+				return res.status(404).send('Request not found');
+			}
+
+			let item = await StoreItem.findById(request.itemID);
+			if (!item) {
+				handleDeletedRequestData(request);
+				return res.status(404).send('Request not found');
+			}
+
+			if (request.status !== StoreRequestStatus.PENDING)
+				return res.status(400).send('Request is not pending');
+
+			if (request.studentID == req.user._id) {
+				request.status = StoreRequestStatus.CANCELLED;
+			} else {
+				let permissions = await getStorePerms(store, req.user);
+				if (!permissions.manage)
+					return res.status(403).send('Forbidden');
+
+				request.status = StoreRequestStatus.DENIED;
+			}
+
+			let student = await User.findById(request.studentID);
+			if (student) {
+				student.balance += request.price;
+				await student.save();
+			}
+
+			if (typeof item.quantity === 'number') {
+				item.quantity += request.quantity ?? 1;
+			}
+
+			await item.save();
+
+			await Transaction.deleteOne({_id: request.transactionID});
+
+			await request.save();
+			res.status(200).json(await request.toAPIResponse());
 		} catch (e) {
 			try {
 				let error = await DBError.generate(

@@ -40,4 +40,9 @@ router.get(
 	},
 );
 
+router.get('/check-version', (req, res) => {
+	let info = [process.env.npm_package_version, process.env.npm_package_name];
+	res.json(info);
+});
+
 export default router;

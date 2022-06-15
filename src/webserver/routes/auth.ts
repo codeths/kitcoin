@@ -81,7 +81,6 @@ router.get(
 			authentication: false,
 		}),
 	async (req, res) => {
-		// lgtm [js/missing-rate-limiting]
 		handleLogin(req, res);
 	},
 );
@@ -93,7 +92,6 @@ router.get(
 			authentication: false,
 		}),
 	async (req, res) => {
-		// lgtm [js/missing-rate-limiting]
 		handleLogin(req, res, {
 			scopes: 'STAFF',
 		});
@@ -107,7 +105,6 @@ router.get(
 			authentication: false,
 		}),
 	async (req, res) => {
-		// lgtm [js/missing-rate-limiting]
 		handleLogin(req, res, {
 			scopes: 'ADMIN_SYNC',
 			redirect: '/admin',
@@ -134,7 +131,6 @@ router.get(
 );
 
 router.get('/cbk', async (req, res) => {
-	// lgtm [js/missing-rate-limiting]
 	const code = req.query.code;
 	if (!code || typeof code !== 'string') {
 		let details = ErrorDetail.OAUTH_SIGN_IN_FAILED;

@@ -5,6 +5,7 @@ const {isValidObjectId} = mongoose;
 import {DBError, User} from '../struct/index.js';
 import {
 	getOptions,
+	isValidEnumValue,
 	isValidRole,
 	notEmpty,
 	RequestOptions,
@@ -530,9 +531,18 @@ export class Validators {
 		errorMessage: '{KEY} must be a valid ISO date or epoch timestamp (ms)',
 	});
 
+	/** Valid enum value */
+	static enum = (enumObject: {[key: number]: string}) => ({
+		run: (data: unknown) => isValidEnumValue(enumObject, data),
+		errorMessage: '{KEY} must be a valid enum value',
+	});
+
 	/** Valid role */
 	static role = () => ({
-		run: (data: unknown) => typeof data == 'string' && isValidRole(data),
+		run: (data: unknown) =>
+			typeof data == 'string' &&
+			isNaN(parseInt(data)) &&
+			isValidRole(data),
 		errorMessage: '{KEY} must be a valid role',
 	});
 

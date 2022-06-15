@@ -170,6 +170,7 @@ Create a store. Requires staff permissions.
 `public` (body): Whether the store is public or not. Public stores require admin permissions.  
 `pinned` (body): Whether the store is pinned or not. Pinned stores require admin permissions. The store must be public to be pinned.  
 `allowDeductions` (body): Whether deductions are allowed when selling items. Changing this setting requires admin permissions.  
+`requests` (body): Whether purchase requests are allowed in this store.  
 `managers` (body): An array of user IDs who can manage this store  
 `users` (body): An array of user IDs who can access this store
 
@@ -218,6 +219,7 @@ Update a store. Requires permission to manage this store.
 `public` (body): Whether the store is public or not. Changing this setting requires admin permissions.  
 `pinned` (body): Whether the store is pinned or not. Changing this setting require admin permissions. The store must be public to be pinned.  
 `allowDeductions` (body): Whether deductions are allowed when selling items. Changing this setting requires admin permissions.  
+`requests` (body): Whether purchase requests are allowed in this store.  
 `managers` (body): An array of user IDs who can manage this store  
 `users` (body): An array of user IDs who can access this store  
 `owner` (body): [Optional] The user ID of the new owner of the store. Changing this setting requires admin permissions or you to be the existing owner.
@@ -375,6 +377,68 @@ Create a store item
 ### Response
 
 `IStoreItem` (see [db schema](src/types/db.ts))
+
+## GET `/store/requests`
+
+Get a list of your requests
+
+### Request
+
+None
+
+### Response
+
+`IStoreRequestAPIResponse[]` (see [db schema](src/types/db.ts))
+
+## GET `/store/requests/:id`
+
+Get a list of pending requests for a store. You must be a manager of the store.
+
+### Request
+
+`:id` (path): Store ID
+
+### Resposne
+
+`IStoreRequestAPIResponse[]` (see [db schema](src/types/db.ts))
+
+## POST `/store/request`
+
+Create store request
+
+### Request
+
+`store` (body): Store ID  
+`item` (body): Item ID  
+`quantity` (body): [Optional] Quantity to purchase
+
+### Response
+
+`IStoreRequestAPIResponse` (see [db schema](src/types/db.ts))
+
+## POST `/store/request/:id`
+
+Approve a request. You must be a manager of the store.
+
+### Request
+
+`:id` (path): Request ID
+
+### Response
+
+`IStoreRequestAPIResponse` (see [db schema](src/types/db.ts))
+
+## DELETE `/store/request/:id`
+
+Deny/Cancel a request. You must be a manager of the store or the person who created the request.
+
+### Request
+
+`:id` (path): Request ID
+
+### Response
+
+`IStoreRequestAPIResponse` (see [db schema](src/types/db.ts))
 
 # Users
 
@@ -631,3 +695,22 @@ Gets users who sent the most Kitcoin
 ```
 
 Or in equivalent CSV form if `csv` is `true`
+
+# Other
+
+## GET `/check-version`
+
+Get version info.
+
+## Request
+
+None
+
+### Response
+
+```ts
+[
+	string | null, // version
+	string | null, // package name
+]
+```
