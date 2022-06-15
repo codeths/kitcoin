@@ -1125,7 +1125,11 @@
 							</table>
 						</div>
 					{:else}
-						<p class="text-center text-xl">No Transactions</p>
+						<p
+							class="bg-base-100 rounded-lg p-4 my-4 text-center text-xl"
+						>
+							No transactions
+						</p>
 					{/if}
 				</div>
 				<div class="col-span-12">
@@ -1195,7 +1199,11 @@
 							</table>
 						</div>
 					{:else}
-						<p class="text-center text-xl">No users</p>
+						<p
+							class="bg-base-100 rounded-lg p-4 my-4 text-center text-xl"
+						>
+							No users
+						</p>
 					{/if}
 				</div>
 			{/key}
