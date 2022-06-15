@@ -245,7 +245,7 @@ router.get(
 		if (from) query.date.$gte = from;
 		if (to) query.date.$lte = to;
 
-		let transactions = await Transaction.aggregate([
+		let steps: mongoose.PipelineStage[] = [
 			{
 				$match: query,
 			},
@@ -261,10 +261,13 @@ router.get(
 					amountAbs: -1,
 				},
 			},
-			{
-				$limit: count,
-			},
-		]);
+		];
+		if (
+			numberFromData(req.query.count) ||
+			!(req.query.csv && booleanFromData(req.query.csv))
+		)
+			steps.push({$limit: count});
+		let transactions = await Transaction.aggregate(steps);
 
 		// We did add an extra field, but mongoose takes it out
 		let data = await Promise.all(
@@ -465,7 +468,7 @@ router.get(
 		}),
 	async (req, res) => {
 		let count = numberFromData(req.query.count) || 10;
-		let topUsers = await User.find({
+		let topUsersQuery = User.find({
 			$and: [
 				{
 					roles: {$bitsAllSet: UserRoles.STUDENT},
@@ -474,9 +477,14 @@ router.get(
 					roles: {$bitsAllClear: UserRoles.STAFF},
 				},
 			],
-		})
-			.sort({balance: -1})
-			.limit(count);
+		}).sort({balance: -1});
+
+		let topUsers =
+			req.query.csv &&
+			booleanFromData(req.query.csv) &&
+			!numberFromData(req.query.count)
+				? await topUsersQuery
+				: await topUsersQuery.limit(count);
 
 		topUsers.forEach(x => {
 			x.balance = roundCurrency(x.balance);
@@ -552,11 +560,7 @@ router.get(
 		if (from) query.date.$gte = from;
 		if (to) query.date.$lte = to;
 
-		let transactions: {
-			_id: string;
-			amount: number;
-			count: number;
-		}[] = await Transaction.aggregate([
+		let steps: mongoose.PipelineStage[] = [
 			{
 				$match: query,
 			},
@@ -572,10 +576,17 @@ router.get(
 					amount: -1,
 				},
 			},
-			{
-				$limit: count,
-			},
-		]);
+		];
+		if (
+			numberFromData(req.query.count) ||
+			!(req.query.csv && booleanFromData(req.query.csv))
+		)
+			steps.push({$limit: count});
+		let transactions: {
+			_id: string;
+			amount: number;
+			count: number;
+		}[] = await Transaction.aggregate(steps);
 
 		let data = await Promise.all(
 			transactions.map(async x => {

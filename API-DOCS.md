@@ -542,7 +542,7 @@ Get top transactions by absolute value of amount
 
 `from` (query): [Optional] Date to start from (ISO or epoch MS). Defaults to none.  
 `to` (query): [Optional] Date to end at (ISO or epoch MS). Defaults to none.  
-`count` (query): [Optional] Number of results to return. Defaults to 10.  
+`count` (query): [Optional] Number of results to return. Defaults to none (all transactions returned) if `csv` is `true`, and 10 otherwise.  
 `csv` (query): [Optional] Return CSV instead of JSON. Should be `true` or `false`. Defaults to `false`.
 
 ### Response
@@ -589,7 +589,7 @@ Get top balances of all students
 
 ### Request
 
-`count` (query): [Optional] Number of results to return. Defaults to 10.  
+`count` (query): [Optional] Number of results to return. Defaults to none (all balances returned) if `csv` is `true`, and 10 otherwise.  
 `csv` (query): [Optional] Return CSV instead of JSON. Should be `true` or `false`. Defaults to `false`.
 
 ### Response
@@ -614,7 +614,7 @@ Gets users who sent the most Kitcoin
 
 `from` (query): [Optional] Date to start from (ISO or epoch MS). Defaults to none.  
 `to` (query): [Optional] Date to end at (ISO or epoch MS). Defaults to none.  
-`count` (query): [Optional] Number of results to return. Defaults to 10  
+`count` (query): [Optional] Number of results to return. Defaults to none (all users returned) when `csv` is `true`, and 10 otherwise.  
 `csv` (query): [Optional] Return CSV instead of JSON. Should be `true` or `false`. Defaults to `false`.
 
 ### Response
