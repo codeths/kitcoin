@@ -510,6 +510,7 @@ router.get(
 						title: 'Balance',
 					},
 				],
+				emptyFieldValue: '',
 			});
 			res.setHeader('Content-Type', 'text/csv');
 			res.setHeader(
