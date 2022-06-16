@@ -649,7 +649,7 @@ None
 
 ## GET `/reports/balance/top`
 
-Get top balances of all students
+Get top balances of students with balances greater than 0
 
 ### Request
 
@@ -712,5 +712,5 @@ None
 [
 	string | null, // version
 	string | null, // package name
-]
+];
 ```
