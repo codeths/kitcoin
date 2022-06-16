@@ -476,6 +476,9 @@ router.get(
 				{
 					roles: {$bitsAllClear: UserRoles.STAFF},
 				},
+				{
+					balance: {$gt: 0},
+				},
 			],
 		}).sort({balance: -1});
 
