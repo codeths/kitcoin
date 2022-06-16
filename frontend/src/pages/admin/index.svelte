@@ -971,13 +971,16 @@
 							</a>
 						</div>
 					</h2>
-					{#if transactionData}
-						<Line
-							data={transactionData}
-							options={chartOptions}
-							class="bg-base-100 rounded-lg p-4 my-4"
-						/>
-					{/if}
+					<div class="bg-base-100 rounded-lg p-4 my-4">
+						{#if transactionData}
+							<Line
+								data={transactionData}
+								options={chartOptions}
+							/>
+						{:else}
+							<Loading height="2rem" />
+						{/if}
+					</div>
 				</div>
 				<div class="col-span-12 lg:col-span-6">
 					<h2
@@ -1000,13 +1003,13 @@
 							</a>
 						</div>
 					</h2>
-					{#if purchaseData}
-						<Line
-							data={purchaseData}
-							options={chartOptions}
-							class="bg-base-100 rounded-lg p-4 my-4"
-						/>
-					{/if}
+					<div class="bg-base-100 rounded-lg p-4 my-4">
+						{#if purchaseData}
+							<Line data={purchaseData} options={chartOptions} />
+						{:else}
+							<Loading height="2rem" />
+						{/if}
+					</div>
 				</div>
 				<div class="col-span-12 lg:col-span-6">
 					<h2
@@ -1026,13 +1029,16 @@
 							</a>
 						</div>
 					</h2>
-					{#if topSentData}
-						<Scatter
-							data={topSentData}
-							options={scatterOptions}
-							class="bg-base-100 rounded-lg p-4 my-4"
-						/>
-					{/if}
+					<div class="bg-base-100 rounded-lg p-4 my-4">
+						{#if topSentData}
+							<Scatter
+								data={topSentData}
+								options={scatterOptions}
+							/>
+						{:else}
+							<Loading height="2rem" />
+						{/if}
+					</div>
 				</div>
 				<div class="col-span-12">
 					<h2
