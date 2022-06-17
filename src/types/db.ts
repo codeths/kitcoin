@@ -46,6 +46,7 @@ export type IUserAPIResponse = Modify<
 export type ITransactionAPIResponse = Modify<
 	LeanDocument<ITransaction>,
 	{
+		_id: string;
 		/**
 		 * The date of the transaction (ISO format)
 		 */

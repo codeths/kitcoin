@@ -157,7 +157,9 @@ export function booleanFromData(data: unknown): boolean | null {
 
 export function dateFromData(data: unknown): Date | null {
 	if (!Validators.date().run(data)) return null;
-	return new Date(data);
+	const num = numberFromData(data);
+	const date = new Date(data);
+	return !isNaN(date.getTime()) ? date : num ? new Date(num) : null;
 }
 
 export class Validators {

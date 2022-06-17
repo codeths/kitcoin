@@ -77,10 +77,30 @@
 		/>
 	{:else if type == 'datetime-local'}
 		<input
-			class="input input-bordered	w-full {additionalClasses}"
+			class="input input-bordered w-full {additionalClasses}"
 			class:input-success={error === null}
 			class:input-error={error}
 			type="datetime-local"
+			{disabled}
+			placeholder={label}
+			on:input={handle}
+			on:focus={handle}
+			on:blur={handle}
+			on:change
+			on:input
+			on:keydown
+			on:focus
+			on:blur
+			bind:value
+			bind:this={input}
+			{...$$restProps}
+		/>
+	{:else if type == 'date'}
+		<input
+			class="input input-bordered w-full {additionalClasses}"
+			class:input-success={error === null}
+			class:input-error={error}
+			type="date"
 			{disabled}
 			placeholder={label}
 			on:input={handle}
@@ -117,7 +137,7 @@
 		</select>
 	{:else}
 		<input
-			class="input input-bordered	w-full {additionalClasses}"
+			class="input input-bordered w-full {additionalClasses}"
 			class:input-success={error === null}
 			class:input-error={error}
 			{disabled}

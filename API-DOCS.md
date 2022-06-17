@@ -542,6 +542,160 @@ None
 
 None
 
+# Reports
+
+All reporting routes require admin permissions
+
+## GET `/reports/transactions/daily`
+
+Get daily transactions report
+
+### Request
+
+`from` (query): [Optional] Date to start from (ISO or epoch MS). Defaults to 30 days ago.  
+`to` (query): [Optional] Date to end at (ISO or epoch MS). Defaults to today.  
+`csv` (query): [Optional] Return CSV instead of JSON. Should be `true` or `false`. Defaults to `false`.
+
+### Response
+
+```ts
+{
+	/** Date as YYYY-MM-DD */
+	date: string;
+	/** Number of transactions */
+	count: number;
+	/** Total transaction value */
+	total: number;
+}
+[];
+```
+
+Or in equivalent CSV form if `csv` is `true`
+
+## GET `/reports/purchases/daily`
+
+Get daily store purchases report
+
+### Request
+
+`from` (query): [Optional] Date to start from (ISO or epoch MS). Defaults to 30 days ago.  
+`to` (query): [Optional] Date to end at (ISO or epoch MS). Defaults to today.  
+`csv` (query): [Optional] Return CSV instead of JSON. Should be `true` or `false`. Defaults to `false`.
+
+### Response
+
+```ts
+{
+	/** Date as YYYY-MM-DD */
+	date: string;
+	/** Number of transactions */
+	count: number;
+	/** Total transaction value */
+	total: number;
+}
+[];
+```
+
+Or in equivalent CSV form if `csv` is `true`
+
+## GET `/reports/transactions/top`
+
+Get top transactions by absolute value of amount
+
+### Request
+
+`from` (query): [Optional] Date to start from (ISO or epoch MS). Defaults to none.  
+`to` (query): [Optional] Date to end at (ISO or epoch MS). Defaults to none.  
+`count` (query): [Optional] Number of results to return. Defaults to none (all transactions returned) if `csv` is `true`, and 10 otherwise.  
+`csv` (query): [Optional] Return CSV instead of JSON. Should be `true` or `false`. Defaults to `false`.
+
+### Response
+
+Array of transactions
+
+Or in equivalent CSV form if `csv` is `true`
+
+## GET `/reports/transactions/all`
+
+Get all transactions
+
+### Request
+
+`from` (query): [Optional] Date to start from (ISO or epoch MS). Defaults to none.  
+`to` (query): [Optional] Date to end at (ISO or epoch MS). Defaults to none.  
+`count` (query): [Optional] Number of results to return. Defaults to none (all transactions returned).  
+`skip` (query): [Optional] Number of results to skip. Defaults to 0.  
+`csv` (query): [Optional] Return CSV instead of JSON. Should be `true` or `false`. Defaults to `false`.
+
+### Response
+
+Array of transactions
+
+## GET `/reports/balance/total`
+
+Get total balance of all students
+
+### Request
+
+None
+
+### Response
+
+```ts
+{
+	balance: number;
+}
+```
+
+## GET `/reports/balance/top`
+
+Get top balances of students with balances greater than 0
+
+### Request
+
+`count` (query): [Optional] Number of results to return. Defaults to none (all balances returned) if `csv` is `true`, and 10 otherwise.  
+`csv` (query): [Optional] Return CSV instead of JSON. Should be `true` or `false`. Defaults to `false`.
+
+### Response
+
+```ts
+{
+	_id: string;
+	name: string;
+	email: string | undefined;
+	balance: number;
+}
+[];
+```
+
+Or in equivalent CSV form if `csv` is `true`
+
+## GET `/reports/sent/top`
+
+Gets users who sent the most Kitcoin
+
+### Request
+
+`from` (query): [Optional] Date to start from (ISO or epoch MS). Defaults to none.  
+`to` (query): [Optional] Date to end at (ISO or epoch MS). Defaults to none.  
+`count` (query): [Optional] Number of results to return. Defaults to none (all users returned) when `csv` is `true`, and 10 otherwise.  
+`csv` (query): [Optional] Return CSV instead of JSON. Should be `true` or `false`. Defaults to `false`.
+
+### Response
+
+```ts
+{
+	_id: string;
+	name: string | undefined;
+	email: string | undefined;
+	amount: number;
+	count: number;
+}
+[];
+```
+
+Or in equivalent CSV form if `csv` is `true`
+
 # Other
 
 ## GET `/check-version`
@@ -558,5 +712,5 @@ None
 [
 	string | null, // version
 	string | null, // package name
-]
+];
 ```
