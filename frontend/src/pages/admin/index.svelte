@@ -313,6 +313,8 @@
 	let dateRangeText = '';
 	let dateRangeActive = false;
 	let dateRangeCSV = '';
+	let dateRangeHint = `By default, different data points have different suggested ranges applied.
+	To change these, check the "Active" box and input a new range.`;
 
 	function dateRangeIsValid() {
 		return (
@@ -822,7 +824,17 @@
 					<div class="flex gap-x-4 items-end flex-wrap">
 						<div>
 							<label class="label" for="">
-								<span class="label-text">Date range</span>
+								<div class="flex">
+									<span class="label-text">Date range</span>
+									<div
+										class="flex ml-2 tooltip"
+										data-tip={dateRangeHint}
+									>
+										<span
+											class="icon-circle-question text-info text-xl leading-5"
+										/>
+									</div>
+								</div>
 								<span class="label-text pr-0.5">Active</span>
 							</label>
 							<div
