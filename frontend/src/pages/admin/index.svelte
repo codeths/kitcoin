@@ -1110,13 +1110,15 @@
 												>{transaction._id}</td
 											>
 											<td class="px-2 py-4"
-												>{transaction.from.text}</td
+												>{transaction.from.text ||
+													'-'}</td
 											>
 											<td class="px-2 py-4"
 												>{transaction.reason || '-'}</td
 											>
 											<td class="px-2 py-4"
-												>{transaction.to.text}</td
+												>{transaction.to.text ||
+													'-'}</td
 											>
 											<td
 												class="px-2 py-4"
@@ -1194,7 +1196,7 @@
 												>{user._id}</td
 											>
 											<td class="px-2 py-4"
-												>{user.name}</td
+												>{user.name || '-'}</td
 											>
 											<td class="px-2 py-4"
 												>{user.email || '-'}</td
