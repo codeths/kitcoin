@@ -63,6 +63,14 @@
 			.addEventListener('change', handleMediaQuery);
 	}
 
+	function updateScrollbar() {
+		const scrollbarWidth = window.innerWidth - document.body.clientWidth;
+		document.body.style.setProperty(
+			'--scrollbarWidth',
+			`${scrollbarWidth}px`,
+		);
+	}
+
 	window.addEventListener(
 		'dragover',
 		e =>
@@ -75,6 +83,8 @@
 			!(e.target && e.target.classList.contains('filedrop')) &&
 			e.preventDefault(),
 	);
+	window.addEventListener('resize', updateScrollbar);
+	updateScrollbar();
 </script>
 
 <Router {routes} />

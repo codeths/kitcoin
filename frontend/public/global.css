@@ -124,6 +124,10 @@ span[class^='icon-']::before {
 		height: calc(100vh - 4rem);
 	}
 
+	.w-screen-noscroll {
+		width: calc(100vw - var(--scrollbarWidth));
+	}
+
 	.drawer-side .menu a {
 		@apply rounded-lg my-1;
 	}
