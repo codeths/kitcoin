@@ -176,10 +176,10 @@ export class AdminClient {
 		this.token = user.tokens.access;
 
 		if (sync_spreadsheet_id) {
-			await this.fetchStudentIDs();
+			await this.fetchStudentIDs().catch(error => console.error('fetchStudentIDs failed:', error));
 		}
 		if (gadmin_domain) {
-			return this.processAllUsers();
+			return this.processAllUsers().catch(error => console.error('processAllUsers failed:', error));
 		}
 	}
 
