@@ -139,7 +139,7 @@ export class AdminClient {
 	public async processAllUsers(pageToken?: string): Promise<void> {
 		return new Promise(async (resolve, reject) => {
 			if (!this.token)
-				reject('Could not authenticate for the Google API');
+				return reject('Could not authenticate for the Google API');
 
 			let users = await this.listUsers(pageToken).catch(e => {
 				if (e && e.code && e.errors)
@@ -150,14 +150,23 @@ export class AdminClient {
 					);
 				else reject(e);
 			});
-			if (!users || !users.users) return;
-			resolve();
+			if (!users || !users.users) return resolve();
 
+			console.log(
+				`processAllUsers(): processing ${users.users.length} users`,
+			);
 			await Promise.all(users.users.map(this.processUser));
 
-			if (users.nextPageToken)
-				return this.processAllUsers(users.nextPageToken);
-			return;
+			if (users.nextPageToken) {
+				return this.processAllUsers(users.nextPageToken)
+					.then(e => resolve())
+					.catch(e => {
+						console.error('processAllUsers(): error in child:', e);
+						reject();
+					});
+			}
+			console.log('processAllUsers(): no nextPageToken; done.');
+			return resolve();
 		});
 	}
 
@@ -175,11 +184,22 @@ export class AdminClient {
 		if (!user.tokens?.access) return;
 		this.token = user.tokens.access;
 
+		console.log(`Starting sync at ${new Date().toLocaleString()}`);
 		if (sync_spreadsheet_id) {
-			await this.fetchStudentIDs().catch(error => console.error('fetchStudentIDs failed:', error));
+			await this.fetchStudentIDs().catch(error =>
+				console.error('fetchStudentIDs failed:', error),
+			);
 		}
 		if (gadmin_domain) {
-			return this.processAllUsers().catch(error => console.error('processAllUsers failed:', error));
+			return this.processAllUsers()
+				.then(e =>
+					console.log(
+						`processAllUsers finished at ${new Date().toLocaleString()}`,
+					),
+				)
+				.catch(error =>
+					console.error('processAllUsers failed:', error),
+				);
 		}
 	}
 
