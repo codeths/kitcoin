@@ -43,7 +43,7 @@ router.get(
 			const dbUser = user == 'me' ? req.user : await User.findById(user);
 			if (!dbUser) return res.status(404).send('Invalid user');
 
-			const balance = dbUser.balance;
+			const {balance} = await dbUser.toAPIResponse();
 
 			res.status(200).send({balance});
 		} catch (e) {
