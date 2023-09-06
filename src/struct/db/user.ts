@@ -3,6 +3,7 @@ import fuzzySearch from 'mongoose-fuzzy-searching';
 import typegoose, {DocumentType} from '@typegoose/typegoose';
 const {index, plugin, prop} = typegoose;
 import {ReturnModelType} from '@typegoose/typegoose/lib/types';
+import {Transaction, ITransaction} from '../index.js';
 
 import {weeklyBalance} from '../../config/keys.js';
 import {getAccessToken} from '../../helpers/oauth.js';
@@ -54,27 +55,21 @@ function endOfWeek(): Date {
 	);
 }
 
-function getBalance(this: DocumentType<User>, balance: number) {
-	if (!this.hasRole('STAFF')) return roundCurrency(balance);
-	let rawBalanceExpires = this.get('balanceExpires', null, {
-		getters: false,
-	});
-	if (
-		!rawBalanceExpires ||
-		rawBalanceExpires.getTime() < new Date().getTime()
-	) {
-		return roundCurrency(
-			(this.balance =
-				weeklyBalance * (this.weeklyBalanceMultiplier ?? 1)),
-		);
-	}
-	return roundCurrency(balance);
-}
-
 function getBalanceExpires(this: DocumentType<User>, balanceExpires: Date) {
 	if (!this.hasRole('STAFF')) return undefined;
 	if (!balanceExpires || balanceExpires.getTime() < new Date().getTime()) {
 		this.balanceExpires = endOfWeek();
+		let origBalance = this.balance;
+		this.balance = weeklyBalance * (this.weeklyBalanceMultiplier ?? 1);
+		let newBalance = this.balance;
+		if (origBalance != newBalance) {
+			let transaction = new Transaction();
+			transaction.amount = newBalance - origBalance;
+			transaction.reason = 'Balance Reset';
+			transaction.from = {text: `System`};
+			transaction.to = {id: this._id};
+			transaction.save();
+		}
 		return this.balanceExpires;
 	}
 	return balanceExpires;
@@ -135,7 +130,7 @@ export default class User extends MongooseFuzzyClass {
 	/**
 	 * The user's balance
 	 */
-	@prop({required: true, get: getBalance, set: roundCurrency, default: 0})
+	@prop({required: true, set: roundCurrency, default: 0})
 	public balance!: number;
 
 	/**
