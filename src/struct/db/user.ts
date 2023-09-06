@@ -3,7 +3,7 @@ import fuzzySearch from 'mongoose-fuzzy-searching';
 import typegoose, {DocumentType} from '@typegoose/typegoose';
 const {index, plugin, prop} = typegoose;
 import {ReturnModelType} from '@typegoose/typegoose/lib/types';
-import {Transaction, ITransaction} from '../index.js';
+import {Transaction} from '../index.js';
 
 import {weeklyBalance} from '../../config/keys.js';
 import {getAccessToken} from '../../helpers/oauth.js';
