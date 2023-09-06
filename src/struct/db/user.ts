@@ -61,6 +61,7 @@ function getBalanceExpires(this: DocumentType<User>, balanceExpires: Date) {
 		this.balanceExpires = endOfWeek();
 		let origBalance = this.balance;
 		this.balance = weeklyBalance * (this.weeklyBalanceMultiplier ?? 1);
+		this.save();
 		let newBalance = this.balance;
 		if (origBalance != newBalance) {
 			let transaction = new Transaction();
