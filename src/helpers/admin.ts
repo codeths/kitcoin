@@ -117,7 +117,13 @@ export class AdminClient {
 					modified = true;
 				}
 
-				if (modified) await dbUser.save().catch(e => {});
+				if (modified)
+					await dbUser.save().catch(e => {
+						console.log(
+							'Failed to save changes to user account:',
+							e,
+						);
+					});
 			}
 		} else if (!exclude) {
 			let newUser = new User({
