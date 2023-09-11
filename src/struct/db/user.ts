@@ -3,7 +3,7 @@ import fuzzySearch from 'mongoose-fuzzy-searching';
 import typegoose, {DocumentType} from '@typegoose/typegoose';
 const {index, plugin, prop} = typegoose;
 import {ReturnModelType} from '@typegoose/typegoose/lib/types';
-import {Transaction} from '../index.js';
+import {Transaction, User as UserClass} from '../index.js';
 
 import {weeklyBalance} from '../../config/keys.js';
 import {getAccessToken} from '../../helpers/oauth.js';
@@ -61,7 +61,14 @@ function getBalanceExpires(this: DocumentType<User>, balanceExpires: Date) {
 		this.balanceExpires = endOfWeek();
 		let origBalance = this.balance;
 		this.balance = weeklyBalance * (this.weeklyBalanceMultiplier ?? 1);
-		this.save();
+
+		if (!this.isNew) {
+			UserClass.findByIdAndUpdate(this.id, {
+				balanceExpires: this.balanceExpires,
+				balance: this.balance,
+			}).exec();
+		}
+
 		let newBalance = this.balance;
 		if (origBalance != newBalance) {
 			let transaction = new Transaction();
