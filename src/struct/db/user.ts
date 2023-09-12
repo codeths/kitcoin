@@ -104,7 +104,7 @@ function getBalanceExpires(this: DocumentType<User>, balanceExpires: Date) {
 		},
 	},
 })
-@index({email: 1}, {unique: true, sparse: true})
+@index({email: 1}, {sparse: true})
 @index({googleID: 1}, {unique: true})
 @index({schoolID: 1}, {unique: true, sparse: true})
 export default class User extends MongooseFuzzyClass {
