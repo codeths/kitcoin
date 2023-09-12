@@ -5,6 +5,8 @@ import {cpus} from 'os';
 import {gadmin_sync_user, mongo} from './config/keys.js';
 import {AdminClient} from './helpers/admin.js';
 
+import {User} from './struct/index.js';
+
 function startSync() {
 	let user = gadmin_sync_user as string | null;
 	if (typeof user == 'string') {
@@ -22,6 +24,12 @@ mongoose
 	.connect(mongo)
 	.then(async () => {
 		if (cluster.isPrimary) {
+			console.log('RUNNING MIGRATIONS');
+
+			await User.syncIndexes();
+
+			console.log('MIGRATIONS COMPLETE');
+
 			startSync();
 
 			const numClusters =
