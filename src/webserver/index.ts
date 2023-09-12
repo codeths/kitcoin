@@ -1,10 +1,8 @@
-import cluster from 'cluster';
 import compression from 'compression';
 import mongostore from 'connect-mongodb-session';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import session from 'express-session';
-import {cpus} from 'os';
 
 import {mongo as mongoURL, port, sessionSecret} from '../config/keys.js';
 import {request} from '../helpers/request.js';
@@ -31,17 +29,9 @@ declare module 'express-serve-static-core' {
 
 const app = express();
 
-let numClusters = parseInt(process.env.CLUSTERS || '0') || cpus().length;
-
-if (numClusters > 1 && cluster.isPrimary) {
-	for (let i = 0; i < numClusters; i++) {
-		cluster.fork();
-	}
-} else {
-	app.listen(port, () => {
-		console.log(`Server listening on port ${port}`);
-	});
-}
+app.listen(port, () => {
+	console.log(`Server listening on port ${port}`);
+});
 
 const MongoDBStore = mongostore(session);
 
