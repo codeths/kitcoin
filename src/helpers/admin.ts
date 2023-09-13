@@ -142,12 +142,15 @@ export class AdminClient {
 	 * Sync all users with Google Admin
 	 * @param pageToken API Page Token
 	 */
-	public async processAllUsers(pageToken?: string): Promise<void> {
+	public async processAllUsers(options?: {
+		pageToken: string;
+		previousUsers: string[];
+	}): Promise<void> {
 		return new Promise(async (resolve, reject) => {
 			if (!this.token)
 				return reject('Could not authenticate for the Google API');
 
-			let users = await this.listUsers(pageToken).catch(e => {
+			let users = await this.listUsers(options?.pageToken).catch(e => {
 				if (e && e.code && e.errors)
 					reject(
 						`Error syncing admin: Google API ${e.code}: ${e.errors
@@ -162,9 +165,18 @@ export class AdminClient {
 				`processAllUsers(): processing ${users.users.length} users`,
 			);
 			await Promise.all(users.users.map(this.processUser));
+			const currentUsers = users.users
+				.map(e => e.id)
+				.filter((e): e is string => typeof e === 'string');
+			const allUserIds = (options?.previousUsers || []).concat(
+				currentUsers,
+			);
 
 			if (users.nextPageToken) {
-				return this.processAllUsers(users.nextPageToken)
+				return this.processAllUsers({
+					pageToken: users.nextPageToken,
+					previousUsers: allUserIds,
+				})
 					.then(e => resolve())
 					.catch(e => {
 						console.error('processAllUsers(): error in child:', e);
@@ -172,6 +184,32 @@ export class AdminClient {
 					});
 			}
 			console.log('processAllUsers(): no nextPageToken; done.');
+
+			const allDbUsers = await User.find(
+				{doNotSync: {$ne: true}},
+				'googleID',
+			)
+				.exec()
+				.then(ids => ids.map(id => id.googleID));
+
+			const idsToRemove = allDbUsers.filter(
+				id => !allUserIds.includes(id),
+			);
+
+			if (idsToRemove.length > 0) {
+				const users = await Promise.all(
+					idsToRemove.map(id => User.findByGoogleId(id)),
+				);
+				console.log(
+					`${idsToRemove.length} account${
+						idsToRemove.length === 1 ? '' : 's'
+					} not found in sync, removing:`,
+				);
+				users.map(user => console.log(`\t${user?.email}`));
+				await Promise.all(users.map(user => user?.remove()));
+				console.log('detached users removed.');
+			}
+
 			return resolve();
 		});
 	}
