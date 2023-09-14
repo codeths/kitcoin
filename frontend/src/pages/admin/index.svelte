@@ -603,6 +603,7 @@
 						hidelabel="true"
 						me="true"
 						roles={null}
+						showMongoID={true}
 					/>
 					{#if selectedStudent}
 						<button

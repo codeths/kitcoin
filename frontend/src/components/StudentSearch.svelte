@@ -11,6 +11,7 @@
 	export let students = null;
 	export let multiselect = false;
 	export let roles = ['STUDENT'];
+	export let showMongoID = false;
 
 	if (!multiselect) {
 		if (value == []) {
@@ -34,7 +35,15 @@
 
 			let fetchedResults = (
 				await searchUsers(text, 15, roles, me).catch(e => [])
-			).map(x => ({text: x.name, value: x.id, confidence: x.confidence}));
+			).map(x => ({
+				text: `${x.name}${
+					showMongoID
+						? ` [${x.id.substring(x.id.length - 7, x.id.length)}]`
+						: ''
+				}`,
+				value: x.id,
+				confidence: x.confidence,
+			}));
 
 			if (!isOpen) return;
 
