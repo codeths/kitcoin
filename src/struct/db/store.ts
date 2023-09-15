@@ -43,6 +43,9 @@ export default class Store {
 	@prop({type: [String]})
 	public users: string[] = [];
 
+	/**
+	 * If the store is pinned at the top of the "stores" page
+	 */
 	@prop({required: true, default: false})
 	public pinned: boolean = false;
 
@@ -57,6 +60,12 @@ export default class Store {
 	 */
 	@prop({required: true, default: false})
 	public allowDeductions: boolean = false;
+
+	/**
+	 * If the store has been archived
+	 */
+	@prop()
+	public archived: boolean;
 
 	public async toAPIResponse(
 		this: DocumentType<Store>,

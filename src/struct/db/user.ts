@@ -166,6 +166,12 @@ export default class User extends MongooseFuzzyClass {
 	public doNotSync: boolean;
 
 	/**
+	 * If the user has been archived
+	 */
+	@prop()
+	public archived: boolean;
+
+	/**
 	 * Set the roles on this user
 	 * @param roles An array of roles to set
 	 */
