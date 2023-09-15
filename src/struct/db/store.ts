@@ -67,6 +67,13 @@ export default class Store {
 	@prop()
 	public archived: boolean;
 
+	/**
+	 * Archives the store
+	 */
+	public archive() {
+		this.archived = true;
+	}
+
 	public async toAPIResponse(
 		this: DocumentType<Store>,
 		canManage: boolean,

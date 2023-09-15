@@ -44,6 +44,13 @@ export default class StoreItem {
 	@prop()
 	public archived: boolean;
 
+	/**
+	 * Archives the item
+	 */
+	public archive() {
+		this.archived = true;
+	}
+
 	public get createdAt(): Date {
 		return (
 			this as unknown as DocumentType<typeof StoreItem>
