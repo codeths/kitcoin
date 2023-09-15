@@ -339,7 +339,8 @@ router.delete(
 			let user = await User.findById(req.params.id);
 			if (!user) return res.status(404).send('User not found');
 
-			await user.remove();
+			user.archive();
+			await user.save();
 
 			res.status(200).send();
 		} catch (e) {

@@ -86,7 +86,8 @@ export class AdminClient {
 		if (dbUser && dbUser.doNotSync) return;
 		if (dbUser) {
 			if (exclude) {
-				await dbUser.remove();
+				dbUser.archive();
+				await dbUser.save();
 			} else {
 				let modified = false;
 				if (

@@ -710,10 +710,12 @@ router.delete(
 							),
 						);
 					} catch (e) {}
-					await item.delete();
+					item.archive();
+					await item.save();
 				}),
 			);
-			await store.delete();
+			store.archive();
+			await store.save();
 
 			res.status(200).send();
 		} catch (e) {
@@ -1189,7 +1191,8 @@ router.delete(
 			if (!item || item.storeID !== store.id)
 				return res.status(400).send('Item not found');
 
-			await item.delete();
+			item.archive();
+			await item.save();
 
 			try {
 				fs.rmSync(
