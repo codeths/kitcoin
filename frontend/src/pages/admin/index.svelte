@@ -610,6 +610,7 @@
 						me="true"
 						roles={null}
 						showMongoID={true}
+						withArchived={true}
 					/>
 					{#if selectedStudent}
 						<button
