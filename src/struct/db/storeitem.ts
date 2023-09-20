@@ -42,7 +42,7 @@ export default class StoreItem {
 	 * If the item has been archived
 	 */
 	@prop()
-	public archived: boolean;
+	public archived?: boolean;
 
 	/**
 	 * Archives the item

@@ -65,7 +65,7 @@ export default class Store {
 	 * If the store has been archived
 	 */
 	@prop()
-	public archived: boolean;
+	public archived?: boolean;
 
 	/**
 	 * Archives the store
