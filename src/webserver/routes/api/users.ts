@@ -25,6 +25,8 @@ function isValidSearchResult(user: IUser, req: express.Request): boolean {
 	)
 		return false;
 
+	if (user.archived && !booleanFromData(req.query.withArchived)) return false;
+
 	let roleArray = req.query.roles
 		? ((req.query.roles as string)
 				.toUpperCase()
@@ -61,6 +63,7 @@ router.get(
 						),
 					),
 					me: Validators.optional(Validators.anyBoolean),
+					withArchived: Validators.optional(Validators.anyBoolean),
 				},
 			},
 		}),

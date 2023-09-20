@@ -169,7 +169,7 @@ export default class User extends MongooseFuzzyClass {
 	 * If the user has been archived
 	 */
 	@prop()
-	public archived: boolean;
+	public archived?: boolean;
 
 	/**
 	 * Archives the store
