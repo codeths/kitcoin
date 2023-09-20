@@ -451,7 +451,8 @@ Search for users
 `q` (query): Search query  
 `roles` (query): [Optional] User must have at least one these roles. Separate multiple roles with a comma.  
 `count` (query): [Optional] Number of results to return. Defaults to 10  
-`me` (query): [Optional] Include the authenticated user in the results. Defaults to false
+`me` (query): [Optional] Include the authenticated user in the results. Defaults to false  
+`withArchived` (query): [Optional] Include archived uesrs in the results. Defaults to false. Requires admin role.
 
 ### Response
 
@@ -492,7 +493,8 @@ Update a user
 `balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)  
 `weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier  
 `roles` (body): [Optional] Roles to give to the user as an arry of strings  
-`doNotSync` (body): [Optional] Do not sync this user with Google Admin
+`doNotSync` (body): [Optional] Do not sync this user with Google Admin  
+`archived` (body): [Optional] Mark user as archived
 
 ### Response
 
@@ -500,7 +502,7 @@ Update a user
 
 ## DELETE `/users/:id`
 
-Delete a user
+Archive a user
 
 ### Request
 
@@ -524,7 +526,8 @@ Create a user
 `balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)  
 `weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier  
 `roles` (body): [Optional] Roles to give to the user as an arry of strings  
-`doNotSync` (body): [Optional] Do not sync this user with Google Admin
+`doNotSync` (body): [Optional] Do not sync this user with Google Admin  
+`archived` (body): [Optional] Mark user as archived
 
 ### Response
 
