@@ -113,9 +113,11 @@
 		return false;
 	}
 
-	async function deleteUser() {
+	async function archiveUser() {
 		if (
-			!confirm(`Are you sure you want to delete ${selectedStudent.text}?`)
+			!confirm(
+				`Are you sure you want to archive ${selectedStudent.text}?`,
+			)
 		)
 			return;
 		submitStatus = 'LOADING';
@@ -126,11 +128,11 @@
 
 		submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
 		if (submitStatus == 'SUCCESS') {
-			toastContainer.toast(`${selectedStudent.text} deleted`, 'success');
+			toastContainer.toast(`${selectedStudent.text} archived`, 'success');
 			studentSearch.el.setValue(null, null);
 			setData();
 		} else {
-			toastContainer.toast('Error deleting user.', 'error');
+			toastContainer.toast('Error archiving user.', 'error');
 		}
 	}
 
@@ -751,13 +753,13 @@
 									{selectedStudent ? 'Edit' : 'Create'}
 								{/if}
 							</button>
-							{#if selectedStudent}
+							{#if selectedStudent && !manageFormData.values.archived}
 								<button
 									type="button"
 									class="btn btn-ghost text-3xl ml-2"
-									on:click={deleteUser}
+									on:click={archiveUser}
 								>
-									<span class="icon-delete" />
+									<span class="icon-archive" />
 								</button>
 							{/if}
 						</div>
