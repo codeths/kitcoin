@@ -25,7 +25,12 @@ function isValidSearchResult(user: IUser, req: express.Request): boolean {
 	)
 		return false;
 
-	if (user.archived && !booleanFromData(req.query.withArchived)) return false;
+	if (
+		user.archived &&
+		(!booleanFromData(req.query.withArchived) ||
+			!req.user?.hasRole('ADMIN'))
+	)
+		return false;
 
 	let roleArray = req.query.roles
 		? ((req.query.roles as string)
