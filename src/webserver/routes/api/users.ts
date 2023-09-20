@@ -171,6 +171,7 @@ router.post(
 						Validators.array(Validators.role),
 					),
 					doNotSync: Validators.optional(Validators.boolean),
+					archived: Validators.optional(Validators.boolean),
 				},
 			},
 		}),
@@ -187,6 +188,7 @@ router.post(
 				balanceExpires: dateFromData(body.balanceExpires),
 				weeklyBalanceMultiplier: body.weeklyBalanceMultiplier,
 				doNotSync: body.doNotSync,
+				archived: body.archived,
 			};
 
 			let user = new User(data);
@@ -283,6 +285,7 @@ router.patch(
 						Validators.array(Validators.role),
 					),
 					doNotSync: Validators.optional(Validators.boolean),
+					archived: Validators.optional(Validators.boolean),
 				},
 			},
 		}),
@@ -299,6 +302,7 @@ router.patch(
 				balanceExpires: dateFromData(body.balanceExpires),
 				weeklyBalanceMultiplier: body.weeklyBalanceMultiplier,
 				doNotSync: body.doNotSync,
+				archived: body.archived,
 			};
 
 			let user = await User.findById(req.params.id);

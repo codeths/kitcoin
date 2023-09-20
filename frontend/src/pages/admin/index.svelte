@@ -77,6 +77,7 @@
 						: null,
 					roles: manageFormData.values.roles.map(x => x.value),
 					doNotSync: manageFormData.values.doNotSync,
+					archived: manageFormData.values.archived,
 				}),
 			},
 		).catch(() => null);
@@ -166,6 +167,7 @@
 		weeklyBalanceMultiplier: '',
 		roles: ['STUDENT'],
 		doNotSync: false,
+		archived: false,
 	};
 
 	// Manage items
@@ -267,6 +269,10 @@
 			return null;
 		},
 		doNotSync: e => {
+			let v = e.value;
+			return null;
+		},
+		archived: e => {
 			let v = e.value;
 			return null;
 		},
@@ -715,6 +721,14 @@
 							type="switch"
 							bind:value={manageFormData.values.doNotSync}
 							bind:error={manageFormData.errors.doNotSync}
+							on:validate={manageForm.validate}
+						/>
+						<Input
+							name="archived"
+							label="Archived"
+							type="switch"
+							bind:value={manageFormData.values.archived}
+							bind:error={manageFormData.errors.archived}
 							on:validate={manageForm.validate}
 						/>
 						<div class="flex items-center">
