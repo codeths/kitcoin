@@ -117,8 +117,8 @@ Body should be sent as `multipart/formdata`
 
 `amount` (body): Amount to send  
 `fromUser` (body): [Optional] User ID to send these transactions from. Either this or `fromText` must be specified, but not both.  
-`fromText` (body): [Optional] Text to send these transactions from. Either this or `fromUser` must be specified, but not both.
-`reason` (body): Reason for the transaction
+`fromText` (body): [Optional] Text to send these transactions from. Either this or `fromUser` must be specified, but not both.  
+`reason` (body): Reason for the transaction  
 `data` (body): CSV or Excel document of the users to send these transactions to.
 
 The file's first column can have any header and should contain the student IDs. Any subsequent columns are ignored.
@@ -317,7 +317,7 @@ Update a store's item
 `name` (body): [Optional] New name  
 `description` (body): [Optional] New description  
 `price` (body): [Optional] New price  
-`quantity` (body): [Optional] New quantity
+`quantity` (body): [Optional] New quantity  
 `pinned` (body): [Optional] New pinned status
 
 ### Response
@@ -367,11 +367,10 @@ Create a store item
 ### Request
 
 `:storeID` (path): Store ID  
-`:id` (path): Item ID  
 `name` (body): Name  
 `description` (body): [Optional] Description  
 `price` (body): Price  
-`quantity` (body): [Optional] Quantity
+`quantity` (body): [Optional] Quantity  
 `pinned` (body): [Optional] Pinned status
 
 ### Response
