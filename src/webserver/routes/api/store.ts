@@ -364,7 +364,9 @@ router.get(
 			let allItems = await Promise.all(
 				stores.map(x => StoreItem.findByStoreID(x.id)),
 			);
-			let newItems = allItems.flat().filter(x => x.newArrival);
+			let newItems = allItems
+				.flat()
+				.filter(x => x.newArrival && !x.archived);
 
 			res.status(200).json(
 				newItems.map(x =>
@@ -834,7 +836,7 @@ router.post(
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(req.body.item);
-			if (!item || item.storeID !== store.id)
+			if (!item || item.storeID !== store.id || item.archived)
 				return res.status(400).send('Item not found');
 			let price = item.price;
 
@@ -928,12 +930,14 @@ router.get(
 		let items = await StoreItem.findByStoreID(store.id);
 
 		res.status(200).json(
-			items.map(x =>
-				x.toObject({
-					getters: true,
-					versionKey: false,
-				}),
-			),
+			items
+				.filter(x => !x.archived)
+				.map(x =>
+					x.toObject({
+						getters: true,
+						versionKey: false,
+					}),
+				),
 		);
 	},
 );
@@ -960,7 +964,7 @@ router.get(
 		if (!permissions.view) return res.status(403).send('Forbidden');
 
 		let item = await StoreItem.findById(id);
-		if (!item || item.storeID !== store.id)
+		if (!item || item.storeID !== store.id || item.archived)
 			return res.status(400).send('Item not found');
 
 		res.status(200).json(
@@ -994,10 +998,10 @@ router.get(
 		if (!permissions.view) return res.status(403).send('Forbidden');
 
 		let item = await StoreItem.findById(id);
-		if (!item || item.storeID !== store.id)
+		if (!item || item.storeID !== store.id || item.archived)
 			return res.status(400).send('Item not found');
 
-		let image;
+		let image: Buffer | undefined;
 		try {
 			image = fs.readFileSync(
 				path.resolve('uploads', 'storeitems', `${item._id}.webp`),
@@ -1046,7 +1050,7 @@ router.patch(
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(id);
-			if (!item || item.storeID !== store.id)
+			if (!item || item.storeID !== store.id || item.archived)
 				return res.status(400).send('Item not found');
 
 			image = await sharp(image)
@@ -1131,7 +1135,7 @@ router.patch(
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(id);
-			if (!item || item.storeID !== store.id)
+			if (!item || item.storeID !== store.id || item.archived)
 				return res.status(400).send('Item not found');
 
 			Object.assign(item, {name, description, price, quantity, pinned});
@@ -1245,7 +1249,7 @@ router.delete(
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(id);
-			if (!item || item.storeID !== store.id)
+			if (!item || item.storeID !== store.id || item.archived)
 				return res.status(400).send('Item not found');
 
 			try {
@@ -1380,7 +1384,7 @@ router.post(
 			if (!permissions.view) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(req.body.item);
-			if (!item || item.storeID !== store.id)
+			if (!item || item.storeID !== store.id || item.archived)
 				return res.status(400).send('Item not found');
 			let price = item.price;
 
