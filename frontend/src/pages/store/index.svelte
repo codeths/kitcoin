@@ -471,12 +471,12 @@
 	{/if}
 </div>
 {#if userInfo == null || (userInfo && userInfo.roles.includes('STUDENT'))}
-	<div class="px-12 my-6 flex flex-col w-screen-noscroll">
+	<div class="px-12 my-6 flex flex-col">
 		<h1 class="text-3xl font-medium mb-2">New Arrivals</h1>
 		<NewArrivals />
 	</div>
 
-	<div class="px-12 my-6 flex flex-col w-screen-noscroll">
+	<div class="px-12 my-6 flex flex-col">
 		<h1 class="text-3xl font-medium mb-2">Purchase requests</h1>
 		<div
 			class="flex bg-base-100 shadow-md rounded-lg min-h-40 overflow-x-auto"
