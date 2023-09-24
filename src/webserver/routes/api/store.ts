@@ -173,7 +173,7 @@ async function getStores(
 		};
 	});
 
-	return data;
+	return data.filter(x => !x.archived);
 }
 
 async function handleDeletedRequestData(request: IStoreRequest) {
@@ -519,7 +519,8 @@ router.get(
 			let {id} = req.params;
 
 			let store = await Store.findById(id);
-			if (!store) return res.status(404).send('Store not found');
+			if (!store || store.archived)
+				return res.status(404).send('Store not found');
 
 			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.view) return res.status(403).send('Forbidden');
@@ -575,7 +576,8 @@ router.patch(
 			if (!requestHasUser(req)) return;
 
 			let store = await Store.findById(req.params.id);
-			if (!store) return res.status(404).send('Store not found');
+			if (!store || store.archived)
+				return res.status(404).send('Store not found');
 
 			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
@@ -693,7 +695,8 @@ router.delete(
 			if (!requestHasUser(req)) return;
 
 			let store = await Store.findById(req.params.id);
-			if (!store) return res.status(404).send('Store not found');
+			if (!store || store.archived)
+				return res.status(404).send('Store not found');
 
 			if (store.owner !== req.user.id && !req.user.hasRole('ADMIN'))
 				return res
@@ -758,7 +761,8 @@ router.get(
 			let {id} = req.params;
 
 			let store = await Store.findById(id);
-			if (!store) return res.status(404).send('Store not found');
+			if (!store || store.archived)
+				return res.status(404).send('Store not found');
 
 			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
@@ -830,7 +834,8 @@ router.post(
 			let {id} = req.params;
 
 			let store = await Store.findById(id);
-			if (!store) return res.status(404).send('Store not found');
+			if (!store || store.archived)
+				return res.status(404).send('Store not found');
 
 			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
@@ -922,7 +927,8 @@ router.get(
 		let {id} = req.params;
 
 		let store = await Store.findById(id);
-		if (!store) return res.status(404).send('Store not found');
+		if (!store || store.archived)
+			return res.status(404).send('Store not found');
 
 		let permissions = await getStorePerms(store, req.user);
 		if (!permissions.view) return res.status(403).send('Forbidden');
@@ -958,7 +964,8 @@ router.get(
 		let {storeID, id} = req.params;
 
 		let store = await Store.findById(storeID);
-		if (!store) return res.status(404).send('Store not found');
+		if (!store || store.archived)
+			return res.status(404).send('Store not found');
 
 		let permissions = await getStorePerms(store, req.user);
 		if (!permissions.view) return res.status(403).send('Forbidden');
@@ -992,7 +999,8 @@ router.get(
 		let {storeID, id} = req.params;
 
 		let store = await Store.findById(storeID);
-		if (!store) return res.status(404).send('Store not found');
+		if (!store || store.archived)
+			return res.status(404).send('Store not found');
 
 		let permissions = await getStorePerms(store, req.user);
 		if (!permissions.view) return res.status(403).send('Forbidden');
@@ -1044,7 +1052,8 @@ router.patch(
 				return res.status(400).send('Invalid image');
 
 			let store = await Store.findById(storeID);
-			if (!store) return res.status(404).send('Store not found');
+			if (!store || store.archived)
+				return res.status(404).send('Store not found');
 
 			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
@@ -1129,7 +1138,8 @@ router.patch(
 			let {name, description, price, quantity, pinned} = req.body;
 
 			let store = await Store.findById(storeID);
-			if (!store) return res.status(404).send('Store not found');
+			if (!store || store.archived)
+				return res.status(404).send('Store not found');
 
 			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
@@ -1186,13 +1196,14 @@ router.delete(
 			let {storeID, id} = req.params;
 
 			let store = await Store.findById(storeID);
-			if (!store) return res.status(404).send('Store not found');
+			if (!store || store.archived)
+				return res.status(404).send('Store not found');
 
 			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
 
 			let item = await StoreItem.findById(id);
-			if (!item || item.storeID !== store.id)
+			if (!item || item.storeID !== store.id || item.archived)
 				return res.status(400).send('Item not found');
 
 			item.archive();
@@ -1243,7 +1254,8 @@ router.delete(
 			let {storeID, id} = req.params;
 
 			let store = await Store.findById(storeID);
-			if (!store) return res.status(404).send('Store not found');
+			if (!store || store.archived)
+				return res.status(404).send('Store not found');
 
 			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
@@ -1314,7 +1326,8 @@ router.post(
 			let {name, quantity, description, price, pinned} = req.body;
 
 			let store = await Store.findById(storeID);
-			if (!store) return res.status(404).send('Store not found');
+			if (!store || store.archived)
+				return res.status(404).send('Store not found');
 
 			let permissions = await getStorePerms(store, req.user);
 			if (!permissions.manage) return res.status(403).send('Forbidden');
@@ -1376,7 +1389,8 @@ router.post(
 			if (!requestHasUser(req)) return;
 
 			let store = await Store.findById(req.body.store);
-			if (!store) return res.status(404).send('Store not found');
+			if (!store || store.archived)
+				return res.status(404).send('Store not found');
 			if (!store.requests)
 				return res.status(400).send('Store does not accept requests');
 
@@ -1471,7 +1485,7 @@ router.post(
 			if (!request) return res.status(404).send('Request not found');
 
 			let store = await Store.findById(request.storeID);
-			if (!store) {
+			if (!store || store.archived) {
 				handleDeletedRequestData(request);
 				return res.status(404).send('Request not found');
 			}
@@ -1483,13 +1497,13 @@ router.post(
 				return res.status(400).send('Request is not pending');
 
 			let item = await StoreItem.findById(request.itemID);
-			if (!item) {
+			if (!item || item.archived) {
 				handleDeletedRequestData(request);
 				return res.status(404).send('Request not found');
 			}
 
 			let student = await User.findById(request.studentID);
-			if (!student) {
+			if (!student || student.archived) {
 				handleDeletedRequestData(request);
 				return res.status(404).send('Request not found');
 			}
@@ -1548,40 +1562,40 @@ router.delete(
 				return res.status(404).send('Request not found');
 			}
 
-			let item = await StoreItem.findById(request.itemID);
-			if (!item) {
-				handleDeletedRequestData(request);
-				return res.status(404).send('Request not found');
-			}
+			if (
+				request.studentID !== req.user._id &&
+				!(await getStorePerms(store, req.user)).manage
+			)
+				return res.status(403).send('Forbidden');
 
-			if (request.status !== StoreRequestStatus.PENDING)
+			const hasValidState = !!(await request.toAPIResponse()); // invalid if request is pending & store, item, or student have been archived / deleted
+			const isPending = request.status === StoreRequestStatus.PENDING;
+
+			if (!isPending)
 				return res.status(400).send('Request is not pending');
 
-			if (request.studentID == req.user._id) {
-				request.status = StoreRequestStatus.CANCELLED;
+			if (hasValidState) {
+				request.status =
+					request.studentID === req.user._id
+						? StoreRequestStatus.CANCELLED
+						: StoreRequestStatus.DENIED;
+				await request.save();
+
+				let student = await User.findById(request.studentID);
+				student!.balance += request.price;
+				await student!.save();
+
+				let item = await StoreItem.findById(request.itemID);
+				if (typeof item?.quantity === 'number') {
+					item.quantity += request.quantity ?? 1;
+					await item.save();
+				}
+
+				await Transaction.deleteOne({_id: request.transactionID});
 			} else {
-				let permissions = await getStorePerms(store, req.user);
-				if (!permissions.manage)
-					return res.status(403).send('Forbidden');
-
-				request.status = StoreRequestStatus.DENIED;
+				await handleDeletedRequestData(request);
 			}
 
-			let student = await User.findById(request.studentID);
-			if (student) {
-				student.balance += request.price;
-				await student.save();
-			}
-
-			if (typeof item.quantity === 'number') {
-				item.quantity += request.quantity ?? 1;
-			}
-
-			await item.save();
-
-			await Transaction.deleteOne({_id: request.transactionID});
-
-			await request.save();
 			res.status(200).json(await request.toAPIResponse());
 		} catch (e) {
 			try {
