@@ -117,6 +117,10 @@ export class AdminClient {
 					dbUser.setRoles(['STUDENT']);
 					modified = true;
 				}
+				if (dbUser.archived) {
+					dbUser.archived = false;
+					modified = true;
+				}
 
 				if (modified)
 					await dbUser.save().catch(e => {
