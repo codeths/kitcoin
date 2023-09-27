@@ -44,7 +44,7 @@
 	class="drawer-toggle"
 	bind:checked={drawerOpen}
 />
-<div class="drawer-side fixed z-50 w-screen h-full">
+<div class="drawer-side fixed !z-[9999] w-screen h-full">
 	<label for="nav-drawer" class="drawer-overlay" />
 	<div class="px-4 overflow-y-auto menu w-80 bg-base-100">
 		<div class="flex h-16 justify-end">
@@ -126,7 +126,7 @@
 			</div>
 			<ul
 				tabindex="0"
-				class="p-2 shadow menu dropdown-content bg-base-200 text-base-content rounded-box w-52"
+				class="p-2 shadow menu dropdown-content bg-base-200 text-base-content rounded-box w-52 !z-[9999]"
 			>
 				{#if userInfo}
 					{#if homes.length > 1}
