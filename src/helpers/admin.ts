@@ -211,7 +211,14 @@ export class AdminClient {
 					} not found in sync, archiving:`,
 				);
 				users.map(user => console.log(`\t${user?.email}`));
-				await Promise.all(users.map(user => user?.archive()));
+				await Promise.all(
+					users.map(user => {
+						if (user) {
+							user.archive();
+							user.save();
+						}
+					}),
+				);
 				console.log('detached users archived.');
 			}
 
