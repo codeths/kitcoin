@@ -200,12 +200,14 @@ export class AdminClient {
 			const idsToRemove = allDbUsers.filter(
 				id => !allUserIds.includes(id),
 			);
+			const orphanedUsers = await Promise.all(
+				idsToRemove.map(id => User.findByGoogleId(id)),
+			);
+			const filtered = orphanedUsers.filter(
+				user => user && !user.archived,
+			);
 
-			if (idsToRemove.length > 0) {
-				const users = await Promise.all(
-					idsToRemove.map(id => User.findByGoogleId(id)),
-				);
-				const filtered = users.filter(user => user && !user.archived);
+			if (filtered.length > 0) {
 				console.log(
 					`${filtered.length} account${
 						filtered.length === 1 ? '' : 's'
