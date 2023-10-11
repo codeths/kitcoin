@@ -117,8 +117,8 @@ Body should be sent as `multipart/formdata`
 
 `amount` (body): Amount to send  
 `fromUser` (body): [Optional] User ID to send these transactions from. Either this or `fromText` must be specified, but not both.  
-`fromText` (body): [Optional] Text to send these transactions from. Either this or `fromUser` must be specified, but not both.
-`reason` (body): Reason for the transaction
+`fromText` (body): [Optional] Text to send these transactions from. Either this or `fromUser` must be specified, but not both.  
+`reason` (body): Reason for the transaction  
 `data` (body): CSV or Excel document of the users to send these transactions to.
 
 The file's first column can have any header and should contain the student IDs. Any subsequent columns are ignored.
@@ -317,7 +317,7 @@ Update a store's item
 `name` (body): [Optional] New name  
 `description` (body): [Optional] New description  
 `price` (body): [Optional] New price  
-`quantity` (body): [Optional] New quantity
+`quantity` (body): [Optional] New quantity  
 `pinned` (body): [Optional] New pinned status
 
 ### Response
@@ -367,11 +367,10 @@ Create a store item
 ### Request
 
 `:storeID` (path): Store ID  
-`:id` (path): Item ID  
 `name` (body): Name  
 `description` (body): [Optional] Description  
 `price` (body): Price  
-`quantity` (body): [Optional] Quantity
+`quantity` (body): [Optional] Quantity  
 `pinned` (body): [Optional] Pinned status
 
 ### Response
@@ -451,7 +450,8 @@ Search for users
 `q` (query): Search query  
 `roles` (query): [Optional] User must have at least one these roles. Separate multiple roles with a comma.  
 `count` (query): [Optional] Number of results to return. Defaults to 10  
-`me` (query): [Optional] Include the authenticated user in the results. Defaults to false
+`me` (query): [Optional] Include the authenticated user in the results. Defaults to false  
+`withArchived` (query): [Optional] Include archived uesrs in the results. Defaults to false. Requires admin role.
 
 ### Response
 
@@ -492,7 +492,8 @@ Update a user
 `balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)  
 `weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier  
 `roles` (body): [Optional] Roles to give to the user as an arry of strings  
-`doNotSync` (body): [Optional] Do not sync this user with Google Admin
+`doNotSync` (body): [Optional] Do not sync this user with Google Admin  
+`archived` (body): [Optional] Mark user as archived
 
 ### Response
 
@@ -500,7 +501,7 @@ Update a user
 
 ## DELETE `/users/:id`
 
-Delete a user
+Archive a user
 
 ### Request
 
@@ -524,7 +525,8 @@ Create a user
 `balanceExpires` (body): [Optional] Balance expiry date (ISO or epoch MS)  
 `weeklyBalanceMultiplier` (body): [Optional] Weekly balance multiplier  
 `roles` (body): [Optional] Roles to give to the user as an arry of strings  
-`doNotSync` (body): [Optional] Do not sync this user with Google Admin
+`doNotSync` (body): [Optional] Do not sync this user with Google Admin  
+`archived` (body): [Optional] Mark user as archived
 
 ### Response
 

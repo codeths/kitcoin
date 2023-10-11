@@ -25,6 +25,13 @@ function isValidSearchResult(user: IUser, req: express.Request): boolean {
 	)
 		return false;
 
+	if (
+		user.archived &&
+		(!booleanFromData(req.query.withArchived) ||
+			!req.user?.hasRole('ADMIN'))
+	)
+		return false;
+
 	let roleArray = req.query.roles
 		? ((req.query.roles as string)
 				.toUpperCase()
@@ -61,6 +68,7 @@ router.get(
 						),
 					),
 					me: Validators.optional(Validators.anyBoolean),
+					withArchived: Validators.optional(Validators.anyBoolean),
 				},
 			},
 		}),
@@ -171,6 +179,7 @@ router.post(
 						Validators.array(Validators.role),
 					),
 					doNotSync: Validators.optional(Validators.boolean),
+					archived: Validators.optional(Validators.boolean),
 				},
 			},
 		}),
@@ -187,6 +196,7 @@ router.post(
 				balanceExpires: dateFromData(body.balanceExpires),
 				weeklyBalanceMultiplier: body.weeklyBalanceMultiplier,
 				doNotSync: body.doNotSync,
+				archived: body.archived,
 			};
 
 			let user = new User(data);
@@ -283,6 +293,7 @@ router.patch(
 						Validators.array(Validators.role),
 					),
 					doNotSync: Validators.optional(Validators.boolean),
+					archived: Validators.optional(Validators.boolean),
 				},
 			},
 		}),
@@ -299,6 +310,7 @@ router.patch(
 				balanceExpires: dateFromData(body.balanceExpires),
 				weeklyBalanceMultiplier: body.weeklyBalanceMultiplier,
 				doNotSync: body.doNotSync,
+				archived: body.archived,
 			};
 
 			let user = await User.findById(req.params.id);
@@ -339,7 +351,8 @@ router.delete(
 			let user = await User.findById(req.params.id);
 			if (!user) return res.status(404).send('User not found');
 
-			await user.remove();
+			user.archive();
+			await user.save();
 
 			res.status(200).send();
 		} catch (e) {
