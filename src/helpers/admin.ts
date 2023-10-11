@@ -208,11 +208,11 @@ export class AdminClient {
 				console.log(
 					`${idsToRemove.length} account${
 						idsToRemove.length === 1 ? '' : 's'
-					} not found in sync, removing:`,
+					} not found in sync, archiving:`,
 				);
 				users.map(user => console.log(`\t${user?.email}`));
-				await Promise.all(users.map(user => user?.remove()));
-				console.log('detached users removed.');
+				await Promise.all(users.map(user => user?.archive()));
+				console.log('detached users archived.');
 			}
 
 			return resolve();
