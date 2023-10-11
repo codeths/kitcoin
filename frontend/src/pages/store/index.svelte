@@ -275,8 +275,8 @@
 		return false;
 	}
 
-	async function deleteStore() {
-		if (!confirm(`Are you sure you want to delete ${modalStore.name}?`))
+	async function archiveStore() {
+		if (!confirm(`Are you sure you want to archive ${modalStore.name}?`))
 			return;
 		submitStatus = 'LOADING';
 
@@ -291,7 +291,7 @@
 			setTimeout(
 				() =>
 					toastContainer.toast(
-						`${modalStore.name} deleted.`,
+						`${modalStore.name} archived.`,
 						'success',
 					),
 				300,
@@ -299,7 +299,7 @@
 		} else {
 			submitStatus = 'ERROR';
 			setTimeout(
-				() => toastContainer.toast('Error deleting store.', 'error'),
+				() => toastContainer.toast('Error archiving store.', 'error'),
 				300,
 			);
 			return;
@@ -586,9 +586,9 @@
 			{#if modalStore && (modalStore.owner.id === userInfo._id || userInfo.roles.includes('ADMIN'))}
 				<button
 					class="inline-flex btn btn-circle btn-ghost text-3xl modal-button"
-					on:click={deleteStore}
+					on:click={archiveStore}
 				>
-					<span class="icon-delete" />
+					<span class="icon-archive" />
 				</button>
 			{/if}
 		</div>

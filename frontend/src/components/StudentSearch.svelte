@@ -8,6 +8,7 @@
 	export let error = '';
 	export let query = '';
 	export let me = null;
+	export let withArchived = null;
 	export let students = null;
 	export let multiselect = false;
 	export let roles = ['STUDENT'];
@@ -34,7 +35,9 @@
 			autoSubmit = false;
 
 			let fetchedResults = (
-				await searchUsers(text, 15, roles, me).catch(e => [])
+				await searchUsers(text, 15, roles, me, withArchived).catch(
+					e => [],
+				)
 			).map(x => ({
 				text: `${x.name}${
 					showMongoID

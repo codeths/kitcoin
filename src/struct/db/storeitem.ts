@@ -38,6 +38,19 @@ export default class StoreItem {
 	@prop({required: true, default: false})
 	public pinned: boolean = false;
 
+	/**
+	 * If the item has been archived
+	 */
+	@prop()
+	public archived?: boolean;
+
+	/**
+	 * Archives the item
+	 */
+	public archive() {
+		this.archived = true;
+	}
+
 	public get createdAt(): Date {
 		return (
 			this as unknown as DocumentType<typeof StoreItem>

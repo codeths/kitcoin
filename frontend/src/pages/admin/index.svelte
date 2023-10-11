@@ -77,6 +77,7 @@
 						: null,
 					roles: manageFormData.values.roles.map(x => x.value),
 					doNotSync: manageFormData.values.doNotSync,
+					archived: manageFormData.values.archived,
 				}),
 			},
 		).catch(() => null);
@@ -112,9 +113,11 @@
 		return false;
 	}
 
-	async function deleteUser() {
+	async function archiveUser() {
 		if (
-			!confirm(`Are you sure you want to delete ${selectedStudent.text}?`)
+			!confirm(
+				`Are you sure you want to archive ${selectedStudent.text}?`,
+			)
 		)
 			return;
 		submitStatus = 'LOADING';
@@ -125,11 +128,11 @@
 
 		submitStatus = res && res.ok ? 'SUCCESS' : 'ERROR';
 		if (submitStatus == 'SUCCESS') {
-			toastContainer.toast(`${selectedStudent.text} deleted`, 'success');
+			toastContainer.toast(`${selectedStudent.text} archived`, 'success');
 			studentSearch.el.setValue(null, null);
 			setData();
 		} else {
-			toastContainer.toast('Error deleting user.', 'error');
+			toastContainer.toast('Error archiving user.', 'error');
 		}
 	}
 
@@ -166,6 +169,7 @@
 		weeklyBalanceMultiplier: '',
 		roles: ['STUDENT'],
 		doNotSync: false,
+		archived: false,
 	};
 
 	// Manage items
@@ -267,6 +271,10 @@
 			return null;
 		},
 		doNotSync: e => {
+			let v = e.value;
+			return null;
+		},
+		archived: e => {
 			let v = e.value;
 			return null;
 		},
@@ -604,6 +612,7 @@
 						me="true"
 						roles={null}
 						showMongoID={true}
+						withArchived={true}
 					/>
 					{#if selectedStudent}
 						<button
@@ -717,6 +726,14 @@
 							bind:error={manageFormData.errors.doNotSync}
 							on:validate={manageForm.validate}
 						/>
+						<Input
+							name="archived"
+							label="Archived"
+							type="switch"
+							bind:value={manageFormData.values.archived}
+							bind:error={manageFormData.errors.archived}
+							on:validate={manageForm.validate}
+						/>
 						<div class="flex items-center">
 							<button
 								type="submit"
@@ -736,13 +753,13 @@
 									{selectedStudent ? 'Edit' : 'Create'}
 								{/if}
 							</button>
-							{#if selectedStudent}
+							{#if selectedStudent && !manageFormData.values.archived}
 								<button
 									type="button"
 									class="btn btn-ghost text-3xl ml-2"
-									on:click={deleteUser}
+									on:click={archiveUser}
 								>
-									<span class="icon-delete" />
+									<span class="icon-archive" />
 								</button>
 							{/if}
 						</div>

@@ -86,7 +86,8 @@ export class AdminClient {
 		if (dbUser && dbUser.doNotSync) return;
 		if (dbUser) {
 			if (exclude) {
-				await dbUser.remove();
+				dbUser.archive();
+				await dbUser.save();
 			} else {
 				let modified = false;
 				if (
@@ -114,6 +115,10 @@ export class AdminClient {
 					!dbUser.hasRole('ADMIN')
 				) {
 					dbUser.setRoles(['STUDENT']);
+					modified = true;
+				}
+				if (dbUser.archived) {
+					dbUser.archived = false;
 					modified = true;
 				}
 

@@ -328,8 +328,8 @@
 		return false;
 	}
 
-	async function deleteItem() {
-		if (!confirm(`Are you sure you want to delete ${editItem.name}?`))
+	async function archiveItem() {
+		if (!confirm(`Are you sure you want to archive ${editItem.name}?`))
 			return;
 		submitStatus = 'LOADING';
 
@@ -343,14 +343,14 @@
 			setTimeout(
 				() =>
 					toastContainer.toast(
-						`${editItem.name} deleted.`,
+						`${editItem.name} archived.`,
 						'success',
 					),
 				300,
 			);
 		} else {
 			setTimeout(
-				() => toastContainer.toast('Error deleting item.', 'error'),
+				() => toastContainer.toast('Error archiving item.', 'error'),
 				300,
 			);
 			return;
@@ -955,9 +955,9 @@
 			{#if editItem}
 				<button
 					class="inline-flex btn btn-circle btn-ghost text-3xl modal-button"
-					on:click={deleteItem}
+					on:click={archiveItem}
 				>
-					<span class="icon-delete" />
+					<span class="icon-archive" />
 				</button>
 			{/if}
 		</div>

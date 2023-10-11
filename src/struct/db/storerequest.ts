@@ -71,6 +71,7 @@ export default class StoreRequest {
 		type DBData = {
 			name: string;
 			id: string;
+			archived?: boolean;
 		} | null;
 
 		let store: DBData = await Store.findById(storeID);
@@ -82,21 +83,21 @@ export default class StoreRequest {
 				id: storeID,
 				name: 'Unknown Store',
 			};
-		}
+		} else if (store.archived && isPending) return null;
 		if (!item) {
 			if (isPending) return null;
 			item = {
 				id: itemID,
 				name: 'Unknown Item',
 			};
-		}
+		} else if (item.archived && isPending) return null;
 		if (!student) {
 			if (isPending) return null;
 			student = {
 				id: studentID,
 				name: 'Unknown Student',
 			};
-		}
+		} else if (student.archived && isPending) return null;
 
 		let res: IStoreRequestAPIResponse = {
 			...rest,

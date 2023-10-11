@@ -42,11 +42,13 @@ async function getTransactions(
 	}
 }
 
-async function searchUsers(search, count, roles, me) {
+async function searchUsers(search, count, roles, me, withArchived) {
 	const params = new URLSearchParams();
 	params.append('q', search);
 	if (count !== null && count !== undefined) params.append('count', count);
 	if (me !== null && me !== undefined) params.append('me', me);
+	if (withArchived !== null && withArchived !== undefined)
+		params.append('withArchived', withArchived);
 	if (roles) params.append('roles', roles.join(','));
 	const res = await fetch(`/api/users/search?${params.toString()}`).catch(
 		e => null,

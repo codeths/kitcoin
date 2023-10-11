@@ -185,6 +185,7 @@ export async function oauthCallback(
 				user.email = email;
 				user.googleID = googleID;
 			}
+			user.archived = false;
 		} else {
 			user = new User({
 				name,
