@@ -207,8 +207,8 @@ export class AdminClient {
 				);
 				const filtered = users.filter(user => user && !user.archived);
 				console.log(
-					`${idsToRemove.length} account${
-						idsToRemove.length === 1 ? '' : 's'
+					`${filtered.length} account${
+						filtered.length === 1 ? '' : 's'
 					} not found in sync, archiving:`,
 				);
 				filtered.map(user => console.log(`\t${user?.email}`));
