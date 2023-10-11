@@ -205,14 +205,15 @@ export class AdminClient {
 				const users = await Promise.all(
 					idsToRemove.map(id => User.findByGoogleId(id)),
 				);
+				const filtered = users.filter(user => user && !user.archived);
 				console.log(
 					`${idsToRemove.length} account${
 						idsToRemove.length === 1 ? '' : 's'
 					} not found in sync, archiving:`,
 				);
-				users.map(user => console.log(`\t${user?.email}`));
+				filtered.map(user => console.log(`\t${user?.email}`));
 				await Promise.all(
-					users.map(user => {
+					filtered.map(user => {
 						if (user) {
 							user.archive();
 							user.save();
