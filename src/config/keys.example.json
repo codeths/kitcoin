@@ -7,14 +7,10 @@
 	"sessionSecret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 	"weeklyBalance": 100,
 	"gadmin_domain": "xxxxx@xxxxx.xxx",
-	"gadmin_staff_ou": [
-		"xxxxx",
-		"xxxxx/yyyyy"
-	],
-	"gadmin_ignore_ou": [
-		"xxxxx",
-		"xxxxx/yyyyy"
-	],
+	"gadmin_staff_ou": ["xxxxx", "xxxxx/yyyyy"],
+	"gadmin_ignore_ou": ["xxxxx", "xxxxx/yyyyy"],
 	"gadmin_sync_user": "xxxxx",
-	"sync_spreadsheet_id": "xxxxx"
+	"sync_spreadsheet_id": "xxxxx",
+	"redis_host": "localhost",
+	"redis_port": 6379
 }

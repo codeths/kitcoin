@@ -3,7 +3,6 @@ import formidable from 'formidable';
 import fs from 'fs';
 import json2csv from 'json-2-csv';
 import readExcel from 'read-excel-file/node/index.commonjs.js';
-
 import {
 	numberFromData,
 	request,
@@ -17,6 +16,15 @@ import {requestHasUser} from '../../../types/index.js';
 const {csv2jsonAsync} = json2csv;
 
 const router = express.Router();
+
+import {redis_host, redis_port} from '../../../config/keys.js';
+import {Queue} from 'bullmq';
+const queue = new Queue('emails', {
+	connection: {
+		host: redis_host,
+		port: redis_port,
+	},
+});
 
 // Get user balance
 router.get(
@@ -196,7 +204,7 @@ router.post(
 
 			const transactions = await Promise.all(
 				dbUsers.map(async dbUser => {
-					let t = await new Transaction({
+					let transactionData = {
 						amount,
 						reason: reason?.trim() || null,
 						from: {
@@ -205,9 +213,11 @@ router.post(
 						to: {
 							id: dbUser!.id,
 						},
-					}).save();
+					};
+					let t = await new Transaction(transactionData).save();
 					dbUser!.balance += amount as number;
 					await dbUser!.save();
+					await queue.add('transaction', transactionData);
 					return t.toAPIResponse(req.user);
 				}),
 			);
@@ -358,15 +368,17 @@ router.post(
 
 			const transactions = await Promise.all(
 				dbUsers.map(async dbUser => {
-					let t = await new Transaction({
+					let transactionData = {
 						amount,
 						reason: reason || null,
 						from,
 						to: {
 							id: dbUser.id,
 						},
-					}).save();
+					};
+					let t = await new Transaction(transactionData).save();
 					dbUser!.balance += amount as number;
+					await queue.add('bulktransaction', transactionData);
 					await dbUser!.save();
 					return t.toAPIResponse(req.user);
 				}),

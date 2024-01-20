@@ -2,10 +2,16 @@ import mongoose from 'mongoose';
 import cluster from 'cluster';
 import {cpus} from 'os';
 
-import {gadmin_sync_user, mongo} from './config/keys.js';
+import {
+	gadmin_sync_user,
+	mongo,
+	redis_host,
+	redis_port,
+} from './config/keys.js';
 import {AdminClient} from './helpers/admin.js';
 
 import {User} from './struct/index.js';
+import {Worker} from 'bullmq';
 
 function startSync() {
 	let user = gadmin_sync_user as string | null;
@@ -18,6 +24,21 @@ function startSync() {
 
 function startServer() {
 	import('./webserver/index.js');
+}
+
+function startEmailQueue() {
+	const worker = new Worker(
+		'emails',
+		async job => {
+			console.log(job.data);
+		},
+		{
+			connection: {
+				host: redis_host,
+				port: redis_port,
+			},
+		},
+	);
 }
 
 mongoose
@@ -40,9 +61,11 @@ mongoose
 				}
 			} else {
 				startServer();
+				startEmailQueue();
 			}
 		} else {
 			startServer();
+			startEmailQueue();
 		}
 	})
 	.catch(e => {
