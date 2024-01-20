@@ -189,13 +189,18 @@
 		<span class="footer-title">Links</span>
 		<a
 			class="link link-hover"
-			href="https://github.com/codeths/kitcoin"
-			target="_blank">Source Code</a
+			href="https://docs.google.com/document/d/1H-lIWD2JsFzbj8jfLc-MAn0ccHXBeW37-FcxWyBBs08/edit?usp=sharing"
+			target="_blank">Documentation</a
 		>
 		<a
 			class="link link-hover"
 			href="mailto:kitcoin@eths202.org"
 			target="_blank">Contact Us</a
+		>
+		<a
+			class="link link-hover"
+			href="https://github.com/codeths/kitcoin"
+			target="_blank">Source Code</a
 		>
 	</div>
 </footer>
