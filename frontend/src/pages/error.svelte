@@ -61,7 +61,9 @@
 		>
 		<a
 			class="btn btn-secondary px-12 mx-2"
-			href="mailto:kitcoin@eths202.org&subject=Kitcoin%20Error%20{error.code}"
+			href="mailto:kitcoin@eths202.org?subject=Kitcoin%20Error%20-%20{error.code ||
+				error.title ||
+				'Unknown'}"
 			target="_blank">Contact Us</a
 		>
 	</div>
