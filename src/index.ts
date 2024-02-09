@@ -11,6 +11,7 @@ import {
 import {AdminClient} from './helpers/admin.js';
 
 import {User} from './struct/index.js';
+import {Sender} from './helpers/email/send.js';
 import {Worker} from 'bullmq';
 
 function startSync() {
@@ -30,7 +31,22 @@ function startEmailQueue() {
 	const worker = new Worker(
 		'emails',
 		async job => {
-			console.log(job.data);
+			let transactionType = job.name;
+			let amount: number = job.data.amount;
+			let fromUserID: string = job.data.from.id;
+			let toUserID: string = job.data.to.id;
+			let message: string = job.data.reason;
+
+			let email = await Sender(
+				transactionType,
+				amount,
+				fromUserID,
+				toUserID,
+				message,
+			);
+			if (!email) {
+				console.log('Email could not be sent.');
+			}
 		},
 		{
 			connection: {

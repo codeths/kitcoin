@@ -217,7 +217,7 @@ router.post(
 					let t = await new Transaction(transactionData).save();
 					dbUser!.balance += amount as number;
 					await dbUser!.save();
-					await queue.add('transaction', transactionData);
+					await queue.add('send', transactionData);
 					return t.toAPIResponse(req.user);
 				}),
 			);
@@ -378,7 +378,7 @@ router.post(
 					};
 					let t = await new Transaction(transactionData).save();
 					dbUser!.balance += amount as number;
-					await queue.add('bulktransaction', transactionData);
+					await queue.add('bulksend', transactionData);
 					await dbUser!.save();
 					return t.toAPIResponse(req.user);
 				}),
