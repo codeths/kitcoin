@@ -1,22 +1,43 @@
-import {error} from 'console';
-import {DBError, User} from '../../struct/index.js';
-import e from 'express';
-export function fillTemplate(
-	amount: Number,
+const prefString: String = `To manage your email preferences, please click <a href="https://kitcoin.app/emails">here</a>`;
+
+export function sendTemplate(
+	amount: number,
 	fromUser: String,
 	toUser: String,
-	userBalance: Number,
+	userBalance: number,
 	message: String,
 ) {
 	return (
 		`
-    Dear ${toUser},
+    Dear ${toUser},<br><br>
     
-    You've earned ${amount} Kitcoin from ${fromUser}!` +
-		(message = true ? 'They added the following note: ${message}.' : '') +
-		`Your current balance is ${userBalance} Kitcoins. You can view your transaction history online at https://kitcoin.app. 
-    Sincerely,
-    The ETHS Kitcoin Team
+    You've earned ${amount} Kitcoin` +
+		(amount > 1 ? 's' : '') +
+		` from ${fromUser}! ` +
+		(message != null ? `They added the following note: ${message}. ` : '') +
+		`Your current balance is ${userBalance} Kitcoin` +
+		(userBalance > 1 ? 's' : '') +
+		`. You can view your transaction history by clicking <a href="https://kitcoin.app">here</a>. 
+		<br><br>Sincerely,<br>
+    The ETHS Kitcoin Team<br><br>
+	You're receiving this email because someone sent you Kitcoin. ${prefString}.
     `
 	);
+}
+export function requestTemplate(
+	quantity: number,
+	fromUser: String,
+	managerUser: String,
+	itemName: String,
+	storeName: String,
+	storeID: String,
+) {
+	return `
+    Dear ${managerUser},<br><br>
+    
+    ${fromUser} requested ${quantity} ${itemName} from your store ${storeName}. To approve or deny this purchase request, please click <a href="https://kitcoin.app/store/${storeID}">here</a>.
+    <br><br>Sincerely,<br>
+    The ETHS Kitcoin Team<br><br>
+	You're receiving this email because a student requested Kitcoin from a store that you manage. ${prefString}.
+    `;
 }

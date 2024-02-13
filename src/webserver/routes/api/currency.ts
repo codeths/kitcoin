@@ -431,7 +431,8 @@ router.delete(
 					.status(403)
 					.send('You are not allowed to delete this transaction.');
 
-			await transaction.delete();
+			transaction.deleted = true;
+			await transaction.save();
 			let fromUser = await User.findById(transaction.from.id);
 			if (
 				fromUser &&

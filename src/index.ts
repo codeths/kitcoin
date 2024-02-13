@@ -11,7 +11,7 @@ import {
 import {AdminClient} from './helpers/admin.js';
 
 import {User} from './struct/index.js';
-import {Sender} from './helpers/email/send.js';
+import {newTransaction, newRequest} from './helpers/email/send.js';
 import {Worker} from 'bullmq';
 
 function startSync() {
@@ -32,20 +32,30 @@ function startEmailQueue() {
 		'emails',
 		async job => {
 			let transactionType = job.name;
-			let amount: number = job.data.amount;
-			let fromUserID: string = job.data.from.id;
-			let toUserID: string = job.data.to.id;
-			let message: string = job.data.reason;
+			if (transactionType == 'send' || transactionType == 'bulksend') {
+				let amount: number = job.data.amount;
+				let fromUserID: string = job.data.from.id;
+				let toUserID: string = job.data.to.id;
+				let message: string = job.data.reason;
 
-			let email = await Sender(
-				transactionType,
-				amount,
-				fromUserID,
-				toUserID,
-				message,
-			);
-			if (!email) {
-				console.log('Email could not be sent.');
+				let email = await newTransaction(
+					amount,
+					fromUserID,
+					toUserID,
+					message,
+				);
+
+				if (!email) {
+					console.log('Email could not be sent.');
+				}
+			} else if (transactionType == 'request') {
+				let reqUserID: string = job.data.to.id;
+				let store: any = job.data.store;
+				let email = await newRequest(reqUserID, store);
+
+				if (!email) {
+					console.log('Email could not be sent.');
+				}
 			}
 		},
 		{
