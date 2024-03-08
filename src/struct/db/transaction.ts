@@ -84,6 +84,9 @@ export default class Transaction {
 	@prop({required: true, default: () => new Date()})
 	public date!: Date;
 
+	@prop({required: true, default: false})
+	public deleted!: Boolean;
+
 	/**
 	 * Get the text of the users involved in this transaction
 	 * @param which Which user to get the text of

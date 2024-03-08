@@ -26,6 +26,15 @@ import {
 	StoreRequestStatus,
 } from '../../../types/index.js';
 
+import {redis_host, redis_port} from '../../../config/keys.js';
+import {Queue} from 'bullmq';
+const queue = new Queue('emails', {
+	connection: {
+		host: redis_host,
+		port: redis_port,
+	},
+});
+
 const router = express.Router();
 
 async function getStorePerms(
@@ -1414,7 +1423,7 @@ router.post(
 				item.quantity -= quantity;
 			}
 
-			let transaction = await new Transaction({
+			let transactionData = {
 				amount: price * -1,
 				from: {
 					text: `[PENDING] Store purchase request in ${store.name}`,
@@ -1429,8 +1438,9 @@ router.post(
 					manager: req.user.id,
 				},
 				reason: `${item.name}${quantity > 1 ? ` x${quantity}` : ''}`,
-			}).save();
-
+			};
+			let t = await new Transaction(transactionData).save();
+			await queue.add('request', transactionData);
 			req.user.balance -= price;
 			await req.user.save();
 
@@ -1438,7 +1448,7 @@ router.post(
 				storeID: store._id,
 				itemID: item._id,
 				studentID: req.user._id,
-				transactionID: transaction._id,
+				transactionID: t._id,
 				quantity,
 				price,
 			}).save();

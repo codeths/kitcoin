@@ -99,6 +99,7 @@ router.get(
 			let transactions = await getDailyTransactions(from, to, {
 				store: {$exists: false},
 				'from.text': {$ne: 'System'},
+				deleted: false,
 			});
 
 			if (req.query.csv && booleanFromData(req.query.csv)) {
@@ -172,6 +173,7 @@ router.get(
 			let transactions = await getDailyTransactions(from, to, {
 				store: {$exists: true},
 				'from.text': {$ne: 'System'},
+				deleted: false,
 			});
 
 			if (req.query.csv && booleanFromData(req.query.csv)) {
@@ -244,6 +246,7 @@ router.get(
 
 		let query: mongoose.FilterQuery<ITransaction> = {
 			'from.text': {$ne: 'System'},
+			deleted: false,
 		};
 		if (from || to) query.date = {};
 		if (from) query.date.$gte = from;
@@ -564,6 +567,7 @@ router.get(
 		let query: mongoose.FilterQuery<ITransaction> = {
 			'from.id': {$exists: true},
 			'from.text': {$ne: 'System'},
+			deleted: false,
 		};
 		if (from || to) query.date = {};
 		if (from) query.date.$gte = from;

@@ -156,8 +156,11 @@
 									)}
 								</td>
 								<td
-									class="px-2 md:py-4 block md:table-cell break-words overflow-ellipsis"
+									class="px-2 md:py-4 block md:table-cell break-words overflow-ellipsis {item.deleted
+										? 'text-error'
+										: ''}"
 								>
+									{item.deleted ? '[DELETED]' : ''}
 									{item.to.me
 										? `${item.from.id ? 'From ' : ''}${
 												item.from.text || 'Unknown'
@@ -169,7 +172,7 @@
 										: ''}
 								</td>
 							</div>
-							{#if item.canManage}
+							{#if item.canManage && !item.deleted}
 								<div class="flex-col self-center md:hidden">
 									<button
 										class="btn btn-ghost md:w-full"
@@ -199,7 +202,7 @@
 							></td
 						>
 						<td class="px-2 py-4 hidden md:table-cell">
-							{#if item.canManage}
+							{#if item.canManage && !item.deleted}
 								<button
 									class="btn btn-ghost md:w-full md:justify-self-end p-0"
 									on:click={confirm(
