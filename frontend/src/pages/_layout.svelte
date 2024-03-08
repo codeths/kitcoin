@@ -175,7 +175,7 @@
 			<span class="icon-logo mr-1" />Kitcoin
 		</h2>
 		<p>
-			Copyright &copy; 2023 codETHS.
+			Copyright &copy; 2024 codETHS.
 			<a
 				href="https://github.com/codeths/kitcoin/blob/main/LICENSE"
 				class="link"
