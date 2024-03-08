@@ -36,7 +36,7 @@ export function requestTemplate(
 	return `
     Dear ${managerUser},<br><br>
     
-    ${fromUser} requested ${quantity} ${itemName} from your store ${storeName}. To approve or deny this purchase request, please click <a href="${url}/${storeID}">here</a>.
+    ${fromUser} requested ${quantity} ${itemName} from your store ${storeName}. To approve or deny this purchase request, please click <a href="${url}/store/${storeID}">here</a>.
     <br><br>Sincerely,<br>
     The ETHS Kitcoin Team<br><br>
 	You're receiving this email because a student requested Kitcoin from a store that you manage. ${prefString}.
