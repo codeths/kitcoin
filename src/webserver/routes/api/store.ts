@@ -1440,11 +1440,10 @@ router.post(
 				reason: `${item.name}${quantity > 1 ? ` x${quantity}` : ''}`,
 			};
 			let t = await new Transaction(transactionData).save();
-			await queue.add('request', transactionData);
 			req.user.balance -= price;
 			await req.user.save();
 
-			let request = await new StoreRequest({
+			let requestData = await new StoreRequest({
 				storeID: store._id,
 				itemID: item._id,
 				studentID: req.user._id,
@@ -1452,10 +1451,9 @@ router.post(
 				quantity,
 				price,
 			}).save();
-
 			await item.save();
-
-			res.status(200).json(await request.toAPIResponse());
+			queue.add('request', transactionData);
+			res.status(200).json(await requestData.toAPIResponse());
 		} catch (e) {
 			try {
 				let error = await DBError.generate(

@@ -172,7 +172,13 @@ export default class User extends MongooseFuzzyClass {
 	public archived?: boolean;
 
 	/**
-	 * Archives the store
+	 * If a user recieves emails
+	 */
+	@prop({required: true, default: true})
+	public emails!: boolean;
+
+	/**
+	 * Archives the user
 	 */
 	public archive() {
 		this.archived = true;

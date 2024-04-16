@@ -52,7 +52,6 @@ function startEmailQueue() {
 				let reqUserID: string = job.data.to.id;
 				let store: any = job.data.store;
 				let email = await newRequest(reqUserID, store);
-
 				if (!email) {
 					console.log('Email could not be sent.');
 				}

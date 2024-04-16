@@ -26,10 +26,10 @@ export async function newTransaction(
 	fromUserID: String,
 	toUserID: String,
 	message: String,
-): Promise<String> {
+): Promise<any> {
 	let fromUser = await User.findById(fromUserID);
 	let toUser = await User.findById(toUserID);
-	if (!fromUser || !toUser) {
+	if (!fromUser || !toUser || !toUser.emails) {
 		return 'false';
 	} else {
 		let msg = sendTemplate(
@@ -46,20 +46,25 @@ export async function newTransaction(
 			subject: `${fromUser.name} sent you Kitcoin!`,
 			html: msg,
 		};
-		await transporter.sendMail(email);
-		return 'sent';
+		return await transporter.sendMail(email).catch(console.log);
 	}
 }
 
 export async function newRequest(
 	fromUserID: String,
 	storeObj: any,
-): Promise<String> {
+): Promise<any> {
 	let requestingUser = await User.findById(fromUserID);
 	let managerUser = await User.findById(storeObj.manager);
 	let item = await StoreItem.findById(storeObj.item);
 	let store = await Store.findById(storeObj.id);
-	if (!requestingUser || !managerUser || !item || !store) {
+	if (
+		!requestingUser ||
+		!managerUser ||
+		!item ||
+		!store ||
+		!managerUser.emails
+	) {
 		return 'false';
 	} else {
 		let msg = requestTemplate(
@@ -79,7 +84,6 @@ export async function newRequest(
 				(storeObj.quantity > 1 ? 'items!' : 'an item!'),
 			html: msg,
 		};
-		await transporter.sendMail(email);
-		return 'sent';
+		return await transporter.sendMail(email).catch(console.log);
 	}
 }

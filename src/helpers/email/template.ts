@@ -1,5 +1,5 @@
-const prefString: String = `To manage your email preferences, please click <a href="https://kitcoin.app/emails">here</a>`;
 import {url} from '../../config/keys.js';
+const prefString: String = `To manage your email preferences, please click <a href="${url}/settings">here</a>`;
 
 export function sendTemplate(
 	amount: number,

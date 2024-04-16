@@ -16,6 +16,7 @@
 		if (roles.includes('STAFF')) homes.push(['Staff Home', '/staff']);
 		if (roles.includes('ADMIN')) homes.push(['Admin Home', '/admin']);
 		if (roles.includes('STUDENT')) homes.push(['Student Home', '/student']);
+		homes.push(['Email Preferences', '/settings']);
 		links.push(['Home', (homes[0] || [, '/'])[1]]);
 		homePath = links[0][1];
 
