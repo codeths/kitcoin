@@ -49,9 +49,8 @@ function startEmailQueue() {
 					console.log('Email could not be sent.');
 				}
 			} else if (transactionType == 'request') {
-				let reqUserID: string = job.data.to.id;
-				let store: any = job.data.store;
-				let email = await newRequest(reqUserID, store);
+				let req: any = job.data;
+				let email = await newRequest(req);
 				if (!email) {
 					console.log('Email could not be sent.');
 				}

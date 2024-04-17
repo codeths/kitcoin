@@ -1452,7 +1452,7 @@ router.post(
 				price,
 			}).save();
 			await item.save();
-			queue.add('request', transactionData);
+			queue.add('request', requestData);
 			res.status(200).json(await requestData.toAPIResponse());
 		} catch (e) {
 			try {

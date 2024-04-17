@@ -19,5 +19,5 @@
 	"email_password": "xxxxxxxxxxxxxxxxxxxx",
 	"email_from": "xxxxx@xxxxx.xxx",
 	"email_replyto": "xxxxx@xxxxx.xxx",
-	"hostname": "localhost:8000"
+	"hostname": "https://kitcoin.app"
 }
