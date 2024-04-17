@@ -4,16 +4,15 @@
 	metatags.title = 'Error - Kitcoin';
 
 	let error = {
-		code: null,
+		code: null, // HTTP status code
 		title: null,
 		description: null,
 		button: null,
 	};
+	let errorCode = window.location.search.slice(1);
 
 	(async () => {
-		if (window.location.search) {
-			let errorCode = window.location.search.slice(1);
-
+		if (errorCode) {
 			let res = await fetch(`/api/error/${errorCode}`);
 			if (res && res.ok) {
 				try {
@@ -61,7 +60,7 @@
 		>
 		<a
 			class="btn btn-secondary px-12 mx-2"
-			href="mailto:kitcoin@eths202.org?subject=Kitcoin%20Error%20-%20{error._id ||
+			href="mailto:kitcoin@eths202.org?subject=Kitcoin%20Error%20-%20{errorCode ||
 				error.title ||
 				'Unknown'}"
 			target="_blank">Contact Us</a
