@@ -13,6 +13,15 @@ interface Keys {
 	gadmin_ignore_ou: string[] | null;
 	gadmin_sync_user: string | null;
 	sync_spreadsheet_id: string | null;
+	redis_host: string;
+	redis_port: number;
+	email_server: string;
+	email_port: number;
+	email_username: string;
+	email_password: string;
+	email_from: string;
+	email_replyto: string;
+	hostname: string;
 }
 
 let data = fs.readFileSync(new URL('./keys.json', import.meta.url).pathname);
@@ -31,6 +40,15 @@ let {
 	gadmin_ignore_ou,
 	gadmin_sync_user,
 	sync_spreadsheet_id,
+	redis_host,
+	redis_port,
+	email_server,
+	email_port,
+	email_username,
+	email_password,
+	email_from,
+	email_replyto,
+	hostname,
 } = json;
 
 export {
@@ -46,4 +64,13 @@ export {
 	gadmin_ignore_ou,
 	gadmin_sync_user,
 	sync_spreadsheet_id,
+	redis_host,
+	redis_port,
+	email_server,
+	email_port,
+	email_username,
+	email_password,
+	email_from,
+	email_replyto,
+	hostname,
 };

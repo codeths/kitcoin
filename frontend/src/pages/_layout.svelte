@@ -16,6 +16,7 @@
 		if (roles.includes('STAFF')) homes.push(['Staff Home', '/staff']);
 		if (roles.includes('ADMIN')) homes.push(['Admin Home', '/admin']);
 		if (roles.includes('STUDENT')) homes.push(['Student Home', '/student']);
+		homes.push(['Email Preferences', '/settings']);
 		links.push(['Home', (homes[0] || [, '/'])[1]]);
 		homePath = links[0][1];
 
@@ -175,7 +176,7 @@
 			<span class="icon-logo mr-1" />Kitcoin
 		</h2>
 		<p>
-			Copyright &copy; 2023 codETHS.
+			Copyright &copy; 2024 codETHS.
 			<a
 				href="https://github.com/codeths/kitcoin/blob/main/LICENSE"
 				class="link"

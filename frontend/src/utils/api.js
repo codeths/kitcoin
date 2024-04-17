@@ -119,6 +119,21 @@ async function getUserInfo() {
 	}
 }
 
+async function toggleEmailStatus() {
+	const info = await fetch('/api/users/email').catch(e => null);
+	if (info && info.ok) {
+		try {
+			return info.json();
+		} catch (e) {
+			throw 'An error occured.';
+		}
+	} else {
+		throw info && info.status == 401
+			? 'Not logged in'
+			: 'An error occured.';
+	}
+}
+
 export {
 	getBalance,
 	getTransactions,
@@ -126,4 +141,5 @@ export {
 	getClasses,
 	getClassStudents,
 	getUserInfo,
+	toggleEmailStatus,
 };

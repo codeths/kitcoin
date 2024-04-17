@@ -42,6 +42,24 @@ function isValidSearchResult(user: IUser, req: express.Request): boolean {
 	return true;
 }
 
+router.get(
+	'/email',
+	async (req, res, next) =>
+		request(req, res, next, {
+			authentication: true,
+		}),
+	async (req, res) => {
+		let user = await User.findById(req.user?.id);
+		if (!user) {
+			res.status(500).send('User not found');
+			throw 'User not found';
+		}
+		user.emails = !user?.emails;
+		user.save();
+		res.send(user.emails);
+	},
+);
+
 // Search users
 router.get(
 	'/search',

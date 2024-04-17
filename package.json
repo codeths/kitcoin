@@ -1,6 +1,6 @@
 {
 	"name": "kitcoin",
-	"version": "0.10.1",
+	"version": "0.10.3",
 	"description": "",
 	"main": "dist/index.js",
 	"type": "module",
@@ -62,6 +62,8 @@
 	},
 	"dependencies": {
 		"@typegoose/typegoose": "^9.7.1",
+		"@types/nodemailer": "^6.4.14",
+		"bullmq": "^5.1.4",
 		"compression": "^1.7.4",
 		"connect-mongodb-session": "^3.1.1",
 		"cookie-parser": "^1.4.6",
@@ -74,8 +76,9 @@
 		"mongoose": "^6.2.9",
 		"mongoose-fuzzy-searching": "github:codeths/mongoose-fuzzy-searching",
 		"nanoid": "^3.3.2",
+		"nodemailer": "^6.9.8",
 		"read-excel-file": "^5.2.28",
-		"sharp": "^0.30.4",
-		"regex-escape": "^3.4.10"
+		"regex-escape": "^3.4.10",
+		"sharp": "^0.30.4"
 	}
 }
