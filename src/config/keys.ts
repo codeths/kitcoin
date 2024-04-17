@@ -21,10 +21,12 @@ interface Keys {
 	email_password: string;
 	email_from: string;
 	email_replyto: string;
-	url: string;
+	hostname: string;
 }
 
-let data = fs.readFileSync(new URL('./keys.json', import.meta.url).pathname);
+let data = fs.readFileSync(
+	new URL('./keys.json', import.meta.hostname).pathname,
+);
 let json: Keys = JSON.parse(data.toString());
 
 let {
@@ -48,7 +50,7 @@ let {
 	email_password,
 	email_from,
 	email_replyto,
-	url,
+	hostname,
 } = json;
 
 export {
@@ -72,5 +74,5 @@ export {
 	email_password,
 	email_from,
 	email_replyto,
-	url,
+	hostname,
 };

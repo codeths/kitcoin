@@ -1,5 +1,5 @@
-import {url} from '../../config/keys.js';
-const prefString: String = `To manage your email preferences, please click <a href="${url}/settings">here</a>`;
+import {hostname} from '../../config/keys.js';
+const prefString: String = `To manage your email preferences, please click <a href="${hostname}/settings">here</a>`;
 
 export function sendTemplate(
 	amount: number,
@@ -18,7 +18,7 @@ export function sendTemplate(
 		(message != null ? `They added the following note: ${message}. ` : '') +
 		`Your current balance is ${userBalance} Kitcoin` +
 		(userBalance > 1 ? 's' : '') +
-		`. You can view your transaction history by clicking <a href="${url}">here</a>. 
+		`. You can view your transaction history by clicking <a href="${hostname}">here</a>. 
 		<br><br>Sincerely,<br>
     The ETHS Kitcoin Team<br><br>
 	You're receiving this email because someone sent you Kitcoin. ${prefString}.
@@ -36,7 +36,7 @@ export function requestTemplate(
 	return `
     Dear ${managerUser},<br><br>
     
-    ${fromUser} requested ${quantity} ${itemName} from your store ${storeName}. To approve or deny this purchase request, please click <a href="${url}/store/${storeID}">here</a>.
+    ${fromUser} requested ${quantity} ${itemName} from your store ${storeName}. To approve or deny this purchase request, please click <a href="${hostname}/store/${storeID}">here</a>.
     <br><br>Sincerely,<br>
     The ETHS Kitcoin Team<br><br>
 	You're receiving this email because a student requested Kitcoin from a store that you manage. ${prefString}.

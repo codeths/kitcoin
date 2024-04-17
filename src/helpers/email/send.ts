@@ -16,11 +16,8 @@ const transporter = nodemailer.createTransport({
 		pass: email_password,
 	},
 });
-import {error} from 'console';
-import {DBError, Store, StoreItem, User} from '../../struct/index.js';
-import e from 'express';
+import {Store, StoreItem, User} from '../../struct/index.js';
 import {sendTemplate, requestTemplate} from './template.js';
-import Transaction from '../../struct/db/transaction.js';
 export async function newTransaction(
 	amount: number,
 	fromUserID: String,
