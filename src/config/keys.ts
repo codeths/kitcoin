@@ -24,9 +24,7 @@ interface Keys {
 	hostname: string;
 }
 
-let data = fs.readFileSync(
-	new URL('./keys.json', import.meta.hostname).pathname,
-);
+let data = fs.readFileSync(new URL('./keys.json', import.meta.url).pathname);
 let json: Keys = JSON.parse(data.toString());
 
 let {
