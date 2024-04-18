@@ -5,11 +5,12 @@
 	import {getUserInfo} from './utils/api';
 	import {userInfo} from './utils/store';
 
-	const routeConfig = {
+	const routeRoles = {
 		'/staff': 'STAFF',
 		'/student': 'STUDENT',
 		'/admin': 'ADMIN',
 	};
+	const authRequiredRoutes = ['/settings'];
 
 	let info = undefined;
 	const userInfoPromise = getUserInfo().catch(e => null);
@@ -31,14 +32,17 @@
 	});
 
 	function handleAuthCheck(path = window.location.pathname) {
-		let requirement = routeConfig[path];
+		let requirement = routeRoles[path];
 		let unauthorized = !info || !info.authorized;
+		let hasRequiredRole =
+			!requirement ||
+			(requirement &&
+				!unauthorized &&
+				typeof requirement == 'string' &&
+				info.roles.includes(requirement));
 		let shouldRedirect =
-			requirement &&
-			(!info ||
-				(typeof requirement == 'string' &&
-					!info.roles.includes(requirement)) ||
-				unauthorized);
+			!hasRequiredRole ||
+			(unauthorized && authRequiredRoutes.includes(path));
 		if (shouldRedirect) {
 			window.location.href = `/login?redirect=${encodeURIComponent(
 				path,
