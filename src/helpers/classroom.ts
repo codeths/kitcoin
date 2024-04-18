@@ -100,18 +100,30 @@ class ClassroomClient {
 	 * Get a list of students in a class
 	 * @param courseID Course ID
 	 */
-	public async getStudents(courseID: string) {
+	public async getStudents(courseID: string, pageToken?: string) {
 		if (!this.client) return null;
 		try {
 			const students = await google
 				.classroom({version: 'v1', auth: this.client})
-				.courses.students.list({courseId: courseID, pageSize: 1000})
+				.courses.students.list({
+					courseId: courseID,
+					...(pageToken && {pageToken}),
+				})
 				.catch(e => null);
 
 			if (!students) return null;
 			if (!students.data || !students.data.students) return [];
 
-			return students.data.students.filter(notEmpty);
+			let allStudents = students.data.students;
+			if (students.data.nextPageToken) {
+				const newStudents = await this.getStudents(
+					courseID,
+					students.data.nextPageToken,
+				);
+				if (newStudents) allStudents.push(...newStudents);
+			}
+
+			return allStudents.filter(notEmpty);
 		} catch (e) {
 			return null;
 		}
