@@ -84,6 +84,11 @@ export default class Transaction {
 	@prop({required: true, default: () => new Date()})
 	public date!: Date;
 
+	/**
+	 * If the transaction was deleted
+	 *
+	 * Added in v0.11.0
+	 */
 	@prop({required: true, default: false})
 	public deleted!: Boolean;
 

@@ -173,6 +173,8 @@ export default class User extends MongooseFuzzyClass {
 
 	/**
 	 * If a user recieves emails
+	 *
+	 * Added in v0.11.0
 	 */
 	@prop({required: true, default: true})
 	public emails!: boolean;
