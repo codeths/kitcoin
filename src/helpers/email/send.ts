@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer';
 import {
 	email_server,
 	email_port,
+	email_insecure_do_not_use_in_prod,
 	email_username,
 	email_password,
 	email_from,
@@ -10,7 +11,7 @@ import {
 const transporter = nodemailer.createTransport({
 	host: email_server,
 	port: email_port,
-	secure: true,
+	secure: !email_insecure_do_not_use_in_prod,
 	auth: {
 		user: email_username,
 		pass: email_password,
