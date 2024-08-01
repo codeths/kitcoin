@@ -297,7 +297,7 @@ router.post(
 			);
 			if (badRequest) return res.status(400).send(badRequest);
 
-			let amount: number = numberFromData(
+			let globalAmount = numberFromData(
 				req.body.amount as number | `${number}`,
 			);
 			let fromUser: string | undefined = req.body.fromUser;
@@ -336,53 +336,137 @@ router.post(
 					.status(400)
 					.send('File is not a CSV or Excel document');
 
-			let ids: string[] = [];
+			const perUserAmounts = true;
+			let users = new Map<string, number>();
 			if (file.mimetype == 'text/csv') {
 				let json = csv2json(fs.readFileSync(file.filepath).toString(), {
 					trimFieldValues: true,
 					trimHeaderFields: true,
+					headerFields: ['email', 'userAmount'],
 				});
 
 				if (!json || !Array.isArray(json))
 					return res.status(400).send('Invalid CSV');
+
+				json.shift(); // remove headers
+
+				if (json.length < 1)
+					return res.status(400).send('Invalid CSV: sheet is empty');
+
 				if (json.some(j => typeof j !== 'object'))
 					return res.status(400).send('Invalid CSV');
 
-				let keys = Object.keys(json[0]);
-				ids = json.map(x => x[keys[0]]).filter(x => x);
+				for (const {email, userAmount} of json as {
+					email: any;
+					userAmount: any;
+				}[]) {
+					if (!email || typeof email !== 'string')
+						return res
+							.status(400)
+							.send(
+								'Invalid CSV: first column [Email] contains improperly formatted email addresses',
+							);
+
+					if (perUserAmounts && typeof userAmount !== 'number')
+						return res
+							.status(400)
+							.send(
+								'Invalid CSV: second column [Amount] contains improperly formatted currency values',
+							);
+
+					users.set(
+						email,
+						perUserAmounts ? userAmount : globalAmount,
+					);
+				}
 			} else {
 				let json = await readExcel(file.filepath);
 
 				if (!json || !Array.isArray(json))
-					return res.status(400).send('Invalid Excel document');
-				if (json.some(j => typeof j !== 'object'))
-					return res.status(400).send('Invalid Excel document');
+					return res.status(400).send('Invalid XLSX');
 
-				ids = json
-					.slice(1)
-					.map(x => x[0]?.toString())
-					.filter(x => x && typeof x == 'string') as string[];
+				json.shift(); // remove headers
+
+				if (json.length < 1)
+					return res.status(400).send('Invalid XLSX: sheet is empty');
+
+				if (json.some(j => !Array.isArray(j)))
+					return res.status(400).send('Invalid XLSX');
+
+				for (const [email, userAmount] of json) {
+					if (!email || typeof email !== 'string')
+						return res
+							.status(400)
+							.send(
+								'Invalid XLSX: first column [Email] contains improperly formatted email addresses',
+							);
+
+					if (perUserAmounts) {
+						const valid = Validators.anyNumber().run(userAmount);
+
+						if (!valid)
+							return res
+								.status(400)
+								.send(
+									'Invalid XLSX: second column [Amount] contains improperly formatted currency values',
+								);
+
+						const amountAsNumber =
+							typeof userAmount === 'string'
+								? parseFloat(userAmount)
+								: userAmount;
+						users.set(email, amountAsNumber);
+					} else {
+						users.set(email, globalAmount);
+					}
+				}
 			}
 			fs.rmSync(file.filepath);
 
-			let dbUsers = (
-				await Promise.all(ids.map(user => User.findBySchoolId(user)))
-			).filter(u => u) as IUser[];
+			for (const currencyValue of users.values()) {
+				const valid = Validators.currency().run(currencyValue);
+
+				if (valid !== true)
+					return res
+						.status(400)
+						.send(
+							'Invalid currency value: ' +
+								(typeof valid === 'string'
+									? valid.replaceAll(
+											'{KEY}',
+											`${currencyValue}`,
+									  )
+									: `${currencyValue}`),
+						);
+			}
+
+			let resolved = (
+				await Promise.all(
+					Array.from(users.entries()).map(
+						async ([email, userAmount]) => {
+							const user = (await User.findByEmail(
+								email,
+							)) as IUser | null;
+							return {user, userAmount};
+						},
+					),
+				)
+			).filter((u): u is {user: IUser; userAmount: number} => !!u.user);
 
 			const transactions = await Promise.all(
-				dbUsers.map(async dbUser => {
+				resolved.map(async ({user, userAmount}) => {
 					let transactionData = {
-						amount,
+						amount: userAmount,
 						reason: reason || null,
 						from,
 						to: {
-							id: dbUser.id,
+							id: user.id,
 						},
 					};
 					let t = await new Transaction(transactionData).save();
-					dbUser!.balance += amount as number;
+					user.balance += userAmount;
 					await queue.add('bulksend', transactionData);
-					await dbUser!.save();
+					await user.save();
 					return t.toAPIResponse(req.user);
 				}),
 			);
