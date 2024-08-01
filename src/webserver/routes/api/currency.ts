@@ -1,6 +1,8 @@
 import express from 'express';
 import formidable from 'formidable';
 import fs from 'fs';
+import path from 'path';
+import os from 'os';
 import json2csv from 'json-2-csv';
 import readExcel from 'read-excel-file/node/index.commonjs.js';
 import {
@@ -256,7 +258,9 @@ router.post(
 		try {
 			if (!requestHasUser(req)) return;
 
-			const form = formidable();
+			const form = formidable({
+				uploadDir: path.join(os.tmpdir(), 'kitcoin'),
+			});
 
 			let [err, fields, files]: [
 				any,

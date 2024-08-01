@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import cluster from 'cluster';
-import {cpus} from 'os';
+import {cpus, tmpdir} from 'os';
+import {mkdirSync} from 'fs';
+import path from 'path';
 
 import {
 	gadmin_sync_user,
@@ -74,6 +76,10 @@ mongoose
 			await User.syncIndexes();
 
 			console.log('MIGRATIONS COMPLETE');
+
+			// create temp dir for file uploads via formidable
+			// `recursive` is true to avoid errors if the folder exists already
+			mkdirSync(path.join(tmpdir(), 'kitcoin'), {recursive: true});
 
 			startSync();
 
