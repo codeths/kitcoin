@@ -72,7 +72,7 @@
 		"express-session": "^1.17.2",
 		"formidable": "^3.2.1",
 		"googleapis": "^100.0.0",
-		"json-2-csv": "^3.17.0",
+		"json-2-csv": "^5.5.4",
 		"mongoose": "^6.2.9",
 		"mongoose-fuzzy-searching": "github:codeths/mongoose-fuzzy-searching",
 		"nanoid": "^3.3.2",

@@ -3,7 +3,7 @@ import formidable from 'formidable';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import json2csv from 'json-2-csv';
+import {csv2json} from 'json-2-csv';
 import readExcel from 'read-excel-file/node/index.commonjs.js';
 import {
 	numberFromData,
@@ -14,8 +14,6 @@ import {
 } from '../../../helpers/request.js';
 import {DBError, IUser, Transaction, User} from '../../../struct/index.js';
 import {requestHasUser} from '../../../types/index.js';
-
-const {csv2jsonAsync} = json2csv;
 
 const router = express.Router();
 
@@ -340,9 +338,10 @@ router.post(
 
 			let ids: string[] = [];
 			if (file.mimetype == 'text/csv') {
-				let json = await csv2jsonAsync(
-					fs.readFileSync(file.filepath).toString(),
-				);
+				let json = csv2json(fs.readFileSync(file.filepath).toString(), {
+					trimFieldValues: true,
+					trimHeaderFields: true,
+				});
 
 				if (!json || !Array.isArray(json))
 					return res.status(400).send('Invalid CSV');

@@ -1,5 +1,5 @@
 import express from 'express';
-import json2csv from 'json-2-csv';
+import {json2csv} from 'json-2-csv';
 import mongoose from 'mongoose';
 import {roundCurrency} from '../../../helpers/misc.js';
 import {
@@ -103,7 +103,7 @@ router.get(
 			});
 
 			if (req.query.csv && booleanFromData(req.query.csv)) {
-				let csv = await json2csv.json2csvAsync(transactions, {
+				let csv = json2csv(transactions, {
 					keys: [
 						{
 							field: 'date',
@@ -177,7 +177,7 @@ router.get(
 			});
 
 			if (req.query.csv && booleanFromData(req.query.csv)) {
-				let csv = await json2csv.json2csvAsync(transactions, {
+				let csv = json2csv(transactions, {
 					keys: [
 						{
 							field: 'date',
@@ -284,7 +284,7 @@ router.get(
 		);
 
 		if (req.query.csv && booleanFromData(req.query.csv)) {
-			let csv = await json2csv.json2csvAsync(data, {
+			let csv = json2csv(data, {
 				keys: [
 					{
 						field: '_id',
@@ -373,7 +373,7 @@ router.get(
 		let data = await Promise.all(transactions.map(x => x.toAPIResponse()));
 
 		if (req.query.csv && booleanFromData(req.query.csv)) {
-			let csv = await json2csv.json2csvAsync(data, {
+			let csv = json2csv(data, {
 				keys: [
 					{
 						field: '_id',
@@ -502,7 +502,7 @@ router.get(
 		});
 
 		if (req.query.csv && booleanFromData(req.query.csv)) {
-			let csv = await json2csv.json2csvAsync(topUsers, {
+			let csv = json2csv(topUsers, {
 				keys: [
 					{
 						field: 'id',
@@ -617,7 +617,7 @@ router.get(
 		);
 
 		if (req.query.csv && booleanFromData(req.query.csv)) {
-			let csv = await json2csv.json2csvAsync(data, {
+			let csv = json2csv(data, {
 				keys: [
 					{
 						field: '_id',
