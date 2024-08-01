@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import {csv2json} from 'json-2-csv';
-import readExcel from 'read-excel-file/node/index.commonjs.js';
+import readExcel from 'read-excel-file/node';
 import {
 	numberFromData,
 	request,

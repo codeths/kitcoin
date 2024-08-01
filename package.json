@@ -77,7 +77,7 @@
 		"mongoose-fuzzy-searching": "github:codeths/mongoose-fuzzy-searching",
 		"nanoid": "^3.3.2",
 		"nodemailer": "^6.9.8",
-		"read-excel-file": "^5.2.28",
+		"read-excel-file": "^5.8.4",
 		"regex-escape": "^3.4.10",
 		"sharp": "^0.30.4"
 	}
