@@ -18,18 +18,18 @@
 	let fileUploadDrag = false;
 	let isFirstUpload = true;
 
+	const validMIMETypes = [
+		'text/csv',
+		'application/vnd.ms-excel',
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+	];
+
 	let formValidators = {
 		students: e => {
 			let v = e.value;
 			if (!v || !v[0]) return isFirstUpload ? '' : 'Please select a file';
 			isFirstUpload = false;
-			if (
-				![
-					'text/csv',
-					'application/vnd.ms-excel',
-					'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-				].includes(v[0].type)
-			) {
+			if (!validMIMETypes.includes(v[0].type)) {
 				fileUpload = [];
 				return 'File must be a CSV or Excel document';
 			}
@@ -197,7 +197,7 @@
 				on:dragenter={() => (fileUploadDrag = true)}
 				on:dragleave={() => (fileUploadDrag = false)}
 				on:drop={() => (fileUploadDrag = false)}
-				accept="text/csv"
+				accept={validMIMETypes.join(',')}
 			/></label
 		>
 		{#if fileUpload && fileUpload[0]}
