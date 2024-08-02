@@ -1,12 +1,12 @@
 import {hostname} from '../../config/keys.js';
-const prefString: String = `To manage your email preferences, please click <a href="${hostname}/settings">here</a>`;
+const prefString = `To manage your email preferences, please click <a href="${hostname}/settings">here</a>`;
 
 export function sendTemplate(
 	amount: number,
-	fromUser: String,
-	toUser: String,
+	fromUser: string,
+	toUser: string,
 	userBalance: number,
-	message: String,
+	message: string,
 ) {
 	return (
 		`
@@ -27,11 +27,11 @@ export function sendTemplate(
 }
 export function requestTemplate(
 	quantity: number,
-	fromUser: String,
-	managerUser: String,
-	itemName: String,
-	storeName: String,
-	storeID: String,
+	fromUser: string,
+	managerUser: string,
+	itemName: string,
+	storeName: string,
+	storeID: string,
 ) {
 	return `
     Dear ${managerUser},<br><br>

@@ -21,9 +21,9 @@ import {Store, StoreItem, User} from '../../struct/index.js';
 import {sendTemplate, requestTemplate} from './template.js';
 export async function newTransaction(
 	amount: number,
-	fromUserID: String,
-	toUserID: String,
-	message: String,
+	fromUserID: string,
+	toUserID: string,
+	message: string,
 ): Promise<any> {
 	let fromUser = await User.findById(fromUserID);
 	let toUser = await User.findById(toUserID);
