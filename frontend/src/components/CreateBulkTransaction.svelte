@@ -35,8 +35,27 @@
 			}
 			return null;
 		},
+		individualAmounts: e => {
+			if (e.type)
+				setTimeout(
+					() =>
+						form.validate({
+							detail: {
+								target: {
+									name: 'amount',
+								},
+								value: formData.values.amount,
+								type: '',
+							},
+						}),
+					0,
+				);
+
+			return null;
+		},
 		amount: e => {
 			let v = e.value;
+			if (formData.values.individualAmounts) return null;
 			if (!v) return e.type == 'blur' ? 'Amount is required' : '';
 			if (!/^\d*(?:\.\d+)?$/.test(v.trim()))
 				return 'Amount must be a number';
@@ -128,7 +147,8 @@
 
 	async function send() {
 		const formData = new FormData();
-		formData.append('amount', form.values.amount);
+		formData.append('individualAmounts', form.values.individualAmounts);
+		if (form.values.amount) formData.append('amount', form.values.amount);
 		if (form.values.fromUser)
 			formData.append('fromUser', form.values.fromUser.value);
 		if (form.values.fromText.trim())
@@ -228,8 +248,17 @@
 		</label>
 	{/if}
 	<Input
+		name="individualAmounts"
+		label="Individual amounts"
+		type="switch"
+		bind:value={formData.values.individualAmounts}
+		bind:error={formData.errors.individualAmounts}
+		on:validate={form.validate}
+	/>
+	<Input
 		name="amount"
 		label="Amount"
+		disabled={formData.values.individualAmounts}
 		bind:value={formData.values.amount}
 		bind:error={formData.errors.amount}
 		on:validate={form.validate}

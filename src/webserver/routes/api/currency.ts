@@ -275,6 +275,7 @@ router.post(
 			}
 
 			req.body = {
+				individualAmounts: fields.individualAmounts,
 				amount: fields.amount,
 				fromUser: fields.fromUser,
 				fromText: fields.fromText,
@@ -285,7 +286,8 @@ router.post(
 				req,
 				{
 					body: {
-						amount: Validators.currency,
+						individualAmounts: Validators.booleanString,
+						amount: Validators.optional(Validators.currency),
 						fromUser: Validators.optional(Validators.objectID),
 						fromText: Validators.optional(
 							Validators.stringNotEmpty,
@@ -297,9 +299,23 @@ router.post(
 			);
 			if (badRequest) return res.status(400).send(badRequest);
 
-			let globalAmount = numberFromData(
-				req.body.amount as number | `${number}`,
-			);
+			let individualAmounts = req.body.individualAmounts as
+				| boolean
+				| `${boolean}`;
+			if (typeof individualAmounts === 'string')
+				individualAmounts = individualAmounts === 'true';
+
+			let globalAmount = req.body.amount
+				? numberFromData(req.body.amount as number | `${number}`)
+				: undefined;
+
+			if (!individualAmounts && !globalAmount)
+				return res
+					.status(400)
+					.send(
+						'Amount must be specified if individualAmounts is false',
+					);
+
 			let fromUser: string | undefined = req.body.fromUser;
 			let fromText: string | undefined = req.body.fromText?.trim();
 			if (!fromUser && !fromText)
@@ -336,7 +352,6 @@ router.post(
 					.status(400)
 					.send('File is not a CSV or Excel document');
 
-			const perUserAmounts = true;
 			let users = new Map<string, number>();
 			if (file.mimetype == 'text/csv') {
 				let json = csv2json(fs.readFileSync(file.filepath).toString(), {
@@ -367,7 +382,7 @@ router.post(
 								'Invalid CSV: first column [Email] contains improperly formatted email addresses',
 							);
 
-					if (perUserAmounts && typeof userAmount !== 'number')
+					if (individualAmounts && typeof userAmount !== 'number')
 						return res
 							.status(400)
 							.send(
@@ -376,7 +391,7 @@ router.post(
 
 					users.set(
 						email,
-						perUserAmounts ? userAmount : globalAmount,
+						individualAmounts ? userAmount : globalAmount,
 					);
 				}
 			} else {
@@ -401,7 +416,7 @@ router.post(
 								'Invalid XLSX: first column [Email] contains improperly formatted email addresses',
 							);
 
-					if (perUserAmounts) {
+					if (individualAmounts) {
 						const valid = Validators.anyNumber().run(userAmount);
 
 						if (!valid)
@@ -417,7 +432,7 @@ router.post(
 								: userAmount;
 						users.set(email, amountAsNumber);
 					} else {
-						users.set(email, globalAmount);
+						users.set(email, globalAmount as number);
 					}
 				}
 			}
