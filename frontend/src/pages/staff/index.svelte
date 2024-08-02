@@ -311,23 +311,21 @@
 		{#key showBulkModal}
 			<CreateBulkTransaction
 				modal="true"
-				class="w-full"
-				on:close={e => {
+				on:close={() => {
 					showBulkModal = false;
-					if (e && typeof e.detail == 'number') {
-						transactions.load();
-						multiSelect = false;
-						setTimeout(
-							() =>
-								toastContainer.toast(
-									`${e.detail} transaction${
-										e.detail == 1 ? '' : 's'
-									} sent!`,
-									'success',
-								),
-							300,
-						);
-					}
+					transactions.load();
+					multiSelect = false;
+				}}
+				on:toast={e => {
+					setTimeout(
+						() =>
+							toastContainer.toast(
+								e.detail.text,
+								e.detail.ok ? 'success' : 'warning',
+								e.detail.ok ? undefined : 10_000, //  give the user more time to read the message
+							),
+						300,
+					);
 				}}
 			/>
 		{/key}

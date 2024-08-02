@@ -148,12 +148,24 @@
 		resetTimeout = setTimeout(() => {
 			submitStatus = null;
 		}, 3000);
-		if (res && res.ok) {
-			let data = await res.json();
-			if (form.reset) form.reset();
-			fileUpload = [];
-			isFirstUpload = true;
-			dispatch('close', data.length);
+		if (res) {
+			if (res.ok) {
+				let data = await res.json();
+				if (form.reset) form.reset();
+				fileUpload = [];
+				isFirstUpload = true;
+				const message = {
+					text: `${data.length} transaction${
+						data.length == 1 ? '' : 's'
+					} sent!`,
+					ok: true,
+				};
+				dispatch('toast', message);
+				dispatch('close');
+			} else {
+				let error = await res.text();
+				dispatch('toast', {text: error, ok: false});
+			}
 		}
 
 		return false;
@@ -175,9 +187,7 @@
 	bind:this={form}
 	validators={formValidators}
 >
-	<label class="label" for="">
-		Students - CSV or Excel document.<br />Supports ActivityScan exports.
-	</label>
+	<label class="label" for="">Students - CSV or Excel document.</label>
 	<div class="flex w-full">
 		<label for="fileinput" class="flex-1 btn btn-primary relative min-w-0">
 			<span class="text-ellipsis whitespace-nowrap overflow-hidden">
