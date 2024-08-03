@@ -6,7 +6,7 @@ export function sendTemplate(
 	fromUser: string,
 	toUser: string,
 	userBalance: number,
-	message: string,
+	message: string | undefined,
 ) {
 	return (
 		`
@@ -15,7 +15,7 @@ export function sendTemplate(
     You've earned ${amount} Kitcoin` +
 		(amount > 1 ? 's' : '') +
 		` from ${fromUser}! ` +
-		(message != null ? `They added the following note: ${message}. ` : '') +
+		(message ? `They added the following note: ${message}. ` : '') +
 		`Your current balance is ${userBalance} Kitcoin` +
 		(userBalance > 1 ? 's' : '') +
 		`. You can view your transaction history by clicking <a href="${hostname}">here</a>. 

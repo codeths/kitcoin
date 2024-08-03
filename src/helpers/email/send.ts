@@ -21,20 +21,22 @@ import {Store, StoreItem, User} from '../../struct/index.js';
 import {sendTemplate, requestTemplate} from './template.js';
 export async function newTransaction(
 	amount: number,
-	fromUserID: string,
+	fromUserID: string | null,
 	toUserID: string,
 	message: string,
-): Promise<any> {
+	fromString?: string,
+) {
 	let fromUser = await User.findById(fromUserID);
 	let toUser = await User.findById(toUserID);
-	if (!fromUser || !toUser) {
+	let finalFrom = fromUserID ? fromUser?.name : fromString;
+	if (!finalFrom || !toUser) {
 		return false;
 	} else if (!toUser.emails) {
 		return true;
 	} else {
 		let msg = sendTemplate(
 			amount,
-			fromUser.name,
+			finalFrom,
 			toUser.name,
 			toUser.balance,
 			message,
@@ -43,14 +45,14 @@ export async function newTransaction(
 			from: `ETHS Kitcoin Team <${email_from}>`,
 			replyTo: email_replyto,
 			to: toUser.email,
-			subject: `${fromUser.name} sent you Kitcoin!`,
+			subject: `${finalFrom} sent you Kitcoin!`,
 			html: msg,
 		};
 		return await transporter.sendMail(email).catch(console.log);
 	}
 }
 
-export async function newRequest(requestObj: any): Promise<any> {
+export async function newRequest(requestObj: any) {
 	let requestingUser = await User.findById(requestObj.studentID);
 	let item = await StoreItem.findById(requestObj.itemID);
 	let store = await Store.findById(requestObj.storeID);

@@ -36,15 +36,17 @@ function startEmailQueue() {
 			let transactionType = job.name;
 			if (transactionType == 'send' || transactionType == 'bulksend') {
 				let amount: number = job.data.amount;
-				let fromUserID: string = job.data.from.id;
+				let fromUserID: string | undefined = job.data.from.id;
+				let fromUserText: string | undefined = job.data.from.text;
 				let toUserID: string = job.data.to.id;
 				let message: string = job.data.reason;
 
 				let email = await newTransaction(
 					amount,
-					fromUserID,
+					fromUserID || null,
 					toUserID,
 					message,
+					fromUserText,
 				);
 
 				if (!email) {

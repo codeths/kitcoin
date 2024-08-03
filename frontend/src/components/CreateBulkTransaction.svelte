@@ -120,7 +120,7 @@
 					0,
 				);
 
-			let otherValue = formData.values.fromUser;
+			let otherValue = formData.values.fromUser?.value;
 			if (v && otherValue)
 				return 'You cannot specify both a user and a message';
 
@@ -149,7 +149,7 @@
 		const formData = new FormData();
 		formData.append('individualAmounts', form.values.individualAmounts);
 		if (form.values.amount) formData.append('amount', form.values.amount);
-		if (form.values.fromUser)
+		if (form.values.fromUser?.value)
 			formData.append('fromUser', form.values.fromUser.value);
 		if (form.values.fromText.trim())
 			formData.append('fromText', form.values.fromText);
