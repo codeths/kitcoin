@@ -93,12 +93,12 @@
 
 			let otherValue = formData.values.fromText;
 			if (v && otherValue)
-				return 'You cannot specify both a user and a message';
+				return 'You cannot specify both a user and a special sender';
 
 			if (!v && e.type == 'blur') {
 				if (e.query) return 'User must be chosen from the dropdown';
 				if (!otherValue)
-					return 'You must specify either a user or a message';
+					return 'You must specify either a user or a special sender';
 			}
 			if (!v && !otherValue) return '';
 			return null;
@@ -122,10 +122,10 @@
 
 			let otherValue = formData.values.fromUser?.value;
 			if (v && otherValue)
-				return 'You cannot specify both a user and a message';
+				return 'You cannot specify both a user and a special sender';
 
 			if (!v && !otherValue && e.type == 'blur')
-				return 'You must specify either a user or a message';
+				return 'You must specify either a user or a special sender';
 			if (!v && !otherValue) return '';
 			return null;
 		},
@@ -271,8 +271,8 @@
 		bind:error={formData.errors.reason}
 		on:validate={form.validate}
 	/>
-	<label class="label" for="">
-		<span class="label-text">From</span>
+	<label class="label mt-3" for="">
+		<span>From</span>
 	</label>
 	<StudentSearch
 		name="fromUser"
@@ -284,10 +284,10 @@
 		bind:error={formData.errors.fromUser}
 		on:validate={form.validate}
 	/>
-	<div class="divider">OR</div>
+	<div class="divider my-2.5">OR</div>
 	<Input
 		name="fromText"
-		label="Message"
+		label="Special sender"
 		hidelabel="true"
 		bind:value={formData.values.fromText}
 		bind:error={formData.errors.fromText}
