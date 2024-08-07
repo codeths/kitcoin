@@ -13,6 +13,7 @@ import {
 	Validators,
 } from '../../../helpers/request.js';
 import {DBError, IUser, Transaction, User} from '../../../struct/index.js';
+import mongoose from 'mongoose';
 import {requestHasUser} from '../../../types/index.js';
 
 const router = express.Router();
@@ -468,6 +469,7 @@ router.post(
 				)
 			).filter((u): u is {user: IUser; userAmount: number} => !!u.user);
 
+			const groupID = new mongoose.Types.ObjectId();
 			const transactions = await Promise.all(
 				resolved.map(async ({user, userAmount}) => {
 					let transactionData = {
@@ -477,6 +479,7 @@ router.post(
 						to: {
 							id: user.id,
 						},
+						groupID,
 					};
 					let t = await new Transaction(transactionData).save();
 					user.balance += userAmount;
