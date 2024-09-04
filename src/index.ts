@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import cluster from 'cluster';
-import {cpus} from 'os';
+import {cpus, tmpdir} from 'os';
+import {mkdirSync} from 'fs';
+import path from 'path';
 
 import {
 	gadmin_sync_user,
@@ -34,15 +36,17 @@ function startEmailQueue() {
 			let transactionType = job.name;
 			if (transactionType == 'send' || transactionType == 'bulksend') {
 				let amount: number = job.data.amount;
-				let fromUserID: string = job.data.from.id;
+				let fromUserID: string | undefined = job.data.from.id;
+				let fromUserText: string | undefined = job.data.from.text;
 				let toUserID: string = job.data.to.id;
 				let message: string = job.data.reason;
 
 				let email = await newTransaction(
 					amount,
-					fromUserID,
+					fromUserID || null,
 					toUserID,
 					message,
+					fromUserText,
 				);
 
 				if (!email) {
@@ -74,6 +78,10 @@ mongoose
 			await User.syncIndexes();
 
 			console.log('MIGRATIONS COMPLETE');
+
+			// create temp dir for file uploads via formidable
+			// `recursive` is true to avoid errors if the folder exists already
+			mkdirSync(path.join(tmpdir(), 'kitcoin'), {recursive: true});
 
 			startSync();
 

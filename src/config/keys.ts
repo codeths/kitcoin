@@ -17,6 +17,7 @@ interface Keys {
 	redis_port: number;
 	email_server: string;
 	email_port: number;
+	email_insecure_do_not_use_in_prod: boolean | null;
 	email_username: string;
 	email_password: string;
 	email_from: string;
@@ -44,6 +45,7 @@ let {
 	redis_port,
 	email_server,
 	email_port,
+	email_insecure_do_not_use_in_prod,
 	email_username,
 	email_password,
 	email_from,
@@ -68,6 +70,7 @@ export {
 	redis_port,
 	email_server,
 	email_port,
+	email_insecure_do_not_use_in_prod,
 	email_username,
 	email_password,
 	email_from,

@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer';
 import {
 	email_server,
 	email_port,
+	email_insecure_do_not_use_in_prod,
 	email_username,
 	email_password,
 	email_from,
@@ -10,7 +11,7 @@ import {
 const transporter = nodemailer.createTransport({
 	host: email_server,
 	port: email_port,
-	secure: true,
+	secure: !email_insecure_do_not_use_in_prod,
 	auth: {
 		user: email_username,
 		pass: email_password,
@@ -20,20 +21,22 @@ import {Store, StoreItem, User} from '../../struct/index.js';
 import {sendTemplate, requestTemplate} from './template.js';
 export async function newTransaction(
 	amount: number,
-	fromUserID: String,
-	toUserID: String,
-	message: String,
-): Promise<any> {
+	fromUserID: string | null,
+	toUserID: string,
+	message: string,
+	fromString?: string,
+) {
 	let fromUser = await User.findById(fromUserID);
 	let toUser = await User.findById(toUserID);
-	if (!fromUser || !toUser) {
+	let finalFrom = fromUserID ? fromUser?.name : fromString;
+	if (!finalFrom || !toUser) {
 		return false;
 	} else if (!toUser.emails) {
 		return true;
 	} else {
 		let msg = sendTemplate(
 			amount,
-			fromUser.name,
+			finalFrom,
 			toUser.name,
 			toUser.balance,
 			message,
@@ -42,14 +45,14 @@ export async function newTransaction(
 			from: `ETHS Kitcoin Team <${email_from}>`,
 			replyTo: email_replyto,
 			to: toUser.email,
-			subject: `${fromUser.name} sent you Kitcoin!`,
+			subject: `${finalFrom} sent you Kitcoin!`,
 			html: msg,
 		};
 		return await transporter.sendMail(email).catch(console.log);
 	}
 }
 
-export async function newRequest(requestObj: any): Promise<any> {
+export async function newRequest(requestObj: any) {
 	let requestingUser = await User.findById(requestObj.studentID);
 	let item = await StoreItem.findById(requestObj.itemID);
 	let store = await Store.findById(requestObj.storeID);

@@ -1,6 +1,6 @@
 {
 	"name": "kitcoin",
-	"version": "0.11.3",
+	"version": "0.12.0",
 	"description": "",
 	"main": "dist/index.js",
 	"type": "module",
@@ -72,12 +72,12 @@
 		"express-session": "^1.17.2",
 		"formidable": "^3.2.1",
 		"googleapis": "^100.0.0",
-		"json-2-csv": "^3.17.0",
+		"json-2-csv": "^5.5.4",
 		"mongoose": "^6.2.9",
 		"mongoose-fuzzy-searching": "github:codeths/mongoose-fuzzy-searching",
 		"nanoid": "^3.3.2",
 		"nodemailer": "^6.9.8",
-		"read-excel-file": "^5.2.28",
+		"read-excel-file": "^5.8.4",
 		"regex-escape": "^3.4.10",
 		"sharp": "^0.30.4"
 	}

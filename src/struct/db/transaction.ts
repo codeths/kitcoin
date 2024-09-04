@@ -1,6 +1,6 @@
 import typegoose, {DocumentType} from '@typegoose/typegoose';
 import {ReturnModelType} from '@typegoose/typegoose/lib/types';
-import {FilterQuery} from 'mongoose';
+import mongoose, {FilterQuery} from 'mongoose';
 import {roundCurrency} from '../../helpers/misc.js';
 import {ITransactionAPIResponse} from '../../types/index.js';
 import {ITransaction, IUser, User} from './index.js';
@@ -83,6 +83,12 @@ export default class Transaction {
 	 */
 	@prop({required: true, default: () => new Date()})
 	public date!: Date;
+
+	/**
+	 * Group identifier
+	 */
+	@prop()
+	public groupID?: mongoose.Types.ObjectId;
 
 	/**
 	 * If the transaction was deleted

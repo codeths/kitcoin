@@ -18,25 +18,44 @@
 	let fileUploadDrag = false;
 	let isFirstUpload = true;
 
+	const validMIMETypes = [
+		'text/csv',
+		'application/vnd.ms-excel',
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+	];
+
 	let formValidators = {
 		students: e => {
 			let v = e.value;
 			if (!v || !v[0]) return isFirstUpload ? '' : 'Please select a file';
 			isFirstUpload = false;
-			if (
-				![
-					'text/csv',
-					'application/vnd.ms-excel',
-					'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-				].includes(v[0].type)
-			) {
+			if (!validMIMETypes.includes(v[0].type)) {
 				fileUpload = [];
 				return 'File must be a CSV or Excel document';
 			}
 			return null;
 		},
+		individualAmounts: e => {
+			if (e.type)
+				setTimeout(
+					() =>
+						form.validate({
+							detail: {
+								target: {
+									name: 'amount',
+								},
+								value: formData.values.amount,
+								type: '',
+							},
+						}),
+					0,
+				);
+
+			return null;
+		},
 		amount: e => {
 			let v = e.value;
+			if (formData.values.individualAmounts) return null;
 			if (!v) return e.type == 'blur' ? 'Amount is required' : '';
 			if (!/^\d*(?:\.\d+)?$/.test(v.trim()))
 				return 'Amount must be a number';
@@ -74,12 +93,12 @@
 
 			let otherValue = formData.values.fromText;
 			if (v && otherValue)
-				return 'You cannot specify both a user and a message';
+				return 'You cannot specify both a user and a special sender';
 
 			if (!v && e.type == 'blur') {
 				if (e.query) return 'User must be chosen from the dropdown';
 				if (!otherValue)
-					return 'You must specify either a user or a message';
+					return 'You must specify either a user or a special sender';
 			}
 			if (!v && !otherValue) return '';
 			return null;
@@ -101,12 +120,12 @@
 					0,
 				);
 
-			let otherValue = formData.values.fromUser;
+			let otherValue = formData.values.fromUser?.value;
 			if (v && otherValue)
-				return 'You cannot specify both a user and a message';
+				return 'You cannot specify both a user and a special sender';
 
 			if (!v && !otherValue && e.type == 'blur')
-				return 'You must specify either a user or a message';
+				return 'You must specify either a user or a special sender';
 			if (!v && !otherValue) return '';
 			return null;
 		},
@@ -128,8 +147,9 @@
 
 	async function send() {
 		const formData = new FormData();
-		formData.append('amount', form.values.amount);
-		if (form.values.fromUser)
+		formData.append('individualAmounts', form.values.individualAmounts);
+		if (form.values.amount) formData.append('amount', form.values.amount);
+		if (form.values.fromUser?.value)
 			formData.append('fromUser', form.values.fromUser.value);
 		if (form.values.fromText.trim())
 			formData.append('fromText', form.values.fromText);
@@ -148,12 +168,24 @@
 		resetTimeout = setTimeout(() => {
 			submitStatus = null;
 		}, 3000);
-		if (res && res.ok) {
-			let data = await res.json();
-			if (form.reset) form.reset();
-			fileUpload = [];
-			isFirstUpload = true;
-			dispatch('close', data.length);
+		if (res) {
+			if (res.ok) {
+				let data = await res.json();
+				if (form.reset) form.reset();
+				fileUpload = [];
+				isFirstUpload = true;
+				const message = {
+					text: `${data.length} transaction${
+						data.length == 1 ? '' : 's'
+					} sent!`,
+					ok: true,
+				};
+				dispatch('toast', message);
+				dispatch('close');
+			} else {
+				let error = await res.text();
+				dispatch('toast', {text: error, ok: false});
+			}
 		}
 
 		return false;
@@ -175,9 +207,7 @@
 	bind:this={form}
 	validators={formValidators}
 >
-	<label class="label" for="">
-		Students - CSV or Excel document.<br />Supports ActivityScan exports.
-	</label>
+	<label class="label" for="">Students - CSV or Excel document.</label>
 	<div class="flex w-full">
 		<label for="fileinput" class="flex-1 btn btn-primary relative min-w-0">
 			<span class="text-ellipsis whitespace-nowrap overflow-hidden">
@@ -197,7 +227,7 @@
 				on:dragenter={() => (fileUploadDrag = true)}
 				on:dragleave={() => (fileUploadDrag = false)}
 				on:drop={() => (fileUploadDrag = false)}
-				accept="text/csv"
+				accept={validMIMETypes.join(',')}
 			/></label
 		>
 		{#if fileUpload && fileUpload[0]}
@@ -218,8 +248,17 @@
 		</label>
 	{/if}
 	<Input
+		name="individualAmounts"
+		label="Individual amounts"
+		type="switch"
+		bind:value={formData.values.individualAmounts}
+		bind:error={formData.errors.individualAmounts}
+		on:validate={form.validate}
+	/>
+	<Input
 		name="amount"
 		label="Amount"
+		disabled={formData.values.individualAmounts}
 		bind:value={formData.values.amount}
 		bind:error={formData.errors.amount}
 		on:validate={form.validate}
@@ -232,8 +271,8 @@
 		bind:error={formData.errors.reason}
 		on:validate={form.validate}
 	/>
-	<label class="label" for="">
-		<span class="label-text">From</span>
+	<label class="label mt-3" for="">
+		<span>From</span>
 	</label>
 	<StudentSearch
 		name="fromUser"
@@ -245,10 +284,10 @@
 		bind:error={formData.errors.fromUser}
 		on:validate={form.validate}
 	/>
-	<div class="divider">OR</div>
+	<div class="divider my-2.5">OR</div>
 	<Input
 		name="fromText"
-		label="Message"
+		label="Special sender"
 		hidelabel="true"
 		bind:value={formData.values.fromText}
 		bind:error={formData.errors.fromText}
