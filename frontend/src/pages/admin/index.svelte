@@ -1183,13 +1183,12 @@
 							>
 								<span class="icon-refresh text-2xl" />
 							</button>
-							<a
+							<div
 								class="btn btn-primary"
-								href="/api/reports/balance/top?csv=true"
 								target="_self"
 							>
-								<span class="icon-download text-2xl mr-2" />CSV
-							</a>
+								<span class="icon-download text-2xl mr-2" />CSV [temporarily disabled]
+						</div>
 						</div>
 					</h2>
 					{#if topBalanceUsers && topBalanceUsers.length > 0}
