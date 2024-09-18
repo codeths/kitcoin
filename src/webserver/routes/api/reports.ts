@@ -505,7 +505,7 @@ router.get(
 			let csv = json2csv(topUsers, {
 				keys: [
 					{
-						field: 'id',
+						field: '_id',
 						title: 'ID',
 					},
 					{
