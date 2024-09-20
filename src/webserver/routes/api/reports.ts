@@ -494,7 +494,7 @@ router.get(
 			req.query.csv &&
 			booleanFromData(req.query.csv) &&
 			!numberFromData(req.query.count)
-				? await topUsersQuery
+				? await topUsersQuery.limit(100)
 				: await topUsersQuery.limit(count);
 
 		topUsers.forEach(x => {
