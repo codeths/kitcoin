@@ -217,8 +217,12 @@ router.post(
 					};
 					let t = await new Transaction(transactionData).save();
 					dbUser!.balance += amount as number;
-					await dbUser!.save();
-					await queue.add('send', transactionData);
+					await dbUser!
+						.save()
+						.then(
+							async () =>
+								await queue.add('send', transactionData),
+						);
 					return t.toAPIResponse(req.user);
 				}),
 			);
