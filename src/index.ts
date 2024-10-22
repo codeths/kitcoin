@@ -67,7 +67,7 @@ function startEmailQueue() {
 			},
 			limiter: {
 				max: 1,
-				duration: 1000,
+				duration: 30000,
 			},
 		},
 	);
