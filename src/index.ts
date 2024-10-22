@@ -65,6 +65,10 @@ function startEmailQueue() {
 				host: redis_host,
 				port: redis_port,
 			},
+			limiter: {
+				max: 1,
+				duration: 1000,
+			},
 		},
 	);
 }

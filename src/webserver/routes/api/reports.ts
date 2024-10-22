@@ -13,6 +13,7 @@ import {
 	DBError,
 	ITransaction,
 	Transaction,
+	IUser,
 	User,
 } from '../../../struct/index.js';
 import {UserRoles} from '../../../types/db.js';
@@ -476,36 +477,41 @@ router.get(
 		}),
 	async (req, res) => {
 		let count = numberFromData(req.query.count) || 10;
-		let topUsersQuery = User.find({
+
+		let query: mongoose.FilterQuery<IUser> = {
 			$and: [
-				{
-					roles: {$bitsAllSet: UserRoles.STUDENT},
-				},
-				{
-					roles: {$bitsAllClear: UserRoles.STAFF},
-				},
-				{
-					balance: {$gt: 0},
-				},
+				{roles: {$bitsAllSet: UserRoles.STUDENT}},
+				{roles: {$bitsAllClear: UserRoles.STAFF}},
+				{balance: {$gt: 0}},
 			],
-		}).sort({balance: -1});
+		};
+		let steps: mongoose.PipelineStage[] = [
+			{
+				$match: query,
+			},
+			{
+				$sort: {
+					balance: -1,
+				},
+			},
+		];
+		if (
+			numberFromData(req.query.count) ||
+			!(req.query.csv && booleanFromData(req.query.csv))
+		)
+			steps.push({$limit: count});
+		let users = await User.aggregate(steps);
 
-		let topUsers =
-			req.query.csv &&
-			booleanFromData(req.query.csv) &&
-			!numberFromData(req.query.count)
-				? await topUsersQuery
-				: await topUsersQuery.limit(count);
-
-		topUsers.forEach(x => {
-			x.balance = roundCurrency(x.balance);
-		});
+		// We did add an extra field, but mongoose takes it out
+		let data = await Promise.all(
+			users.map(x => new User(x)).map(x => x.toAPIResponse()),
+		);
 
 		if (req.query.csv && booleanFromData(req.query.csv)) {
-			let csv = json2csv(topUsers, {
+			let csv = json2csv(data, {
 				keys: [
 					{
-						field: 'id',
+						field: '_id',
 						title: 'ID',
 					},
 					{
@@ -531,9 +537,8 @@ router.get(
 			res.send(csv);
 			return;
 		}
-
 		res.status(200).json(
-			topUsers.map(x => ({
+			users.map(x => ({
 				_id: x.id,
 				name: x.name,
 				email: x.email,

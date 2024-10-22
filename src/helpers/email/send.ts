@@ -45,7 +45,10 @@ export async function newTransaction(
 			from: `ETHS Kitcoin Team <${email_from}>`,
 			replyTo: email_replyto,
 			to: toUser.email,
-			subject: `${finalFrom} sent you Kitcoin!`,
+			subject:
+				message == 'Balance Migration'
+					? 'Your Kitcoin balance has been migrated!'
+					: `${finalFrom} sent you Kitcoin!`,
 			html: msg,
 		};
 		return await transporter.sendMail(email).catch(console.log);
