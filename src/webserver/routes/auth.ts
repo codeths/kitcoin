@@ -21,6 +21,7 @@ const ALLOWED_REDIRECTS: (string | RegExp)[] = [
 	'/store',
 	'/settings',
 	'/home',
+	'/settings',
 	'/',
 	/\/store\/\w+/,
 ];
