@@ -33,11 +33,9 @@ export function sendTemplate(
 		Dear ${toUser},<br><br>
 		
 		You've earned ${amount} Kitcoin` +
-			(amount > 1 ? 's' : '') +
 			` from ${fromUser}! ` +
 			(message ? `They added the following note: ${message}. ` : '') +
 			`Your current balance is ${userBalance} Kitcoin` +
-			(userBalance > 1 ? 's' : '') +
 			`. You can view your transaction history by clicking <a href="${hostname}">here</a>. 
 			<br><br>Sincerely,<br>
 		The ETHS Kitcoin Team<br><br>
@@ -61,5 +59,25 @@ export function requestTemplate(
     <br><br>Sincerely,<br>
     The ETHS Kitcoin Team<br><br>
 	You're receiving this email because a student requested Kitcoin from a store that you manage. ${prefString}.
-    `;
+    Your current balance is ${userBalance} Kitcoin
+	`;
+}
+
+export function purchaseConfirmation(
+	quantity: number,
+	userBalance: number,
+	student: string,
+	itemName: string,
+	storeName: string,
+	status: string,
+) {
+	return `
+    Dear ${student},<br><br>
+    
+    Your purchase for ${quantity} ${itemName} from the store ${storeName}.
+    <br><br>Sincerely,<br>
+    The ETHS Kitcoin Team<br><br>
+	You're receiving this email because you purchased something from the Kitcoin store. ${prefString}.
+    Your balance is now ${userBalance}
+	`;
 }

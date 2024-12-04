@@ -443,7 +443,8 @@
 			if (isNaN(num)) return 'Amount must be an number';
 			if (Math.round(num * 100) / 100 !== num)
 				return 'Amount cannot have more than 2 decimal places';
-			if (num <= 0) return 'Amount must be greater than 0';
+			if (num < 1) return 'Amount must be greater than 1';
+			if (num > 3) return 'Amount cannot be more than 3';
 
 			transactionFormData.errors.deduct = null;
 			if (e.type !== 'validateprice') validatePriceData('deduct');
