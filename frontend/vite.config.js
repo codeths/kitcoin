@@ -9,7 +9,7 @@ export default defineConfig({
 		sourcemap: true,
 	},
 	optimizeDeps: {
-		exclude: ['@roxi/ssr'],
+		exclude: ['@roxi/ssr', '@roxi/routify'],
 	},
 	css: {
 		postcss,

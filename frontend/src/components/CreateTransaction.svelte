@@ -35,7 +35,8 @@
 			if (isNaN(num)) return 'Amount must be an number';
 			if (Math.round(num * 100) / 100 !== num)
 				return 'Amount cannot have more than 2 decimal places';
-			if (num <= 0) return 'Amount must be greater than 0';
+			if (num < 1) return 'Amount must be greater than or equal to 1';
+			if (num > 3) return 'Amount must be less than or equal to 3';
 			if (balance !== -1 && balance < num * numStudents)
 				return 'You do not have enough money';
 

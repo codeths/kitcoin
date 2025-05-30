@@ -165,7 +165,7 @@ router.post(
 			roles: ['STAFF'],
 			validators: {
 				body: {
-					amount: Validators.currency,
+					amount: Validators.and(Validators.currency, Validators.gte(1), Validators.lte(3)),
 					reason: Validators.optional(Validators.stringNotEmpty),
 					user: Validators.arrayOrValue(Validators.objectID),
 				},
