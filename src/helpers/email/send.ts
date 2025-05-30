@@ -59,8 +59,8 @@ export async function newRequest(requestObj: any) {
 	let requestingUser = await User.findById(requestObj.studentID);
 	let item = await StoreItem.findById(requestObj.itemID);
 	let store = await Store.findById(requestObj.storeID);
-	let messages: Object[] = [];
 	let managers: string[] = [];
+	let emails: string[] = [];
 
 	if (!requestingUser || !item || !store) {
 		return false;
@@ -77,26 +77,28 @@ export async function newRequest(requestObj: any) {
 			if (!manager) {
 				return false;
 			} else if (manager.emails) {
-				let msg = requestTemplate(
-					requestObj.quantity,
-					requestingUser.name,
-					manager.name,
-					item.name,
-					store.name,
-					store._id,
-				);
-				let email = {
-					from: `ETHS Kitcoin Team <${email_from}>`,
-					replyTo: email_replyto,
-					to: manager.email,
-					subject:
-						`${requestingUser.name} requested ` +
-						(requestObj.quantity > 1 ? 'items!' : 'an item!'),
-					html: msg,
-				};
-				await transporter.sendMail(email).catch(console.log);
+				emails.push(manager.email!);
 			}
 		}
+		let msg: string = requestTemplate(
+			requestObj.quantity,
+			requestingUser.name,
+			'Store Manager',
+			item.name,
+			store.name,
+			store._id,
+		);
+		let email: Object = {
+			from: `ETHS Kitcoin Team <${email_from}>`,
+			replyTo: email_replyto,
+			to: emails,
+			subject:
+				`${requestingUser.name} requested ` +
+				(requestObj.quantity > 1 ? 'items!' : 'an item!'),
+			html: msg,
+		};
+		await transporter.sendMail(email).catch(console.log);
+
 		return true;
 	}
 }
