@@ -12,7 +12,13 @@ import {
 	validate,
 	Validators,
 } from '../../../helpers/request.js';
-import {DBError, IUser, Transaction, User} from '../../../struct/index.js';
+import {
+	DBError,
+	IUser,
+	Transaction,
+	User,
+	StoreRequest,
+} from '../../../struct/index.js';
 import mongoose from 'mongoose';
 import {requestHasUser} from '../../../types/index.js';
 
@@ -543,9 +549,16 @@ router.delete(
 				return res
 					.status(403)
 					.send('You are not allowed to delete this transaction.');
-
-			transaction.deleted = true;
-			await transaction.save();
+			const storeReq = await StoreRequest.findOne({
+				transactionID: transaction._id,
+			});
+			if (storeReq) {
+				await storeReq.delete();
+				await transaction.delete();
+			} else {
+				transaction.deleted = true;
+				await transaction.save();
+			}
 			let fromUser = await User.findById(transaction.from.id);
 			if (
 				fromUser &&
