@@ -702,8 +702,9 @@
 						for="editmodal"
 						class="btn btn-outline px-12"
 						on:click={e =>
-							!confirm('Are you sure you want to close this without saving?') &&
-							e.preventDefault()}
+							!confirm(
+								'Are you sure you want to close this without saving?',
+							) && e.preventDefault()}
 					>
 						Cancel
 					</label>

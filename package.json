@@ -14,6 +14,7 @@
 		"tsc": "tsc",
 		"watch": "gulp dev --watch",
 		"format": "prettier --write .",
+		"lint": "prettier --check .",
 		"frontend:dev": "(cd frontend && routify & vite --port 8080)",
 		"frontend:build:dev": "(cd frontend && routify -b && vite build --mode dev)",
 		"frontend:build": "(cd frontend && routify -b && vite build)",
@@ -80,5 +81,15 @@
 		"read-excel-file": "^5.8.4",
 		"regex-escape": "^3.4.10",
 		"sharp": "^0.30.4"
+	},
+	"prettier": {
+		"printWidth": 80,
+		"useTabs": true,
+		"tabWidth": 4,
+		"singleQuote": true,
+		"arrowParens": "avoid",
+		"bracketSpacing": false,
+		"trailingComma": "all",
+		"semi": true
 	}
 }

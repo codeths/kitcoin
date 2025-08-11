@@ -1,0 +1,9 @@
+{
+	"format_on_save": "prettier",
+	"hard_tabs": true,
+	"languages": {
+		"Markdown": {
+			"remove_trailing_whitespace_on_save": false
+		}
+	}
+}
