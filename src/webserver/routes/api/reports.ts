@@ -433,30 +433,47 @@ router.get(
 			roles: ['ADMIN'],
 		}),
 	async (req, res) => {
-		let [{balance}] = await User.aggregate([
-			{
-				$match: {
-					$and: [
-						{
-							roles: {$bitsAllSet: UserRoles.STUDENT},
-						},
-						{
-							roles: {$bitsAllClear: UserRoles.STAFF},
-						},
-					],
+		try {
+			let [{balance}] = await User.aggregate([
+				{
+					$match: {
+						$and: [
+							{
+								roles: {$bitsAllSet: UserRoles.STUDENT},
+							},
+							{
+								roles: {$bitsAllClear: UserRoles.STAFF},
+							},
+						],
+					},
 				},
-			},
-			{
-				$group: {
-					_id: null,
-					balance: {$sum: '$balance'},
+				{
+					$group: {
+						_id: null,
+						balance: {$sum: '$balance'},
+					},
 				},
-			},
-		]);
+			]);
 
-		balance = roundCurrency(balance);
+			balance = roundCurrency(balance);
 
-		res.status(200).json({balance});
+			res.status(200).json({balance});
+		} catch (e) {
+			try {
+				const error = await DBError.generate(
+					{
+						request: req,
+						error: e instanceof Error ? e : undefined,
+					},
+					{
+						user: req.user?.id,
+					},
+				);
+				res.status(500).send(
+					`Something went wrong. Error ID: ${error.id}`,
+				);
+			} catch (e) {}
+		}
 	},
 );
 
