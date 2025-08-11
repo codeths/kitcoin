@@ -176,13 +176,16 @@
 			<span class="icon-logo mr-1" />Kitcoin
 		</h2>
 		<p>
-			Copyright &copy; 2024 codETHS.
+			Copyright &copy; {new Date().getFullYear()}
+			<a href="https://codeths.dev/" class="link" target="_blank"
+				>codETHS</a
+			>. Licensed under
 			<a
 				href="https://github.com/codeths/kitcoin/blob/main/LICENSE"
 				class="link"
 				target="_blank"
 			>
-				Licensed under AGPLv3
+				AGPLv3
 			</a>
 		</p>
 	</div>
