@@ -1,8 +1,8 @@
 <script>
 	import {metatags} from '@roxi/routify';
 	import {getContext} from 'svelte';
-	import {Loading} from '../components';
-	import {getUserInfo, toggleEmailStatus} from '../utils/api.js';
+	import {Loading} from '../../components';
+	import {getUserInfo, toggleEmailStatus} from '../../utils/api.js';
 
 	metatags.title = 'Settings - Kitcoin';
 
