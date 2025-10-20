@@ -1452,7 +1452,14 @@ router.post(
 				price,
 			}).save();
 			await item.save();
-			queue.add('request', requestData);
+			await queue.add('request', {
+				storeID: requestData.storeID,
+				itemID: requestData.itemID,
+				studentID: requestData.studentID,
+				quantity: requestData.quantity,
+				price: requestData.price,
+				_id: requestData._id,
+			});
 			res.status(200).json(await requestData.toAPIResponse());
 		} catch (e) {
 			try {
